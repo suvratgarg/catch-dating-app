@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'who_is_going.dart';
+part of 'who_is_going_section.dart';
 
 // **************************************************************************
 // RiverpodGenerator

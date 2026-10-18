@@ -47,7 +47,7 @@ Lab/manual-QA screens (`event_policy_lab`, `event_success_lab`,
   (control chrome), HostParticipationLifecycleBoard, TargetAttendeeControl.
 - **R3 plane changes:** all sheets (broadcast composer, QR scanner, reaction
   comment, draft picker, booking conflict, payment checkout),
-  PlaceSearchPanel/SelectedPointPanel + EventLocationMap overlay panels,
+  PlaceSearchSection/SelectedPointSection + EventLocationMap overlay panels,
   CatchesTopOverlay, MapPill, AppShellNavigationBar, LiveNowConsole,
   HostRosterSearchBar.
 - **R4 status tone:** NoticeCard, ReadinessIssues, IssueList,
@@ -62,7 +62,7 @@ Lab/manual-QA screens (`event_policy_lab`, `event_success_lab`,
 - **Exempt classes:** every `*Pill`/`*Chip`/`*Badge`/`*Seal`/`*Dot`/marker
   (data-chip anatomy), every `*Skeleton` (follows subject), the entire
   stage/paper/live-reveal/celebration grammar (S5 calibration), HeroTime/
-  HeroActivity chips, PhotoCaption, MonthMarker.
+  HeroActivity chips, PhotoCaption, MonthDayTile.
 
 Depth check: no depth-2 bordered nesting found outside plane changes after
 the contained-flush work — record any encountered during execution.
@@ -111,10 +111,10 @@ confirm before execution.
 
 ### N5. Informational empty/locked states go inline `[codex]`
 
-`UserAnalyticsEmptyState`, `EmptyRosterMessage`, and the Catches-hub
+`UserAnalyticsEmptyState`, `WhoIsGoingEmptyState`, and the Catches-hub
 explainer surface (`CatchesHubEmptyState`'s bordered how-it-works card):
 informational, not actionable — render flat (icon + title + supporting,
-CatchEmptyState inline layout, no border). `GuestWhoIsGoing`: verify tone —
+CatchEmptyState inline layout, no border). `GuestWhoIsGoingCard`: verify tone —
 if its fill is neutral it flattens the same way; if it deliberately reads
 as a locked/status treatment, re-tone it as an explicit R4 surface and
 record which.

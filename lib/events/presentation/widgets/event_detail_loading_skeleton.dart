@@ -36,7 +36,7 @@ class EventDetailLoadingScreen extends StatelessWidget {
             children: [
               EventDetailPlanSkeleton(),
               EventDetailHintSkeleton(),
-              EventDetailItinerarySkeleton(),
+              EventDetailItineraryListSkeleton(),
               EventDetailMapSkeleton(),
               EventDetailMechanismSkeleton(),
               EventDetailSocialSkeleton(),
@@ -44,7 +44,7 @@ class EventDetailLoadingScreen extends StatelessWidget {
           ),
         ],
       ),
-      footer: showBottomNavigation ? const EventDetailLoadingCta() : null,
+      footer: showBottomNavigation ? const EventDetailLoadingDock() : null,
     );
   }
 }
@@ -162,7 +162,7 @@ class EventDetailTicketStubSkeleton extends StatelessWidget {
                         color: t.line,
                         width: CatchStroke.hairline,
                       ),
-                    const Expanded(child: TicketStubCellSkeleton()),
+                    const Expanded(child: TicketStubTileSkeleton()),
                   ],
                 ],
               ),
@@ -179,8 +179,8 @@ class EventDetailTicketStubSkeleton extends StatelessWidget {
   }
 }
 
-class TicketStubCellSkeleton extends StatelessWidget {
-  const TicketStubCellSkeleton({super.key});
+class TicketStubTileSkeleton extends StatelessWidget {
+  const TicketStubTileSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -255,8 +255,8 @@ class EventDetailHintSkeleton extends StatelessWidget {
   }
 }
 
-class EventDetailItinerarySkeleton extends StatelessWidget {
-  const EventDetailItinerarySkeleton({super.key});
+class EventDetailItineraryListSkeleton extends StatelessWidget {
+  const EventDetailItineraryListSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -435,8 +435,8 @@ class EventDetailHostsSkeleton extends StatelessWidget {
   }
 }
 
-class EventDetailLoadingCta extends StatelessWidget {
-  const EventDetailLoadingCta({super.key});
+class EventDetailLoadingDock extends StatelessWidget {
+  const EventDetailLoadingDock({super.key});
 
   @override
   Widget build(BuildContext context) {

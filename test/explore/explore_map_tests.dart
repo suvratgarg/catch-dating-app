@@ -280,7 +280,7 @@ void _registerExploreMapTests() {
                   now: DateTime(2026, 5, 26, 10),
                 ),
               ),
-              const ExploreAppliedFilterChips(
+              const ExploreAppliedFilterRail(
                 filters: filters,
                 showJoinedOnly: true,
                 onDistanceFilterSelected: null,
@@ -331,7 +331,7 @@ void _registerExploreMapTests() {
           body: Column(
             children: [
               ExploreFilterRail(filters: filters, showJoinedOnly: false),
-              ExploreAppliedFilterChips(
+              ExploreAppliedFilterRail(
                 filters: filters,
                 showJoinedOnly: false,
                 onDistanceFilterSelected: null,
@@ -366,7 +366,7 @@ void _registerExploreMapTests() {
         theme: AppTheme.light,
         home: Scaffold(
           body: StatefulBuilder(
-            builder: (context, setState) => ExploreAppliedFilterChips(
+            builder: (context, setState) => ExploreAppliedFilterRail(
               filters: filters,
               showJoinedOnly: true,
               onDistanceFilterSelected: (distance) => setState(
@@ -722,7 +722,7 @@ void _registerExploreMapTests() {
     );
     await _pumpClubUi(tester);
 
-    expect(find.byType(EventPinsMapPlaceholder), findsNothing);
+    expect(find.byType(EventPinsFallbackMap), findsNothing);
     expect(find.byType(gmaps.GoogleMap), findsOneWidget);
   });
 
@@ -912,7 +912,7 @@ void _registerExploreMapTests() {
       await _pumpClubUi(tester);
 
       expect(find.text('No events within 1 km'), findsOneWidget);
-      expect(find.byType(EventPinsMapPlaceholder), findsOneWidget);
+      expect(find.byType(EventPinsFallbackMap), findsOneWidget);
       expect(find.byType(CatchDistanceOverlay), findsOneWidget);
       expect(find.text('Expand to 3 km'), findsOneWidget);
 

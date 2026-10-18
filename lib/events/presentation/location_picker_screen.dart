@@ -164,7 +164,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
               bottom: false,
               child: MapPickerSearchRow(
                 onBack: () => Navigator.of(context).maybePop(),
-                searchPanel: PlaceSearchPanel(
+                searchPanel: PlaceSearchSection(
                   controller: _searchController,
                   suggestions: _suggestions,
                   stateText: _searchStateText,
@@ -181,7 +181,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
             right: 16,
             child: SafeArea(
               top: false,
-              child: SelectedPointPanel(
+              child: SelectedPointSection(
                 selectedLabel: _selectedLabel,
                 hasSelection: _selected != null,
                 onConfirm: _selected == null || _pendingSuggestion != null
@@ -409,8 +409,8 @@ class MapPickerSearchRow extends StatelessWidget {
   }
 }
 
-class PlaceSearchPanel extends StatelessWidget {
-  const PlaceSearchPanel({
+class PlaceSearchSection extends StatelessWidget {
+  const PlaceSearchSection({
     super.key,
     required this.controller,
     required this.suggestions,
@@ -562,8 +562,8 @@ class PlaceSuggestionRow extends StatelessWidget {
   }
 }
 
-class SelectedPointPanel extends StatelessWidget {
-  const SelectedPointPanel({
+class SelectedPointSection extends StatelessWidget {
+  const SelectedPointSection({
     super.key,
     required this.hasSelection,
     required this.selectedLabel,

@@ -579,11 +579,11 @@
           "implementationPaths": [
             "lib/events/presentation/event_detail_screen.dart",
             "lib/events/presentation/widgets/event_detail_body.dart",
-            "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+            "lib/events/presentation/widgets/event_detail_fact_list.dart",
             "lib/events/presentation/widgets/event_detail_overview_section.dart",
             "lib/events/presentation/widgets/event_detail_social_section.dart",
-            "lib/events/presentation/widgets/event_detail_cta.dart",
-            "lib/events/presentation/widgets/event_detail_hero_app_bar.dart"
+            "lib/events/presentation/widgets/event_detail_dock.dart",
+            "lib/events/presentation/widgets/event_detail_hero_top_bar.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -715,8 +715,8 @@
                 "event_detail_member_ticket"
               ],
               "previewIds": [
-                "EventDetailHeroAppBar/Catalog states",
-                "EventDetailTicketStubBand/Catalog states",
+                "EventDetailHeroTopBar/Catalog states",
+                "EventDetailTicketStubRow/Catalog states",
                 "EventDetailScreen/Screen states"
               ],
               "tests": [
@@ -731,7 +731,7 @@
                 "event_detail_member_spotlight"
               ],
               "previewIds": [
-                "EventDetailHeroAppBar/Catalog states",
+                "EventDetailHeroTopBar/Catalog states",
                 "EventDetailScreen/Screen states"
               ],
               "tests": [
@@ -799,7 +799,7 @@
                 "test/events/event_detail_screen_state_test.dart",
                 "test/events/event_detail_widgets_test.dart"
               ],
-              "notes": "event_detail_booking_pending and event_detail_cancel_pending seed EventBookingController mutations through EventDetailScreen so EventDetailCta renders disabled loading dock states.",
+              "notes": "event_detail_booking_pending and event_detail_cancel_pending seed EventBookingController mutations through EventDetailScreen so EventDetailDock renders disabled loading dock states.",
               "captureIds": [
                 "event_detail_booking_pending",
                 "event_detail_cancel_pending"
@@ -910,7 +910,7 @@
         {
           "id": "DP-EVENT-PREVIEW-001",
           "status": "closed",
-          "nextAction": "Widgetbook entries cover EventHero, TicketStub, Overview, HintList, Itinerary, PhotoStrip, HostCard, MapCard, MechanismList, WhoIsGoing/social proof, Reviews, companion/invite prompts, and provider-free EventBookingDock states. Route captures now cover the missing guest, host-app, offline, text-scale, reduced-motion, and booking-state variants."
+          "nextAction": "Widgetbook entries cover EventHero, TicketStub, Overview, HintList, Itinerary, PhotoStrip, HostCard, MapCard, MechanismList, WhoIsGoingSection/social proof, Reviews, companion/invite prompts, and provider-free EventBookingDock states. Route captures now cover the missing guest, host-app, offline, text-scale, reduced-motion, and booking-state variants."
         }
       ]
     },
@@ -1049,7 +1049,7 @@
               "kind": "error",
               "status": "captured",
               "previewIds": [
-                "ExploreFeedContentSliver/Feed states"
+                "ExploreFeedSliverBody/Feed states"
               ],
               "tests": [
                 "test/explore/explore_widgets_test.dart"
@@ -1081,7 +1081,7 @@
               "status": "captured",
               "previewIds": [
                 "CatchEmptyState/Empty states",
-                "ExploreFeedContentSliver/Feed states",
+                "ExploreFeedSliverBody/Feed states",
                 "ExploreScreen/Screen states"
               ],
               "tests": [
@@ -1104,7 +1104,7 @@
               ],
               "previewIds": [
                 "ExploreScreen/Screen states",
-                "ExploreFeedContentSliver/Feed states",
+                "ExploreFeedSliverBody/Feed states",
                 "ExploreEventTypeBrowseGrid/Activity states",
                 "CatchButton/Map launcher states"
               ],
@@ -1174,7 +1174,7 @@
                 "explore_unclaimed_host_projection"
               ],
               "previewIds": [
-                "ExploreFeedContentSliver/Feed states",
+                "ExploreFeedSliverBody/Feed states",
                 "ExploreScreen/Screen states"
               ],
               "tests": [
@@ -1804,7 +1804,7 @@
               "previewIds": [
                 "ExploreMapScreen/Map route states"
               ],
-              "notes": "ExploreMapScreen delegates feeds without exact coordinates to EventMapView's shared no-pins branch while keeping route chrome and the deterministic fixture mounted."
+              "notes": "ExploreMapScreen delegates feeds without exact coordinates to EventMap's shared no-pins branch while keeping route chrome and the deterministic fixture mounted."
             },
             {
               "id": "zero_radius_results",
@@ -1840,7 +1840,7 @@
               "previewIds": [
                 "ExploreMapScreen/Map route states"
               ],
-              "notes": "Captured the map route feed-error branch with retry routed through EventMapView."
+              "notes": "Captured the map route feed-error branch with retry routed through EventMap."
             }
           ],
           "gaps": [
@@ -10495,7 +10495,7 @@
             {
               "id": "DP-SAVED-EVENTS-003",
               "status": "closed",
-              "nextAction": "Closed by SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, SavedEventsMessage, and SavedEventsListState provider-free section boundaries."
+              "nextAction": "Closed by SavedEventsHeaderSliver, SavedEventsAgendaList, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorState, SavedEventsMessage, and SavedEventsListState provider-free section boundaries."
             },
             {
               "id": "DP-SAVED-EVENTS-004",

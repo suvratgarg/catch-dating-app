@@ -8,7 +8,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'event_hype_avatar_stack.g.dart';
+part 'event_hype_avatar_row.g.dart';
 
 class EventHypeAvatarQuery {
   const EventHypeAvatarQuery({required this.eventId, this.limit = 4});
@@ -47,8 +47,8 @@ Future<List<CatchPersonAvatarItem>> eventHypeAvatars(
       .toList(growable: false);
 }
 
-class EventHypeAvatarStack extends StatelessWidget {
-  const EventHypeAvatarStack({
+class EventHypeAvatarRow extends StatelessWidget {
+  const EventHypeAvatarRow({
     super.key,
     required this.eventId,
     required this.totalCount,

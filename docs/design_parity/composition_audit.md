@@ -150,7 +150,7 @@ mimic (skeleton mimics must track the widget they imitate).
 - `DashboardEmptySliverBody`: role-derived padding (`pageBody.copyWith`),
   `CatchSection.divided` + `CatchJourneySteps` — clean; the model for what
   a section body should look like.
-- `Recommendations`: the LayoutBuilder card-width math is real CONFIGURES
+- `ExploreRecommendationsSection`: the LayoutBuilder card-width math is real CONFIGURES
   value (its rail zeroings fall away with D4).
 - `EventFocusCard` → `EventActionCard`: adapter over a shared primitive, as
   designed.
@@ -227,7 +227,7 @@ third-occurrence review point if another callout shape converges.
 
 ### E3. Spinner loading in companion/hosts sections `[done fca49f467]` (G2 approved)
 
-`EventCompanionEntry.loading` and `EventDetailHostsSection.loading` rendered
+`EventCompanionCard.loading` and `EventDetailHostsSection.loading` rendered
 `Center(CatchLoadingIndicator())`. They now use content-shaped skeletons:
 hosts uses `EventDetailHostsSkeleton`, and companion uses
 `EventDetailCompanionSkeleton`.
@@ -700,7 +700,7 @@ text-scale, reduced-motion, and light/dark states.
 
 ### CA1. Calendar's date header is real product grammar — keep
 
-`CalendarDateHeader`, `CalendarWeekStrip`, `CalendarMonthGrid`,
+`CalendarDateHeader`, `CalendarWeekRow`, `CalendarMonthGrid`,
 `CalendarStatsHeader`, and `CalendarLoadingScreen` look large in one file, but
 they are not pass-through wrappers around a generic section. The header owns
 route-local interaction state: selected day, collapsed/expanded month mode,
@@ -721,8 +721,8 @@ structure, not top-level page sections.
 
 ### CA3. Saved Events' small header widgets are provider-free sections — keep
 
-`SavedEventsHeaderSliver`, `SavedEventsAgendaSliver`, `SavedEventsLoading`,
-`SavedEventsError`, and `SavedEventsClubNamesErrorSliver` add narrow sliver or
+`SavedEventsHeaderSliver`, `SavedEventsAgendaList`, `SavedEventsLoading`,
+`SavedEventsError`, and `SavedEventsClubNamesErrorState` add narrow sliver or
 state-shape value and are covered as public catalog entries. No dead parallel
 shell or feature-local section system was found.
 

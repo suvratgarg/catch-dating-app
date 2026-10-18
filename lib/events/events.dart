@@ -56,14 +56,14 @@ export 'shared/event_invite_share_copy.dart';
 // ── Presentation — widgets commonly reused outside the feature ──────────────
 export 'package:catch_dating_app/core/widgets/event_activity_badge.dart';
 export 'presentation/widgets/event_detail_body.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/widgets/event_detail_cta.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/widgets/event_detail_hero_app_bar.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/widgets/event_detail_dock.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/widgets/event_detail_hero_top_bar.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/event_detail_overview_section.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/event_detail_social_section.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/widgets/event_hype_avatar_stack.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/widgets/event_hype_avatar_row.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/event_photo_header.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/event_pins_map.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/widgets/who_is_going.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/widgets/who_is_going_section.dart'; // public-api: shared presentation component used outside this feature
 export 'shared/event_share_card.dart';
 export 'shared/event_tiles/event_tile_data.dart';
 export 'shared/event_tiles/event_tiles.dart';

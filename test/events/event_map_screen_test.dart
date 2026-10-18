@@ -86,7 +86,7 @@ void main() {
   ) async {
     await pumpEventsTestApp(
       tester,
-      const EventMapView(
+      const EventMap(
         enableNetworkTiles: false,
         viewModel: AsyncLoading<EventMapViewModel>(),
       ),
@@ -107,7 +107,7 @@ void main() {
   ) async {
     await pumpEventsTestApp(
       tester,
-      const EventMapView(enableNetworkTiles: false),
+      const EventMap(enableNetworkTiles: false),
       overrides: [
         eventMapViewModelProvider.overrideWith(
           (ref) =>
@@ -127,7 +127,7 @@ void main() {
   ) async {
     await pumpEventsTestApp(
       tester,
-      const EventMapView(
+      const EventMap(
         enableNetworkTiles: false,
         preserveCanvasWhenEmpty: true,
         distanceRingRadiusKm: 3,
@@ -145,7 +145,7 @@ void main() {
       ],
     );
 
-    expect(find.byType(EventPinsMapPlaceholder), findsOneWidget);
+    expect(find.byType(EventPinsFallbackMap), findsOneWidget);
     expect(find.byType(CatchDistanceOverlay), findsOneWidget);
     expect(find.text('No mapped events yet'), findsNothing);
   });
@@ -168,7 +168,7 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      const EventMapView(enableNetworkTiles: false),
+      const EventMap(enableNetworkTiles: false),
       overrides: [
         eventMapViewModelProvider.overrideWith(
           (ref) => AsyncData(
@@ -224,7 +224,7 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      EventMapView(
+      EventMap(
         enableNetworkTiles: false,
         viewModel: AsyncData(
           EventMapViewModel(
@@ -266,7 +266,7 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      const EventMapView(
+      const EventMap(
         enableNetworkTiles: false,
         initialSelectedEventId: 'second-event',
       ),

@@ -667,7 +667,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
           '/lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart',
         ) ||
         path.endsWith(
-          '/lib/events/presentation/widgets/event_detail_hero_app_bar.dart',
+          '/lib/events/presentation/widgets/event_detail_hero_top_bar.dart',
         );
   }
 }

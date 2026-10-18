@@ -205,7 +205,7 @@ or an independent feature contract. Its domain state and route intents remain te
   Activity, Payment Confirmation, Saved Events, Event Map, Event Location Map,
   host create/edit club/event route gates, Host Operations/Clubs, Host Account,
   Host Profile, Host Event Manage, host attendance/profile lookups, host
-  analytics, hosted-club event lists, `WhoIsGoing`, and Settings route gutters
+  analytics, hosted-club event lists, `WhoIsGoingSection`, and Settings route gutters
   now use shared async/layout primitives. Remaining direct async branches are
   dashboard view-model transformations and an optional Event Detail plan
   presence check; treat those as policy decisions before further migration.
@@ -1259,9 +1259,9 @@ tests, captures, Widgetbook, Git, and CI.
     entries as represented rather than missing. Existing generated entries for
     `CatchCountPill`, `FeaturedEventPoster`, `ClubCover`, `CatchIndexRow`,
     `EventBookingDock`, `EventDetailHintList`, `EventDetailHostCard`,
-    `EventDetailItinerary`, `EventDetailMapCard`,
-    `EventDetailMechanismList`, `EventDetailPhotoStrip`,
-    `EventDetailTicketStubBand`, `NotificationRow`, and `CatchConfirmDialog`
+    `EventDetailItineraryList`, `EventDetailMapCard`,
+    `EventDetailMechanismList`, `EventDetailPhotoGrid`,
+    `EventDetailTicketStubRow`, `NotificationRow`, and `CatchConfirmDialog`
     are recorded as represented; remaining unresolved rows stay in the
     no-clear-match bucket for future product/API decisions.
   - `CatchRosterTiles`, `ParticipantRow`, and `ParticipantTable` are now formal
@@ -1695,7 +1695,7 @@ comparison, interaction proof, adapter extraction, or scanner/test proof.
   - captured: `uid_missing`, `saved_events_loading`, `saved_events_error`, `empty_saved_events`, `populated_saved_events`, `club_names_loading_error`, `text_scale_2`, `light_dark`
   - DP-SAVED-EVENTS-001: Closed by Saved Events Widgetbook states for populated rows, empty, loading, stream error, club-name loading/error, past/saved row statuses, text scale, and dark theme variants.
   - DP-SAVED-EVENTS-002: Closed by deterministic Saved Events captures for uid-missing fallback, empty/deleted-doc fallback, loading, error, club-name loading/error, past-only, text scale, and paired light/dark output.
-  - DP-SAVED-EVENTS-003: Closed by SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, SavedEventsMessage, and SavedEventsListState provider-free section boundaries.
+  - DP-SAVED-EVENTS-003: Closed by SavedEventsHeaderSliver, SavedEventsAgendaList, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorState, SavedEventsMessage, and SavedEventsListState provider-free section boundaries.
 - [x] `filters.preferences` (10 state follow-ups, 0 open gaps)
   - planned: None
   - implemented: None

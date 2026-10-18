@@ -5,11 +5,14 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class Recommendations extends StatelessWidget {
-  const Recommendations({super.key, required this.recommendations, this.title})
-    : _loading = false;
+class ExploreRecommendationsSection extends StatelessWidget {
+  const ExploreRecommendationsSection({
+    super.key,
+    required this.recommendations,
+    this.title,
+  }) : _loading = false;
 
-  const Recommendations.loading({super.key, this.title})
+  const ExploreRecommendationsSection.loading({super.key, this.title})
     : recommendations = const [],
       _loading = true;
 

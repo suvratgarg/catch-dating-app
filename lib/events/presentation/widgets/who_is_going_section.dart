@@ -2,7 +2,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_attendee_lookup_controller.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_row.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'who_is_going.g.dart';
+part 'who_is_going_section.g.dart';
 
 const _whoIsGoingAvatarLimit = 7;
 
@@ -31,8 +31,8 @@ Future<Map<String, (String name, String? photoUrl)>> attendeeProfiles(
   };
 }
 
-class WhoIsGoing extends ConsumerWidget {
-  const WhoIsGoing({
+class WhoIsGoingSection extends ConsumerWidget {
+  const WhoIsGoingSection({
     super.key,
     required this.event,
     this.surfaceStyle,
@@ -65,7 +65,7 @@ class WhoIsGoing extends ConsumerWidget {
             ),
           );
     final avatarItems = avatarItemsState?.value;
-    return WhoIsGoingContent(
+    return WhoIsGoingBody(
       event: event,
       totalCount: totalCount,
       avatarItems: avatarItems,
@@ -77,8 +77,8 @@ class WhoIsGoing extends ConsumerWidget {
   }
 }
 
-class WhoIsGoingContent extends StatelessWidget {
-  const WhoIsGoingContent({
+class WhoIsGoingBody extends StatelessWidget {
+  const WhoIsGoingBody({
     super.key,
     required this.event,
     required this.totalCount,
@@ -135,7 +135,7 @@ class WhoIsGoingContent extends StatelessWidget {
           gapH12,
         ],
         if (total == 0)
-          EmptyRosterMessage(
+          WhoIsGoingEmptyState(
             title: isUpcoming
                 ? context.l10n.eventsWhoIsGoingTitleNoAttendeesYet
                 : context.l10n.eventsWhoIsGoingTitleNoAttendeesBooked,
@@ -145,7 +145,7 @@ class WhoIsGoingContent extends StatelessWidget {
             surfaceStyle: surfaceStyle,
           )
         else ...[
-          EventHypeAvatarStack(
+          EventHypeAvatarRow(
             eventId: event.id,
             totalCount: total,
             avatarItems: avatarItems,
@@ -182,8 +182,8 @@ class WhoIsGoingContent extends StatelessWidget {
   }
 }
 
-class EmptyRosterMessage extends StatelessWidget {
-  const EmptyRosterMessage({
+class WhoIsGoingEmptyState extends StatelessWidget {
+  const WhoIsGoingEmptyState({
     super.key,
     required this.title,
     required this.message,

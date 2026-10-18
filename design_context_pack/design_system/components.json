@@ -14427,7 +14427,7 @@
           },
           {
             "id": "catch.event_card.ticket_stub",
-            "symbol": "EventTicketStub",
+            "symbol": "EventTicketStubRow",
             "file": "lib/events/shared/event_tiles/event_date_rail_card.dart",
             "summary": "Shared responsive ticket decision row for time, capacity, status, and trailing price copy.",
             "states": [
@@ -15139,8 +15139,8 @@
         "members": [
           {
             "id": "catch.event_detail_sections.hero",
-            "symbol": "EventDetailHeroAppBar",
-            "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
+            "symbol": "EventDetailHeroTopBar",
+            "file": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart",
             "summary": "Event detail hero section with standard, ticket, and spotlight-dark media treatments plus route-owned top actions.",
             "states": [
               "standard",
@@ -15156,8 +15156,8 @@
           },
           {
             "id": "catch.event_detail_sections.ticket_stub",
-            "symbol": "EventDetailTicketStubBand",
-            "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+            "symbol": "EventDetailTicketStubRow",
+            "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
             "summary": "Flush ticket fact band for when, where, pace, and activity facts below the hero.",
             "states": [
               "band",
@@ -15173,7 +15173,7 @@
           {
             "id": "catch.event_detail_sections.hint_list",
             "symbol": "EventDetailHintList",
-            "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+            "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
             "summary": "Why-you-might-click hint list derived from event format and activity context.",
             "states": [
               "two-hints",
@@ -15187,8 +15187,8 @@
           },
           {
             "id": "catch.event_detail_sections.itinerary",
-            "symbol": "EventDetailItinerary",
-            "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+            "symbol": "EventDetailItineraryList",
+            "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
             "summary": "Timed event itinerary rail for route plan, meet, run, and post-event moments.",
             "states": [
               "standard",
@@ -15202,8 +15202,8 @@
           },
           {
             "id": "catch.event_detail_sections.photo_strip",
-            "symbol": "EventDetailPhotoStrip",
-            "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+            "symbol": "EventDetailPhotoGrid",
+            "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
             "summary": "Canonical event-detail photo proof strip with uploaded photos and activity-soft placeholders.",
             "states": [
               "three-photos",
@@ -15218,7 +15218,7 @@
           {
             "id": "catch.event_detail_sections.map_card",
             "symbol": "EventDetailMapCard",
-            "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+            "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
             "summary": "Event detail map preview card with exact or morning-of pin states and optional route-owned tap action.",
             "states": [
               "pin-ready",
@@ -15234,7 +15234,7 @@
           {
             "id": "catch.event_detail_sections.mechanism_list",
             "symbol": "EventDetailMechanismList",
-            "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+            "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
             "summary": "How-sign-ups-work list for open signup, approval, waitlist, and demand-pricing mechanics.",
             "states": [
               "open-signup",
@@ -15250,7 +15250,7 @@
           {
             "id": "catch.event_detail_sections.good_to_know",
             "symbol": "EventDetailGoodToKnowList",
-            "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+            "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
             "summary": "Good-to-know list for requirements, expectations, booking, cancellation, and settlement rows.",
             "states": [
               "requirements",
@@ -15318,7 +15318,7 @@
           },
           {
             "id": "catch.event_detail_sections.companion_entry",
-            "symbol": "EventCompanionEntry",
+            "symbol": "EventCompanionCard",
             "file": "lib/events/presentation/widgets/event_detail_body.dart",
             "summary": "Provider-free companion prompt adapter for hidden, loading, error, and available Event Success plan states.",
             "states": [
@@ -15335,7 +15335,7 @@
           {
             "id": "catch.event_detail_sections.booking_dock",
             "symbol": "EventBookingDock",
-            "file": "lib/events/presentation/widgets/event_detail_cta.dart",
+            "file": "lib/events/presentation/widgets/event_detail_dock.dart",
             "summary": "Provider-free booking dock renderer for eligible, paid, booked, waitlist, waitlist-offer, attended, past, disabled, pending, and error states.",
             "states": [
               "eligible",
@@ -15355,8 +15355,8 @@
           },
           {
             "id": "catch.event_detail_sections.avatar_stack",
-            "symbol": "EventHypeAvatarStack",
-            "file": "lib/events/presentation/widgets/event_hype_avatar_stack.dart",
+            "symbol": "EventHypeAvatarRow",
+            "file": "lib/events/presentation/widgets/event_hype_avatar_row.dart",
             "summary": "Event-detail attendee-hype avatar stack that composes the shared Catch person-avatar stack for hidden and revealed roster states.",
             "states": [
               "obscured",

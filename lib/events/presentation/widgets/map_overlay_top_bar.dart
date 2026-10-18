@@ -2,8 +2,8 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class MapOverlayControls extends StatelessWidget {
-  const MapOverlayControls({super.key, this.trailing, this.below, this.onBack});
+class MapOverlayTopBar extends StatelessWidget {
+  const MapOverlayTopBar({super.key, this.trailing, this.below, this.onBack});
 
   final Widget? trailing;
   final Widget? below;

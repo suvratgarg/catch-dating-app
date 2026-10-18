@@ -1505,7 +1505,18 @@ slices:
   classes or widget helpers inlined (the OTP step's phone row and edit
   button).
 
-Deferred: `DashboardFullSliverBody`'s file rename touches
+Slice 2 (2026-10-18): events and explore; the ratchet fell from 222 to 162.
+Notable calls: CTA widgets that render a `CatchDock` are Docks
+(`EventDetailCta` is `EventDetailDock`, `GuestBookCta` is `GuestBookDock`);
+the date markers are Tiles (`EventDateTile`, with `EventDateTileVariant`
+replacing the non-axis `EventDateMarkerLayout`); slivers take the role they
+render (`SavedEventsAgendaList`, `ExploreFeedSliverBody`); and
+`ExploreEventsEmptySliver` became `ExploreFeedEmptyState` because
+`ExploreEventsEmptyState` already names its data. Renamed libraries carry
+their `part` files and generated parts with them.
+
+Deferred: `DashboardFullSliverBody`'s file rename and the
+`EventCheckInQrScanner` rename both touch
 `test/dashboard/dashboard_screen_test.dart`, which another active task holds.
 
 **Phase 7c — One registry for React identity.** Replace the `surfaces` name

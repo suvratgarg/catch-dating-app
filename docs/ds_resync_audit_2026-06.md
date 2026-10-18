@@ -139,7 +139,7 @@ data exists; optionally flatten GOOD TO KNOW from cards to box-free hairline row
 
 **2026-06-16 — batch 8 (Explore → feed-primary + map route; owner chose the FULL rewrite over
 skin-in-place. Analyze-clean project-wide; explore (57) + clubs (62) + routing (42) green):**
-- **Retired the map-as-canvas.** `ExploreScreen` was a 644-line map canvas: a live `EventMapView`
+- **Retired the map-as-canvas.** `ExploreScreen` was a 644-line map canvas: a live `EventMap`
   behind a `DraggableScrollableSheet` with three snap states (FULL/MAP/PEEK), tilt-to-reveal device
   motion, and map-lead slivers. It is now a plain feed-primary screen — `Column[ browse header +
   filter rail, Expanded(CustomScrollView(feed)) ]` reusing `buildExploreBodySlivers` + the existing
@@ -291,13 +291,13 @@ non-field controls.
 - Wired via `_EventDetailHostsSection` in `event_detail_body.dart` — watches
   `fetchClubProvider`, maps `Club` → host name/avatar/meta/stats, and wires
   View club (→ club detail) + Message host (→ `startConversation` → chat).
-- `EventDetailHeroAppBar` enriched: activity **tag pill** (glyph + label) on both the
+- `EventDetailHeroTopBar` enriched: activity **tag pill** (glyph + label) on both the
   standard + ticket heroes, poster **w700** title, condensed standard-hero title
   (`eventDetailHeroStandardTitleSize`), `sunsetDark`→`dark` retired (5 sites). Added
   canonical `CatchIcons.sealCheck/arrowUpRight/chatCircle/sparkle`.
 - `CatchBottomCta` extended with `catchLine`/`catchLineAccent`/`footnote`; the booking
   dock now shows the whispered catch-line ("Matching opens for everyone who goes") and
-  `PriceLeading` is a mono `numericLarge` price + warning-toned scarcity note (≤3 spots).
+  `EventPriceText` is a mono `numericLarge` price + warning-toned scarcity note (≤3 spots).
 - Photo grade: `CatchGrade` re-tuned to DS `.catch-grade` (Wave 0).
 
 **Deferred from the hero (deliberate):** the activity-pigment gradient base + multiply

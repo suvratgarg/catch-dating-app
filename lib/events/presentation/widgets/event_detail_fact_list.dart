@@ -17,8 +17,8 @@ import 'package:flutter/material.dart';
 part 'event_detail_design_support.dart';
 part 'event_detail_itinerary_row.dart';
 
-class EventDetailTicketStubBand extends StatelessWidget {
-  const EventDetailTicketStubBand({
+class EventDetailTicketStubRow extends StatelessWidget {
+  const EventDetailTicketStubRow({
     super.key,
     required this.event,
     this.notchBackgroundColor,
@@ -49,7 +49,7 @@ class EventDetailTicketStubBand extends StatelessWidget {
                     children: [
                       for (var index = 0; index < cells.length; index++)
                         Expanded(
-                          child: TicketStubCell(
+                          child: TicketStubTile(
                             cell: cells[index],
                             showDivider: index > 0,
                           ),
@@ -125,8 +125,8 @@ class EventDetailHintList extends StatelessWidget {
   }
 }
 
-class EventDetailItinerary extends StatelessWidget {
-  const EventDetailItinerary({
+class EventDetailItineraryList extends StatelessWidget {
+  const EventDetailItineraryList({
     super.key,
     required this.event,
     this.titleColor,
@@ -483,8 +483,8 @@ IconData _eventDetailFactIcon(
 
 const _photoStripTileCount = 3;
 
-class EventDetailPhotoStrip extends StatelessWidget {
-  const EventDetailPhotoStrip({super.key, required this.event});
+class EventDetailPhotoGrid extends StatelessWidget {
+  const EventDetailPhotoGrid({super.key, required this.event});
 
   final Event event;
 
@@ -512,7 +512,7 @@ class EventDetailPhotoStrip extends StatelessWidget {
               ) ...[
                 if (index > start) gapW8,
                 Expanded(
-                  child: EventDetailPhotoStripTile(
+                  child: EventDetailPhotoTile(
                     index: index,
                     photo: photos[index],
                     backgroundColor: activity.soft,
@@ -545,8 +545,8 @@ class EventDetailPhotoStrip extends StatelessWidget {
   }
 }
 
-class EventDetailPhotoStripTile extends StatelessWidget {
-  const EventDetailPhotoStripTile({
+class EventDetailPhotoTile extends StatelessWidget {
+  const EventDetailPhotoTile({
     super.key,
     required this.index,
     required this.photo,
@@ -588,14 +588,14 @@ class EventDetailPhotoStripTile extends StatelessWidget {
   }
 }
 
-class TicketStubCell extends StatelessWidget {
-  const TicketStubCell({
+class TicketStubTile extends StatelessWidget {
+  const TicketStubTile({
     super.key,
     required this.cell,
     required this.showDivider,
   });
 
-  final TicketStubCellData cell;
+  final TicketStubTileData cell;
   final bool showDivider;
 
   @override

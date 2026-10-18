@@ -791,7 +791,7 @@
     {
       "clusterId": "small-widget: AttendedLeading/BookedLeading/UnsavedChangesPill",
       "decision": "merge-new-primitive",
-      "canonicalSymbol": "EventCtaStatusLeading (feature-level)",
+      "canonicalSymbol": "EventDockStatusText (feature-level)",
       "members": [
         {
           "name": "AttendedLeading",
@@ -973,7 +973,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "EventCtaStatusLeading",
+          "name": "EventDockStatusText",
           "action": "keep"
         },
         {
@@ -1380,7 +1380,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "EventSharePill",
+          "name": "EventShareChip",
           "action": "keep"
         },
         {
@@ -1388,7 +1388,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: EventSharePill is a light share-card metadata pill using primarySoft/labelS/compactLabelContent; EventSuccessDarkPill is a dark editorial overlay pill using editorialLight alpha/labelL/compactControlContent. REVIEW (claude, 2026-07-03): light vs dark tone recipes; deliberate surface-specific variants.",
+      "rationale": "K5 concept mismatch: EventShareChip is a light share-card metadata pill using primarySoft/labelS/compactLabelContent; EventSuccessDarkPill is a dark editorial overlay pill using editorialLight alpha/labelL/compactControlContent. REVIEW (claude, 2026-07-03): light vs dark tone recipes; deliberate surface-specific variants.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -1514,7 +1514,7 @@
           "action": "keep"
         },
         {
-          "name": "EmptyRosterMessage",
+          "name": "WhoIsGoingEmptyState",
           "action": "keep"
         },
         {
@@ -2067,7 +2067,7 @@
       "status": "recorded"
     },
     {
-      "clusterId": "ranked-pair: ClubPhotoRail/EventDetailPhotoStrip",
+      "clusterId": "ranked-pair: ClubPhotoRail/EventDetailPhotoGrid",
       "decision": "keep-distinct",
       "members": [
         {
@@ -2075,7 +2075,7 @@
           "action": "keep"
         },
         {
-          "name": "EventDetailPhotoStrip",
+          "name": "EventDetailPhotoGrid",
           "action": "keep"
         }
       ],
@@ -2122,7 +2122,7 @@
       "canonicalSymbol": "CatchSectionHeader"
     },
     {
-      "clusterId": "ranked-pair: ClubHeroTopBar/EventDetailHeroAppBar",
+      "clusterId": "ranked-pair: ClubHeroTopBar/EventDetailHeroTopBar",
       "decision": "keep-distinct",
       "members": [
         {
@@ -2130,7 +2130,7 @@
           "action": "keep"
         },
         {
-          "name": "EventDetailHeroAppBar",
+          "name": "EventDetailHeroTopBar",
           "action": "keep"
         }
       ],
@@ -2447,7 +2447,7 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: DarkPill/EventSharePill",
+      "clusterId": "ranked-pair: DarkPill/EventShareChip",
       "decision": "keep-distinct",
       "members": [
         {
@@ -2455,11 +2455,11 @@
           "action": "keep"
         },
         {
-          "name": "EventSharePill",
+          "name": "EventShareChip",
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: DarkPill is a manual-QA dark accent pill while EventSharePill is a light event share-card metadata pill with different surface and typography roles. REVIEW (claude, 2026-07-03): light-primary share pill vs dark reveal pill — different tone recipes for different surfaces; DarkPill itself merges into EventSuccessDarkPill (WO-019).",
+      "rationale": "K5 concept mismatch: DarkPill is a manual-QA dark accent pill while EventShareChip is a light event share-card metadata pill with different surface and typography roles. REVIEW (claude, 2026-07-03): light-primary share pill vs dark reveal pill — different tone recipes for different surfaces; DarkPill itself merges into EventSuccessDarkPill (WO-019).",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -3750,15 +3750,15 @@
       "status": "recorded-WO-015-ranked-pair"
     },
     {
-      "clusterId": "ranked-pair: ExploreEventsEmptySliver/ExploreEventsLoadingSliver",
+      "clusterId": "ranked-pair: ExploreFeedEmptyState/ExploreEventsSkeleton",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "ExploreEventsEmptySliver",
+          "name": "ExploreFeedEmptyState",
           "action": "keep"
         },
         {
-          "name": "ExploreEventsLoadingSliver",
+          "name": "ExploreEventsSkeleton",
           "action": "keep"
         }
       ],
@@ -4885,7 +4885,7 @@
           "action": "keep"
         },
         {
-          "name": "EventDetailItinerarySkeleton",
+          "name": "EventDetailItineraryListSkeleton",
           "action": "keep"
         },
         {
@@ -5368,15 +5368,15 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "GuestWhoIsGoing",
+          "name": "GuestWhoIsGoingCard",
           "action": "keep"
         },
         {
-          "name": "WhoIsGoing",
+          "name": "WhoIsGoingSection",
           "action": "keep"
         }
       ],
-      "rationale": "Name-family review (batch 2): WhoIsGoing is the provider-wired roster dispatcher, GuestWhoIsGoing the static locked variant; both render through shared WhoIsGoingContent (K3).",
+      "rationale": "Name-family review (batch 2): WhoIsGoingSection is the provider-wired roster dispatcher, GuestWhoIsGoingCard the static locked variant; both render through shared WhoIsGoingBody (K3).",
       "decidedBy": "claude",
       "date": "2026-07-04",
       "status": "recorded"
@@ -5386,11 +5386,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "EventDetailCta",
+          "name": "EventDetailDock",
           "action": "keep"
         },
         {
-          "name": "EventDetailLoadingCta",
+          "name": "EventDetailLoadingDock",
           "action": "keep"
         }
       ],
@@ -5650,7 +5650,7 @@
           "action": "keep"
         },
         {
-          "name": "CalendarWeekStripSkeleton",
+          "name": "CalendarWeekRowSkeleton",
           "action": "keep"
         }
       ],
@@ -5694,7 +5694,7 @@
           "action": "keep"
         },
         {
-          "name": "EventDetailPhotoStripTile",
+          "name": "EventDetailPhotoTile",
           "action": "keep"
         }
       ],
@@ -5811,11 +5811,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "SavedEventsAgendaSliver",
+          "name": "SavedEventsAgendaList",
           "action": "keep"
         },
         {
-          "name": "SavedEventsClubNamesErrorSliver",
+          "name": "SavedEventsClubNamesErrorState",
           "action": "keep"
         },
         {
@@ -6227,7 +6227,7 @@
           "action": "keep"
         },
         {
-          "name": "EmptyRosterMessage",
+          "name": "WhoIsGoingEmptyState",
           "action": "keep"
         },
         {

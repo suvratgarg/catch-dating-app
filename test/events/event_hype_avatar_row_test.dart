@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_row.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -11,14 +11,14 @@ import 'events_test_helpers.dart';
 
 void main() {
   testWidgets(
-    'EventHypeAvatarStack renders veiled activity placeholders when obscured',
+    'EventHypeAvatarRow renders veiled activity placeholders when obscured',
     (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
             theme: AppTheme.light,
             home: const Scaffold(
-              body: EventHypeAvatarStack(
+              body: EventHypeAvatarRow(
                 eventId: 'event-1',
                 totalCount: 4,
                 size: 42,

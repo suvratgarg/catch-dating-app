@@ -9,8 +9,8 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class EventDetailHeroAppBar extends StatelessWidget {
-  const EventDetailHeroAppBar({
+class EventDetailHeroTopBar extends StatelessWidget {
+  const EventDetailHeroTopBar({
     super.key,
     required this.event,
     required this.isSaved,

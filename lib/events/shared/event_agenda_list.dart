@@ -62,7 +62,7 @@ class EventAgendaSliverList extends StatelessWidget {
       for (var groupIndex = 0; groupIndex < entries.length; groupIndex++) ...[
         KeyedSubtree(
           key: dayKeyBuilder?.call(entries[groupIndex].key),
-          child: AgendaDayGroup(
+          child: AgendaDaySection(
             date: entries[groupIndex].key,
             rows: entries[groupIndex].value,
             today: effectiveToday,
@@ -249,8 +249,8 @@ class EventAgendaTileSkeleton extends StatelessWidget {
   }
 }
 
-class AgendaDayGroup extends StatelessWidget {
-  const AgendaDayGroup({
+class AgendaDaySection extends StatelessWidget {
+  const AgendaDaySection({
     super.key,
     required this.date,
     required this.rows,

@@ -100,7 +100,7 @@
     "note": "these are the custom app bars for two different things",
     "recommended": "catch.hero_chrome",
     "left": "ClubHeroTopBar",
-    "right": "EventDetailHeroAppBar"
+    "right": "EventDetailHeroTopBar"
   },
   {
     "ts": "2026-06-27T12:06:28.112Z",
@@ -460,7 +460,7 @@
     "note": "",
     "recommended": "catch.person_avatar_stack",
     "left": "CatchPersonAvatarStack",
-    "right": "EventHypeAvatarStack"
+    "right": "EventHypeAvatarRow"
   },
   {
     "ts": "2026-06-27T11:27:33.189Z",

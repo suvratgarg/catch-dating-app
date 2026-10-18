@@ -1478,7 +1478,7 @@ function buildCandidates() {
       tags: ["hero", "chrome"],
       names: [
         "ClubHeroTopBar",
-        "EventDetailHeroAppBar",
+        "EventDetailHeroTopBar",
         "CatchHeroImage",
         "CatchHeroViewport",
       ],
@@ -1645,7 +1645,7 @@ function buildCandidates() {
       tags: ["avatar", "people"],
       names: [
         "CatchAvatarRow",
-        "EventHypeAvatarStack",
+        "EventHypeAvatarRow",
         "HostTodayAvatarStack",
         "ClubAvatarRail",
       ],
@@ -2030,7 +2030,7 @@ function buildCandidates() {
         "FiltersBody",
         "FiltersSection",
         "HostRosterFilterHeader",
-        "MapOverlayControls",
+        "MapOverlayTopBar",
       ],
     },
     {
@@ -2095,11 +2095,11 @@ function buildCandidates() {
         "ActivityMapPin",
         "MapPinTile",
         "EventPinsMap",
-        "EventMapView",
+        "EventMap",
         "EventMapLoadingBody",
         "ExploreMapScreen",
         "EventLocationMapScreen",
-        "MapOverlayControls",
+        "MapOverlayTopBar",
       ],
     },
     {

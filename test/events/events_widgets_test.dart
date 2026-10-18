@@ -12,10 +12,10 @@ import 'package:catch_dating_app/events/presentation/event_detail_information_st
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_state.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
-import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
+import 'package:catch_dating_app/events/presentation/widgets/who_is_going_section.dart';
 import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
@@ -146,7 +146,7 @@ void main() {
         Scaffold(
           body: ListView(
             children: [
-              EventDetailItinerary(event: event),
+              EventDetailItineraryList(event: event),
               const SizedBox(height: 16),
               EventDetailMapCard(event: event, enableNetworkTiles: false),
               const SizedBox(height: 16),
@@ -1002,7 +1002,7 @@ void main() {
     testWidgets('who is going shows the empty upcoming state', (tester) async {
       await pumpEventsTestApp(
         tester,
-        Scaffold(body: WhoIsGoing(event: buildEvent(bookedCount: 0))),
+        Scaffold(body: WhoIsGoingSection(event: buildEvent(bookedCount: 0))),
       );
 
       expect(find.text("Who's going"), findsOneWidget);
@@ -1030,7 +1030,7 @@ void main() {
 
         await pumpEventsTestApp(
           tester,
-          Scaffold(body: WhoIsGoing(event: event)),
+          Scaffold(body: WhoIsGoingSection(event: event)),
           overrides: [
             swipeCandidateRepositoryProvider.overrideWith(
               (ref) => candidateRepository,

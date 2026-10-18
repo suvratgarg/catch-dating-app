@@ -8,7 +8,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,7 @@ import 'event_viewer_state_fixtures.dart';
 import 'events_test_helpers.dart';
 
 void main() {
-  group('EventDetailCta', () {
+  group('EventDetailDock', () {
     testWidgets('books a free event from the eligible state', (tester) async {
       final fakePaymentRepository = FakePaymentRepository();
 
@@ -28,7 +28,7 @@ void main() {
         tester,
         Scaffold(
           bottomNavigationBar: _withCurrentViewer(
-            EventDetailCta(
+            EventDetailDock(
               event: buildEvent(bookedCount: 2),
               clubId: 'club1',
               userProfile: buildUser(),
@@ -64,7 +64,7 @@ void main() {
         tester,
         Scaffold(
           bottomNavigationBar: _withCurrentViewer(
-            EventDetailCta(
+            EventDetailDock(
               event: buildEvent(bookedCount: 2),
               clubId: 'club1',
               userProfile: buildUser(runPreferencesVersion: 0),
@@ -103,7 +103,7 @@ void main() {
         tester,
         Scaffold(
           bottomNavigationBar: _withCurrentViewer(
-            EventDetailCta(
+            EventDetailDock(
               event: event,
               clubId: 'club1',
               userProfile: buildUser(),
@@ -137,7 +137,7 @@ void main() {
         tester,
         Scaffold(
           bottomNavigationBar: _withCurrentViewer(
-            EventDetailCta(
+            EventDetailDock(
               event: buildEvent(
                 eventPolicy: EventPolicyBundle.inviteOnlyEvent(
                   capacityLimit: 20,
@@ -171,7 +171,7 @@ void main() {
         tester,
         Scaffold(
           bottomNavigationBar: _withCurrentViewer(
-            EventDetailCta(
+            EventDetailDock(
               event: buildEvent(),
               clubId: 'club1',
               userProfile: buildUser(),
@@ -212,7 +212,7 @@ void main() {
         tester,
         Scaffold(
           bottomNavigationBar: _withCurrentViewer(
-            EventDetailCta(
+            EventDetailDock(
               event: buildEvent(priceInPaise: 15000),
               clubId: 'club1',
               userProfile: buildUser(),
@@ -243,7 +243,7 @@ void main() {
         tester,
         Scaffold(
           bottomNavigationBar: _withCurrentViewer(
-            EventDetailCta(
+            EventDetailDock(
               event: buildEvent(bookedCount: 1),
               clubId: 'club1',
               userProfile: buildUser(),
@@ -272,7 +272,7 @@ void main() {
         tester,
         Scaffold(
           bottomNavigationBar: _withCurrentViewer(
-            EventDetailCta(
+            EventDetailDock(
               event: buildEvent(bookedCount: 1),
               clubId: 'club1',
               userProfile: buildUser(),
@@ -300,7 +300,7 @@ void main() {
           tester,
           Scaffold(
             bottomNavigationBar: _withCurrentViewer(
-              EventDetailCta(
+              EventDetailDock(
                 event: buildEvent(startTime: startTime, bookedCount: 1),
                 clubId: 'club1',
                 now: startTime.subtract(const Duration(minutes: 5)),
@@ -350,7 +350,7 @@ void main() {
               body: ListView(
                 children: [
                   _withCurrentViewer(
-                    EventDetailCta(
+                    EventDetailDock(
                       event: buildEvent(
                         capacityLimit: 1,
                         bookedCount: 1,
@@ -369,7 +369,7 @@ void main() {
                     viewer: viewerFixture(reason: 'full'),
                   ),
                   _withCurrentViewer(
-                    EventDetailCta(
+                    EventDetailDock(
                       event: buildEvent(waitlistedCount: 1),
                       clubId: 'club1',
                       userProfile: buildUser(uid: 'runner-9'),
@@ -424,7 +424,7 @@ void main() {
               theme: AppTheme.light,
               home: Scaffold(
                 bottomNavigationBar: _withCurrentViewer(
-                  EventDetailCta(
+                  EventDetailDock(
                     event: buildEvent(),
                     clubId: 'club1',
                     now: DateTime(2026, 1, 1, 12),
@@ -502,7 +502,7 @@ void main() {
               body: ListView(
                 children: [
                   _withCurrentViewer(
-                    EventDetailCta(
+                    EventDetailDock(
                       event: event,
                       clubId: 'club1',
                       userProfile: buildUser(uid: 'runner-9'),
@@ -511,7 +511,7 @@ void main() {
                     viewer: viewerFixture(reason: 'reviewRequired'),
                   ),
                   _withCurrentViewer(
-                    EventDetailCta(
+                    EventDetailDock(
                       event: event,
                       clubId: 'club1',
                       userProfile: buildUser(uid: 'runner-9'),
@@ -527,7 +527,7 @@ void main() {
                     ),
                   ),
                   _withCurrentViewer(
-                    EventDetailCta(
+                    EventDetailDock(
                       event: event,
                       clubId: 'club1',
                       userProfile: buildUser(uid: 'runner-9'),
@@ -571,7 +571,7 @@ void main() {
             mainAxisSize: MainAxisSize.min,
             children: [
               _withCurrentViewer(
-                EventDetailCta(
+                EventDetailDock(
                   event: buildEvent(
                     startTime: pastStart,
                     endTime: pastStart.add(const Duration(hours: 1)),
@@ -590,7 +590,7 @@ void main() {
                 ),
               ),
               _withCurrentViewer(
-                EventDetailCta(
+                EventDetailDock(
                   event: buildEvent(
                     startTime: DateTime.now().subtract(
                       const Duration(hours: 2),
@@ -626,7 +626,7 @@ void main() {
         tester,
         Scaffold(
           bottomNavigationBar: _withCurrentViewer(
-            EventDetailCta(
+            EventDetailDock(
               event: buildEvent(
                 startTime: futureStart,
                 endTime: futureStart.add(const Duration(hours: 1)),
@@ -675,7 +675,7 @@ void main() {
             mainAxisSize: MainAxisSize.min,
             children: [
               _withCurrentViewer(
-                EventDetailCta(
+                EventDetailDock(
                   event: buildEvent(
                     constraints: const EventConstraints(minAge: 18),
                   ),
@@ -686,7 +686,7 @@ void main() {
                 viewer: viewerFixture(reason: 'ageRestricted'),
               ),
               _withCurrentViewer(
-                EventDetailCta(
+                EventDetailDock(
                   event: buildEvent(
                     constraints: const EventConstraints(maxAge: 40),
                   ),
@@ -697,7 +697,7 @@ void main() {
                 viewer: viewerFixture(reason: 'ageRestricted'),
               ),
               _withCurrentViewer(
-                EventDetailCta(
+                EventDetailDock(
                   event: buildEvent(
                     constraints: const EventConstraints(maxMen: 1),
                     genderCounts: const {'man': 1},
@@ -752,7 +752,7 @@ EventParticipation _participation({
 /// Each synthetic actor has its own Auth/current-read scope, including cases
 /// that show several event states side by side. No local policy grants access.
 Widget _withCurrentViewer(
-  EventDetailCta child, {
+  EventDetailDock child, {
   required EventViewerState viewer,
 }) => ProviderScope(
   overrides: [

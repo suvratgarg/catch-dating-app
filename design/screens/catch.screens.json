@@ -2380,8 +2380,8 @@
             "event_detail_member_ticket"
           ],
           "previewIds": [
-            "EventDetailHeroAppBar/Catalog states",
-            "EventDetailTicketStubBand/Catalog states",
+            "EventDetailHeroTopBar/Catalog states",
+            "EventDetailTicketStubRow/Catalog states",
             "EventDetailScreen/Screen states"
           ],
           "tests": [
@@ -2398,7 +2398,7 @@
             "event_detail_member_spotlight"
           ],
           "previewIds": [
-            "EventDetailHeroAppBar/Catalog states",
+            "EventDetailHeroTopBar/Catalog states",
             "EventDetailScreen/Screen states"
           ],
           "tests": [
@@ -2463,7 +2463,7 @@
           "id": "booking_pending",
           "kind": "mutation",
           "status": "captured",
-          "source": "EventDetailCta listens to EventBookingController mutations and maps pending flags into EventDetailBookingDockState; EventDetailBody routes booking/cancel success feedback through the shared Catch snackbar helper.",
+          "source": "EventDetailDock listens to EventBookingController mutations and maps pending flags into EventDetailBookingDockState; EventDetailBody routes booking/cancel success feedback through the shared Catch snackbar helper.",
           "previewIds": [
             "EventBookingDock/BookingDock states"
           ],
@@ -2481,7 +2481,7 @@
           "id": "booking_failed",
           "kind": "mutation",
           "status": "captured",
-          "source": "Booking/cancel mutation failures are surfaced by the EventDetailBookingDockMutationState and EventDetailCta tests; success feedback uses the shared Catch snackbar helper.",
+          "source": "Booking/cancel mutation failures are surfaced by the EventDetailBookingDockMutationState and EventDetailDock tests; success feedback uses the shared Catch snackbar helper.",
           "previewIds": [
             "EventBookingDock/BookingDock states"
           ],
@@ -2501,7 +2501,7 @@
           "id": "waitlist_sold_out_cancelled_past",
           "kind": "populated",
           "status": "captured",
-          "source": "EventDetailBookingDockState derives sold-out, waitlist, cancellation, and past-event action states from Event and EventParticipation before EventDetailCta renders the provider-free dock.",
+          "source": "EventDetailBookingDockState derives sold-out, waitlist, cancellation, and past-event action states from Event and EventParticipation before EventDetailDock renders the provider-free dock.",
           "previewIds": [
             "EventBookingDock/BookingDock states"
           ],
@@ -2581,8 +2581,8 @@
               "EventHero"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-              "symbol": "EventDetailHeroAppBar"
+              "file": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart",
+              "symbol": "EventDetailHeroTopBar"
             },
             "currentOwner": "EventDetailBody",
             "targetOwner": "registered Event Detail hero section with view data and user intents",
@@ -2599,7 +2599,7 @@
               "spotlight_dark"
             ],
             "previewIds": [
-              "EventDetailHeroAppBar/Catalog states"
+              "EventDetailHeroTopBar/Catalog states"
             ],
             "migration": "Register the hero section/component contract, move save/calendar visibility into an adapter view model, keep saved/calendar fallback feedback on the shared Catch snackbar helper, and add Widgetbook states for saved, pending, ticket, and dark variants."
           },
@@ -2612,8 +2612,8 @@
               "TicketStub"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-              "symbol": "EventDetailTicketStubBand"
+              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "symbol": "EventDetailTicketStubRow"
             },
             "currentOwner": "EventDetailBody",
             "targetOwner": "registered ticket-stub compound",
@@ -2628,7 +2628,7 @@
               "long_location"
             ],
             "previewIds": [
-              "EventDetailTicketStubBand/Catalog states"
+              "EventDetailTicketStubRow/Catalog states"
             ],
             "migration": "Convert the component to accept explicit cells, keep the Event adapter responsible for deriving when/where/pace copy, and add Widgetbook coverage."
           },
@@ -2668,7 +2668,7 @@
               "HintList"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailHintList"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2695,8 +2695,8 @@
               "Itinerary"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-              "symbol": "EventDetailItinerary"
+              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "symbol": "EventDetailItineraryList"
             },
             "currentOwner": "EventDetailOverviewSection",
             "targetOwner": "registered itinerary compound",
@@ -2709,7 +2709,7 @@
               "long_detail"
             ],
             "previewIds": [
-              "EventDetailItinerary/Catalog states"
+              "EventDetailItineraryList/Catalog states"
             ],
             "migration": "Convert to explicit step input, then keep event-derived default itinerary generation outside the visual component."
           },
@@ -2722,8 +2722,8 @@
               "PhotoStrip"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-              "symbol": "EventDetailPhotoStrip"
+              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "symbol": "EventDetailPhotoGrid"
             },
             "currentOwner": "EventDetailOverviewSection",
             "targetOwner": "registered photo-strip compound",
@@ -2736,7 +2736,7 @@
               "empty_hidden"
             ],
             "previewIds": [
-              "EventDetailPhotoStrip/Catalog states"
+              "EventDetailPhotoGrid/Catalog states"
             ],
             "migration": "Accept explicit cells, caption, and data copy so the same strip can serve event, website, and social proof templates."
           },
@@ -2749,7 +2749,7 @@
               "MapCard"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailMapCard"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2777,7 +2777,7 @@
               "MechanismList"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailMechanismList"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2805,7 +2805,7 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailGoodToKnowList"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2953,7 +2953,7 @@
             ],
             "flutter": {
               "file": "lib/events/presentation/widgets/event_detail_body.dart",
-              "symbol": "EventCompanionEntry"
+              "symbol": "EventCompanionCard"
             },
             "currentOwner": "EventDetailBody",
             "targetOwner": "registered post-booking prompt section",
@@ -2980,7 +2980,7 @@
               "BookingDock"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_cta.dart",
+              "file": "lib/events/presentation/widgets/event_detail_dock.dart",
               "symbol": "EventBookingDock"
             },
             "currentOwner": "EventDetailBody",
@@ -3003,7 +3003,7 @@
             "previewIds": [
               "EventBookingDock/BookingDock states"
             ],
-            "migration": "EventDetailCta now maps provider and mutation output through provider-free EventDetailBookingDockState, then renders the result through EventBookingDock while keeping mutation execution at the route/widget edge."
+            "migration": "EventDetailDock now maps provider and mutation output through provider-free EventDetailBookingDockState, then renders the result through EventBookingDock while keeping mutation execution at the route/widget edge."
           }
         ]
       },
@@ -3016,7 +3016,7 @@
         {
           "id": "DS-EVENT-DETAIL-002",
           "status": "closed",
-          "nextAction": "Widgetbook entries now cover EventDetailHeroAppBar, TicketStub, Overview, HintList, Itinerary, PhotoStrip, MapCard, MechanismList, HostCard, WhoIsGoing/social proof, Reviews, Cross Paths event consent, companion/invite prompts, and provider-free EventBookingDock states."
+          "nextAction": "Widgetbook entries now cover EventDetailHeroTopBar, TicketStub, Overview, HintList, Itinerary, PhotoStrip, MapCard, MechanismList, HostCard, WhoIsGoingSection/social proof, Reviews, Cross Paths event consent, companion/invite prompts, and provider-free EventBookingDock states."
         },
         {
           "id": "DS-EVENT-DETAIL-003",
@@ -4201,7 +4201,7 @@
           "status": "captured",
           "source": "AsyncError from exploreFeedViewModelProvider renders CatchLocalizedErrorState (inline/compact mode) inside the feed sliver.",
           "previewIds": [
-            "ExploreFeedContentSliver/Feed states"
+            "ExploreFeedSliverBody/Feed states"
           ],
           "tests": [
             "test/explore/explore_widgets_test.dart"
@@ -4235,7 +4235,7 @@
           "source": "CatchEmptyState renders with Explore search/filter copy for narrowed query states.",
           "previewIds": [
             "CatchEmptyState/Empty states",
-            "ExploreFeedContentSliver/Feed states",
+            "ExploreFeedSliverBody/Feed states",
             "ExploreScreen/Screen states"
           ],
           "tests": [
@@ -4259,7 +4259,7 @@
           ],
           "previewIds": [
             "ExploreScreen/Screen states",
-            "ExploreFeedContentSliver/Feed states",
+            "ExploreFeedSliverBody/Feed states",
             "ExploreEventTypeBrowseGrid/Activity states",
             "CatchButton/Map launcher states"
           ],
@@ -4368,7 +4368,7 @@
             "explore_unclaimed_host_projection"
           ],
           "previewIds": [
-            "ExploreFeedContentSliver/Feed states",
+            "ExploreFeedSliverBody/Feed states",
             "ExploreScreen/Screen states"
           ],
           "tests": [
@@ -4448,11 +4448,11 @@
           "id": "no_exact_pins",
           "kind": "empty",
           "status": "implemented",
-          "source": "ExploreMapScreen delegates no-exact-pin feed data to EventMapView's shared no-pins empty branch while keeping the route chrome and deterministic Widgetbook fixture.",
+          "source": "ExploreMapScreen delegates no-exact-pin feed data to EventMap's shared no-pins empty branch while keeping the route chrome and deterministic Widgetbook fixture.",
           "previewIds": [
             "ExploreMapScreen/Map route states"
           ],
-          "nextAction": "Keep no-exact-pin route coverage aligned with EventMapView; add a screenshot capture only if map empty-state parity needs pixel review."
+          "nextAction": "Keep no-exact-pin route coverage aligned with EventMap; add a screenshot capture only if map empty-state parity needs pixel review."
         },
         {
           "id": "zero_radius_results",
@@ -4471,7 +4471,7 @@
           "id": "map_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "AsyncLoading from exploreFeedViewModelProvider renders EventMapView loading treatment inside ExploreMapScreen chrome.",
+          "source": "AsyncLoading from exploreFeedViewModelProvider renders EventMap loading treatment inside ExploreMapScreen chrome.",
           "captureIds": [
             "explore_map_loading"
           ],
@@ -4487,7 +4487,7 @@
           "id": "map_error",
           "kind": "error",
           "status": "captured",
-          "source": "AsyncError from exploreFeedViewModelProvider renders EventMapView error and retry inside ExploreMapScreen chrome.",
+          "source": "AsyncError from exploreFeedViewModelProvider renders EventMap error and retry inside ExploreMapScreen chrome.",
           "captureIds": [
             "explore_map_error"
           ],
@@ -4541,7 +4541,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "ExploreScreen composes Scaffold, SafeArea, browse chrome, filter rail, CustomScrollView slivers, membership mutation listener, mixed event/person/organizer feed, empty/error states, and floating map count pill; route provider-wave branch precedence, empty-state derivation, and map count label route through ExploreDiscoveryScreenState, which delegates body loading/error/content/empty branches to ExploreScreenBodyState and map label derivation to ExploreMapLauncherState. Browse/search-open chrome labels and search expansion policy route through ExploreChromeState, city-trigger chrome labels/icons route through ExploreCityTriggerState, filter active-count/sheet-option copy routes through ExploreFilterRailState and ExploreFilterSheetState, cover-story copy routes through ExploreCoverStoryState, and mixed-feed card ordering plus event/external/person/organizer row labels route through ExploreFeedSectionState, ExploreEventRowState, ExploreExternalEventRowState, CrossPathsExploreCard, and ExploreClubCardState. Cross Paths is optional fail-closed enrichment and never replaces its associated event ticket. ExploreMapScreen is a child route that reuses the event map view model; the retired map peek-rail summary/ticket adapters are no longer part of the active composition.",
+        "currentLayout": "ExploreScreen composes Scaffold, SafeArea, browse chrome, filter rail, CustomScrollView slivers, membership mutation listener, mixed event/person/organizer feed, empty/error states, and floating map count pill; route provider-wave branch precedence, empty-state derivation, and map count label route through ExploreDiscoveryScreenState, which delegates body loading/error/content/empty branches to ExploreScreenBodyState and map label derivation to ExploreMapLauncherState. Browse/search-open chrome labels and search expansion policy route through ExploreChromeState, city-trigger chrome labels/icons route through ExploreCityButtonState, filter active-count/sheet-option copy routes through ExploreFilterRailState and ExploreFilterSheetState, cover-story copy routes through ExploreCoverStoryState, and mixed-feed card ordering plus event/external/person/organizer row labels route through ExploreFeedSectionState, ExploreEventRowState, ExploreExternalEventRowState, CrossPathsExploreCard, and ExploreClubCardState. Cross Paths is optional fail-closed enrichment and never replaces its associated event ticket. ExploreMapScreen is a child route that reuses the event map view model; the retired map peek-rail summary/ticket adapters are no longer part of the active composition.",
         "targetLayout": "ExploreScreen should map provider state into an ExploreDiscoveryScreenState and compose registered sections: browse chrome, scope/filter rail, cover story, day ticket feed, club interleaves, cross-paths card, event type browse grid, map launcher, empty/error states, and map route sheet/overlay.",
         "sections": [
           {
@@ -4556,7 +4556,7 @@
               "file": "lib/explore/presentation/widgets/explore_header.dart",
               "symbol": "ExploreDiscoveryCoverHeader"
             },
-            "currentOwner": "ExploreScreen, ExploreChromeState, ExploreCityTriggerState, and ExploreMapLauncherState",
+            "currentOwner": "ExploreScreen, ExploreChromeState, ExploreCityButtonState, and ExploreMapLauncherState",
             "targetOwner": "registered Explore browse chrome section",
             "dependencies": [
               "catch.field",
@@ -4572,7 +4572,7 @@
             "previewIds": [
               "ExploreDiscoveryCoverHeader/Cover header states"
             ],
-            "migration": "ExploreDiscoveryScreenState now maps route provider-wave data before the route composes chrome and body slivers. ExploreChromeState owns browse header title/subtitle/search labels plus cover-versus-search-open policy for the discovery header. ExploreCityTriggerState owns city trigger tooltip, semantic label, scope label, and focused/unfocused icon selection."
+            "migration": "ExploreDiscoveryScreenState now maps route provider-wave data before the route composes chrome and body slivers. ExploreChromeState owns browse header title/subtitle/search labels plus cover-versus-search-open policy for the discovery header. ExploreCityButtonState owns city trigger tooltip, semantic label, scope label, and focused/unfocused icon selection."
           },
           {
             "id": "section.explore.filters",
@@ -4640,7 +4640,7 @@
               "empty"
             ],
             "previewIds": [
-              "ExploreFeedContentSliver/Feed states"
+              "ExploreFeedSliverBody/Feed states"
             ],
             "migration": "ExploreFeedSectionState owns mixed feed card selection, result-count copy, Cross Paths person insertion, organizer intermix ranking, and This Week promotion. ExploreCoverStoryState owns the ranked cover-story identity and availability-aware CTA copy with an injected clock for tests. Explore event tickets reuse the consent-safe veiled attendee stack, ExploreClubCardState owns organizer context, and CrossPathsExploreCard composes catch.person_polaroid with separate associated-event context and actions from a server-owned sanitized suggestion. DateTicket/EventTicket roles map to catch.event_card; organizer spotlights map to catch.organizer_poster through ClubCard. The old standalone CrossPathsCard proposal remains retired."
           },
@@ -4716,7 +4716,7 @@
               "file": "lib/explore/presentation/explore_map_screen.dart",
               "symbol": "ExploreMapScreen"
             },
-            "currentOwner": "ExploreMapScreen and EventMapView",
+            "currentOwner": "ExploreMapScreen and EventMap",
             "targetOwner": "registered Explore map route adapter",
             "dependencies": [
               "catch.button",
@@ -4734,7 +4734,7 @@
             "previewIds": [
               "ExploreMapScreen/Map route states"
             ],
-            "migration": "The dropped Explore map peek-rail lead and selected-pin ticket widgets were retired in the event/club/profile parity handoff. ExploreMapScreen now owns selected-pin route state and renders the selected event through the canonical EventDateRailCard overlay; EventPinsMap renders DS activity map pins for deterministic placeholders and byte-backed native markers. Widgetbook covers ready, selected-card, loading, empty, no-exact-pin, error, and distance-ring route states. Remaining work: map dynamic-region masking, keeping EventMapView as the map primitive, and moving route chrome/provider-wave data into an adapter."
+            "migration": "The dropped Explore map peek-rail lead and selected-pin ticket widgets were retired in the event/club/profile parity handoff. ExploreMapScreen now owns selected-pin route state and renders the selected event through the canonical EventDateRailCard overlay; EventPinsMap renders DS activity map pins for deterministic placeholders and byte-backed native markers. Widgetbook covers ready, selected-card, loading, empty, no-exact-pin, error, and distance-ring route states. Remaining work: map dynamic-region masking, keeping EventMap as the map primitive, and moving route chrome/provider-wave data into an adapter."
           },
           {
             "id": "section.explore.empty_error",
@@ -4763,7 +4763,7 @@
             ],
             "previewIds": [
               "CatchEmptyState/Empty states",
-              "ExploreFeedContentSliver/Feed states",
+              "ExploreFeedSliverBody/Feed states",
               "ExploreScreen/Screen states"
             ],
             "migration": "ExploreDiscoveryScreenState now owns route-level empty-state selection before ExploreScreen composes visual branches. ExploreScreen uses provider-free ExploreScreenBodyState for route loading/error/content/empty branch precedence and ExploreDiscoveryEmptyState for source-club/search/filter empty copy and clear-action cardinality. ExploreEventsSection uses provider-free ExploreEventsEmptyState for feed-empty copy, clear-search/filter intent, and broaden-time-filter intent. Remaining work is only product policy: decide whether feed-only failures should stay inline or promote to the screen-level error contract."
@@ -5210,7 +5210,7 @@
           "id": "recommendations_ready",
           "kind": "populated",
           "status": "captured",
-          "source": "dashboardRecommendedEventsProvider candidates are ranked into DashboardEventRecommendation rows and rendered by Recommendations.",
+          "source": "dashboardRecommendedEventsProvider candidates are ranked into DashboardEventRecommendation rows and rendered by ExploreRecommendationsSection.",
           "captureIds": [
             "dashboard_home"
           ],
@@ -21920,7 +21920,7 @@
             "symbol": "SavedEventRepository"
           }
         ],
-        "notes": "SavedEventsScreen watches the current uid, streams saved event details, owns CatchRouteScaffold chrome, retry invalidation, club-name lookup, and saved-event detail navigation. SavedEventsListState owns event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input. SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage own provider-free agenda, loading, error, lookup-error, and empty surfaces; the duplicate body headline was removed."
+        "notes": "SavedEventsScreen watches the current uid, streams saved event details, owns CatchRouteScaffold chrome, retry invalidation, club-name lookup, and saved-event detail navigation. SavedEventsListState owns event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input. SavedEventsAgendaList, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorState, and SavedEventsMessage own provider-free agenda, loading, error, lookup-error, and empty surfaces; the duplicate body headline was removed."
       },
       "designRefs": [
         {
@@ -22121,7 +22121,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "SavedEventsScreen owns uid/provider orchestration, CatchRouteScaffold chrome, club-name lookup, retry invalidation, and event-detail navigation, then resolves SavedEventsListState before passing typed data into provider-free SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage sections.",
+        "currentLayout": "SavedEventsScreen owns uid/provider orchestration, CatchRouteScaffold chrome, club-name lookup, retry invalidation, and event-detail navigation, then resolves SavedEventsListState before passing typed data into provider-free SavedEventsAgendaList, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorState, and SavedEventsMessage sections.",
         "targetLayout": "Saved Events should keep providers at the route boundary, one compact route title in CatchRouteScaffold, SavedEventsListState as the ordered-row adapter, and public section widgets as the owner of agenda, loading/error, lookup-error, and empty surfaces.",
         "sections": [
           {
@@ -22159,10 +22159,10 @@
             ],
             "flutter": {
               "file": "lib/events/presentation/saved_events_screen.dart",
-              "symbol": "SavedEventsAgendaSliver"
+              "symbol": "SavedEventsAgendaList"
             },
-            "currentOwner": "SavedEventsAgendaSliver + SavedEventsListState",
-            "targetOwner": "SavedEventsAgendaSliver + SavedEventsListState",
+            "currentOwner": "SavedEventsAgendaList + SavedEventsListState",
+            "targetOwner": "SavedEventsAgendaList + SavedEventsListState",
             "dependencies": [
               "catch.badge",
               "catch.surface"
@@ -22172,7 +22172,7 @@
               "club_names_loading_error",
               "detail_navigation"
             ],
-            "migration": "SavedEventsAgendaSliver reuses EventAgendaSliverList while SavedEventsListState supplies ordering, badge labels, tile statuses, and today; the route supplies club names and navigation callbacks."
+            "migration": "SavedEventsAgendaList reuses EventAgendaSliverList while SavedEventsListState supplies ordering, badge labels, tile statuses, and today; the route supplies club names and navigation callbacks."
           },
           {
             "id": "section.saved_events.empty_error",
@@ -22186,8 +22186,8 @@
               "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "symbol": "CatchEmptyState"
             },
-            "currentOwner": "SavedEventsLoading + SavedEventsError + SavedEventsClubNamesErrorSliver + SavedEventsMessage",
-            "targetOwner": "SavedEventsLoading + SavedEventsError + SavedEventsClubNamesErrorSliver + SavedEventsMessage",
+            "currentOwner": "SavedEventsLoading + SavedEventsError + SavedEventsClubNamesErrorState + SavedEventsMessage",
+            "targetOwner": "SavedEventsLoading + SavedEventsError + SavedEventsClubNamesErrorState + SavedEventsMessage",
             "dependencies": [
               "catch.surface"
             ],
@@ -22215,7 +22215,7 @@
         {
           "id": "DS-SAVED-EVENTS-003",
           "status": "closed",
-          "nextAction": "Closed by one CatchRouteScaffold title plus SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, SavedEventsMessage, and SavedEventsListState provider-free section boundaries."
+          "nextAction": "Closed by one CatchRouteScaffold title plus SavedEventsAgendaList, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorState, SavedEventsMessage, and SavedEventsListState provider-free section boundaries."
         },
         {
           "id": "DS-SAVED-EVENTS-004",
@@ -24902,13 +24902,13 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "MapOverlayControls"
+              "MapOverlayTopBar"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/map_overlay_controls.dart",
-              "symbol": "MapOverlayControls"
+              "file": "lib/events/presentation/widgets/map_overlay_top_bar.dart",
+              "symbol": "MapOverlayTopBar"
             },
-            "currentOwner": "MapOverlayControls",
+            "currentOwner": "MapOverlayTopBar",
             "targetOwner": "provider-free floating map controls",
             "dependencies": [
               "catch.icon_button",

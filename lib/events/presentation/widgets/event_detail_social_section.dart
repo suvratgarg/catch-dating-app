@@ -2,7 +2,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
-import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
+import 'package:catch_dating_app/events/presentation/widgets/who_is_going_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
@@ -49,14 +49,17 @@ class EventDetailSocialSection extends StatelessWidget {
           dividerColor: surfaceStyle?.dividerColor,
           titleColor: surfaceStyle?.headingColor,
           child: canShowMemberContext
-              ? WhoIsGoing(
+              ? WhoIsGoingSection(
                   event: event,
                   surfaceStyle: surfaceStyle,
                   showHeader: false,
                   showCatchWindowStatus: false,
                   now: now,
                 )
-              : GuestWhoIsGoing(surfaceStyle: surfaceStyle, showHeader: false),
+              : GuestWhoIsGoingCard(
+                  surfaceStyle: surfaceStyle,
+                  showHeader: false,
+                ),
         ),
         if (canShowMemberContext && state.reviews.visible) ...[
           CatchSection.divided(
@@ -79,8 +82,12 @@ class EventDetailSocialSection extends StatelessWidget {
   }
 }
 
-class GuestWhoIsGoing extends StatelessWidget {
-  const GuestWhoIsGoing({super.key, this.surfaceStyle, this.showHeader = true});
+class GuestWhoIsGoingCard extends StatelessWidget {
+  const GuestWhoIsGoingCard({
+    super.key,
+    this.surfaceStyle,
+    this.showHeader = true,
+  });
 
   final EventDetailSurfaceStyle? surfaceStyle;
   final bool showHeader;

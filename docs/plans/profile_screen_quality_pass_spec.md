@@ -87,7 +87,7 @@ and **nothing renders it** — only `isStrong` gates one confidence chip shown t
 profiles to onboarding (`go_router.dart:1042-1076`), so the users who most need
 guidance never see any.
 
-**Recommendations:** surface the quality score + top suggestion as a
+**ExploreRecommendationsSection:** surface the quality score + top suggestion as a
 completeness module on the Edit tab (the engine exists — wire it); add a share/
 "view as others" action; fix the "Profile not available" empty state, which is
 currently a dead end with recovery copy but no action

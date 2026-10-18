@@ -112,7 +112,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_view_model.dar
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
-import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
+import 'package:catch_dating_app/events/presentation/widgets/who_is_going_section.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';

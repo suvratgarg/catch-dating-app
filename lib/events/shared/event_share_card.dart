@@ -235,8 +235,8 @@ class EventShareCard extends StatelessWidget {
                         spacing: CatchSpacing.micro6,
                         runSpacing: CatchSpacing.micro6,
                         children: [
-                          EventSharePill(label: priceLabel),
-                          EventSharePill(
+                          EventShareChip(label: priceLabel),
+                          EventShareChip(
                             label: _spotsLabel(event, context.l10n),
                           ),
                         ],
@@ -259,8 +259,8 @@ class EventShareCard extends StatelessWidget {
   }
 }
 
-class EventSharePill extends StatelessWidget {
-  const EventSharePill({super.key, required this.label});
+class EventShareChip extends StatelessWidget {
+  const EventShareChip({super.key, required this.label});
 
   final String label;
 

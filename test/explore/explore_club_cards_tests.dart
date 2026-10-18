@@ -153,7 +153,7 @@ void _registerExploreClubCardsTests() {
         home: Scaffold(
           body: Align(
             alignment: Alignment.topLeft,
-            child: CityTrigger(
+            child: ExploreCityButton(
               city: _testCities.first,
               focused: false,
               presentation: ExploreCityPickerPresentation.scopeLabel,
@@ -165,7 +165,7 @@ void _registerExploreClubCardsTests() {
     );
 
     expect(
-      tester.getSize(find.byType(CityTrigger)).height,
+      tester.getSize(find.byType(ExploreCityButton)).height,
       greaterThanOrEqualTo(CatchIconAction.defaultSize),
     );
   });

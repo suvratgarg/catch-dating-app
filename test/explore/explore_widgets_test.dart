@@ -51,8 +51,8 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_recommendations_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/featured_event_poster.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/recommendations.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
@@ -516,7 +516,7 @@ void _registerExploreAsyncPhaseTests() {
         ),
       ]);
       expect(
-        find.byType(ExploreEventsLoadingSliver),
+        find.byType(ExploreEventsSkeleton),
         state.isLoading ? findsOneWidget : findsNothing,
         reason: entry.key,
       );
@@ -526,7 +526,7 @@ void _registerExploreAsyncPhaseTests() {
         reason: entry.key,
       );
       expect(
-        find.byType(ExploreFeedContentSliver),
+        find.byType(ExploreFeedSliverBody),
         content ? findsOneWidget : findsNothing,
         reason: entry.key,
       );
@@ -593,9 +593,9 @@ void _registerExploreAsyncPhaseTests() {
           onRetryFeed: () => retries++,
         ),
       ]);
-      expect(find.byType(ExploreEventsEmptySliver), findsOneWidget);
+      expect(find.byType(ExploreFeedEmptyState), findsOneWidget);
       expect(
-        find.byType(Recommendations),
+        find.byType(ExploreRecommendationsSection),
         failed ? findsNothing : findsOneWidget,
         reason: entry.key,
       );
@@ -608,8 +608,8 @@ void _registerExploreAsyncPhaseTests() {
         tester.widget<CatchErrorState>(find.byType(CatchErrorState)).onRetry!();
         expect(retries, 1);
       } else {
-        final rail = tester.widget<Recommendations>(
-          find.byType(Recommendations),
+        final rail = tester.widget<ExploreRecommendationsSection>(
+          find.byType(ExploreRecommendationsSection),
         );
         expect(
           rail.recommendations,
@@ -629,9 +629,9 @@ void _registerExploreAsyncPhaseTests() {
           recommendationsState: recommendations,
         ),
       ]);
-      expect(find.byType(Recommendations), findsNothing);
+      expect(find.byType(ExploreRecommendationsSection), findsNothing);
       expect(find.bySubtype<CatchErrorState>(), findsNothing);
-      expect(find.byType(ExploreEventsEmptySliver), findsOneWidget);
+      expect(find.byType(ExploreFeedEmptyState), findsOneWidget);
     }
   });
 }

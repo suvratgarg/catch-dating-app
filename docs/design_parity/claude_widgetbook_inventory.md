@@ -670,7 +670,7 @@ they still need inventory tracking until the direct/alias mapping is settled.
 
 | Claude Design | Likely local source candidate | Current status |
 |---|---|---|
-| `BookingDock` | `EventBookingDock` | Source-backed Widgetbook entry added under `[Event detail]/Sections`; broad core catalog also exposes `EventDetailCta` dock states under `[Core catalog]/Event detail`. |
+| `BookingDock` | `EventBookingDock` | Source-backed Widgetbook entry added under `[Event detail]/Sections`; broad core catalog also exposes `EventDetailDock` dock states under `[Core catalog]/Event detail`. |
 | `ConfirmDialog` | `CatchConfirmDialog` | Source-backed Widgetbook entry added under `[P3 utility]/Settings`. |
 | `CountPill` | `CatchCountPill` | Source-backed Widgetbook entry added under `[Explore]/Sections`. |
 | `CoverStory` | `FeaturedEventPoster` | Source-backed Widgetbook entry added under `[Explore]/Sections`. |
@@ -678,12 +678,12 @@ they still need inventory tracking until the direct/alias mapping is settled.
 | `FieldGroup` | `CatchSection` | Merged into the formal `catch.section` contract under `[Core primitives]/Sections`; no separate field-group Widgetbook page remains. |
 | `HintList` | `EventDetailHintList` | Source-backed Widgetbook entry added under `[Core catalog]/Event detail`. |
 | `HostCard` | `EventDetailHostCard` | Source-backed Widgetbook entry added under `[Core catalog]/Event detail`. |
-| `Itinerary` | `EventDetailItinerary` | Source-backed Widgetbook entry added under `[Core catalog]/Event detail`. |
+| `Itinerary` | `EventDetailItineraryList` | Source-backed Widgetbook entry added under `[Core catalog]/Event detail`. |
 | `JourneySteps` | `CatchJourneySteps` | Formal `catch.journey_steps` contract under `[Core primitives]/Sections`; no duplicate catalog page remains. |
 | `MapCard` | `EventDetailMapCard` | Source-backed Widgetbook entry added under `[Core catalog]/Event detail`. |
 | `MechanismList` | `EventDetailMechanismList` | Source-backed Widgetbook entry added under `[Core catalog]/Event detail`. |
 | `NotificationRow` | `NotificationRow` | Source-backed Widgetbook entry added under `[P3 utility]/Notifications`. |
-| `PhotoStrip` | `EventDetailPhotoStrip` | Source-backed Widgetbook entry added under `[Core catalog]/Event detail`. |
+| `PhotoStrip` | `EventDetailPhotoGrid` | Source-backed Widgetbook entry added under `[Core catalog]/Event detail`. |
 | `PrivacyBadge` | `CatchPrivacyBadge` | Formal `catch.privacy_badge` contract under `[Core primitives]/Status`; no duplicate catalog page remains. |
 | `ChatBubble` | `MessageBubble` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Matches and chat/Primitives`; alias still needs formal component-contract decision. |
 | `ChatComposer` | `ChatInput` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Matches and chat/Primitives`; alias still needs formal component-contract decision. |
@@ -709,7 +709,7 @@ they still need inventory tracking until the direct/alias mapping is settled.
 | `ScreenBody` | `CatchScreenBody` | Formal `catch.screen_body` contract under `[Core primitives]/Sections`; no duplicate catalog page remains. |
 | `SectionStack` | `CatchSectionStack` | Formal `catch.section_stack` contract under `[Core primitives]/Sections`; no duplicate catalog page remains. |
 | `StrideCard` | `DashboardStrideSection` / `StrideCard` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Dashboard primitives`; direct card-vs-section contract split remains a design decision. |
-| `TicketStub` | `EventDetailTicketStubBand` | Source-backed Widgetbook entry added under `[Core catalog]/Event detail`. |
+| `TicketStub` | `EventDetailTicketStubRow` | Source-backed Widgetbook entry added under `[Core catalog]/Event detail`. |
 
 ### No Clear Widgetbook Or Source Match Yet
 

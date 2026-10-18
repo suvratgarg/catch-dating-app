@@ -19,9 +19,9 @@ import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_top_bar.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
@@ -338,7 +338,7 @@ void main() {
           theme: AppTheme.light,
           home: Scaffold(
             body: Builder(
-              builder: (context) => EventCompanionEntry(
+              builder: (context) => EventCompanionCard(
                 state: const EventDetailCompanionState.loading(),
                 surfaceStyle: EventDetailSurfaceStyle.light(
                   CatchTokens.of(context),
@@ -425,7 +425,7 @@ void main() {
     });
   });
 
-  group('EventDetailPhotoStrip', () {
+  group('EventDetailPhotoGrid', () {
     testWidgets('renders supplied photos without empty slots', (tester) async {
       final event = buildEvent().copyWith(
         eventPhotos: [
@@ -444,7 +444,7 @@ void main() {
           home: Scaffold(
             body: SizedBox(
               width: 360,
-              child: EventDetailPhotoStrip(event: event),
+              child: EventDetailPhotoGrid(event: event),
             ),
           ),
         ),
@@ -479,7 +479,7 @@ void main() {
     });
   });
 
-  group('EventDetailHeroAppBar', () {
+  group('EventDetailHeroTopBar', () {
     testWidgets('uses canonical outer gutters and action gaps', (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(390, 800);
@@ -492,7 +492,7 @@ void main() {
           home: Scaffold(
             body: CustomScrollView(
               slivers: [
-                EventDetailHeroAppBar(
+                EventDetailHeroTopBar(
                   event: buildEvent(),
                   isSaved: false,
                   savePending: false,
@@ -542,7 +542,7 @@ void main() {
           home: Scaffold(
             body: CustomScrollView(
               slivers: [
-                EventDetailHeroAppBar(
+                EventDetailHeroTopBar(
                   event: event,
                   isSaved: false,
                   savePending: false,
@@ -596,7 +596,7 @@ void main() {
           home: Scaffold(
             body: CustomScrollView(
               slivers: [
-                EventDetailHeroAppBar(
+                EventDetailHeroTopBar(
                   event: event,
                   isSaved: true,
                   savePending: false,
@@ -638,7 +638,7 @@ void main() {
             home: Scaffold(
               body: CustomScrollView(
                 slivers: [
-                  EventDetailHeroAppBar(
+                  EventDetailHeroTopBar(
                     event: event,
                     isSaved: false,
                     savePending: false,
@@ -687,7 +687,7 @@ void main() {
             home: Scaffold(
               body: CustomScrollView(
                 slivers: [
-                  EventDetailHeroAppBar(
+                  EventDetailHeroTopBar(
                     event: event,
                     isSaved: false,
                     savePending: false,
@@ -958,7 +958,7 @@ void main() {
         );
         await tester.pump();
         expect(find.text('Complete booking profile'), findsOneWidget);
-        expect(find.byType(EventDetailCta), findsNothing);
+        expect(find.byType(EventDetailDock), findsNothing);
 
         await tester.tap(find.byTooltip('Save event'));
         await pumpFeatureUi(tester);

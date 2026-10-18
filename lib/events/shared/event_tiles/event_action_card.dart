@@ -119,7 +119,7 @@ class EventActionCard extends StatelessWidget {
                 ],
                 if (actions.isNotEmpty) ...[
                   gapH16,
-                  EventActionCardActions(actions: actions),
+                  EventActionList(actions: actions),
                 ],
               ],
             ),
@@ -205,8 +205,8 @@ class EventActionCardHeader extends StatelessWidget {
   }
 }
 
-class EventActionCardActions extends StatelessWidget {
-  const EventActionCardActions({super.key, required this.actions});
+class EventActionList extends StatelessWidget {
+  const EventActionList({super.key, required this.actions});
 
   final List<EventActionCardAction> actions;
 

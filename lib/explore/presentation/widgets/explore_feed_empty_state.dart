@@ -11,8 +11,8 @@ const EdgeInsets exploreEventsLoadingPadding = EdgeInsets.fromLTRB(
   CatchSpacing.s3,
 );
 
-class ExploreEventsLoadingSliver extends StatelessWidget {
-  const ExploreEventsLoadingSliver({super.key});
+class ExploreEventsSkeleton extends StatelessWidget {
+  const ExploreEventsSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +32,8 @@ class ExploreEventsLoadingSliver extends StatelessWidget {
   }
 }
 
-class ExploreEventsEmptySliver extends StatelessWidget {
-  const ExploreEventsEmptySliver({
+class ExploreFeedEmptyState extends StatelessWidget {
+  const ExploreFeedEmptyState({
     super.key,
     required this.state,
     this.onClearSearch,

@@ -77,8 +77,8 @@ class EventBookingDock extends StatelessWidget {
   }
 }
 
-class EventDetailCta extends ConsumerWidget {
-  const EventDetailCta({
+class EventDetailDock extends ConsumerWidget {
+  const EventDetailDock({
     super.key,
     required this.event,
     required this.userProfile,
@@ -346,23 +346,23 @@ class EventDetailCta extends ConsumerWidget {
 
     final leadingContent = switch (dockState.leadingKind) {
       EventDetailBookingDockLeadingKind.none => null,
-      EventDetailBookingDockLeadingKind.price => PriceLeading(
+      EventDetailBookingDockLeadingKind.price => EventPriceText(
         price: dockState.price ?? '',
         note: dockState.priceNote,
         warn: dockState.priceWarn,
       ),
-      EventDetailBookingDockLeadingKind.booked => EventCtaStatusLeading(
+      EventDetailBookingDockLeadingKind.booked => EventDockStatusText(
         icon: CatchIcons.checkCircleRounded,
         label: context.l10n.eventsEventDetailCtaLabelYouReIn,
       ),
-      EventDetailBookingDockLeadingKind.waitlistOffer => WaitlistOfferLeading(
+      EventDetailBookingDockLeadingKind.waitlistOffer => WaitlistOfferNotice(
         expiresAt: dockState.waitlistOfferExpiresAt,
         isDeclining: dockState.isSecondaryLoading,
         onDecline: dockState.isSecondaryActionEnabled
             ? () => runBookingDockAction(context, dockState.secondaryAction)
             : null,
       ),
-      EventDetailBookingDockLeadingKind.attended => EventCtaStatusLeading(
+      EventDetailBookingDockLeadingKind.attended => EventDockStatusText(
         icon: CatchIcons.directionsRunRounded,
         label: context.l10n.eventsEventDetailCtaLabelCompleted,
       ),
@@ -440,8 +440,8 @@ void _openRunPreferencesGate(BuildContext context) {
   );
 }
 
-class PriceLeading extends StatelessWidget {
-  const PriceLeading({
+class EventPriceText extends StatelessWidget {
+  const EventPriceText({
     super.key,
     required this.price,
     this.note,
@@ -477,8 +477,8 @@ class PriceLeading extends StatelessWidget {
   }
 }
 
-class WaitlistOfferLeading extends StatelessWidget {
-  const WaitlistOfferLeading({
+class WaitlistOfferNotice extends StatelessWidget {
+  const WaitlistOfferNotice({
     super.key,
     required this.expiresAt,
     required this.isDeclining,
@@ -520,8 +520,8 @@ class WaitlistOfferLeading extends StatelessWidget {
   }
 }
 
-class EventCtaStatusLeading extends StatelessWidget {
-  const EventCtaStatusLeading({
+class EventDockStatusText extends StatelessWidget {
+  const EventDockStatusText({
     super.key,
     required this.icon,
     required this.label,

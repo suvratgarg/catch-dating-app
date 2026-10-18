@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_recommendations_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/recommend_card.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/recommendations.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,7 +12,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const Scaffold(body: Recommendations.loading()),
+        home: const Scaffold(body: ExploreRecommendationsSection.loading()),
       ),
     );
     await tester.pump();

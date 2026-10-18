@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'event_hype_avatar_stack.dart';
+part of 'event_hype_avatar_row.dart';
 
 // **************************************************************************
 // RiverpodGenerator

@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "21975d077743c45f86c131cb96700ebb630749b554286aa2c4da78e9dd4a9c18",
+  "sourceDigest": "00914c83900f154f3296e6018e6d1e7b9978e36b3bc98b161fdff30681630e57",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "21975d077743c45f86c131cb96700ebb630749b554286aa2c4da78e9dd4a9c18",
-    "contractDigest": "21975d077743c45f86c131cb96700ebb630749b554286aa2c4da78e9dd4a9c18"
+    "digest": "00914c83900f154f3296e6018e6d1e7b9978e36b3bc98b161fdff30681630e57",
+    "contractDigest": "00914c83900f154f3296e6018e6d1e7b9978e36b3bc98b161fdff30681630e57"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "998a8122823d647d930134cfc46f9f8bd9812bce225cadac512171778ef5e376",
+    "handoffRequestDigest": "72d889deadcd6a8c19b9dadf8492e8cb5c4b919db6470e91da2ca97b43b9d128",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -186,7 +186,7 @@
           "EventDateRailCard",
           "EventFallbackThumbnail",
           "EventThumbnail",
-          "EventTicketStub"
+          "EventTicketStubRow"
         ]
       },
       {
@@ -2054,7 +2054,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "EventCard",
       "claudeAllowed": true,
-      "contractDigest": "40ae6577f30fe30751d15ef99d2a7fe6534613d00d243e5470c3b0e38172ab80"
+      "contractDigest": "df8689cfc9bd964894a3e381e7dfe28c3807d509f2ce97f0f989b5130235741b"
     },
     {
       "contractId": "catch.graded_image",
@@ -2182,7 +2182,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Event Detail Sections",
       "claudeAllowed": true,
-      "contractDigest": "63ca21a64ee9ef60a481f8a54db045559cf0700c47de42f4be2477a465afe361"
+      "contractDigest": "d98495b0378b1edb8f4fb87bc8192b7b016d106ede54a32e15addf949dd2ddf6"
     },
     {
       "contractId": "catch.notification_row",

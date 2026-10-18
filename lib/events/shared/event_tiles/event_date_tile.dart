@@ -6,16 +6,16 @@ import 'package:flutter/material.dart';
 const double _dateMarkerRadius = CatchSpacing.s3;
 const double _monthMarkerHeight = CatchSpacing.s10;
 
-enum EventDateMarkerLayout { weekStrip, monthGrid }
+enum EventDateTileVariant { weekStrip, monthGrid }
 
-class EventDateMarker extends StatelessWidget {
-  const EventDateMarker({
+class EventDateTile extends StatelessWidget {
+  const EventDateTile({
     super.key,
     required this.date,
     required this.active,
     required this.hasEvent,
     required this.onTap,
-    this.layout = EventDateMarkerLayout.weekStrip,
+    this.layout = EventDateTileVariant.weekStrip,
     this.today = false,
     this.enabled = true,
     this.label,
@@ -25,7 +25,7 @@ class EventDateMarker extends StatelessWidget {
   final bool active;
   final bool hasEvent;
   final VoidCallback onTap;
-  final EventDateMarkerLayout layout;
+  final EventDateTileVariant layout;
   final bool today;
   final bool enabled;
   final String? label;
@@ -33,14 +33,14 @@ class EventDateMarker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (layout) {
-      EventDateMarkerLayout.weekStrip => WeekMarker(
+      EventDateTileVariant.weekStrip => WeekDayTile(
         date: date,
         active: active,
         hasEvent: hasEvent,
         onTap: onTap,
         label: label,
       ),
-      EventDateMarkerLayout.monthGrid => MonthMarker(
+      EventDateTileVariant.monthGrid => MonthDayTile(
         date: date,
         active: active,
         today: today,
@@ -52,8 +52,8 @@ class EventDateMarker extends StatelessWidget {
   }
 }
 
-class WeekMarker extends StatelessWidget {
-  const WeekMarker({
+class WeekDayTile extends StatelessWidget {
+  const WeekDayTile({
     super.key,
     required this.date,
     required this.active,
@@ -125,8 +125,8 @@ class WeekMarker extends StatelessWidget {
   }
 }
 
-class MonthMarker extends StatelessWidget {
-  const MonthMarker({
+class MonthDayTile extends StatelessWidget {
+  const MonthDayTile({
     super.key,
     required this.date,
     required this.active,

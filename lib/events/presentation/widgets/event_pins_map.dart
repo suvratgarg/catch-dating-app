@@ -145,7 +145,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
     final pinnedItems = _pinnedItems;
 
     if (!widget.enableNetworkTiles) {
-      return EventPinsMapPlaceholder(
+      return EventPinsFallbackMap(
         items: pinnedItems,
         selectedEventId: widget.selectedEventId,
         userLocation: widget.userLocation,
@@ -635,8 +635,8 @@ String eventMapMarkerSemanticLabel(EventMapPinItem item) =>
   return (bitmap: bitmap, publish: bitmap != null || rasterFailed);
 }
 
-class EventPinsMapPlaceholder extends StatelessWidget {
-  const EventPinsMapPlaceholder({
+class EventPinsFallbackMap extends StatelessWidget {
+  const EventPinsFallbackMap({
     super.key,
     required this.items,
     required this.selectedEventId,

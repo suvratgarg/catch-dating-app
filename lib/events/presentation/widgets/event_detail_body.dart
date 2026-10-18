@@ -5,8 +5,8 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_top_bar.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
@@ -119,7 +119,7 @@ class EventDetailBody extends StatelessWidget {
     return CustomScrollView(
       key: const ValueKey('event_detail.scroll_view'),
       slivers: [
-        EventDetailHeroAppBar(
+        EventDetailHeroTopBar(
           event: event,
           isSaved: isSaved,
           savePending: savePending,
@@ -133,7 +133,7 @@ class EventDetailBody extends StatelessWidget {
           onToggleSaved: onToggleSaved,
         ),
         SliverToBoxAdapter(
-          child: EventDetailTicketStubBand(
+          child: EventDetailTicketStubRow(
             event: event,
             notchBackgroundColor: style.pageBackground,
           ),
@@ -150,7 +150,7 @@ class EventDetailBody extends StatelessWidget {
               onLocationTap: onLocationTap,
               enableMapNetworkTiles: enableMapNetworkTiles,
             ),
-            EventCompanionEntry(
+            EventCompanionCard(
               state: companionState,
               surfaceStyle: style,
               onOpen: onOpenCompanion,
@@ -280,8 +280,8 @@ class EventDetailCalloutCard extends StatelessWidget {
   }
 }
 
-class EventCompanionEntry extends StatelessWidget {
-  const EventCompanionEntry({
+class EventCompanionCard extends StatelessWidget {
+  const EventCompanionCard({
     super.key,
     required this.state,
     required this.surfaceStyle,
@@ -319,8 +319,8 @@ class EventCompanionEntry extends StatelessWidget {
   }
 }
 
-class GuestBookCta extends StatelessWidget {
-  const GuestBookCta({
+class GuestBookDock extends StatelessWidget {
+  const GuestBookDock({
     super.key,
     required this.onPressed,
     this.darkSurface = false,
