@@ -1,3 +1,6 @@
+import * as admin from "firebase-admin";
+import {prepareProgramActivityChannel, type ProgramFcmSender} from
+  "./programActivityChannel";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../operations/durableActions";
 import type {
@@ -41,11 +44,14 @@ export type ProgramDeliveryOutbox = FirestoreDeliveryOutbox<
 export type WhatsappSubmissionOutcome =
   {kind: "accepted"; providerMessageId: string} | {kind: "unknown"};
 
+export type ProgramSubmissionOutcome = WhatsappSubmissionOutcome |
+  {kind: "activityRecorded"; reason: "noEndpoint" | "preferenceOff"};
+
 export type ProgramChannelDispatchResult =
   | {kind: "withheld"; reason: "permitExpired" | "notReserved" |
     "rehearsal" | "authorityChanged" | "authorizationExpired" |
     "deliveryConflict" | "resourceUnavailable" | "endpointChanged"}
-  | {kind: "submitted"; outcome: WhatsappSubmissionOutcome};
+  | {kind: "submitted"; outcome: ProgramSubmissionOutcome};
 
 export type PreparedProgramChannel = {
   kind: "ready";
@@ -64,7 +70,7 @@ export type ProgramDeliveryWorkerResult =
   | {kind: "waiting"; decision: import("../delivery/deliveryCore")
       .DeliveryDecision<ProviderBinding>}
   | {kind: "submitted"; routeId: string;
-    outcome: WhatsappSubmissionOutcome};
+    outcome: ProgramSubmissionOutcome};
 
 const FACT_SNAPSHOT_MS = 120_000;
 
@@ -415,9 +421,13 @@ async function dispatchProgramWhatsapp(
  */
 export class ProgramDeliveryWorker {
   constructor(private readonly db: Firestore,
-    private readonly provider: Pick<MetaWhatsappProvider, "sendTemplate">,
-    private readonly credentials: Pick<OrganizerTokenStore, "accessBound">,
-    private readonly clock: () => number = Date.now) {}
+    private readonly provider:
+      Pick<MetaWhatsappProvider, "sendTemplate"> | null,
+    private readonly credentials:
+      Pick<OrganizerTokenStore, "accessBound"> | null,
+    private readonly clock: () => number = Date.now,
+    private readonly sendFcm: ProgramFcmSender =
+    (message) => admin.messaging().send(message)) {}
 
   async dispatch(messageId: string,
     executionDeadline = Number.MAX_SAFE_INTEGER):
@@ -443,11 +453,14 @@ export class ProgramDeliveryWorker {
     }
     const channels = new Map<string, PreparedProgramChannel>();
     await Promise.all(message.intent.permittedRoutes.map(async (routeId) => {
-      const channel = routeId === "organizerProgramWhatsapp" ?
-        await prepareProgramWhatsappChannel(this.db, message.intent,
-          this.provider, this.credentials, this.clock) :
-        {kind: "unavailable" as const,
-          reason: "senderUnavailable" as const};
+      const channel = routeId === "catchProgramActivity" ?
+        prepareProgramActivityChannel(this.db, message.intent, this.sendFcm,
+          this.clock) : routeId === "organizerProgramWhatsapp" &&
+            this.provider && this.credentials ?
+          await prepareProgramWhatsappChannel(this.db, message.intent,
+            this.provider, this.credentials, this.clock) :
+          {kind: "unavailable" as const,
+            reason: "senderUnavailable" as const};
       if (channel.kind === "ready" && channel.routeId !== routeId) {
         throw new Error("Prepared program channel has the wrong route");
       }
@@ -457,6 +470,14 @@ export class ProgramDeliveryWorker {
     const outbox: ProgramDeliveryOutbox = new FirestoreDeliveryOutbox(
       this.db, programDeliveryAdapter,
       async (tx, intent, now) => {
+        if (intent.activity) {
+          const activity = channels.get("catchProgramActivity");
+          if (activity?.kind !== "ready") {
+            return {gate: {kind: "stop", reason: "recipientWithdrawn"},
+              routes: []};
+          }
+          return activity.readFacts(tx, intent, now);
+        }
         const gate = (await readProgramGate(tx, this.db, intent, now)).gate;
         const routes: DeliveryRouteReadiness<ProviderBinding>[] = [];
         for (const routeId of intent.permittedRoutes) {

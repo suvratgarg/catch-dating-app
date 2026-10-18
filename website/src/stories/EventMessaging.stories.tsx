@@ -4,7 +4,7 @@ import {eventMessageWithdrawalCopy} from "../content/eventMessaging";
 import {useState} from "react";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {EventSmsPreferenceCard} from "../features/eventMessaging/EventSmsPreferencePanel";
-import type {EventMessagingState, SmsPreferenceView} from "../features/eventMessaging/eventMessagingModel";
+import type {SmsPreferenceState, SmsPreferenceView} from "../features/eventMessaging/smsPreferenceModel";
 import {EventRuntimeFrame, EventRuntimePanel} from "../shared/ui/primitives";
 
 const meta = {title: "Marketing Website/Event text preferences",
@@ -18,7 +18,7 @@ const view: SmsPreferenceView = {senderId: "fixture-sms", eventId: "fixture", at
   availability: "ready", phoneLastFour: "9999", expiresAt: null,
   consent: {version: "catch-event-service-sms-v1",
     text: "Receive text messages from Catch about joining, changes and follow-up for this event, until 24 hours after it ends. I can turn them off here."}};
-const ready: Extract<EventMessagingState, {kind: "ready"}> = {kind: "ready", view,
+const ready: Extract<SmsPreferenceState, {kind: "ready"}> = {kind: "ready", view,
   pending: false, uncertain: false, notice: "", earlier: false};
 
 export const Preference: Story = {
@@ -36,7 +36,7 @@ export const Unavailable: Story = {render: () => <Preview initial={{...ready,
 export const Loading: Story = {render: () => <Preview initial={{kind: "loading"}} />};
 export const Error: Story = {render: () => <Preview initial={{kind: "error"}} />};
 
-function Preview({initial}: {initial: EventMessagingState}) {
+function Preview({initial}: {initial: SmsPreferenceState}) {
   const [state, setState] = useState(initial);
   const save = (preference: "enabled" | "disabled") => setState({...ready,
     view: {...view, preference, revision: 1, expiresAt: 2000}, notice: preference === "enabled" ?

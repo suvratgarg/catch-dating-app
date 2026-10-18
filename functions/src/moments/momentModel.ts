@@ -221,6 +221,12 @@ export interface RunRecord {
   targetFunctionId?: string;
   /** Subject of a triggered run, when the fact names one. */
   subjectId?: string;
+  /** Immutable first-ingestion authority and recovery clock. */
+  travelOccurrence?: {
+    momentRevision: number;
+    occurredAtMillis: number;
+    createdAtMillis: number;
+  };
   /**
    * Occurrence binding for form-automation sends. The automation engine
    * owns trigger matching and the business delay; this run materializes
