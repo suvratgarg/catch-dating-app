@@ -94,12 +94,20 @@ class OnboardingController extends _$OnboardingController {
     bool runPreferencesOnly = false,
   }) async {
     final uid = ref.read(uidProvider).asData?.value;
-    final userProfile = ref.read(watchUserProfileProvider).asData?.value;
+    final profileAsync = ref.read(watchUserProfileProvider);
 
     if (uid == null) {
       _setStateIfChanged(state.copyWith(step: OnboardingStep.welcome));
       return;
     }
+
+    // The router owns profile-read recovery. Do not resume a new-account draft
+    // while the profile is unresolved, or treat a failed read as absence.
+    if (profileAsync.isLoading ||
+        (profileAsync.hasError && profileAsync.value == null)) {
+      return;
+    }
+    final userProfile = profileAsync.value;
 
     final today = DateTime.now();
     if (runPreferencesOnly &&
