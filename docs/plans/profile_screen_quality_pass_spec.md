@@ -24,8 +24,8 @@ Scope — the profile feature is **four surfaces sharing one flagship widget**:
 | Preview tab | tab 2 of `/you` | `ProfileSurface` mode `preview` |
 
 The shared shell is `ProfileSurface` (`lib/swipes/shared/profile_surface/profile_surface.dart:21`)
-over the flagship `CatchProfileView` (`catch_profile_view.dart:27`). The Edit tab
-is a one-off inline-editor surface; Insights is `UserAnalyticsPanel`.
+over the flagship `ProfileBody` (`catch_profile_view.dart:27`). The Edit tab
+is a one-off inline-editor surface; Insights is `UserAnalyticsSection`.
 
 Data-layer note: profile reads are healthy relative to the systemic findings in
 the explore spec §3 — single-doc realtime streams (`user_profile_repository.dart:148-161`,
@@ -44,7 +44,7 @@ baselines `artifacts/ui-captures/non-host-reference-baseline-20260625/`;
 
 ## 1. Executive summary
 
-The flagship `CatchProfileView` is genuinely good — it is the proof that the
+The flagship `ProfileBody` is genuinely good — it is the proof that the
 design language works. The problems are around it: the tab you actually live on
 is a form, the preview doesn't promise the truth, photo management has
 destructive one-tap paths, and there is no trust layer at all.
@@ -87,7 +87,7 @@ and **nothing renders it** — only `isStrong` gates one confidence chip shown t
 profiles to onboarding (`go_router.dart:1042-1076`), so the users who most need
 guidance never see any.
 
-**Recommendations:** surface the quality score + top suggestion as a
+**ExploreRecommendationsSection:** surface the quality score + top suggestion as a
 completeness module on the Edit tab (the engine exists — wire it); add a share/
 "view as others" action; fix the "Profile not available" empty state, which is
 currently a dead end with recovery copy but no action
@@ -189,7 +189,7 @@ visual/semantic distinction — users will tap them and learn by failure.
 More consequential than any literal: hero and inset photos use raw
 `Image(image: NetworkImage(url))` (`profile_view_mapper.dart:204-210`,
 `catch_profile_view.dart:238-240`), bypassing `CatchNetworkImage`'s decode-size
-cap and branded error state — the edit grid's `PhotoSlot` does it correctly
+cap and branded error state — the edit grid's `PhotoSlotTile` does it correctly
 (`photo_slot.dart:71-88`). The flagship should not be the surface that skips
 the primitive.
 
@@ -222,7 +222,7 @@ meant to be dark-first, grade it dark-first.
 
 ## 4. Widget reviews, duplication, primitives, hygiene
 
-### 4.1 `CatchProfileView` / hero — the flagship earns its status
+### 4.1 `ProfileBody` / hero — the flagship earns its status
 
 Graded 4:5 hero, bottom-radius 28 component token, 4-stop scrim, mono kicker,
 Archivo display name, `numericMeta` line, hairline-separated body sections with
@@ -236,7 +236,7 @@ renders it, which is also the cheapest people-signal for Explore's §2.2 gap.
 ### 4.2 Duplication inventory
 
 - Three hairline rules: `ProfileRule` (`catch_profile_view.dart:590`),
-  `ProfileSurfaceRule` (`profile_surface.dart:326`), core `CatchDivider`.
+  `ProfileSurfaceDivider` (`profile_surface.dart:326`), core `CatchDivider`.
 - `ProfileSectionKicker` (`catch_profile_view.dart:306-320`) hand-rolls
   `CatchKicker`; the hero kicker is a third copy.
 - `_trimToNull` × 3; `_migrateActivityPreferences` + `_stringKeyedMap` verbatim

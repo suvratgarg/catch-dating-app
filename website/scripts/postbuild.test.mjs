@@ -1,3 +1,4 @@
+import {retiredMarketingDestination} from "../src/app/retiredMarketingRoutes.ts";
 import assert from "node:assert/strict";
 import {execFileSync} from "node:child_process";
 import fs from "node:fs";
@@ -17,6 +18,10 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   const hostListingsPath = path.join(tmpRoot, "hostListings.json");
   fs.mkdirSync(distRoot, {recursive: true});
   fs.writeFileSync(path.join(distRoot, "index.html"), baseHtml());
+  for (const slug of ["overview", "platform", "workflows", "planners", "mixers", "clubs", "stack", "directory", "claim", "preview"]) {
+    fs.mkdirSync(path.join(distRoot, "host", slug), {recursive: true});
+    fs.writeFileSync(path.join(distRoot, "host", slug, "index.html"), "Retired page");
+  }
   fs.mkdirSync(path.join(distRoot, "events", "stale-private-event"), {recursive: true});
   fs.writeFileSync(path.join(distRoot, "events", "stale-private-event", "index.html"), "Private event");
   fs.writeFileSync(
@@ -34,6 +39,9 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
     "https://example.test",
   ], {stdio: "pipe"});
 
+  for (const slug of ["overview", "platform", "workflows", "planners", "mixers", "clubs", "stack", "directory", "claim", "preview"]) {
+    assert.equal(fs.existsSync(path.join(distRoot, "host", slug)), false, `retired ${slug} must not survive a rebuild`);
+  }
   const listingHtml = fs.readFileSync(
     path.join(distRoot, "organizers", "afterfly", "index.html"),
     "utf8"
@@ -121,6 +129,8 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   for (const [routeKey, relativeOutput] of [
     ["home", "index.html"],
     ["host", path.join("host", "index.html")],
+    ["host_apply", path.join("host", "apply", "index.html")],
+    ["visitor_discovery", path.join("explore", "index.html")],
     ["event_offer", path.join("offer", "index.html")],
     ["event_booking", path.join("booking", "index.html")],
     ["event_assistance", path.join("event-update", "index.html")],
@@ -351,3 +361,29 @@ function hostListings() {
     },
   ];
 }
+
+
+test("retired marketing URLs have redirects only, with no page owners or metadata", () => {
+  const read = (relative) => JSON.parse(fs.readFileSync(new URL(relative, import.meta.url), "utf8"));
+  const contract = read("../../design/website/routes.json");
+  const hosting = read("../../firebase.json").hosting.find((entry) => entry.target === "marketing");
+  const meta = read("../src/content/meta.json");
+  for (const redirect of contract.redirects) {
+    const pathname = redirect.source.replace("/**", "/legacy-child/");
+    const expected = new URL(redirect.destination, "https://example.test");
+    assert.equal(retiredMarketingDestination({pathname, search: "?listing=real-id&utm_source=partner", hash: "#obsolete"}),
+      `${expected.pathname}?listing=real-id&utm_source=partner${expected.hash}`);
+    assert.ok(hosting.redirects.some((entry) => entry.source === redirect.source && entry.destination === redirect.destination && entry.type === 301));
+    assert.ok(!hosting.rewrites.some((entry) => entry.source === redirect.source));
+    assert.ok(!contract.routes.some((route) => route.path === `${pathname.replace(/\/$/, "")}/`));
+  }
+  for (const slug of ["overview", "platform", "workflows", "planners", "mixers", "clubs", "stack", "directory", "claim"]) {
+    assert.equal(meta.routes[`host_${slug}`], undefined);
+  }
+  for (const source of ["features/host/concepts/HostConceptPage.tsx", "features/host/HostContentReview.tsx",
+    "content/hostConceptContent.ts", "content/hostConceptNavigation.ts", "content/prototypeStackContent.ts",
+    "content/prototypeInteractionContent.ts", "content/hostOrganization.ts", "features/host/HostApplicationFlow.tsx",
+    "features/host/applicationModel.ts", "features/host/useHostApplicationController.ts"]) {
+    assert.equal(fs.existsSync(new URL(`../src/${source}`, import.meta.url)), false, `${source} must remain retired`);
+  }
+});

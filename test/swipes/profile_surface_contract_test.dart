@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
+import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -42,7 +42,7 @@ void main() {
           age: 29,
           kickerActivity: ActivityKind.socialRun,
           sections: [
-            ProfileCompatibilitySection(
+            ProfileCompatibilitySectionData(
               title: 'Why you might click',
               reasons: [
                 'Shared run context from the same event.',
@@ -50,7 +50,7 @@ void main() {
               ],
               confidence: ['Verified photos', 'Active this week'],
             ),
-            ProfileRunningSection(
+            ProfileRunningSectionData(
               pace: '5:20-6:00 /km',
               distance: '5K · 10K',
               reasons: ['Headspace miles'],
@@ -84,7 +84,7 @@ void main() {
 Widget _profileHarness(ProfileView view) {
   return MaterialApp(
     theme: AppTheme.light,
-    home: CatchProfileView(data: view),
+    home: ProfileBody(data: view),
   );
 }
 

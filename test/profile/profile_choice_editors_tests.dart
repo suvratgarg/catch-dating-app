@@ -374,12 +374,12 @@ void _registerProfileChoiceEditorsTests() {
     expect(_catchChip(ChildrenStatus.dontHave.label), findsOneWidget);
   });
 
-  testWidgets('ProfileSingleEnumEntry renders through the inline editor', (
+  testWidgets('ProfileSingleEnumRow renders through the inline editor', (
     tester,
   ) async {
     await tester.pumpWidget(
       _profileWidgetHarness(
-        ProfileSingleEnumEntry<EducationLevel>(
+        ProfileSingleEnumRow<EducationLevel>(
           icon: CatchIcons.schoolOutlined,
           label: 'Education',
           contract: CatchContractConstraints.updateUserProfilePatchEducation,
@@ -396,7 +396,7 @@ void _registerProfileChoiceEditorsTests() {
       ),
     );
 
-    expect(find.byType(ProfileSingleEnumEntry<EducationLevel>), findsOneWidget);
+    expect(find.byType(ProfileSingleEnumRow<EducationLevel>), findsOneWidget);
     expect(
       find.byType(ProfileInlineSingleChoiceEntryEditor<EducationLevel>),
       findsOneWidget,
@@ -405,12 +405,12 @@ void _registerProfileChoiceEditorsTests() {
     expect(find.text(EducationLevel.masters.label), findsOneWidget);
   });
 
-  testWidgets('ProfileMultiEnumEntry renders through the inline editor', (
+  testWidgets('ProfileMultiEnumRow renders through the inline editor', (
     tester,
   ) async {
     await tester.pumpWidget(
       _profileWidgetHarness(
-        ProfileMultiEnumEntry<Language>(
+        ProfileMultiEnumRow<Language>(
           icon: CatchIcons.languageOutlined,
           label: 'Languages',
           contract: CatchContractConstraints.updateUserProfilePatchLanguages,
@@ -427,7 +427,7 @@ void _registerProfileChoiceEditorsTests() {
       ),
     );
 
-    expect(find.byType(ProfileMultiEnumEntry<Language>), findsOneWidget);
+    expect(find.byType(ProfileMultiEnumRow<Language>), findsOneWidget);
     expect(
       find.byType(ProfileInlineMultiChoiceEntryEditor<Language>),
       findsOneWidget,

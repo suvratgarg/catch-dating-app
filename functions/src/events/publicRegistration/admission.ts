@@ -27,6 +27,7 @@ import {onboardingDraftSeed} from "../eventAttendees";
 import {
   assertCurrentPublicGuest,
   readPublicEventSource,
+  publicGuestMembership,
 } from "./authority";
 import {preparePublicGuestIdentity} from "./identity";
 import {
@@ -111,7 +112,8 @@ export async function finalizePublicPayment(input: {
         tx,
         eventId,
       });
-      assertPublicRegistrationPolicy(event, organizer, "paid", nowMillis);
+      assertPublicRegistrationPolicy(event, organizer, "paid", nowMillis,
+        await publicGuestMembership({db, tx, event, uid, nowMillis}));
       if (
         event.organizerId !== organizerId ||
         event.startTime.toMillis() !==

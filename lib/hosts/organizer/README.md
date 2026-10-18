@@ -55,11 +55,11 @@ Typed handoffs:
 |---|---|---|
 | `HostClubsScreen` | `lib/hosts/presentation/host_operations/host_clubs_screen.dart` | Feature-contract actions: sign_in, retry_organizer_workspace. |
 | `HostClubsScaffold` | `lib/hosts/presentation/host_operations/host_clubs_scaffold.dart` | Feature-contract actions: create_organizer, select_workspace_tab. |
-| `HostClubEditTab` | `lib/hosts/presentation/host_operations/host_club_edit_tab.dart` | Feature-contract actions: open_organizer_setting. |
+| `HostClubEditBody` | `lib/hosts/presentation/host_operations/host_club_edit_body.dart` | Feature-contract actions: open_organizer_setting. |
 | `HostClubEditController` | `lib/hosts/presentation/club_management/host_club_edit_controller.dart` | Feature-contract actions: update_organizer, update_organizer_media. |
-| `HostClubSpokeResolver` | `lib/hosts/presentation/host_operations/host_club_spoke_screens.dart` | Feature-contract actions: retry_organizer_setting. |
+| `HostClubSpokeAsyncBoundary` | `lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart` | Feature-contract actions: retry_organizer_setting. |
 | `HostClubDefaultsSaver` | `lib/hosts/presentation/club_management/host_club_defaults_saver.dart` | Feature-contract actions: save_event_defaults. |
-| `HostClubInsightsPane` | `lib/hosts/presentation/host_operations/host_analytics.dart` | Feature-contract actions: retry_insights, refresh_insights, select_insights_range, open_insights_event_report, open_all_host_events. |
+| `HostClubInsightsSection` | `lib/hosts/presentation/host_operations/host_club_insights_section.dart` | Feature-contract actions: retry_insights, refresh_insights, select_insights_range, open_insights_event_report, open_all_host_events. |
 | `HostPaymentAccountControllerCard` | `lib/hosts/presentation/payments/host_payment_account_controller_card.dart` | Feature-contract actions: retry_payout_account. |
 | `HostPaymentAccountController` | `lib/hosts/presentation/payments/host_payment_account_controller.dart` | Feature-contract actions: start_payout_onboarding, refresh_payout_status. |
 | `HostClubTeamScreen` | `lib/hosts/presentation/host_operations/host_club_team_screen.dart` | Feature-contract actions: retry_host_profile, retry_hosted_organizers, open_hosted_organizer, select_team_tab, leave_team_workspace. |

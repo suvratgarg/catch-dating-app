@@ -1381,7 +1381,7 @@ test("capture provenance inputs add lightweight freshness without changing sourc
     !["marketing.capture-tooling", "marketing.capture-artifacts", "marketing.capture-docs",
       "marketing.capture-artifact-docs"].includes(entry.id));
   const inputs = [
-    "lib/auth/presentation/phone_page.dart", "lib/hosts/presentation/host_home.dart",
+    "lib/auth/presentation/phone_step.dart", "lib/hosts/presentation/host_home.dart",
     "lib/main_consumer.dart", "lib/l10n/app_en.arb",
     "lib/l10n/generated/app_localizations.dart",
     "lib/core/schema_contracts/generated/schema_paths.dart",
@@ -1422,7 +1422,7 @@ test("capture provenance inputs add lightweight freshness without changing sourc
       }
     }
   }
-  for (const file of ["lib/auth/presentation/phone_page.dart",
+  for (const file of ["lib/auth/presentation/phone_step.dart",
     "test/ui_captures/fixtures/sales_demo_synthetic_fixtures.dart"]) {
     const before = plan(file, "release", baseline);
     const after = plan(file, "release");
@@ -1438,12 +1438,12 @@ test("capture validation keeps unrelated tooling narrow and mixed Functions auth
   }
   for (const mode of ["pr", "merge_group", "main", "nightly"]) {
     const result = planAffected({graph, mode, changedPaths: [
-      "lib/auth/presentation/phone_page.dart", "functions/src/payments/razorpay.ts"]});
+      "lib/auth/presentation/phone_step.dart", "functions/src/payments/razorpay.ts"]});
     for (const target of ["capture_freshness", "functions"]) {
       assert.ok(result.operations.ciTargets.includes(target));
     }
     assert.deepEqual(result.operations.deployGroups, mode === "main" ? ["functions"] : []);
-    const nativeOnly = plan("lib/auth/presentation/phone_page.dart", mode);
+    const nativeOnly = plan("lib/auth/presentation/phone_step.dart", mode);
     assert.deepEqual(result.operations.releaseTargets, nativeOnly.operations.releaseTargets);
     assert.deepEqual(result.operations.releaseRoles, nativeOnly.operations.releaseRoles);
   }

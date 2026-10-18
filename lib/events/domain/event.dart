@@ -1,25 +1,24 @@
-import 'dart:math' as math;
-
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_domain_classes.mjs
+// Then run: dart run build_runner build
+//
+// Data shape emitted from contracts/firestore/events.schema.json.
+// Derived behavior, if any, lives in a hand-written companion extension file.
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
-import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
-import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
-import 'package:catch_dating_app/events/domain/event_service.dart';
-import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:catch_dating_app/events/domain/event_types.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-// Re-export so existing `import '.../event.dart'` call sites keep working
-// without churning every import. Prefer importing the dedicated file in new
-// code.
-export 'package:catch_dating_app/events/domain/event_meeting_location.dart';
+export 'event_extensions.dart';
+export 'event_meeting_location.dart';
+export 'event_types.dart';
 
 part 'event.freezed.dart';
 part 'event.g.dart';
@@ -41,11 +40,16 @@ enum EventPublicRegistrationMode { closed, free, paid }
 
 enum EventOriginMode { catchNative, externalCompanion }
 
-enum EventBookingAuthority { catchPlatform, external }
+enum EventBookingAuthority {
+  @JsonValue('catch')
+  catchPlatform,
+  external,
+}
 
 enum EventRosterAuthority { catchProjection, hostImport, providerSync }
 
 enum ExternalBookingProvider {
+  @JsonValue('catch')
   catchPlatform,
   generic,
   luma,
@@ -58,165 +62,20 @@ enum ExternalBookingProvider {
   airbnb,
 }
 
-extension ExternalBookingProviderX on ExternalBookingProvider {
-  String get rosterAdapterVersion => switch (this) {
-    ExternalBookingProvider.luma => 'luma-v1',
-    ExternalBookingProvider.eventbrite => 'eventbrite-v1',
-    ExternalBookingProvider.partiful => 'partiful-v1',
-    ExternalBookingProvider.posh => 'posh-v1',
-    ExternalBookingProvider.generic => 'generic-v1',
-    ExternalBookingProvider.bookmyshow => 'bookmyshow-sample-required',
-    ExternalBookingProvider.district => 'district-sample-required',
-    ExternalBookingProvider.sortmyscene => 'sortmyscene-sample-required',
-    ExternalBookingProvider.airbnb => 'airbnb-sample-required',
-    ExternalBookingProvider.catchPlatform => 'catch-native',
-  };
-
-  static const externalValues = <ExternalBookingProvider>[
-    ExternalBookingProvider.luma,
-    ExternalBookingProvider.eventbrite,
-    ExternalBookingProvider.partiful,
-    ExternalBookingProvider.posh,
-    ExternalBookingProvider.bookmyshow,
-    ExternalBookingProvider.district,
-    ExternalBookingProvider.sortmyscene,
-    ExternalBookingProvider.airbnb,
-    ExternalBookingProvider.generic,
-  ];
-}
-
 enum EventRuntimeWalkInPolicy { deny, hostApproval, autoCreate }
-
-String _eventBookingAuthorityToJson(EventBookingAuthority value) =>
-    value == EventBookingAuthority.catchPlatform ? 'catch' : value.name;
-
-EventBookingAuthority _eventBookingAuthorityFromJson(String value) =>
-    value == 'catch'
-    ? EventBookingAuthority.catchPlatform
-    : EventBookingAuthority.values.byName(value);
-
-String _externalBookingProviderToJson(ExternalBookingProvider value) =>
-    value == ExternalBookingProvider.catchPlatform ? 'catch' : value.name;
-
-ExternalBookingProvider _externalBookingProviderFromJson(String value) =>
-    value == 'catch'
-    ? ExternalBookingProvider.catchPlatform
-    : ExternalBookingProvider.values.byName(value);
-
-@freezed
-abstract class EventOrigin with _$EventOrigin {
-  const EventOrigin._();
-
-  const factory EventOrigin({
-    required EventOriginMode mode,
-    @JsonKey(
-      fromJson: _eventBookingAuthorityFromJson,
-      toJson: _eventBookingAuthorityToJson,
-    )
-    required EventBookingAuthority bookingAuthority,
-    required EventRosterAuthority rosterAuthority,
-    @JsonKey(
-      fromJson: _externalBookingProviderFromJson,
-      toJson: _externalBookingProviderToJson,
-    )
-    required ExternalBookingProvider provider,
-    String? externalEventId,
-    String? externalEventUrl,
-    String? sourceExternalEventId,
-    String? adapterVersion,
-    @NullableTimestampConverter() DateTime? connectedAt,
-    String? connectedBy,
-  }) = _EventOrigin;
-
-  factory EventOrigin.fromJson(Map<String, dynamic> json) =>
-      _$EventOriginFromJson(json);
-
-  bool get isExternal => mode == EventOriginMode.externalCompanion;
-}
-
-@freezed
-abstract class EventRuntimeAccess with _$EventRuntimeAccess {
-  const EventRuntimeAccess._();
-
-  const factory EventRuntimeAccess({
-    required bool enabled,
-    String? publicRuntimeId,
-    required EventRuntimeWalkInPolicy walkInPolicy,
-    required String termsVersion,
-  }) = _EventRuntimeAccess;
-
-  factory EventRuntimeAccess.fromJson(Map<String, dynamic> json) =>
-      _$EventRuntimeAccessFromJson(json);
-
-  bool get isJoinable => enabled && publicRuntimeId != null;
-}
-
-class ExternalEventOriginInput {
-  const ExternalEventOriginInput({
-    required this.provider,
-    this.externalEventId,
-    this.externalEventUrl,
-    this.sourceExternalEventId,
-    this.adapterVersion,
-  });
-
-  final ExternalBookingProvider provider;
-  final String? externalEventId;
-  final String? externalEventUrl;
-  final String? sourceExternalEventId;
-  final String? adapterVersion;
-
-  Map<String, Object?> toJson() => {
-    'provider': _externalBookingProviderToJson(provider),
-    'externalEventId': externalEventId,
-    'externalEventUrl': externalEventUrl,
-    'sourceExternalEventId': sourceExternalEventId,
-    'adapterVersion': adapterVersion,
-  };
-}
-
-/// The current booking status of a specific event from one user's perspective.
-enum EventSignUpStatus {
-  /// Event is upcoming, not full, and the user hasn't signed up.
-  eligible,
-
-  /// The user has already signed up.
-  signedUp,
-
-  /// The event is full and the user is not on the waitlist.
-  full,
-
-  /// The event is full and the user is on the waitlist.
-  waitlisted,
-
-  /// The user attended this event.
-  attended,
-
-  /// The event has started (or ended) and the user did not sign up.
-  past,
-
-  /// The user does not meet the event's eligibility constraints (age or gender cap).
-  ineligible,
-}
-
-Object? _readOrganizerId(Map<dynamic, dynamic> json, String key) =>
-    json[key] ?? json['clubId'];
-
-const _legacyUnattributedCohortId = 'legacyUnattributed';
 
 @freezed
 abstract class Event with _$Event {
-  const Event._();
-
   const factory Event({
     @JsonKey(includeToJson: false) required String id,
     @JsonKey(includeToJson: false) @Default(false) bool synthetic,
     @JsonKey(includeToJson: false) String? seedPrefix,
-    @JsonKey(name: 'organizerId', readValue: _readOrganizerId)
+    @JsonKey(name: 'organizerId', readValue: readEventOrganizerId)
     required String clubId,
     @JsonKey(includeIfNull: false) String? sourceVenueId,
     @Default('') String name,
     @TimestampConverter() required DateTime startTime,
+    @JsonKey(includeIfNull: false) String? eventTimezone,
     @TimestampConverter() required DateTime endTime,
     required String meetingPoint,
     @JsonKey(includeIfNull: false) EventMeetingLocation? meetingLocation,
@@ -255,173 +114,50 @@ abstract class Event with _$Event {
     @JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy,
     @JsonKey(includeIfNull: false) EventOrigin? eventOrigin,
     @JsonKey(includeIfNull: false) EventRuntimeAccess? runtimeAccess,
-    // Denormalized gender counts maintained atomically by Cloud Functions.
-    // Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'.
     @Default({}) Map<String, int> genderCounts,
-    // Denormalized event-policy cohort counts maintained by Cloud Functions.
-    // Keys are EventCohortIds values.
     @Default({}) Map<String, int> cohortCounts,
-    // Denormalized waitlist demand by event-policy cohort. Used for dynamic
-    // pricing quotes without reading the whole waitlist on every client view.
     @Default({}) Map<String, int> waitlistedCohortCounts,
   }) = _Event;
 
-  String get organizerId => clubId;
-
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
+}
 
-  double get distanceMiles => distanceKm * 0.621371;
-  ActivityKind get activityKind => eventFormat.activityKind;
-  int get signedUpCount => bookedCount ?? 0;
-  int get attendedCount => checkedInCount ?? 0;
-  int get waitlistCount => waitlistedCount ?? 0;
-  int get spotsRemaining => math.max(0, capacityLimit - signedUpCount);
-  bool get isFull => signedUpCount >= capacityLimit;
-  bool get isFree => priceInPaise == 0;
-  bool get isCancelled => status == EventLifecycleStatus.cancelled;
-  bool get isExternalCompanion => eventOrigin?.isExternal ?? false;
-  bool get hasWebRuntime => runtimeAccess?.isJoinable ?? false;
-  Uri? runtimeJoinUri({String baseUrl = 'https://catchdates.com'}) {
-    final runtimeId = runtimeAccess?.publicRuntimeId;
-    if (runtimeId == null || runtimeId.isEmpty) return null;
-    return Uri.parse(
-      baseUrl,
-    ).resolve('/join/${Uri.encodeComponent(runtimeId)}');
-  }
+@freezed
+abstract class EventOrigin with _$EventOrigin {
+  const factory EventOrigin({
+    required EventOriginMode mode,
+    @JsonKey(
+      fromJson: eventBookingAuthorityFromJson,
+      toJson: eventBookingAuthorityToJson,
+    )
+    required EventBookingAuthority bookingAuthority,
+    required EventRosterAuthority rosterAuthority,
+    @JsonKey(
+      fromJson: externalBookingProviderFromJson,
+      toJson: externalBookingProviderToJson,
+    )
+    required ExternalBookingProvider provider,
+    String? externalEventId,
+    String? externalEventUrl,
+    String? sourceExternalEventId,
+    String? adapterVersion,
+    @NullableTimestampConverter() DateTime? connectedAt,
+    String? connectedBy,
+  }) = _EventOrigin;
 
-  bool isUpcomingAt(DateTime now) => !isCancelled && startTime.isAfter(now);
-  bool get hasRequirements => constraints.hasRequirements;
-  bool get hasExactStartingPoint =>
-      effectiveStartingPointLat != null && effectiveStartingPointLng != null;
-  String? get primaryPhotoUrl {
-    if (eventPhotos.isNotEmpty) return eventPhotos.first.url;
-    return photoUrl;
-  }
+  factory EventOrigin.fromJson(Map<String, dynamic> json) =>
+      _$EventOriginFromJson(json);
+}
 
-  EventMeetingLocation? get effectiveMeetingLocation =>
-      meetingLocation ??
-      EventMeetingLocation.legacy(
-        name: meetingPoint,
-        latitude: startingPointLat,
-        longitude: startingPointLng,
-        notes: locationDetails,
-      );
-  String get locationName => effectiveMeetingLocation?.name ?? meetingPoint;
-  String? get locationNotes =>
-      effectiveMeetingLocation?.notes ?? locationDetails;
-  double? get effectiveStartingPointLat =>
-      effectiveMeetingLocation?.latitude ?? startingPointLat;
-  double? get effectiveStartingPointLng =>
-      effectiveMeetingLocation?.longitude ?? startingPointLng;
-  EventPolicyBundle get effectiveEventPolicy =>
-      eventPolicy ??
-      EventPolicyBundle.legacyEvent(
-        capacityLimit: capacityLimit,
-        priceInPaise: priceInPaise,
-        maxMen: constraints.maxMen,
-        maxWomen: constraints.maxWomen,
-      );
+@freezed
+abstract class EventRuntimeAccess with _$EventRuntimeAccess {
+  const factory EventRuntimeAccess({
+    required bool enabled,
+    String? publicRuntimeId,
+    required EventRuntimeWalkInPolicy walkInPolicy,
+    required String termsVersion,
+  }) = _EventRuntimeAccess;
 
-  Map<String, int> get effectiveCohortCounts {
-    if (cohortCounts.isNotEmpty) return cohortCounts;
-    final nonBinaryOrOther =
-        (genderCounts[Gender.nonBinary.name] ?? 0) +
-        (genderCounts[Gender.other.name] ?? 0);
-    final legacyGenderCohorts = {
-      if ((genderCounts[Gender.man.name] ?? 0) > 0)
-        EventCohortIds.menInterestedInWomen: genderCounts[Gender.man.name]!,
-      if ((genderCounts[Gender.woman.name] ?? 0) > 0)
-        EventCohortIds.womenInterestedInMen: genderCounts[Gender.woman.name]!,
-      if (nonBinaryOrOther > 0)
-        EventCohortIds.nonBinaryOrOther: nonBinaryOrOther,
-    };
-    if (legacyGenderCohorts.isNotEmpty) return legacyGenderCohorts;
-
-    // Older event documents projected only an aggregate bookedCount. Preserve
-    // that total for global capacity and waitlist decisions without assigning
-    // it to a real cohort whose cap or pricing rule it could distort.
-    final legacyBookedCount = bookedCount ?? 0;
-    return legacyBookedCount > 0
-        ? {_legacyUnattributedCohortId: legacyBookedCount}
-        : const {};
-  }
-
-  Map<String, int> get effectiveWaitlistedCohortCounts =>
-      waitlistedCohortCounts;
-
-  int priceInPaiseFor(UserProfile user) {
-    final policy = effectiveEventPolicy;
-    final attendee = EventAttendeeProfile.fromUserProfile(user);
-    final cohort = policy.cohortResolver.resolve(attendee);
-    return policy.pricingPolicy
-        .quoteFor(
-          cohort: cohort,
-          roster: EventRosterSnapshot(
-            bookedCountsByCohort: effectiveCohortCounts,
-            waitlistedCountsByCohort: effectiveWaitlistedCohortCounts,
-            crossPathsPairConfirmedCount: crossPathsPairConfirmedCount,
-          ),
-        )
-        .finalAmount
-        .inPaise;
-  }
-
-  /// Returns fresh-viewer eligibility of [user] for this event.
-  ///
-  /// User-specific roster state lives in `eventParticipations`, so callers that
-  /// know the viewer's participation edge should prefer a view-model seam that
-  /// combines the event and participation before rendering action state.
-  @Deprecated('Use EventService.eligibilityFor instead')
-  EventEligibility eligibilityFor(
-    UserProfile user, {
-    required DateTime now,
-    bool hasValidInvite = false,
-  }) {
-    return EventService.eligibilityFor(
-      this,
-      user,
-      now: now,
-      hasValidInvite: hasValidInvite,
-    );
-  }
-
-  /// Returns the fresh-viewer booking status for [user].
-  ///
-  /// Signed-up, waitlisted, and attended statuses require a `EventParticipation`
-  /// edge and are intentionally resolved outside this model.
-  EventSignUpStatus statusFor(
-    UserProfile user, {
-    required DateTime now,
-    bool hasValidInvite = false,
-  }) {
-    return switch (EventService.eligibilityFor(
-      this,
-      user,
-      now: now,
-      hasValidInvite: hasValidInvite,
-    )) {
-      EventPast() => EventSignUpStatus.past,
-      EventFull() => EventSignUpStatus.full,
-      Eligible() => EventSignUpStatus.eligible,
-      _ => EventSignUpStatus.ineligible,
-    };
-  }
-
-  String get title {
-    final authoredName = name.trim();
-    if (authoredName.isNotEmpty) return authoredName;
-    return legacyDerivedTitle;
-  }
-
-  String get legacyDerivedTitle {
-    final weekday = AppTimeFormatters.longWeekday(startTime);
-    final hour = startTime.hour;
-    final period = hour < 12
-        ? StructuredDomainCopy.eventTitleMorning
-        : hour < 17
-        ? StructuredDomainCopy.eventTitleAfternoon
-        : StructuredDomainCopy.eventTitleEvening;
-    // copy:allow-inline(Composes governed period copy with dynamic event data)
-    return '$weekday $period ${eventFormat.eventTitleLabel}';
-  }
+  factory EventRuntimeAccess.fromJson(Map<String, dynamic> json) =>
+      _$EventRuntimeAccessFromJson(json);
 }

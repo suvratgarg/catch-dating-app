@@ -10,14 +10,35 @@ const designPath = "tool/marketing/app_screenshots_design_context.json";
 const websiteManifestPath = "website/public/assets/app-screenshots/manifest.json";
 const sha256 = bytes => crypto.createHash("sha256").update(bytes).digest("hex");
 
-export function resolveCaptureRequest({eventName, event, repository, runSha, workflowDefinitionSha}) {
+export function resolveCaptureRequest({eventName, event, repository, runSha, workflowDefinitionSha,
+  automaticSourceSha = "", workflowRef}) {
   if (!/^[\w.-]+\/[\w.-]+$/u.test(repository ?? "") || event?.repository?.full_name !== repository) {
     throw new Error("Capture request repository does not match the workflow repository.");
   }
   let sourceSha;
   let workflowSha;
   let prNumber;
-  if (eventName === "workflow_dispatch") {
+  if (automaticSourceSha !== "") {
+    const callers = ["ci.yml", "tools-ci.yml", "flutter-ci.yml", "marketing-website.yml"];
+    if (automaticSourceSha !== runSha || !callers.some(file =>
+      workflowRef?.startsWith(`${repository}/.github/workflows/${file}@refs/`))) {
+      throw new Error("Automatic captures require the actual caller source SHA and an existing CI consumer workflow.");
+    }
+    if (!["pull_request", "push", "merge_group", "schedule", "workflow_dispatch"].includes(eventName)) {
+      throw new Error("Unsupported automatic capture event.");
+    }
+    if (eventName === "pull_request" && (event.pull_request?.state !== "open" ||
+        event.pull_request.base?.ref !== "main" || event.pull_request.base?.repo?.full_name !== repository ||
+        event.pull_request.head?.repo?.full_name !== repository)) {
+      throw new Error("Automatic PR captures require an open same-repository PR into main.");
+    }
+    if (eventName === "push" && event.after !== runSha) throw new Error("Push source differs from the caller SHA.");
+    if (eventName === "merge_group" && event.merge_group?.head_sha !== runSha) {
+      throw new Error("Merge-group source differs from the caller SHA.");
+    }
+    sourceSha = automaticSourceSha;
+    workflowSha = runSha;
+  } else if (eventName === "workflow_dispatch") {
     sourceSha = event.inputs?.source_sha;
     workflowSha = runSha;
   } else if (eventName === "pull_request") {
@@ -34,10 +55,12 @@ export function resolveCaptureRequest({eventName, event, repository, runSha, wor
   } else {
     throw new Error("Unsupported capture request event.");
   }
-  for (const sha of [sourceSha, workflowSha, runSha, workflowDefinitionSha]) {
+  const runHeadSha = eventName === "pull_request" ? event.pull_request?.head?.sha : runSha;
+  for (const sha of [sourceSha, workflowSha, runSha, workflowDefinitionSha, runHeadSha]) {
     if (!/^[a-f0-9]{40}$/u.test(sha ?? "")) throw new Error("Full immutable capture request SHAs required.");
   }
-  return {eventName, sourceSha, workflowSha, workflowDefinitionSha, eventSha: runSha,
+  return {eventName, sourceSha, workflowSha, workflowDefinitionSha, eventSha: runSha, runHeadSha,
+    ...(automaticSourceSha !== "" ? {mode: "automatic", workflowRef} : {}),
     ...(prNumber ? {prNumber, label: "capture:requested"} : {})};
 }
 
@@ -45,7 +68,9 @@ function requestFromEnvironment() {
   const request = resolveCaptureRequest({eventName: process.env.GITHUB_EVENT_NAME,
     event: JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, "utf8")),
     repository: process.env.GITHUB_REPOSITORY, runSha: process.env.GITHUB_SHA,
-    workflowDefinitionSha: process.env.CAPTURE_WORKFLOW_DEFINITION_SHA});
+    workflowDefinitionSha: process.env.CAPTURE_WORKFLOW_DEFINITION_SHA,
+    automaticSourceSha: process.env.CAPTURE_AUTOMATIC_SOURCE_SHA ?? "",
+    workflowRef: process.env.GITHUB_WORKFLOW_REF});
   if (request.sourceSha !== process.env.CAPTURE_SOURCE_SHA ||
       request.workflowSha !== process.env.CAPTURE_WORKFLOW_SHA) {
     throw new Error("Capture environment differs from the immutable event request.");

@@ -2,7 +2,7 @@
 
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
+import 'package:catch_dating_app/core/widgets/splash_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -286,12 +286,12 @@ Widget catchAsyncValueContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchStartupLoadingScreen,
+  type: SplashScreen,
   path: '[Core primitives]/Loading',
 )
 Widget catchStartupLoadingScreenContractStates(BuildContext context) {
   return WidgetbookContractFrame(
-    title: 'CatchStartupLoadingScreen',
+    title: 'SplashScreen',
     contractId: 'catch.startup_loading_screen',
     states: const ['startup', 'safe-area', 'primary-fill', 'bounded-spinner'],
     children: const [
@@ -299,28 +299,28 @@ Widget catchStartupLoadingScreenContractStates(BuildContext context) {
         label: 'startup',
         child: SizedBox(
           height: WidgetbookPreviewLayout.startupViewportHeight,
-          child: CatchStartupLoadingScreen(),
+          child: SplashScreen(),
         ),
       ),
       WidgetbookContractStateCard(
         label: 'safe-area',
         child: SizedBox(
           height: WidgetbookPreviewLayout.startupViewportHeight,
-          child: CatchStartupLoadingScreen(),
+          child: SplashScreen(),
         ),
       ),
       WidgetbookContractStateCard(
         label: 'primary-fill',
         child: SizedBox(
           height: WidgetbookPreviewLayout.startupViewportHeight,
-          child: CatchStartupLoadingScreen(),
+          child: SplashScreen(),
         ),
       ),
       WidgetbookContractStateCard(
         label: 'bounded-spinner',
         child: SizedBox(
           height: WidgetbookPreviewLayout.startupViewportHeight,
-          child: CatchStartupLoadingScreen(),
+          child: SplashScreen(),
         ),
       ),
     ],

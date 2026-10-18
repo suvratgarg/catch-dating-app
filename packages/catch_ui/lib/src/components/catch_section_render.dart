@@ -48,11 +48,11 @@ extension _CatchSectionRendering on CatchSection {
     final hasCount = displayCount != null && displayCount.isNotEmpty;
     final hasHeader = hasTitle || hasCount || sectionTrailing != null;
     final bodyMode = !fieldRows
-        ? CatchSectionRowListMode.content
+        ? CatchSectionBodyMode.content
         : variant == _CatchSectionVariant.contained
-        ? CatchSectionRowListMode.containedFields
-        : CatchSectionRowListMode.dividedFields;
-    final body = CatchSectionRowList(
+        ? CatchSectionBodyMode.containedFields
+        : CatchSectionBodyMode.dividedFields;
+    final body = CatchSectionBody(
       mode: bodyMode,
       dividerIndent: dividerIndent,
       dividerVariant: internalDividerVariant,
@@ -185,7 +185,7 @@ extension _CatchSectionRendering on CatchSection {
                         ],
                       ),
                     ),
-                    CatchSectionRowList(
+                    CatchSectionBody(
                       mode: bodyMode,
                       dividerIndent: dividerIndent,
                       dividerVariant: internalDividerVariant,

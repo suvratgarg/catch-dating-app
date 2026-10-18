@@ -114,6 +114,7 @@ export async function hasEventCommunityMembership(params: {
   policy: Pick<EventPolicyBundleDocument, "admission">;
   nowMillis?: number;
 }): Promise<boolean> {
-  if (!requiresCommunityMembership(params.policy)) return true;
+  if (!requiresCommunityMembership(params.policy) &&
+      params.policy.admission.approvedMembersSkipReview !== true) return true;
   return (await readCommunityMembership(params))?.state === "active";
 }

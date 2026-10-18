@@ -43,7 +43,7 @@ first/lead` slots and divider-role control, plus `CatchSectionList` /
 
 The current source has 713 `CatchField.*` references and 289
 `CatchSection.*` references across `lib/` and `test/`, but only three
-production `CatchFormRowList<P>` composition sites. `CatchField.input` exposes
+production `CatchFormList<P>` composition sites. `CatchField.input` exposes
 53 named parameters and the shared private `CatchSection` constructor carries
 31. Those numbers do not mean every caller sees every option: `CatchField`
 already redirects its public named constructors into closed private per-mode
@@ -77,10 +77,10 @@ facade but enforce five layers:
    contract inventory stay stable.
 
 The first implementation from this review moves text commit behavior from
-`CatchFormTextRow` to `CatchFormRowList.textCommitMode`. Host Club Identity and
+`CatchFormTextRow` to `CatchFormList.textCommitMode`. Host Club Identity and
 Contact inherit the explicit default and delete six repeated arguments.
 Consumer Profile About You keeps its current behavior with one
-`CatchFormRowListMode.onBlur` list override, so the API improves without a
+`CatchFormListMode.onBlur` list override, so the API improves without a
 silent product migration or a call-site sweep. The mapper also drops nine
 unused visual pass-throughs; its constructor now exposes semantic section
 content and orchestration only, while `CatchSection.fieldRows` owns divider,
@@ -496,10 +496,10 @@ ratified as follows:
 
 | Call site | Verdict |
 |---|---|
-| `lib/user_profile/presentation/widgets/inline_editor_range.dart` | KEEP — slider composite; exactly what `control:` is for |
+| `lib/user_profile/presentation/widgets/profile_inline_range_editor.dart` | KEEP — slider composite; exactly what `control:` is for |
 | `lib/hosts/presentation/host_operations/host_inline_editors.dart` `HostInlineAgeRangeEditor` | KEEP — two-input composite |
 | `lib/hosts/presentation/host_operations/host_inline_editors.dart` `HostInlineOptionEditor` | MIGRATE to `CatchField.choices` (with §7.2 `itemAccent` + `helperText`) **only when** its save model becomes immediate-commit — i.e., after the edit spec's Phase 3 §7.3 lands. Until then the draft-then-submit semantics justify `control:`. Leave a `// TODO(edit-spec-p3)` marker |
-| `lib/onboarding/presentation/pages/running_prefs_page.dart` | AUDIT in-PR: if it renders a plain chip group with immediate semantics, migrate to `choices`; if composite, KEEP and note why |
+| `lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart` | AUDIT in-PR: if it renders a plain chip group with immediate semantics, migrate to `choices`; if composite, KEEP and note why |
 
 Goal state: every remaining `control:` usage is a genuine multi-widget
 composite, and the PR description lists them with one-line justifications.
@@ -545,7 +545,7 @@ orchestration stack.
    }
    ```
 
-   plus a `CatchFormRowList<P>` mapper widget that owns
+   plus a `CatchFormList<P>` mapper widget that owns
    `CatchFieldAccordion` wiring and a single
    `Future<bool> Function(P patch)` save delegate (per-field commit — the
    canonical save model).

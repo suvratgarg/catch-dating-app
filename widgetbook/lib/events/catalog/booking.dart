@@ -1,17 +1,23 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../../support/contract_preview.dart';
 import '../../support/page_preview.dart';
+import '../../support/widgetbook_harness.dart';
 import 'event_scope.dart';
 import 'fixtures.dart';
 import 'preview.dart';
@@ -42,7 +48,7 @@ Widget eventDetailBookingDockStates(BuildContext context) {
           child: EventBookingDock(
             label: 'Book event',
             onPressed: widgetbookNoop,
-            leadingContent: const PriceLeading(
+            leadingContent: const EventPriceText(
               price: '₹1,400',
               note: '2 spots left',
               warn: true,
@@ -81,7 +87,7 @@ Widget eventDetailBookingDockStates(BuildContext context) {
           child: EventBookingDock(
             label: 'Cancel booking',
             onPressed: widgetbookNoop,
-            leadingContent: EventCtaStatusLeading(
+            leadingContent: EventDockStatusText(
               icon: CatchIcons.checkCircleRounded,
               label: "You're in!",
             ),
@@ -103,7 +109,7 @@ Widget eventDetailBookingDockStates(BuildContext context) {
           child: EventBookingDock(
             label: 'Accept spot',
             onPressed: widgetbookNoop,
-            leadingContent: WaitlistOfferLeading(
+            leadingContent: WaitlistOfferNotice(
               expiresAt: widgetbookEventsNow.add(const Duration(hours: 5)),
               isDeclining: false,
               onDecline: widgetbookNoop,
@@ -133,7 +139,7 @@ Widget eventDetailBookingDockStates(BuildContext context) {
               child: EventBookingDock(
                 label: 'You attended this event',
                 onPressed: null,
-                leadingContent: EventCtaStatusLeading(
+                leadingContent: EventDockStatusText(
                   icon: CatchIcons.directionsRunRounded,
                   label: 'Completed',
                 ),
@@ -148,6 +154,53 @@ Widget eventDetailBookingDockStates(BuildContext context) {
           message: 'No booking dock is composed in host app context.',
         ),
       ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Connected dock states',
+  type: EventDetailDock,
+  path: '[Event Detail]/Sections',
+)
+Widget eventDetailDockStates(BuildContext context) {
+  final viewerUid = widgetbookEventsViewer.uid;
+  final overrides = [
+    uidProvider.overrideWithValue(AsyncData<String?>(viewerUid)),
+    eventViewerStateProvider(widgetbookEvent.id, viewerUid).overrideWithValue(
+      AsyncData(
+        widgetbookEventViewerSnapshot(
+          widgetbookEvent,
+          admission: EventViewerAdmission.none,
+        ),
+      ),
+    ),
+    paymentRepositoryProvider.overrideWithValue(
+      WidgetbookEventFakePaymentRepository(),
+    ),
+  ];
+  return WidgetbookPageCatalogFrame(
+    title: 'EventDetailDock',
+    contractId: 'section.event.booking_dock_connected',
+    children: [
+      for (final (label, darkSurface) in [
+        ('eligible on light surface', false),
+        ('eligible on dark surface', true),
+      ])
+        WidgetbookPageStateCard(
+          label: label,
+          child: WidgetbookFixtureScope(
+            overrides: overrides,
+            child: EventDetailDock(
+              event: widgetbookEvent,
+              userProfile: widgetbookEventsViewer,
+              clubId: widgetbookEventsClubId,
+              participation: null,
+              now: widgetbookEventsNow,
+              darkSurface: darkSurface,
+            ),
+          ),
+        ),
     ],
   );
 }
@@ -334,20 +387,24 @@ Widget eventDetailPromptBodyStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Price leading',
-  type: PriceLeading,
+  type: EventPriceText,
   path: '[Event Detail]/Booking Dock',
 )
 Widget priceLeadingState(BuildContext context) {
-  return const PriceLeading(price: '₹1,400', note: '2 spots left', warn: true);
+  return const EventPriceText(
+    price: '₹1,400',
+    note: '2 spots left',
+    warn: true,
+  );
 }
 
 @widgetbook.UseCase(
   name: 'Waitlist offer leading',
-  type: WaitlistOfferLeading,
+  type: WaitlistOfferNotice,
   path: '[Event Detail]/Booking Dock',
 )
 Widget waitlistOfferLeadingState(BuildContext context) {
-  return WaitlistOfferLeading(
+  return WaitlistOfferNotice(
     expiresAt: widgetbookEventsNow.add(const Duration(hours: 5)),
     isDeclining: false,
     onDecline: widgetbookNoop,
@@ -356,7 +413,7 @@ Widget waitlistOfferLeadingState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Status leading states',
-  type: EventCtaStatusLeading,
+  type: EventDockStatusText,
   path: '[Event Detail]/Booking Dock',
 )
 Widget eventCtaStatusLeadingStates(BuildContext context) {
@@ -364,12 +421,12 @@ Widget eventCtaStatusLeadingStates(BuildContext context) {
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      EventCtaStatusLeading(
+      EventDockStatusText(
         icon: CatchIcons.checkCircleRounded,
         label: "You're in!",
       ),
       gapH12,
-      EventCtaStatusLeading(
+      EventDockStatusText(
         icon: CatchIcons.directionsRunRounded,
         label: 'Completed',
       ),

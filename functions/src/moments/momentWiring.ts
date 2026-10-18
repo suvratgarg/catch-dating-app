@@ -72,9 +72,12 @@ const PREFERENCE_KEYS: ReadonlySet<string> = new Set([
 ]);
 
 export function buildMomentRunnerDeps(
-  overrides?: Partial<MomentRunnerDeps>,
+  overrides?: Partial<MomentRunnerDeps> & {
+    sendNotification?: typeof sendFcmNotification;
+  },
 ): MomentRunnerDeps {
   const firestore = overrides?.firestore ?? (() => admin.firestore());
+  const sendNotification = overrides?.sendNotification ?? sendFcmNotification;
   const tokenStore = new OrganizerTokenStore();
   const provider = () => new MetaWhatsappProvider({
     appId: metaWhatsappAppId.value(),
@@ -120,8 +123,9 @@ export function buildMomentRunnerDeps(
       now: () => Date.now(),
       ...params,
     }),
-    sendPushToUid: (params) => sendPush(firestore(), params),
-    writeStaffAttention: (params) => staffAttention(firestore(), params),
+    sendPushToUid: (params) => sendPush(firestore(), params, sendNotification),
+    writeStaffAttention: (params) =>
+      staffAttention(firestore(), params, sendNotification),
     loadConsentFacts: (recipient) =>
       consentFacts(firestore(), recipient),
     ...overrides,
@@ -253,10 +257,19 @@ async function pushCopy(
   return {title: moment.name, body: ""};
 }
 
+/** IDs are interpolated by the native route parser; preserve exact safe
+ *  segments and withhold malformed/encoded routing rather than normalize. */
+function routeSafeId(value: unknown): value is string {
+  return typeof value === "string" && value.length > 0 && value.length <= 180 &&
+    !/[^A-Za-z0-9_.~-]/.test(value) &&
+    value !== "." && value !== "..";
+}
+
 async function sendPush(
   db: Firestore,
   params: {
     uid: string;
+    appRole: "consumer" | "host";
     title: string;
     body: string;
     notificationType: string;
@@ -265,9 +278,25 @@ async function sendPush(
     runId: string;
     recipientKey: string;
   },
+  sendNotification: typeof sendFcmNotification,
 ): Promise<void> {
   const type = ACTIVITY_TYPES.has(params.notificationType) ?
     params.notificationType as ActivityNotificationType : "organizerUpdate";
+  const consumerEvent = params.appRole === "consumer" &&
+    params.scope.kind === "event";
+  let organizerId: string | undefined;
+  if (consumerEvent && params.scope.kind === "event" &&
+      routeSafeId(params.scope.eventId)) {
+    const event = (await db.collection("events").doc(params.scope.eventId)
+      .get()).data();
+    const candidate = event &&
+      Object.prototype.hasOwnProperty.call(event, "organizerId") ?
+      event.organizerId : event?.clubId;
+    if (routeSafeId(candidate)) organizerId = candidate;
+  }
+  const eventContext = params.scope.kind === "event" &&
+      (!consumerEvent || organizerId !== undefined) ?
+    {eventId: params.scope.eventId, ...(organizerId ? {organizerId} : {})} : {};
   // The durable send is the activity item; the user's push preference
   // gates only the FCM leg, matching the shipped reminder behavior.
   await createActivityNotificationIfAbsent(db, {
@@ -277,9 +306,9 @@ async function sendPush(
     title: params.title,
     body: params.body,
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    ...(params.scope.kind === "event" ?
-      {eventId: params.scope.eventId} : {}),
+    ...eventContext,
   });
+  if (consumerEvent && organizerId === undefined) return;
   const userSnap = await db.collection("users").doc(params.uid).get();
   const user = userSnap.data() as UserProfileDocument | undefined;
   const preferenceKey = PREFERENCE_KEYS.has(params.preferenceKey) ?
@@ -288,16 +317,15 @@ async function sendPush(
       !allowsPushPreference(user, preferenceKey)) {
     return;
   }
-  await sendFcmNotification({
+  await sendNotification({
     token: user.fcmToken,
     title: params.title,
     body: params.body,
     type: params.notificationType,
     notificationId: activityNotificationId(type, `${params.runId}`),
     recipientUid: params.uid,
-    appRole: "host",
-    ...(params.scope.kind === "event" ?
-      {eventId: params.scope.eventId} : {}),
+    appRole: params.appRole,
+    ...eventContext,
   });
 }
 
@@ -312,6 +340,7 @@ async function staffAttention(
     scope: MomentScope;
     runId: string;
   },
+  sendNotification: typeof sendFcmNotification,
 ): Promise<void> {
   // Attention-item projection ownership lives in organizerAttention; the
   // durable signal to the staff member is an activity item + push.
@@ -330,7 +359,7 @@ async function staffAttention(
   const userSnap = await db.collection("users").doc(params.uid).get();
   const user = userSnap.data() as UserProfileDocument | undefined;
   if (!user?.fcmToken) return;
-  await sendFcmNotification({
+  await sendNotification({
     token: user.fcmToken,
     title: params.title,
     body: params.title,

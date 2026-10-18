@@ -1,0 +1,6 @@
+{
+  "canonical": {"type":"eventReminder","eventId":"evt","organizerId":"canonical-org","notificationId":"eventReminder_evt_event_start_reminder_1_1700000000000","recipientUid":"one","appRole":"consumer"},
+  "legacy": {"type":"eventReminder","eventId":"evt","organizerId":"legacy-org","notificationId":"eventReminder_evt_event_start_reminder_1_1700000000000","recipientUid":"one","appRole":"consumer"},
+  "staffPush": {"type":"eventReminder","eventId":"evt","notificationId":"eventReminder_staff_push_0_1700000000000","recipientUid":"staff","appRole":"host"},
+  "staffAttention": {"type":"organizerUpdate","notificationId":"organizerUpdate_staff_attention_0_1700000000000_staff","recipientUid":"staff","appRole":"host"}
+}
