@@ -28,17 +28,24 @@ abstract class OnboardingProfileDraft with _$OnboardingProfileDraft {
 
 /// Uses the same authored capability catalog as Functions and the website.
 extension OnboardingProfileDraftReadiness on OnboardingProfileDraft {
-  List<String> missingFields(String capability, {required DateTime today}) =>
-      missingProfileFields(
-        capability,
-        (field) => switch (field) {
-          'name' => fullName.isNotEmpty,
-          'phoneNumber' => phoneNumber.trim().isNotEmpty,
-          'dateOfBirth' =>
-            validateRequiredDateOfBirth(dateOfBirth, today: today) == null,
-          'gender' => gender != null,
-          'interestedInGenders' => interestedInGenders.isNotEmpty,
-          _ => false,
-        },
-      );
+  List<String> missingFields(
+    String capability, {
+    required DateTime today,
+    Iterable<String> eventRequirements = const [],
+  }) => missingProfileFields(
+    capability,
+    (field) => switch (field) {
+      'name' => fullName.isNotEmpty,
+      'phoneNumber' => phoneNumber.trim().isNotEmpty,
+      'dateOfBirth' =>
+        capability == 'eventBooking'
+            ? dateOfBirth != null &&
+                  validateOptionalDateOfBirth(dateOfBirth, today: today) == null
+            : validateRequiredDateOfBirth(dateOfBirth, today: today) == null,
+      'gender' => gender != null,
+      'interestedInGenders' => interestedInGenders.isNotEmpty,
+      _ => false,
+    },
+    eventRequirements: eventRequirements,
+  );
 }

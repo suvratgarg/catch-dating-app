@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/schema_contracts/generated/profile_requirements.g.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
@@ -227,6 +228,11 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
           path: Routes.onboardingScreen.path,
           name: Routes.onboardingScreen.name,
           builder: (context, state) => OnboardingScreen(
+            eventRequirements:
+                state.uri.queryParameters[_onboardingIntentQueryParam] ==
+                    _completeProfileIntent
+                ? _eventRequirementsFromUri(state.uri)
+                : null,
             profileCompletionOnly:
                 state.uri.queryParameters[_onboardingIntentQueryParam] ==
                 _completeProfileIntent,

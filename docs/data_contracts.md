@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.171.0
+version: 1.172.0
 updated: 2026-10-19
 owner: recursive_audit_loop
 status: active
@@ -51,14 +51,19 @@ generator, and commit the generated diff.
 ### Profile information by capability
 
 `contracts/catalogs/profile_requirements.json` owns required fields for account,
-organizer following, event booking and social discovery. The schema generator
-emits the same policy evaluator for Functions, website and Flutter. Account and
+organizer following, event booking, social identity and social discovery. The
+schema generator emits the same policy evaluator for Functions, website and Flutter. Account and
 following require name and verified phone. Event booking adds DOB only when the
 event has age restrictions, and cohort fields only when admission or pricing
 uses them. Public website registration does not offer cohort-dependent booking.
 Social discovery retains adult DOB, gender, matching preferences, photos,
 answered prompts and profile completion. An account alone grants none of those
-social capabilities.
+social capabilities. Native signup stops after the same minimal identity step;
+its later social setup collects missing demographics before photos and prompts,
+using a profile patch that preserves the existing account. Native event
+completion requests only the birthday or cohort fields that event needs and
+returns to booking without asking for social photos or prompts; URL hints
+select questions, while server admission still checks the live event policy.
 
 The private users schema permits absent DOB and gender. Required empty arrays
 and preference defaults are storage shape, not questions for the user.

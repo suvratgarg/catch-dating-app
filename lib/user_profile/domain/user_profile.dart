@@ -247,8 +247,8 @@ abstract class UserProfile with _$UserProfile {
     double? latitude,
     double? longitude,
 
-    // Matching preferences. Profile creation/update validators require at least
-    // one value before a profile can be saved.
+    // Matching preferences are required only for social capabilities. Minimal
+    // accounts can follow organizers and book unrestricted events without them.
     @Default([]) List<Gender> interestedInGenders,
     @Default(18) int minAgePreference,
     @Default(maximumPreferredMatchAge) int maxAgePreference,
