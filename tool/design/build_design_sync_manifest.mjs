@@ -118,7 +118,7 @@ export function buildDesignSyncManifest({
     version: 3,
     updated: new Date().toISOString().slice(0, 10),
     sourceOfTruth: {
-      behavior: "Flutter sources named by design/components/catch.components.json",
+      behavior: "Contracts in design/components/catch.components.json; Flutter is the reference implementation",
       componentContracts: "design/components/catch.components.json",
       tokens: "design/tokens/catch.tokens.json",
       figmaSnapshot: "design/sync/figma_library_snapshot.json",
@@ -170,6 +170,10 @@ export function buildDesignSyncManifest({
       figmaPublishedMappings: mappings.filter((entry) => entry.figmaPublishStatus === "CURRENT").length,
       codeConnectMappingStates: codeConnectStates,
       claudeAllowed: mappings.filter((entry) => entry.claudeAllowed).length,
+      reactImplementationStates: countBy(
+        mappings.filter((entry) => entry.reactApi !== null),
+        (entry) => entry.reactApi,
+      ),
       claudeContextState: claudeContextStatus,
       claudeDesignReceiptState: claudeReceiptStatus,
       figmaMappedConcepts: mappings.filter(
@@ -310,6 +314,9 @@ function buildMapping({
     conceptId: component.governance?.conceptId ?? null,
     dartSymbol: component.dart?.symbol,
     dartFile: component.dart?.file,
+    reactSymbol: component.react?.symbol ?? null,
+    reactFile: component.react?.file ?? null,
+    reactApi: component.react?.api ?? null,
     figmaName: component.design?.figma?.componentName,
     figmaPropertyProjectionMode: propertyProjection?.mode ?? "inferred",
     figmaReviewStatePolicy: propertyProjection?.reviewStates ?? "variant",

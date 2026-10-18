@@ -73,7 +73,7 @@ void main() {
         await pumpOnboardingUi(tester);
 
         expect(find.text('How do you identify?'), findsOneWidget);
-        expect(find.text('STEP 2 OF 2'), findsOneWidget);
+        expect(find.text('STEP 1 OF 1'), findsOneWidget);
         await tester.tap(find.byTooltip('Back'));
         await pumpOnboardingUi(tester);
 
@@ -82,7 +82,7 @@ void main() {
           OnboardingStep.nameDob,
         );
         expect(find.text("What's your name?"), findsOneWidget);
-        expect(find.text('STEP 1 OF 2'), findsOneWidget);
+        expect(find.text('STEP 1 OF 1'), findsOneWidget);
       },
     );
   });
@@ -132,17 +132,14 @@ void main() {
       expect(missingDate.shouldAutofocus, isFalse);
       expect(missingDate.dateText, isEmpty);
       expect(missingDate.ageSuffix, isNull);
-      expect(
-        missingDate.validateDateOfBirth(),
-        'Please select your date of birth',
-      );
+      expect(missingDate.validateDateOfBirth(), isNull);
       expect(
         missingDate.submitIntent(
           firstName: 'Asha',
           lastName: 'Runner',
           phoneNumber: '9876543210',
         ),
-        isNull,
+        isNotNull,
       );
     });
 
@@ -215,11 +212,11 @@ void main() {
       await pumpOnboardingUi(tester);
 
       expect(find.text('First name is required'), findsOneWidget);
-      expect(find.text('Last name is required'), findsOneWidget);
-      expect(find.text('Please select your date of birth'), findsOneWidget);
+      expect(find.text('Last name is required'), findsNothing);
+      expect(find.text('Please select your date of birth'), findsNothing);
     });
 
-    testWidgets('completed profile fields advance to the next step', (
+    testWidgets('social birthday advances to matching preferences', (
       tester,
     ) async {
       final container = createOnboardingTestContainer();
@@ -237,13 +234,13 @@ void main() {
       await pumpOnboardingPage(
         tester,
         container: container,
-        child: const OnboardingNameDobBody(),
+        child: const OnboardingNameDobBody(profileCompletionOnly: true),
       );
 
-      expect(find.text('Asha'), findsOneWidget);
-      expect(find.text('Runner'), findsOneWidget);
+      expect(find.text('Asha'), findsNothing);
+      expect(find.text('Runner'), findsNothing);
       expect(find.text('15 Apr 1997'), findsOneWidget);
-      expect(find.text('9876543210'), findsOneWidget);
+      expect(find.text('9876543210'), findsNothing);
 
       await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
       await pumpOnboardingUi(tester);

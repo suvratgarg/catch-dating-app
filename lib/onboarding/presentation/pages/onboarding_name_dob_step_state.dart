@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/schema_contracts/generated/profile_requirements.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
@@ -5,6 +6,10 @@ import 'package:flutter/material.dart';
 
 class OnboardingNameDobState {
   const OnboardingNameDobState({
+    this.profileCompletionOnly = false,
+    this.eventRequirements,
+    this.isSaving = false,
+    this.saveErrorMessage,
     required this.firstName,
     required this.lastName,
     required this.phoneNumber,
@@ -18,6 +23,10 @@ class OnboardingNameDobState {
   });
 
   factory OnboardingNameDobState.fromDraft({
+    bool profileCompletionOnly = false,
+    List<String>? eventRequirements,
+    bool isSaving = false,
+    String? saveErrorMessage,
     required String firstName,
     required String lastName,
     required String phoneNumber,
@@ -28,6 +37,10 @@ class OnboardingNameDobState {
     required AppLocalizations l10n,
   }) {
     return OnboardingNameDobState(
+      profileCompletionOnly: profileCompletionOnly,
+      eventRequirements: eventRequirements,
+      isSaving: isSaving,
+      saveErrorMessage: saveErrorMessage,
       firstName: firstName,
       lastName: lastName,
       phoneNumber: phoneNumber,
@@ -42,6 +55,23 @@ class OnboardingNameDobState {
           l10n.onboardingNameDobPageStateVisiblecopyLastName,
     );
   }
+
+  final bool profileCompletionOnly;
+  final bool isSaving;
+  final String? saveErrorMessage;
+  final List<String>? eventRequirements;
+  bool get birthdayRequired => eventRequirements != null
+      ? eventRequirements!.any(
+          (requirement) =>
+              eventProfileRequirements[requirement]!.contains('dateOfBirth'),
+        )
+      : profileRequiredFields[profileCompletionOnly
+                ? 'socialIdentity'
+                : 'account']!
+            .contains('dateOfBirth');
+  int get minimumAge => profileCompletionOnly && eventRequirements == null
+      ? minimumProfileAge
+      : 0;
 
   final String firstName;
   final String lastName;
@@ -67,9 +97,15 @@ class OnboardingNameDobState {
 
   OnboardingNameDobDatePickerRequest get datePickerRequest {
     return OnboardingNameDobDatePickerRequest(
-      initialDate: dateOfBirth ?? DateTime(2000),
+      initialDate:
+          (dateOfBirth != null &&
+              !dateOfBirth!.isAfter(
+                latestAllowedDateOfBirth(today: today, minimumAge: minimumAge),
+              ))
+          ? dateOfBirth!
+          : DateTime(2000),
       firstDate: DateTime(1920),
-      lastDate: latestAllowedDateOfBirth(today: today),
+      lastDate: latestAllowedDateOfBirth(today: today, minimumAge: minimumAge),
       title: datePickerTitle,
     );
   }
@@ -77,11 +113,14 @@ class OnboardingNameDobState {
   String? validateFirstName(String? value) =>
       validateRequiredProfileName(value, label: firstNameValidationLabel);
 
-  String? validateLastName(String? value) =>
-      validateRequiredProfileName(value, label: lastNameValidationLabel);
+  String? validateLastName(String? value) => null;
 
-  String? validateDateOfBirth() =>
-      validateRequiredDateOfBirth(dateOfBirth, today: today);
+  String? validateDateOfBirth() {
+    if (birthdayRequired && (dateOfBirth == null || minimumAge > 0)) {
+      return validateRequiredDateOfBirth(dateOfBirth, today: today);
+    }
+    return validateOptionalDateOfBirth(dateOfBirth, today: today);
+  }
 
   String? validatePhoneNumber(String? value) =>
       validateRequiredPhoneNumber(value);
@@ -92,7 +131,7 @@ class OnboardingNameDobState {
     required String phoneNumber,
   }) {
     final dateOfBirth = this.dateOfBirth;
-    if (dateOfBirth == null) return null;
+    if (validateDateOfBirth() != null) return null;
 
     return OnboardingNameDobSubmitIntent(
       firstName: firstName.trim(),
@@ -150,7 +189,7 @@ class OnboardingNameDobSubmitIntent {
   final String lastName;
   final String phoneNumber;
   final String countryCode;
-  final DateTime dateOfBirth;
+  final DateTime? dateOfBirth;
 }
 
 class OnboardingNameDobTextControllers {

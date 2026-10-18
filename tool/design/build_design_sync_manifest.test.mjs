@@ -29,6 +29,25 @@ const component = (id, figma = {}, codeConnect = {}) => ({
   contract: {props: [], states: [], members: [], tokens: []},
 });
 
+test("mappings carry each framework's implementation record", () => {
+  const badge = {
+    ...component("catch.badge"),
+    react: {symbol: "BadgeControl", file: "packages/web-ui/src/primitives.tsx", api: "headless-control"},
+  };
+  const manifest = buildDesignSyncManifest({
+    componentsDocument: {components: [badge, component("catch.field")]},
+    capabilities,
+  });
+  const [badgeMapping, fieldMapping] = manifest.mappings;
+  assert.equal(badgeMapping.dartSymbol, "CatchBadge");
+  assert.equal(badgeMapping.reactSymbol, "BadgeControl");
+  assert.equal(badgeMapping.reactFile, "packages/web-ui/src/primitives.tsx");
+  assert.equal(badgeMapping.reactApi, "headless-control");
+  assert.equal(fieldMapping.reactSymbol, null);
+  assert.deepEqual(manifest.metrics.reactImplementationStates, {"headless-control": 1});
+  assert.match(manifest.sourceOfTruth.behavior, /^Contracts in design\/components\/catch\.components\.json/u);
+});
+
 test("known-bad mapped entries without node URLs fail", () => {
   const manifest = buildDesignSyncManifest({
     componentsDocument: {components: [

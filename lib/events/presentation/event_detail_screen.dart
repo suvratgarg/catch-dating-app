@@ -21,6 +21,7 @@ import 'package:catch_dating_app/event_success/event_success.dart'
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/domain/event_profile_requirements.dart';
 import 'package:catch_dating_app/events/presentation/attendee_event_share_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_controller.dart';
@@ -448,6 +449,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                 ),
                 onCompleteProfile: () => _openEventProfileCompletion(
                   context,
+                  event: vm.event,
                   clubId: widget.clubId,
                   eventId: vm.event.id,
                 ),
@@ -660,7 +662,11 @@ class _EventDetailBottomNavigationBar extends StatelessWidget {
       return GuestBookDock(onPressed: onGuestBook, darkSurface: darkSurface);
     }
 
-    if (!eventDetailHasBookingReadyProfile(userProfile, now: now)) {
+    if (!eventDetailHasBookingReadyProfile(
+      userProfile,
+      now: now,
+      event: event,
+    )) {
       return EventBookingDock(
         label: completeProfileLabel,
         onPressed: onCompleteProfile,

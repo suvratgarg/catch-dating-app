@@ -20,8 +20,6 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
     'firstName',
     'lastName',
     'displayName',
-    'dateOfBirth',
-    'gender',
     'phoneNumber',
     'profileComplete',
     'email',

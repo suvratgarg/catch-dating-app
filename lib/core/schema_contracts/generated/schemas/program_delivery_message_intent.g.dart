@@ -182,7 +182,7 @@ const schemaProgramDeliveryMessageIntentSchema = <String, Object?>{
     },
     'body': <String, Object?>{
       'type': 'string',
-      'minLength': 1,
+      'minLength': 0,
       'maxLength': 8000,
     },
     'instructionRevision': <String, Object?>{
@@ -222,6 +222,150 @@ const schemaProgramDeliveryMessageIntentSchema = <String, Object?>{
         },
       },
       'description': 'Approved WhatsApp template content for organizerProgramWhatsapp routes. Frozen at intent time; sender credentials never appear here.',
+    },
+    'activity': <String, Object?>{
+      'description': 'Frozen staff activity and push semantics; claim revalidates the original Moment revision and current recipient authority.',
+      'oneOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'appRole',
+            'audienceDuty',
+            'scopeIds',
+            'actionKind',
+            'notificationType',
+            'preferenceKey',
+          ],
+          'properties': <String, Object?>{
+            'appRole': <String, Object?>{
+              'type': 'string',
+              'const': 'host',
+            },
+            'audienceDuty': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+            },
+            'scopeIds': <String, Object?>{
+              'type': <Object?>[
+                'array',
+                'null',
+              ],
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 160,
+              },
+              'maxItems': 200,
+            },
+            'actionKind': <String, Object?>{
+              'type': 'string',
+              'const': 'push',
+            },
+            'notificationType': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+            },
+            'preferenceKey': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'appRole',
+            'audienceDuty',
+            'scopeIds',
+            'actionKind',
+            'actionDuty',
+            'severity',
+          ],
+          'properties': <String, Object?>{
+            'appRole': <String, Object?>{
+              'type': 'string',
+              'const': 'host',
+            },
+            'audienceDuty': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+            },
+            'scopeIds': <String, Object?>{
+              'type': <Object?>[
+                'array',
+                'null',
+              ],
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 160,
+              },
+              'maxItems': 200,
+            },
+            'actionKind': <String, Object?>{
+              'type': 'string',
+              'const': 'staffAttention',
+            },
+            'actionDuty': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+            },
+            'severity': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'info',
+                'warning',
+                'urgent',
+              ],
+            },
+          },
+        },
+      ],
+    },
+  },
+  'if': <String, Object?>{
+    'required': <Object?>[
+      'activity',
+    ],
+  },
+  'then': <String, Object?>{
+    'required': <Object?>[
+      'activity',
+    ],
+    'properties': <String, Object?>{
+      'permittedRoutes': <String, Object?>{
+        'minItems': 1,
+        'maxItems': 1,
+        'items': <String, Object?>{
+          'const': 'catchProgramActivity',
+        },
+      },
+      'recipient': <String, Object?>{
+        'properties': <String, Object?>{
+          'kind': <String, Object?>{
+            'const': 'staff',
+          },
+        },
+      },
+    },
+    'not': <String, Object?>{
+      'required': <Object?>[
+        'whatsapp',
+      ],
+    },
+  },
+  'else': <String, Object?>{
+    'properties': <String, Object?>{
+      'body': <String, Object?>{
+        'minLength': 1,
+      },
     },
   },
   'title': 'ProgramDeliveryMessageIntent',
