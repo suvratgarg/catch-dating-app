@@ -1,7 +1,7 @@
 ---
 doc_id: component_contract_registry
-version: 1.8.0
-updated: 2026-10-17
+version: 1.9.0
+updated: 2026-10-18
 owner: ui_elevation_initiative
 status: active
 ---
@@ -46,12 +46,59 @@ gap with a named owner, a specific reason, and a review expiry.
 
 A component's identity is its `catch.*` id in this registry, and no other file
 assigns component identity. Every implementation, in Flutter or React, binds to
-that id. The React registries (`design/web-ui/components.json`,
-`design/admin/components.json`, `design/website/components.json`) own only
-their surface's routes, sections, and surface-specific components; blueprint
-Phase 7 points their shared entries at `catch.*` ids and merges the web-ui
-registry into this one. Cross-framework naming is binding in the Cross-Framework
-Names subsection of `docs/app_architecture.md`.
+that id. Cross-framework naming is binding in the Cross-Framework Names
+subsection of `docs/app_architecture.md`.
+
+Each contract names its implementations, one record per framework:
+
+| Record | Names | Required |
+|---|---|---|
+| `dart` | `symbol`, `file` (and named `constructors`) of the Flutter implementation | Always |
+| `react` | `symbol`, `file`, `api`, optional `additionalSymbols` and `storybook` of the `@catch/web-ui` implementation | Where one exists; never on T3 or T4 |
+
+`react.api` is `headless-control` for the pre-D10 `*Control` exports, which
+carry native semantics while surface adapters own styling, and `styled` for a
+D10 `Catch*` component. A styled record must use the Flutter symbol (D9).
+Phase 7e replaces every headless record with a styled one. Storybook coverage
+of `@catch/web-ui` lives in `react.storybook`, which the `webui` visual surface
+of `tool/web/check_storybook_visuals.mjs` reads.
+
+The website and admin registries (`design/website/components.json`,
+`design/admin/components.json`) own their routes, sections, and
+surface-specific (T4) components. A surface adapter of a shared contract
+carries `componentId`, which must name a T1 or T2 contract. Admin components
+that a single feature or only the app shell renders are `feature-component`
+entries owned by that feature; those still under `admin/src/shared/ui` are the
+files Phase 7e moves.
+
+`node tool/design/check_component_lexicon.mjs` proves that every `dart`, `react`
+and story symbol exists in its named file, that React symbols are exported
+from `packages/web-ui/src/index.ts`, and that every `componentId` resolves to a
+T1 or T2 contract whose adapter export exists.
+
+### React prop types
+
+Every prop of a T1 or T2 contract at L2–L4 declares `tsType` beside `dartType`:
+the prop type the React implementation uses. L5 bindings and L6 screen
+contracts bind each framework's own domain data and declare none (D14, D15),
+and T3 and T4 contracts never declare one. Catch-owned types keep their name
+(D9); Flutter SDK types map to their web equivalents:
+
+| Dart | TypeScript |
+|---|---|
+| `String`, `bool`, `int`/`double`/`num` | `string`, `boolean`, `number` |
+| `Widget`, `List<Widget>`, `IconData` | `ReactNode` |
+| `VoidCallback`, `ValueChanged<T>`, `WidgetBuilder` | `() => void`, `(value: T) => void`, `() => ReactNode` |
+| `Color`; `EdgeInsetsGeometry`, `TextStyle`, `BorderSide`, `List<FontFeature>` | CSS color `string`; the matching `CSSProperties` member |
+| `Size`, `Offset`, `RangeValues`, `TimeOfDay` | `{width; height}`, `{x; y}`, `{start; end}`, `{hour; minute}` of `number` |
+| SDK enums (`BoxFit`) and constructor recipes | the union of the contract's `values` |
+
+`null` marks a Flutter framework mechanism with no React prop: `Key`,
+`FocusNode`, the `TextEditingController`, `TabController` and `MenuController`
+controllers, `MaterialTapTargetSize`, `Set<WidgetState>` and `OutlinedBorder`.
+Optionality comes from `required`; a required nullable Dart prop is
+`<type> | null`. The contract check enforces presence, the null list, enum
+names, and the callback, widget and scalar shapes.
 
 ## Parity Tiers
 
@@ -72,9 +119,10 @@ surface.** Tiers only decide when the React implementation has to exist.
 `CatchIconTile` and `CatchControlSurface` are T1 but internal: they are matched
 through the T1 components that render them and are not exported to apps.
 
-`node tool/design/check_component_contracts.mjs` rejects a missing tier, a React
-surface mapping on a T3 or T4 entry, and a member whose tier is wider than its
-parent concept's.
+`node tool/design/check_component_contracts.mjs` rejects a missing tier, a
+`react` record on a T3 or T4 entry, a styled `react` record whose symbol differs
+from `dart.symbol`, a missing or misplaced `tsType`, and a member whose tier is
+wider than its parent concept's.
 
 ### What T1 and T2 implementations must match
 
@@ -131,7 +179,8 @@ fixed finding that is still listed also fails until
 
 1. Add or change the Flutter primitive in `packages/catch_ui/lib/src`.
 2. Update the matching contract entry here, including its `tier`, `aliases`,
-   props, states, slots, and DTCG token references. Confirm its accessibility policy preserves primary
+   `react` record, props with `dartType` and `tsType`, states, slots, and DTCG
+   token references. Confirm its accessibility policy preserves primary
    meaning and actions at text scale 2.0 and does not depend on motion.
 3. Add or revise the governance decision. Prefer static enforcement when a
    misuse pattern is mechanically detectable; otherwise use executable

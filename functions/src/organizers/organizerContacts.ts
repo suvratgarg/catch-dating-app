@@ -771,21 +771,29 @@ export async function getOrganizerContactDetailHandler(
   const uniqueEventIds = [
     ...new Set(eventDocuments.map((edge) => edge.eventId)),
   ];
-  const hydratedEventSnaps = uniqueEventIds.length === 0 ? [] : await db.getAll(
-    ...uniqueEventIds.map((eventId) => db.collection("events").doc(eventId))
-  );
+  const [hydratedEventSnaps, revenueResult, permission] = await Promise.all([
+    uniqueEventIds.length === 0 ? Promise.resolve([]) : db.getAll(
+      ...uniqueEventIds.map((eventId) => db.collection("events").doc(eventId))
+    ),
+    contactRevenue({
+      db,
+      contact,
+      eventEdges: eventDocuments,
+      eventHistoryTruncated: eventSnap.size > maxDetailEvents,
+    }),
+    contactWhatsappPermission({
+      db,
+      organizerId: data.organizerId,
+      contact,
+      traits,
+    }),
+  ]);
   const hydratedEvents = new Map(hydratedEventSnaps
     .filter((snapshot) => snapshot.exists)
     .map((snapshot) => [
       snapshot.id,
       snapshot.data() as EventDocument,
     ]));
-  const revenueResult = await contactRevenue({
-    db,
-    contact,
-    eventEdges: eventDocuments,
-    eventHistoryTruncated: eventSnap.size > maxDetailEvents,
-  });
   const events = eventDocuments.map((doc) => eventDetailRow(
     doc,
     revenueResult.byEvent.get(doc.eventId) ?? [],
@@ -804,12 +812,6 @@ export async function getOrganizerContactDetailHandler(
     organizerId: data.organizerId,
     origins: originDocuments,
     hydratedEvents,
-  });
-  const permission = await contactWhatsappPermission({
-    db,
-    organizerId: data.organizerId,
-    contact,
-    traits,
   });
   const tagVocabulary = safeManualTagVocabulary(
     data.organizerId,

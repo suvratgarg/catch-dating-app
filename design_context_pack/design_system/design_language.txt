@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.33.0
+version: 1.34.0
 updated: 2026-10-18
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -843,16 +843,18 @@ prove that the screen communicates the hierarchy.
 ## Cross-stack component lexicon
 
 `design/components/catch.components.json` is the binding semantic lexicon for
-Flutter, website, admin, and the shared web UI package. Implementation remains
-stack-native; the registry shares identity and contract ownership, not widget
-or component code.
+Flutter, website, admin, and the shared web UI package, and the only file that
+assigns component identity. Implementation remains stack-native; the registry
+shares identity and contract ownership, not widget or component code.
 
-Each component declares a `surfaces` map. Every declared symbol must exist in
-its owning source tree. Entries in `design/website/components.json`,
-`design/admin/components.json`, and `design/web-ui/components.json` opt into the
-binding with `lexicon: true` plus a `lexiconId`; the symbol must exactly match
-the corresponding surface link. New or moved design-system components must add
-the link in the same change.
+Each component names its implementations: `dart` for Flutter and, where one
+exists, `react` for `@catch/web-ui` (symbol, file, `api`, and Storybook
+coverage). Every declared symbol must exist in its named file, and React symbols
+must be exported from the package barrel. Website and admin adapters of a
+shared contract carry a `componentId` in `design/website/components.json` or
+`design/admin/components.json`; the id must name a T1 or T2 contract and the
+export must exist in the entry's source. New or moved design-system components
+must add the record in the same change.
 
 Run `node tool/run.mjs check design:component-lexicon`. The checker remains a
 repo-level JavaScript gate. Its default command also checks shared Flutter API
@@ -870,10 +872,10 @@ is registered separately with shell, top-bar, and state policies and validated
 with analyzer resolution.
 
 Structural labels and status badges are separate semantic families. Use
-`catch.typography` (`CatchKickerText`, website `UiLabel`, admin
-`AdminEyebrow`, web-ui `UiLabel`) for eyebrows and compact hierarchy context.
-Use `catch.badge` (`CatchBadge`, `StatusBadge`, `StatusChip`, `BadgeControl`)
-for status, state, counts, and alerts. The lexicon gate pins these mappings so a
+`catch.typography` (`CatchKickerText`, React `UiLabel`, website `UiLabel`,
+admin `AdminEyebrow`) for eyebrows and compact hierarchy context. Use
+`catch.badge` (`CatchBadge`, React `BadgeControl`, website `StatusBadge`, admin
+`StatusChip`) for status, state, counts, and alerts. The lexicon gate pins these mappings so a
 shared visual treatment cannot erase their different meanings.
 
 ---
