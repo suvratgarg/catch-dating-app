@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_ui/catch_ui.dart';
-import 'package:catch_ui/src/patterns/catch_form_row_list.dart';
+import 'package:catch_ui/src/patterns/catch_form_list.dart';
 import 'package:flutter/material.dart';
 
 /// Form-owned text draft, normalization and validation with list-owned commit policy.
@@ -48,7 +48,7 @@ class _CatchFormTextFieldState<P> extends State<CatchFormTextField<P>> {
       _hasCommittedValue ? _lastCommittedText! : widget.descriptor.currentValue;
 
   bool get _usesExplicitCommit =>
-      widget.scope.textCommitMode == CatchFormRowListMode.explicit;
+      widget.scope.textCommitMode == CatchFormListMode.explicit;
 
   @override
   void initState() {

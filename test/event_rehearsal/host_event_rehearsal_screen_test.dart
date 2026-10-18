@@ -11,9 +11,9 @@ import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_ru
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_staff_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_guest_link_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_setup_section.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator_body.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_section.dart';
 import 'package:catch_dating_app/event_success/event_success.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
@@ -184,7 +184,7 @@ void main() {
     expect(find.text('Practice tools'), findsNothing);
     expect(find.byType(EventRehearsalSetupSection), findsNothing);
     expect(find.byType(EventRehearsalStaffSection), findsNothing);
-    expect(find.byType(EventRehearsalSimulator), findsNothing);
+    expect(find.byType(EventRehearsalSimulatorBody), findsNothing);
     expect(
       container.exists(eventRehearsalStaffControllerProvider('session-1')),
       isFalse,
@@ -357,7 +357,7 @@ void main() {
     var appliedCount = 0;
     Widget simulator(EventRehearsalStatus status) => Scaffold(
       body: SingleChildScrollView(
-        child: EventRehearsalSimulator(
+        child: EventRehearsalSimulatorBody(
           rehearsal: _bootstrap(status: status),
           isLoading: false,
           onBehavior: (_, _) => appliedCount += 1,

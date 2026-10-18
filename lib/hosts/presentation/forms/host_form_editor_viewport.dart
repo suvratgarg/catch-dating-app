@@ -1,11 +1,11 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_section.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_body.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_actions.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_notice.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_question_section.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_renderer.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_section_list.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -66,7 +66,7 @@ class HostFormEditorViewport extends StatelessWidget {
                         constraints: const BoxConstraints(
                           maxWidth: CatchLayout.maxContentWidth,
                         ),
-                        child: HostFormRenderer(definition: definition),
+                        child: HostFormBody(definition: definition),
                       ),
                     ),
                   ),

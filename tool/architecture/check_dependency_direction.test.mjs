@@ -606,3 +606,111 @@ function createFixtureSnapshot(files, {onReadTexts = () => {}} = {}) {
     },
   };
 }
+
+test("relative and package presentation imports enforce the same dependency rules", () => {
+  for (const layer of ["data", "domain"]) {
+    for (const uri of [
+      "../presentation/widget.dart",
+      "../domain/../presentation/widget.dart",
+      "../%70resentation/widget.dart",
+      "package:catch_dating_app/sample/presentation/widget.dart",
+    ]) {
+      const findings = scanFile({relativePath: `lib/sample/${layer}/model.dart`,
+        source: `import '${uri}';`});
+      assert.deepEqual(findings.map(({rule, line}) => ({rule, line})),
+        [{rule: "dataDomainPresentationImport", line: 1}], uri);
+      assert.equal(findings[0].import, uri);
+    }
+  }
+});
+
+test("relative presentation imports preserve same-feature, core and controller seams", () => {
+  const source = [
+    "import '../../core/presentation/widget.dart';",
+    "import 'widgets/local.dart';",
+    "import '../../other/presentation/other_controller.dart';",
+  ].join("\n");
+  assert.deepEqual(scanFile({relativePath: "lib/sample/presentation/sample_screen.dart",
+    source}), []);
+  const findings = scanFile({relativePath: "lib/sample/presentation/sample_widget.dart",
+    source});
+  assert.deepEqual(findings.map(({rule, line}) => ({rule, line})),
+    [{rule: "crossFeaturePresentationImport", line: 3}]);
+});
+
+test("dependency imports include every conditional URI with its source line", () => {
+  const source = [
+    "// Emoji keeps offsets honest: 🌟",
+    "  import '../domain/model.dart'",
+    "    if (dart.library.io) '../presentation/widget.dart'",
+    "    if (dart.library.html) 'package:flutter/widgets.dart' as ui show Widget;",
+  ].join("\n");
+  const findings = scanFile({relativePath: "lib/sample/domain/model.dart", source});
+  assert.deepEqual(findings.map(({rule, line, import: uri}) => ({rule, line, uri})), [
+    {rule: "dataDomainPresentationImport", line: 3, uri: "../presentation/widget.dart"},
+    {rule: "domainFrameworkImport", line: 4, uri: "package:flutter/widgets.dart"},
+  ]);
+  assert.equal(scanFile({relativePath: "lib/sample/presentation/sample_widget.dart",
+    source: "import 'local.dart' if (dart.library.io) 'package:image_picker/image_picker.dart' deferred as picker;"})[0].rule,
+  "presentationPluginImport");
+});
+
+test("dependency import parsing ignores commented and literal directives", () => {
+  const source = [
+    "/* outer /* nested */",
+    "import 'package:flutter/widgets.dart';",
+    "*/",
+    "final documentation = r'''",
+    "import 'package:flutter/widgets.dart';",
+    "DateTime.now()",
+    "''';",
+    "// import '../presentation/widget.dart'; DateTime.now()",
+    'final example = "DateTime.now()";',
+    "class Sample {}",
+  ].join("\n");
+  assert.deepEqual(scanFile({relativePath: "lib/sample/domain/model.dart", source}), []);
+  assert.throws(() => scanFile({relativePath: "lib/sample/domain/model.dart",
+    source: "import '${dynamicPath}';"}), /Unsupported Dart import directive/u);
+});
+
+test("domain clocks scan executable interpolation and preserve offsets and scope", () => {
+  const source = [
+    "// 🌟 DateTime.now() is documentation",
+    "final example = r'${DateTime.now()}';",
+    "final value = '${DateTime /* comment */ . now()}';",
+  ].join("\n");
+  assert.deepEqual(scanFile({relativePath: "lib/sample/domain/model.dart", source})
+    .map(({rule, line}) => ({rule, line})), [{rule: "domainClockAccess", line: 3}]);
+  assert.deepEqual(scanFile({relativePath: "lib/sample/data/model.dart", source}), []);
+  assert.deepEqual(scanFile({relativePath: "lib/sample/domain/model.dart",
+    source: "final value = MyDateTime.now();"}), []);
+});
+
+test("dependency CLI rejects relative and conditional violations but accepts lexical controls", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-dependency-lexical-"));
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const init = spawnSync("git", ["init", "--quiet", root], {encoding: "utf8"});
+  assert.equal(init.status, 0, init.stderr);
+  const file = path.join(root, "lib/sample/domain/model.dart");
+  fs.mkdirSync(path.dirname(file), {recursive: true});
+  const cases = [
+    ["import '../presentation/widget.dart';", 1, "dataDomainPresentationImport"],
+    ["import 'package:catch_dating_app/sample/presentation/widget.dart';", 1, "dataDomainPresentationImport"],
+    ["import 'model.dart' if (dart.library.io) 'package:flutter/widgets.dart';", 1, "domainFrameworkImport"],
+    ["// DateTime.now()\nfinal text = 'DateTime.now()';", 0, null],
+    ["/* import 'package:flutter/widgets.dart'; */\nclass Sample {}", 0, null],
+    ["final now = DateTime.now();", 1, "domainClockAccess"],
+    ["final label = '${DateTime.now()}';", 1, "domainClockAccess"],
+  ];
+  for (const [source, status, rule] of cases) {
+    fs.writeFileSync(file, source);
+    const result = spawnSync(process.execPath, [
+      fileURLToPath(new URL("./check_dependency_direction.mjs", import.meta.url)),
+      "--root", root, "--json",
+    ], {encoding: "utf8"});
+    assert.equal(result.status, status, `${source}\n${result.stderr}\n${result.stdout}`);
+    assert.deepEqual(JSON.parse(result.stdout).findings.map((finding) => finding.rule),
+      rule ? [rule] : [], source);
+    assert.equal(fs.readFileSync(file, "utf8"), source);
+  }
+});

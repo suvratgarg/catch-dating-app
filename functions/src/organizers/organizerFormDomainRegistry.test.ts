@@ -156,4 +156,89 @@ describe("organizer form domain registry", () => {
     await assert.rejects(verifyOrganizerFormDomain(db, input.hostname,
       probe, now));
   });
+
+  for (const change of ["unchanged", "revoked", "deleted", "certificate",
+    "generation", "reassigned", "wrong-form", "unpublished", "form-owner",
+    "public-id", "no-proof"] as const) {
+    it(`revalidates ${change} binding after a held DNS probe`, async () => {
+      const {db, rows} = fakeDb();
+      const pending = await reserveOrganizerFormDomain(db, input, now,
+        hostingTarget, manager);
+      let proof = {hostname: input.hostname,
+        txtValues: [pending.ownershipChallenge], cnameTarget: hostingTarget,
+        checkedAtMillis: now};
+      await verifyOrganizerFormDomain(db, input.hostname, proof, now);
+      await markOrganizerFormCertificateReady(db, input.hostname,
+        pending.generation);
+      await activateOrganizerFormDomain(db, input.hostname, proof, now);
+      let started!: () => void;
+      let release!: () => void;
+      const probeStarted = new Promise<void>((resolve) => {
+        started = resolve;
+      });
+      const probeHeld = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      const lookup = resolveOrganizerFormDomain(db, input.hostname,
+        async () => {
+          started();
+          await probeHeld;
+          return change === "no-proof" ? null : proof;
+        }, () => now);
+      await probeStarted;
+      if (change === "no-proof") {
+        db.runTransaction = async () => {
+          throw new Error("Unavailable DNS must not start a transaction");
+        };
+      }
+      const domainPath = `organizerFormDomains/${input.hostname}`;
+      const formPath = "organizerForms/form-a";
+      if (["revoked", "generation", "reassigned"].includes(change)) {
+        await revokeOrganizerFormDomain(db, input.hostname,
+          input.organizerId, input.actorUid, manager);
+      }
+      if (change === "generation" || change === "reassigned") {
+        const nextInput = change === "generation" ? input : {...input,
+          organizerId: "organizer-b", formId: "form-b"};
+        rows.set(`organizerForms/${nextInput.formId}`, {
+          organizerId: nextInput.organizerId, status: "published",
+          publicFormId: change === "generation" ? "public-a" : "public-b",
+        });
+        const next = await reserveOrganizerFormDomain(db, nextInput, now,
+          hostingTarget, manager);
+        // DNS now genuinely proves the replacement. The original in-flight
+        // lookup must still not cross its reservation generation boundary.
+        proof = {...proof, txtValues: [next.ownershipChallenge]};
+        await verifyOrganizerFormDomain(db, input.hostname, proof, now);
+        await markOrganizerFormCertificateReady(db, input.hostname,
+          next.generation);
+        await activateOrganizerFormDomain(db, input.hostname, proof, now);
+      }
+      if (change === "deleted") rows.delete(domainPath);
+      if (change === "certificate") {
+        rows.set(domainPath,
+          {...rows.get(domainPath), certificateStatus: "failed"});
+      }
+      if (change === "wrong-form") {
+        rows.set("organizerForms/form-b", {...rows.get(formPath)});
+        rows.set(domainPath, {...rows.get(domainPath), formId: "form-b"});
+      }
+      if (change === "unpublished") {
+        rows.set(formPath,
+          {...rows.get(formPath), status: "draft"});
+      }
+      if (change === "form-owner") {
+        rows.set(formPath,
+          {...rows.get(formPath), organizerId: "organizer-b"});
+      }
+      if (change === "public-id") {
+        rows.set(formPath,
+          {...rows.get(formPath), publicFormId: "public-b"});
+      }
+      release();
+      assert.deepEqual(await lookup, change === "unchanged" ? {
+        organizerId: "organizer-a", publicFormId: "public-a",
+      } : null);
+    });
+  }
 });

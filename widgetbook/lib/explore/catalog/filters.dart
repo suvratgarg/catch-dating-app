@@ -96,12 +96,12 @@ Widget exploreFilterRailStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Applied filter states',
-  type: ExploreAppliedFilterChips,
+  type: ExploreAppliedFilterRail,
   path: '[Explore]/Sections',
 )
 Widget exploreAppliedFilterChipsStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ExploreAppliedFilterChips',
+    title: 'ExploreAppliedFilterRail',
     catalogId: 'section.explore.applied_filters',
     children: [
       WidgetbookPageStateCard(
@@ -109,7 +109,7 @@ Widget exploreAppliedFilterChipsStates(BuildContext context) {
         description:
             'This row is deliberately separate from the pinned time rail.',
         child: WidgetbookExploreScope(
-          child: ExploreAppliedFilterChips(
+          child: ExploreAppliedFilterRail(
             filters: const ExploreFilterSelection(
               distanceFilter: ExploreDistanceFilter.threeKm,
               highRatedOnly: true,

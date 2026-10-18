@@ -35,7 +35,7 @@ void _registerExploreClubCardsTests() {
     );
     await tester.pump();
 
-    expect(find.byType(CatchCoverStory), findsOneWidget);
+    expect(find.byType(FeaturedEventPoster), findsOneWidget);
     expect(find.text('Explore'), findsOneWidget);
     expect(find.text('Mumbai'), findsOneWidget);
     expect(find.text(event.title), findsOneWidget);
@@ -45,7 +45,7 @@ void _registerExploreClubCardsTests() {
     await tester.pump();
     await _pumpClubUi(tester);
 
-    expect(find.byType(CatchCoverStory), findsNothing);
+    expect(find.byType(FeaturedEventPoster), findsNothing);
     expect(_topLevelSearchField(), findsOneWidget);
     expect(find.byType(TextField), findsOneWidget);
     expect(
@@ -59,7 +59,7 @@ void _registerExploreClubCardsTests() {
     expect(find.text(event.title), findsNothing);
   });
 
-  testWidgets('CatchCoverStory data block stays within narrow widths', (
+  testWidgets('FeaturedEventPoster data block stays within narrow widths', (
     tester,
   ) async {
     // Regression guard: the data block must yield to the Expanded CTA (ellipsis)
@@ -82,7 +82,7 @@ void _registerExploreClubCardsTests() {
                   child: const SingleChildScrollView(
                     child: Padding(
                       padding: EdgeInsets.all(20),
-                      child: CatchCoverStory(
+                      child: FeaturedEventPoster(
                         kicker: "This week's pick",
                         title: 'Long-table supper for strangers in Bandra West',
                         body: 'Pace Social - Carter Road - 5km easy run - 5km',
@@ -104,7 +104,7 @@ void _registerExploreClubCardsTests() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('CatchCoverStory labels tappable location chrome', (
+  testWidgets('FeaturedEventPoster labels tappable location chrome', (
     tester,
   ) async {
     var tapped = false;
@@ -113,7 +113,7 @@ void _registerExploreClubCardsTests() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: CatchCoverStory(
+          body: FeaturedEventPoster(
             title: 'Tonight in Mumbai',
             location: 'Mumbai',
             onLocation: () => tapped = true,
@@ -153,7 +153,7 @@ void _registerExploreClubCardsTests() {
         home: Scaffold(
           body: Align(
             alignment: Alignment.topLeft,
-            child: CityTrigger(
+            child: ExploreCityButton(
               city: _testCities.first,
               focused: false,
               presentation: ExploreCityPickerPresentation.scopeLabel,
@@ -165,7 +165,7 @@ void _registerExploreClubCardsTests() {
     );
 
     expect(
-      tester.getSize(find.byType(CityTrigger)).height,
+      tester.getSize(find.byType(ExploreCityButton)).height,
       greaterThanOrEqualTo(CatchIconAction.defaultSize),
     );
   });
@@ -189,7 +189,7 @@ void _registerExploreClubCardsTests() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: Scaffold(body: CatchClubCover(club: club)),
+        home: Scaffold(body: ClubCover(club: club)),
       ),
     );
 
@@ -218,10 +218,7 @@ void _registerExploreClubCardsTests() {
         home: Scaffold(
           body: SizedBox(
             width: 360,
-            child: ExploreOrganizerPosterCard(
-              club: club,
-              onClubSelected: (_) {},
-            ),
+            child: ClubCard(club: club, onClubSelected: (_) {}),
           ),
         ),
       ),
@@ -295,17 +292,15 @@ void _registerExploreClubCardsTests() {
       );
       await tester.pump();
 
-      final cardPoster = tester.widget<CatchOrganizerPoster>(
-        find.byType(CatchOrganizerPoster),
-      );
-      expect(cardPoster.layout, OrganizerPosterLayout.editorial);
+      final cardPoster = tester.widget<CatchPoster>(find.byType(CatchPoster));
+      expect(cardPoster.variant, CatchPosterVariant.editorial);
 
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
             body: CustomScrollView(
-              slivers: [ClubHeroAppBar(club: club, isHost: false)],
+              slivers: [ClubHeroTopBar(club: club, isHost: false)],
             ),
           ),
         ),
@@ -315,11 +310,9 @@ void _registerExploreClubCardsTests() {
       final detailPadding = tester.widget<Padding>(
         find.byKey(const ValueKey('club-detail-hero-poster-padding')),
       );
-      final detailPoster = tester.widget<CatchOrganizerPoster>(
-        find.byType(CatchOrganizerPoster),
-      );
+      final detailPoster = tester.widget<CatchPoster>(find.byType(CatchPoster));
       expect(detailPadding.padding, clubInteractionMediaPadding);
-      expect(detailPoster.layout, cardPoster.layout);
+      expect(detailPoster.variant, cardPoster.variant);
       expect(detailPoster.radius, cardPoster.radius);
       expect(detailPoster.media.runtimeType, cardPoster.media.runtimeType);
       expect(
@@ -439,7 +432,7 @@ void _registerExploreClubCardsTests() {
     expect(find.textContaining('Pickleball'), findsWidgets);
     expect(find.textContaining('Pub quiz'), findsWidgets);
     expect(find.byType(EventDateRailCard), findsNWidgets(6));
-    expect(find.byType(CatchCoverStory), findsNothing);
+    expect(find.byType(FeaturedEventPoster), findsNothing);
   });
 
   testWidgets('ExploreEventsSection does not duplicate full status meta', (

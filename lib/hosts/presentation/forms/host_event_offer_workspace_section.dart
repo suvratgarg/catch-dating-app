@@ -280,7 +280,7 @@ class _HostEventOfferWorkspaceSectionState
         widget.workspace,
       ),
       action: personal
-          ? CatchDockSurface.pageAction(
+          ? CatchDock.pageAction(
               label: copy.review.preview,
               onPressed: _snapshot.loading ? null : _controller.previewPersonal,
             )

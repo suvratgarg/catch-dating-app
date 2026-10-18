@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {verifyRecomputeCli} from "./lib/recompute_cli_test_support.mjs";
 import {
   applyEventAggregateRepairPlan,
   buildEventAggregateRepairPlan,
@@ -143,3 +144,7 @@ function docSnapshot(collectionName, id, value) {
     data: () => ({...value}),
   };
 }
+
+test("CLI shared helpers preserve project precedence and dry-run policy", (t) => {
+  verifyRecomputeCli(t, new URL("./recompute_event_aggregate_counts.mjs", import.meta.url), {events: {event: {bookedCount: 7, checkedInCount: 0, waitlistedCount: 0}}, eventParticipations: {}});
+});

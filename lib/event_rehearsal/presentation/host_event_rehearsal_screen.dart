@@ -13,13 +13,13 @@ import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_ru
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_operation_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_delivery_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_groups_section.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_guest_link_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_help_section.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_movement_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_practice_role_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_settings_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_setup_section.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator_body.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_sweep_section.dart';
 import 'package:catch_dating_app/event_success/event_success.dart';
@@ -522,7 +522,7 @@ class _HostEventRehearsalScreenState
                 _control(rehearsal.session, action, minutes),
           ),
           gapH20,
-          EventRehearsalSimulator(
+          EventRehearsalSimulatorBody(
             rehearsal: rehearsal,
             isLoading: busy,
             onBehavior: (actorId, behavior) =>
@@ -674,8 +674,8 @@ class _RehearsalCoachDock extends StatelessWidget {
         fullWidth: largeText,
         onPressed: onToggle,
       );
-      return CatchDockSurface(
-        padding: CatchInsets.rosterRowContent,
+      return CatchDock(
+        padding: CatchInsets.tableRowContent,
         child: largeText
             ? Column(
                 mainAxisSize: MainAxisSize.min,
@@ -751,8 +751,8 @@ class _RehearsalCoachDock extends StatelessWidget {
         ),
       ],
     );
-    return CatchDockSurface(
-      padding: largeText ? CatchInsets.content : CatchInsets.rosterRowContent,
+    return CatchDock(
+      padding: largeText ? CatchInsets.content : CatchInsets.tableRowContent,
       child: largeText
           ? Column(
               mainAxisSize: MainAxisSize.min,

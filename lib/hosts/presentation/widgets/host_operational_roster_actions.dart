@@ -1,6 +1,6 @@
-part of 'host_operational_roster_panel.dart';
+part of 'host_operational_roster_section.dart';
 
-extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
+extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
   static const _rosterIntakeJournal = HostRosterIntakeDraftJournal();
 
   bool get _showsProviderSource {

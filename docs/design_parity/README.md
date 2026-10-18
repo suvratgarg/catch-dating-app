@@ -373,7 +373,7 @@ audience segmentation, and broadcasts are host operations rather than thread
 behavior.
 
 The same rule applies when one implementation serves two registered entry
-points for the same user goal. `WelcomePage` is both the onboarding welcome
+points for the same user goal. `OnboardingWelcomeBody` is both the onboarding welcome
 state and the logged-out Start route, so Member Onboarding owns two projections
 instead of creating a duplicate Start feature. Reuse the same semantic action
 ids across such projections when the user decision and production callback are

@@ -387,7 +387,6 @@ class _CollapsedTitleFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     Widget titleWidget = CatchCollapsedHeaderTitle(title: title);
 
     final extent = currentExtent;
@@ -403,7 +402,7 @@ class _CollapsedTitleFrame extends StatelessWidget {
 
     return CatchSurface(
       width: WidgetbookPreviewLayout.standardContractWidth,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
       child: SizedBox(
         height: WidgetbookPreviewLayout.navigationBarHeight,

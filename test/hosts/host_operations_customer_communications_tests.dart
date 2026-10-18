@@ -44,6 +44,9 @@ void _registerHostOperationsCustomerCommunicationsTests() {
           contactId: 'contact-1',
         ),
         overrides: [
+          firebaseAuthProvider.overrideWithValue(
+            MockFirebaseAuth(mockUser: MockUser(uid: _hostUid), signedIn: true),
+          ),
           uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
           hostAudienceContactDetailProvider(
             'organizer-1',
@@ -61,10 +64,10 @@ void _registerHostOperationsCustomerCommunicationsTests() {
           .getTopLeft(find.byType(HostCustomerMemoryPreview))
           .dy;
       final activityY = tester
-          .getTopLeft(find.byType(HostCustomerDetailOverview))
+          .getTopLeft(find.byType(HostCustomerOverviewSectionList))
           .dy;
       expect(activityY, lessThan(memoryY));
-      expect(find.byType(HostCustomerDetailOverview), findsOneWidget);
+      expect(find.byType(HostCustomerOverviewSectionList), findsOneWidget);
       expect(
         find.byKey(const ValueKey('host-customer-controls')),
         findsNothing,
@@ -74,12 +77,12 @@ void _registerHostOperationsCustomerCommunicationsTests() {
       );
       await pumpFeatureUi(tester);
       expect(find.byType(HostCustomerMemorySection), findsOneWidget);
-      expect(find.byType(HostCustomerDetailOverview), findsNothing);
+      expect(find.byType(HostCustomerOverviewSectionList), findsNothing);
       await tester.ensureVisible(find.text('History'));
       await tester.tap(find.text('History'));
       await pumpFeatureUi(tester);
       expect(find.byType(HostCustomerTimelineSection), findsOneWidget);
-      expect(find.byType(HostCustomerDetailOverview), findsNothing);
+      expect(find.byType(HostCustomerOverviewSectionList), findsNothing);
       expect(
         find.byKey(const ValueKey('host-customer-controls')),
         findsNothing,
@@ -181,7 +184,7 @@ void _registerHostOperationsCustomerCommunicationsTests() {
         ],
       );
 
-      final overview = find.byType(HostCustomerDetailOverview);
+      final overview = find.byType(HostCustomerOverviewSectionList);
       final attendance = find.descendant(
         of: overview,
         matching: find.text('Attended'),
@@ -363,8 +366,10 @@ void _registerHostOperationsCustomerCommunicationsTests() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Email app'), findsOneWidget);
-    expect(find.textContaining('Ananya Rao · ananya@example.com'),
-        findsOneWidget);
+    expect(
+      find.textContaining('Ananya Rao · ananya@example.com'),
+      findsOneWidget,
+    );
     final messageInput = tester.widget<TextField>(
       find.descendant(
         of: find.byKey(const ValueKey('host-customer-email-message')),
@@ -373,9 +378,7 @@ void _registerHostOperationsCustomerCommunicationsTests() {
     );
     expect(messageInput.controller?.text, 'Hi Ananya Rao,');
 
-    await tester.tap(
-      find.byKey(const ValueKey('host-customer-confirm-email')),
-    );
+    await tester.tap(find.byKey(const ValueKey('host-customer-confirm-email')));
     await pumpFeatureUi(tester);
 
     expect(launchedUri?.scheme, 'mailto');

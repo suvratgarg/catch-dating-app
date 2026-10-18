@@ -33,7 +33,7 @@ class EditHostedEventScopeNotice extends StatelessWidget {
 
     return CatchSurface(
       padding: CatchInsets.content,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -384,13 +384,13 @@ export const hostApplicationCopy = {
 } as const;
 
 // Canonical destinations for the Host header, footer and in-page actions.
-export const hostSiteActions = {apply: "#founding-hosts", workflow: "#workflow"} as const;
+export const hostSiteActions = {apply: "/host/apply/", workflow: "#how-it-works"} as const;
 export const hostSiteNavigation = [
-  {href: hostSiteActions.workflow, label: hostPageCopy.nav.workflow, footer: true},
-  {href: "#live", label: hostPageCopy.nav.liveTools, footer: true},
-  {href: "#works-now", label: hostPageCopy.nav.worksNow, footer: false},
-  {href: "#coming-soon", label: hostPageCopy.nav.comingSoon, footer: true},
-  {href: "/organizers/", label: hostPageCopy.nav.organizers, footer: false},
+  {href: "#features", label: "Features", footer: true},
+  {href: "#how-it-works", label: "How it works", footer: true},
+  {href: "#use-cases", label: "Use cases", footer: true},
+  {href: "#existing-tools", label: "Existing tools", footer: true},
+  {href: "#pricing", label: "Pricing and access", footer: true},
 ] as const;
 export const hostWorkflowOverview = {
   label: "The first adoption step",

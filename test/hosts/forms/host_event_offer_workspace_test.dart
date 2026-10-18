@@ -18,7 +18,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_works
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_offer_workspace_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_capability.dart';
@@ -115,7 +115,7 @@ void main() {
     expect(find.text(preview), findsNothing);
     await tester.tap(find.byKey(const ValueKey('offer-target-event-one')));
     await pumpUntilFound(tester, find.text(preview));
-    final dock = find.byType(CatchDockSurface);
+    final dock = find.byType(CatchDock);
     expect(dock, findsOneWidget);
     expect(tester.getBottomLeft(dock).dy, greaterThan(500));
     expect(
@@ -169,7 +169,7 @@ void main() {
               return Scaffold(
                 body: CustomScrollView(
                   slivers: [
-                    HostFormResponsesPanel(
+                    HostFormResponsesSection(
                       organizerId: 'org',
                       accountId: accountId,
                       requireAccount: true,
@@ -248,7 +248,7 @@ void main() {
           home: Scaffold(
             body: CustomScrollView(
               slivers: [
-                HostFormResponsesPanel(
+                HostFormResponsesSection(
                   organizerId: 'org',
                   formId: 'form',
                   queryCapability: HostResponseQueryCapability(

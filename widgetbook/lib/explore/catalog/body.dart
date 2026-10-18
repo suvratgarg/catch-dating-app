@@ -1,7 +1,8 @@
-import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -13,7 +14,7 @@ import 'scope.dart';
 
 @widgetbook.UseCase(
   name: 'Body sliver states',
-  type: ExploreFeedContentSliver,
+  type: ExploreFeedSliverBody,
   path: '[Explore]/Sections',
 )
 Widget exploreBodyStates(BuildContext context) {
@@ -42,7 +43,9 @@ class _ExploreBodySliverPreview extends ConsumerWidget {
     return CustomScrollView(
       slivers: buildExploreBodySlivers(
         context: context,
-        feedAsync: ref.watch(exploreFeedViewModelProvider),
+        feedState: catchAsyncStateFromAsyncValue(
+          ref.watch(exploreFeedViewModelProvider),
+        ),
         clubsViewModel: ExploreViewModel.partition(
           clubs: widgetbookExploreClubs,
           joinedClubIds: widgetbookExploreJoinedClubIds,

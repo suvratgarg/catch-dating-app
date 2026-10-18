@@ -108,7 +108,7 @@ class _InheritedOrganizerLogo extends StatelessWidget {
           child: CatchSurface(
             tone: CatchSurfaceTone.raised,
             radius: CatchRadius.md,
-            borderColor: t.line2,
+            borderRole: CatchBorderRole.boundary,
             clipBehavior: Clip.antiAlias,
             child: organizerLogoUrl == null
                 ? Icon(CatchIcons.groupsOutlined, color: t.ink2)

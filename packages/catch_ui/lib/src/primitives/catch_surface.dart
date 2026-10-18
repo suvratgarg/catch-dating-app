@@ -21,8 +21,6 @@ class CatchSurface extends StatelessWidget {
     this.borderRadius,
     this.borderRole,
     this.borderSpec,
-    this.borderColor,
-    this.borderWidth = 1,
     this.backgroundColor,
     this.gradient,
     this.boxShadow,
@@ -41,7 +39,6 @@ class CatchSurface extends StatelessWidget {
     this.height,
     this.borderRole,
     this.borderSpec,
-    this.borderColor,
     this.boxShadow,
     this.tone = CatchSurfaceTone.surface,
     this.onTap,
@@ -51,7 +48,6 @@ class CatchSurface extends StatelessWidget {
        emphasis = CatchSurfaceEmphasis.subtle,
        radius = CatchRadius.md,
        borderRadius = null,
-       borderWidth = 1,
        backgroundColor = null,
        gradient = null,
        clipBehavior = Clip.none;
@@ -74,8 +70,6 @@ class CatchSurface extends StatelessWidget {
        height = null,
        borderRole = null,
        borderSpec = null,
-       borderColor = null,
-       borderWidth = 0,
        gradient = null,
        boxShadow = null,
        clipBehavior = Clip.none,
@@ -98,14 +92,6 @@ class CatchSurface extends StatelessWidget {
   /// Resolved semantic border for stateful or custom-pigment containment.
   final CatchBorderSpec? borderSpec;
 
-  /// Legacy escape hatch. Product surfaces should use [borderRole] or
-  /// [borderSpec] so color and width cannot drift independently.
-  @Deprecated('Use borderRole or borderSpec')
-  final Color? borderColor;
-
-  /// Legacy escape hatch paired with [borderColor].
-  @Deprecated('Use borderRole or borderSpec')
-  final double borderWidth;
   final Color? backgroundColor;
   final Gradient? gradient;
   final List<BoxShadow>? boxShadow;
@@ -122,21 +108,15 @@ class CatchSurface extends StatelessWidget {
         ? Duration.zero
         : duration;
     final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(radius);
-    final semanticBorder =
+    final border =
         borderSpec ??
         (borderRole == null ? null : CatchBorder.resolve(t, borderRole!));
-    final effectiveBorderColor = semanticBorder?.color ?? borderColor;
-    final effectiveBorderWidth = semanticBorder?.width ?? borderWidth;
     final content = Padding(padding: padding ?? EdgeInsets.zero, child: child);
-    final borderDecoration =
-        effectiveBorderColor == null || effectiveBorderWidth <= 0
+    final borderDecoration = border == null || border.width <= 0
         ? null
         : BoxDecoration(
             borderRadius: effectiveBorderRadius,
-            border: Border.all(
-              color: effectiveBorderColor,
-              width: effectiveBorderWidth,
-            ),
+            border: Border.all(color: border.color, width: border.width),
           );
     final decorated = AnimatedContainer(
       duration: effectiveDuration,

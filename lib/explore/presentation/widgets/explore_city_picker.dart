@@ -23,7 +23,7 @@ class ExploreCityPicker extends StatefulWidget implements CatchToolbarLeading {
   Size toolbarSizeFor(BuildContext context) => CatchToolbarButton.sizeFor(
     context,
     label: presentation == ExploreCityPickerPresentation.scopeLabel
-        ? ExploreCityTriggerState.from(
+        ? ExploreCityButtonState.from(
             city: state.selectedCity,
             focused: false,
             l10n: context.l10n,
@@ -42,7 +42,7 @@ class _ExploreCityPickerState extends State<ExploreCityPicker> {
   @override
   Widget build(BuildContext context) {
     final enabled = widget.state.enabled && widget.onSelected != null;
-    return CityTrigger(
+    return ExploreCityButton(
       city: widget.state.selectedCity,
       enabled: enabled,
       focused: _isSheetOpen,
@@ -84,8 +84,8 @@ Future<void> showExploreCityPickerSheet({
   );
 }
 
-class CityTrigger extends StatelessWidget {
-  const CityTrigger({
+class ExploreCityButton extends StatelessWidget {
+  const ExploreCityButton({
     super.key,
     required this.city,
     required this.focused,
@@ -102,7 +102,7 @@ class CityTrigger extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = ExploreCityTriggerState.from(
+    final state = ExploreCityButtonState.from(
       city: city,
       focused: focused,
       l10n: context.l10n,

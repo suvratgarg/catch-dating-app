@@ -96,15 +96,15 @@ void main() {
       );
 
       expect(view.heroReaction?.label, 'Main photo');
-      expect(view.sections[0], isA<ProfileCompatibilitySection>());
+      expect(view.sections[0], isA<ProfileCompatibilitySectionData>());
       expect(view.sections[1], isA<ProfilePromptSectionData>());
-      expect(view.sections[2], isA<ProfileRunningSection>());
-      expect(view.sections[3], isA<ProfilePhotoSection>());
-      expect(view.sections[4], isA<ProfilePhotoSection>());
-      expect(view.sections[5], isA<ProfileFactsSection>());
-      expect(view.sections[6], isA<ProfileFactsSection>());
+      expect(view.sections[2], isA<ProfileRunningSectionData>());
+      expect(view.sections[3], isA<ProfilePhotoSectionData>());
+      expect(view.sections[4], isA<ProfilePhotoSectionData>());
+      expect(view.sections[5], isA<ProfileFactsSectionData>());
+      expect(view.sections[6], isA<ProfileFactsSectionData>());
 
-      final details = view.sections[5] as ProfileFactsSection;
+      final details = view.sections[5] as ProfileFactsSectionData;
       expect(details.title, 'Details');
       expect(details.reaction?.preview, contains('Something casual'));
       expect(details.facts.map((fact) => fact.text), [
@@ -113,7 +113,7 @@ void main() {
         '170 cm',
       ]);
 
-      final lifestyle = view.sections[6] as ProfileFactsSection;
+      final lifestyle = view.sections[6] as ProfileFactsSectionData;
       expect(lifestyle.title, 'Lifestyle');
       expect(lifestyle.facts.single.text, 'Vegetarian');
     });

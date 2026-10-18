@@ -67,7 +67,7 @@ void _registerEventSuccessCompanionProfilesTests() {
       expect(find.text('Private afterglow'), findsOneWidget);
       expect(find.textContaining('not a public share card'), findsOneWidget);
       expect(find.text('Suggested first-message openers'), findsOneWidget);
-      final copyOpener = findTooltipIn<StageCueLine>(
+      final copyOpener = findTooltipIn<StageCueCard>(
         'compare routes',
         'Copy opener',
       );
