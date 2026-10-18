@@ -160,7 +160,7 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
             )
           : CatchSection.plain(
               key: const ValueKey('host-customer-contact-details'),
-              child: _HostCustomerIdentitySummary(
+              child: HostCustomerIdentitySection(
                 customer: widget.customer,
                 displayName: _displayName,
                 phoneE164: _phoneE164,
@@ -271,8 +271,9 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
   }
 }
 
-class _HostCustomerIdentitySummary extends StatelessWidget {
-  const _HostCustomerIdentitySummary({
+class HostCustomerIdentitySection extends StatelessWidget {
+  const HostCustomerIdentitySection({
+    super.key,
     required this.customer,
     required this.displayName,
     required this.phoneE164,
@@ -525,8 +526,8 @@ class HostCustomerDetailsSection extends StatelessWidget {
   );
 }
 
-class HostCustomerRecentEvents extends StatelessWidget {
-  const HostCustomerRecentEvents({
+class HostCustomerRecentEventsList extends StatelessWidget {
+  const HostCustomerRecentEventsList({
     super.key,
     required this.customer,
     required this.onOpenEvent,
@@ -656,8 +657,8 @@ class HostCustomerRevenueCard extends StatelessWidget {
   );
 }
 
-class HostCustomerRevenueBreakdown extends StatelessWidget {
-  const HostCustomerRevenueBreakdown({
+class HostCustomerRevenueList extends StatelessWidget {
+  const HostCustomerRevenueList({
     super.key,
     required this.customer,
     required this.onOpenEvent,

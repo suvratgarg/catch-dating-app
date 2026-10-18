@@ -226,7 +226,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
                     width: double.infinity,
                     child: KeyedSubtree(
                       key: _profileSectionsKey,
-                      child: HostClubEditTab(
+                      child: HostClubEditBody(
                         key: ValueKey('host-club-${selectedClub.id}-edit'),
                         club: selectedClub,
                         currentUid: state.currentUid,

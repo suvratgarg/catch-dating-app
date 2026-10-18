@@ -31,7 +31,7 @@ const protectedHostPaths = [
   'lib/hosts/presentation/customers/host_saved_audiences_workspace.dart',
   'lib/hosts/presentation/customers/host_saved_audience_section.dart',
   'lib/hosts/presentation/customers/host_customer_applications_section.dart',
-  'lib/hosts/presentation/forms/host_form_responses_panel.dart',
+  'lib/hosts/presentation/forms/host_form_responses_section.dart',
   'lib/hosts/presentation/forms/host_forms_screen.dart',
   'lib/hosts/presentation/forms/host_form_overview_section_list.dart',
   'lib/hosts/presentation/forms/host_form_templates_screen.dart',

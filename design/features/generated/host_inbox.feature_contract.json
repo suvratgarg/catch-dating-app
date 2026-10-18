@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-09-15",
-  "sourceDigest": "sha256:58e58778dbdf6324ef0fe48e41c8552484fc140d01884deb8e56ce5a53401266",
-  "resolvedDigest": "sha256:fb0d8de365e995a9e8b7d3a7405e91bdb718868f4ef706b22c187a6df62cfba6",
+  "sourceDigest": "sha256:662f69ae32cbf6bbe58eed7b9a8b0f8e5b5263c1520d6f8068f684aa28116a06",
+  "resolvedDigest": "sha256:b3d9edb53d2c16a0aafbe2d9d484bb455b620c78a10e75285212f7332237e249",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -89,8 +89,8 @@
           {
             "id": "manual_send_queue",
             "language": "dart",
-            "file": "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
-            "symbol": "HostManualSendQueue"
+            "file": "lib/hosts/presentation/inbox/host_manual_send_list.dart",
+            "symbol": "HostManualSendList"
           },
           {
             "id": "follower_update_composer",
@@ -113,8 +113,8 @@
           {
             "id": "campaign_composer",
             "language": "dart",
-            "file": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
-            "symbol": "HostCampaignComposer"
+            "file": "lib/hosts/presentation/inbox/host_campaign_editor.dart",
+            "symbol": "HostCampaignEditor"
           },
           {
             "id": "campaign_controller",
@@ -196,7 +196,7 @@
             "test/hosts/host_whatsapp_setup_pane_test.dart"
           ],
           "customer_campaign_draft": [
-            "test/hosts/host_campaign_composer_test.dart",
+            "test/hosts/host_campaign_editor_test.dart",
             "test/hosts/host_inbox_screen_test.dart"
           ],
           "customer_campaign_active": [
@@ -3054,7 +3054,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostCampaignComposer/Campaign and sender states"
+              "HostCampaignEditor/Campaign and sender states"
             ],
             "tests": []
           },
@@ -3135,7 +3135,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostCampaignComposer/Campaign and sender states"
+              "HostCampaignEditor/Campaign and sender states"
             ],
             "tests": [
               "test/hosts/host_whatsapp_setup_pane_test.dart"
@@ -3297,7 +3297,7 @@
               "host_messaging_campaigns"
             ],
             "previewIds": [
-              "HostCampaignComposer/Campaign and sender states"
+              "HostCampaignEditor/Campaign and sender states"
             ],
             "tests": [
               "test/hosts/host_inbox_screen_test.dart",
@@ -3380,10 +3380,10 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostCampaignComposer/Campaign and sender states"
+              "HostCampaignEditor/Campaign and sender states"
             ],
             "tests": [
-              "test/hosts/host_campaign_composer_test.dart",
+              "test/hosts/host_campaign_editor_test.dart",
               "test/hosts/host_inbox_screen_test.dart"
             ]
           },
@@ -3541,7 +3541,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "HostCampaignComposer/Campaign and sender states"
+              "HostCampaignEditor/Campaign and sender states"
             ],
             "tests": [
               "test/hosts/host_crm_repository_test.dart"
@@ -4991,7 +4991,7 @@
         ],
         "previews": [
           "HostBroadcastComposerSheet/Lifecycle states",
-          "HostCampaignComposer/Campaign and sender states",
+          "HostCampaignEditor/Campaign and sender states",
           "HostInboxScreen/Event-scoped states"
         ]
       }

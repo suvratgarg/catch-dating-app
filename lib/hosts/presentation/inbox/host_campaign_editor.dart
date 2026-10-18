@@ -43,8 +43,8 @@ enum _HostInviteDestination {
   final String wireValue;
 }
 
-class HostCampaignComposer extends ConsumerStatefulWidget {
-  const HostCampaignComposer({
+class HostCampaignEditor extends ConsumerStatefulWidget {
+  const HostCampaignEditor({
     super.key,
     required this.club,
     this.initialSavedAudienceId,
@@ -56,11 +56,10 @@ class HostCampaignComposer extends ConsumerStatefulWidget {
   final ValueChanged<bool>? onBusyChanged;
 
   @override
-  ConsumerState<HostCampaignComposer> createState() =>
-      _HostCampaignComposerState();
+  ConsumerState<HostCampaignEditor> createState() => _HostCampaignEditorState();
 }
 
-class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
+class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
   final _campaignNameController = TextEditingController();
   final Map<String, TextEditingController> _variableControllers = {};
   HostSavedAudience? _selectedAudience;
@@ -75,7 +74,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
   bool _busy = false;
 
   @override
-  void didUpdateWidget(covariant HostCampaignComposer oldWidget) {
+  void didUpdateWidget(covariant HostCampaignEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.club.id != widget.club.id ||
         oldWidget.initialSavedAudienceId != widget.initialSavedAudienceId) {
@@ -98,319 +97,315 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
   @override
   Widget build(BuildContext context) {
     final messaging = ref.watch(hostMessagingSetupProvider(widget.club.id));
-    final savedAudiences = ref.watch(
-      hostSavedAudiencesProvider(widget.club.id),
+    final savedAudiences = catchAsyncStateFromAsyncValue(
+      ref.watch(hostSavedAudiencesProvider(widget.club.id)),
     );
-    return _buildCampaignComposer(
-      context,
-      messaging,
-      catchAsyncStateFromAsyncValue(savedAudiences),
-    );
-  }
-
-  CatchSection _buildCampaignComposer(
-    BuildContext context,
-    AsyncValue<HostMessagingSetup> messaging,
-    CatchAsyncState<HostSavedAudiencePage> savedAudiences,
-  ) => CatchSection.divided(
-    title: context.l10n.hostsHostAudienceCampaign,
-    child: CatchAsyncBoundary<HostMessagingSetup>(
-      value: messaging,
-      onRetry: () => ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
-      initialLoadTimeout: null,
-      loadingBuilder: (_) => const CatchLoadingIndicator(),
-      errorBuilder: (_, error, _, onBoundaryRetry) => CatchLocalizedErrorState(
-        error,
-        context: AppErrorContext.club,
-        mode: CatchErrorStateMode.compact,
-        onRetry: onBoundaryRetry,
-      ),
-      builder: (context, setup) {
-        final connection = setup.connection;
-        final approved = setup.approvedTemplates;
-        final events =
-            catchAsyncStateFromAsyncValue(
-                  ref.watch(watchEventsForClubProvider(widget.club.id)),
-                ).value
-                ?.where((event) => !event.isCancelled)
-                .toList(growable: false) ??
-            const <Event>[];
-        if (connection == null || !connection.isActive) {
-          return Text(
-            context.l10n.hostsHostAudienceCampaignNeedsActiveSender,
-            style: CatchTextStyles.supporting(
-              context,
-              color: CatchTokens.of(context).ink2,
+    return CatchSection.divided(
+      title: context.l10n.hostsHostAudienceCampaign,
+      child: CatchAsyncBoundary<HostMessagingSetup>(
+        value: messaging,
+        onRetry: () =>
+            ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
+        initialLoadTimeout: null,
+        loadingBuilder: (_) => const CatchLoadingIndicator(),
+        errorBuilder: (_, error, _, onBoundaryRetry) =>
+            CatchLocalizedErrorState(
+              error,
+              context: AppErrorContext.club,
+              mode: CatchErrorStateMode.compact,
+              onRetry: onBoundaryRetry,
             ),
+        builder: (context, setup) {
+          final connection = setup.connection;
+          final approved = setup.approvedTemplates;
+          final events =
+              catchAsyncStateFromAsyncValue(
+                    ref.watch(watchEventsForClubProvider(widget.club.id)),
+                  ).value
+                  ?.where((event) => !event.isCancelled)
+                  .toList(growable: false) ??
+              const <Event>[];
+          if (connection == null || !connection.isActive) {
+            return Text(
+              context.l10n.hostsHostAudienceCampaignNeedsActiveSender,
+              style: CatchTextStyles.supporting(
+                context,
+                color: CatchTokens.of(context).ink2,
+              ),
+            );
+          }
+          if (approved.isEmpty) {
+            return Text(
+              context.l10n.hostsHostAudienceCampaignNeedsTemplate,
+              style: CatchTextStyles.supporting(
+                context,
+                color: CatchTokens.of(context).ink2,
+              ),
+            );
+          }
+          if (savedAudiences.status == CatchAsyncStatus.error) {
+            return CatchLocalizedErrorState(
+              savedAudiences.error!,
+              context: AppErrorContext.customers,
+              mode: CatchErrorStateMode.compact,
+              onRetry: () =>
+                  ref.invalidate(hostSavedAudiencesProvider(widget.club.id)),
+            );
+          }
+          if (savedAudiences.status == CatchAsyncStatus.loading) {
+            return const CatchLoadingIndicator();
+          }
+          final audiences = savedAudiences.value?.audiences ?? const [];
+          if (audiences.isEmpty) {
+            return CatchNotice(
+              dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
+              notice: CatchNoticeData(
+                id: 'host.sends.saved-audience-required',
+                title: context.l10n.hostSavedAudiencesEmptyTitle,
+                message: context.l10n.hostSavedAudiencesEmptyBody,
+              ),
+            );
+          }
+          final template = _selectedTemplate ?? approved.first;
+          final selectedAudience = _audienceIn(
+            audiences,
+            _selectedAudience,
+            widget.initialSavedAudienceId,
           );
-        }
-        if (approved.isEmpty) {
-          return Text(
-            context.l10n.hostsHostAudienceCampaignNeedsTemplate,
-            style: CatchTextStyles.supporting(
-              context,
-              color: CatchTokens.of(context).ink2,
-            ),
-          );
-        }
-        if (savedAudiences.status == CatchAsyncStatus.error) {
-          return CatchLocalizedErrorState(
-            savedAudiences.error!,
-            context: AppErrorContext.customers,
-            mode: CatchErrorStateMode.compact,
-            onRetry: () =>
-                ref.invalidate(hostSavedAudiencesProvider(widget.club.id)),
-          );
-        }
-        if (savedAudiences.status == CatchAsyncStatus.loading) {
-          return const CatchLoadingIndicator();
-        }
-        final audiences = savedAudiences.value?.audiences ?? const [];
-        if (audiences.isEmpty) {
-          return CatchNotice(
-            dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
-            notice: CatchNoticeData(
-              id: 'host.sends.saved-audience-required',
-              title: context.l10n.hostSavedAudiencesEmptyTitle,
-              message: context.l10n.hostSavedAudiencesEmptyBody,
-            ),
-          );
-        }
-        final template = _selectedTemplate ?? approved.first;
-        final selectedAudience = _audienceIn(
-          audiences,
-          _selectedAudience,
-          widget.initialSavedAudienceId,
-        );
-        return CatchFieldLanes.custom(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CatchField.input(
-                copy: catchFieldCopy(context.l10n),
-                title: context.l10n.hostsHostAudienceCampaignName,
-                contract: CatchContractConstraints
-                    .upsertOrganizerCampaignCallablePayloadName,
-                controller: _campaignNameController,
-                placeholder: context.l10n.hostsHostAudienceCampaignNameExample,
-                states: <WidgetState>{
-                  if (!(_campaign == null)) WidgetState.disabled,
-                },
-              ),
-              gapH12,
-              CatchField<_HostCampaignMessageClass>.select(
-                copy: catchFieldCopy(context.l10n),
-                title: context.l10n.hostsHostAudienceMessageType,
-                contract: CatchContractConstraints
-                    .upsertOrganizerCampaignCallablePayloadMessageClass,
-                contractValueBuilder: (value) => value.wireValue,
-                values: _HostCampaignMessageClass.values,
-                itemLabelBuilder: (value) => _messageClassLabel(context, value),
-                value: _messageClass,
-                states: <WidgetState>{
-                  if (!(_campaign == null)) WidgetState.disabled,
-                },
-                onChanged: (value) {
-                  if (value != null) setState(() => _messageClass = value);
-                },
-              ),
-              gapH12,
-              Text(
-                context.l10n.hostSendsDeliveryTime,
-                style: CatchTextStyles.fieldRowTitle(context),
-              ),
-              gapH8,
-              Text(
-                _scheduledAt == null
-                    ? context.l10n.hostSendsSendNow
-                    : AppTimeFormatters.dateTime(_scheduledAt!),
-                style: CatchTextStyles.supporting(
-                  context,
-                  color: CatchTokens.of(context).ink2,
-                ),
-              ),
-              gapH8,
-              Wrap(
-                spacing: CatchSpacing.s2,
-                runSpacing: CatchSpacing.s2,
-                children: [
-                  CatchButton(
-                    label: context.l10n.hostSendsSchedule,
-                    variant: CatchButtonVariant.secondary,
-                    size: CatchButtonSize.sm,
-                    onPressed: _campaign == null && !_busy
-                        ? _pickSchedule
-                        : null,
-                  ),
-                  if (_scheduledAt != null)
-                    CatchButton(
-                      label: context.l10n.hostSendsClearSchedule,
-                      variant: CatchButtonVariant.ghost,
-                      size: CatchButtonSize.sm,
-                      onPressed: _campaign == null && !_busy
-                          ? () => setState(() {
-                              _scheduledAt = null;
-                              _scheduleError = null;
-                            })
-                          : null,
-                    ),
-                ],
-              ),
-              if (_scheduleError case final error?) ...[
-                gapH8,
-                Text(
-                  error,
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: CatchTokens.of(context).warning,
-                  ),
-                ),
-              ],
-              gapH12,
-              Text(
-                context.l10n.hostsHostAudienceRecipients,
-                style: CatchTextStyles.fieldRowTitle(context),
-              ),
-              gapH8,
-              CatchField<HostSavedAudience>.select(
-                copy: catchFieldCopy(context.l10n),
-                title: context.l10n.hostSavedAudienceFieldLabel,
-                contract: CatchContractConstraints
-                    .upsertOrganizerCampaignCallablePayloadSavedAudienceId,
-                contractValueBuilder: (audience) => audience.audienceId,
-                values: audiences,
-                itemLabelBuilder: (audience) =>
-                    _savedAudienceLabel(context, audience),
-                value: selectedAudience,
-                states: <WidgetState>{
-                  if (!(_campaign == null)) WidgetState.disabled,
-                },
-                onChanged: (value) => setState(() => _selectedAudience = value),
-              ),
-              gapH12,
-              CatchField<HostWhatsappTemplate>.select(
-                copy: catchFieldCopy(context.l10n),
-                title: context.l10n.hostsHostAudienceTemplate,
-                contract: CatchContractConstraints
-                    .upsertOrganizerCampaignCallablePayloadTemplateId,
-                contractValueBuilder: (value) => value.templateId,
-                values: approved,
-                itemLabelBuilder: (value) =>
-                    '${value.name} · ${value.language}',
-                value: template,
-                states: <WidgetState>{
-                  if (!(_campaign == null)) WidgetState.disabled,
-                },
-                onChanged: (value) {
-                  if (value == null) return;
-                  setState(() {
-                    _selectedTemplate = value;
-                    _syncVariableControllers(value);
-                  });
-                },
-              ),
-              if (hostCampaignTemplateUsesInvite(template)) ...[
-                gapH12,
-                CatchField<Event>.select(
+          return CatchFieldLanes.custom(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CatchField.input(
                   copy: catchFieldCopy(context.l10n),
-                  title: context.l10n.hostsHostAudienceLinkedEvent,
+                  title: context.l10n.hostsHostAudienceCampaignName,
                   contract: CatchContractConstraints
-                      .upsertOrganizerCampaignCallablePayloadEventId,
-                  contractValueBuilder: (event) => event.id,
-                  values: events,
-                  itemLabelBuilder: (event) =>
-                      '${event.title} · ${AppTimeFormatters.shortDate(event.startTime)}',
-                  value: _eventIn(events, _selectedEvent),
-                  hintText: context.l10n.hostsHostAudienceChooseEvent,
-                  helperText: context.l10n.hostsHostAudienceLinkedEventHelp,
+                      .upsertOrganizerCampaignCallablePayloadName,
+                  controller: _campaignNameController,
+                  placeholder:
+                      context.l10n.hostsHostAudienceCampaignNameExample,
                   states: <WidgetState>{
                     if (!(_campaign == null)) WidgetState.disabled,
                   },
-                  onChanged: (value) => setState(() {
-                    _selectedEvent = value;
-                    _inviteDestination = value == null
-                        ? null
-                        : _destinationsFor(value).first;
-                  }),
                 ),
-                if (_selectedEvent case final event?) ...[
+                gapH12,
+                CatchField<_HostCampaignMessageClass>.select(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.hostsHostAudienceMessageType,
+                  contract: CatchContractConstraints
+                      .upsertOrganizerCampaignCallablePayloadMessageClass,
+                  contractValueBuilder: (value) => value.wireValue,
+                  values: _HostCampaignMessageClass.values,
+                  itemLabelBuilder: (value) =>
+                      _messageClassLabel(context, value),
+                  value: _messageClass,
+                  states: <WidgetState>{
+                    if (!(_campaign == null)) WidgetState.disabled,
+                  },
+                  onChanged: (value) {
+                    if (value != null) setState(() => _messageClass = value);
+                  },
+                ),
+                gapH12,
+                Text(
+                  context.l10n.hostSendsDeliveryTime,
+                  style: CatchTextStyles.fieldRowTitle(context),
+                ),
+                gapH8,
+                Text(
+                  _scheduledAt == null
+                      ? context.l10n.hostSendsSendNow
+                      : AppTimeFormatters.dateTime(_scheduledAt!),
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: CatchTokens.of(context).ink2,
+                  ),
+                ),
+                gapH8,
+                Wrap(
+                  spacing: CatchSpacing.s2,
+                  runSpacing: CatchSpacing.s2,
+                  children: [
+                    CatchButton(
+                      label: context.l10n.hostSendsSchedule,
+                      variant: CatchButtonVariant.secondary,
+                      size: CatchButtonSize.sm,
+                      onPressed: _campaign == null && !_busy
+                          ? _pickSchedule
+                          : null,
+                    ),
+                    if (_scheduledAt != null)
+                      CatchButton(
+                        label: context.l10n.hostSendsClearSchedule,
+                        variant: CatchButtonVariant.ghost,
+                        size: CatchButtonSize.sm,
+                        onPressed: _campaign == null && !_busy
+                            ? () => setState(() {
+                                _scheduledAt = null;
+                                _scheduleError = null;
+                              })
+                            : null,
+                      ),
+                  ],
+                ),
+                if (_scheduleError case final error?) ...[
+                  gapH8,
+                  Text(
+                    error,
+                    style: CatchTextStyles.supporting(
+                      context,
+                      color: CatchTokens.of(context).warning,
+                    ),
+                  ),
+                ],
+                gapH12,
+                Text(
+                  context.l10n.hostsHostAudienceRecipients,
+                  style: CatchTextStyles.fieldRowTitle(context),
+                ),
+                gapH8,
+                CatchField<HostSavedAudience>.select(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.hostSavedAudienceFieldLabel,
+                  contract: CatchContractConstraints
+                      .upsertOrganizerCampaignCallablePayloadSavedAudienceId,
+                  contractValueBuilder: (audience) => audience.audienceId,
+                  values: audiences,
+                  itemLabelBuilder: (audience) =>
+                      _savedAudienceLabel(context, audience),
+                  value: selectedAudience,
+                  states: <WidgetState>{
+                    if (!(_campaign == null)) WidgetState.disabled,
+                  },
+                  onChanged: (value) =>
+                      setState(() => _selectedAudience = value),
+                ),
+                gapH12,
+                CatchField<HostWhatsappTemplate>.select(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.hostsHostAudienceTemplate,
+                  contract: CatchContractConstraints
+                      .upsertOrganizerCampaignCallablePayloadTemplateId,
+                  contractValueBuilder: (value) => value.templateId,
+                  values: approved,
+                  itemLabelBuilder: (value) =>
+                      '${value.name} · ${value.language}',
+                  value: template,
+                  states: <WidgetState>{
+                    if (!(_campaign == null)) WidgetState.disabled,
+                  },
+                  onChanged: (value) {
+                    if (value == null) return;
+                    setState(() {
+                      _selectedTemplate = value;
+                      _syncVariableControllers(value);
+                    });
+                  },
+                ),
+                if (hostCampaignTemplateUsesInvite(template)) ...[
                   gapH12,
-                  CatchField<_HostInviteDestination>.select(
+                  CatchField<Event>.select(
                     copy: catchFieldCopy(context.l10n),
-                    title: context.l10n.hostsHostAudienceInviteDestination,
+                    title: context.l10n.hostsHostAudienceLinkedEvent,
                     contract: CatchContractConstraints
-                        .upsertOrganizerCampaignCallablePayloadInviteDestinationKind,
-                    contractValueBuilder: (value) => value.wireValue,
-                    values: _destinationsFor(event),
-                    itemLabelBuilder: (value) =>
-                        _inviteDestinationLabel(context, value),
-                    value: _inviteDestination ?? _destinationsFor(event).first,
-                    helperText: event.isExternalCompanion
-                        ? context
-                              .l10n
-                              .hostsHostAudienceExternalAttributionExplanation
-                        : context
-                              .l10n
-                              .hostsHostAudienceCatchAttributionExplanation,
+                        .upsertOrganizerCampaignCallablePayloadEventId,
+                    contractValueBuilder: (event) => event.id,
+                    values: events,
+                    itemLabelBuilder: (event) =>
+                        '${event.title} · ${AppTimeFormatters.shortDate(event.startTime)}',
+                    value: _eventIn(events, _selectedEvent),
+                    hintText: context.l10n.hostsHostAudienceChooseEvent,
+                    helperText: context.l10n.hostsHostAudienceLinkedEventHelp,
                     states: <WidgetState>{
                       if (!(_campaign == null)) WidgetState.disabled,
                     },
-                    onChanged: (value) =>
-                        setState(() => _inviteDestination = value),
+                    onChanged: (value) => setState(() {
+                      _selectedEvent = value;
+                      _inviteDestination = value == null
+                          ? null
+                          : _destinationsFor(value).first;
+                    }),
                   ),
+                  if (_selectedEvent case final event?) ...[
+                    gapH12,
+                    CatchField<_HostInviteDestination>.select(
+                      copy: catchFieldCopy(context.l10n),
+                      title: context.l10n.hostsHostAudienceInviteDestination,
+                      contract: CatchContractConstraints
+                          .upsertOrganizerCampaignCallablePayloadInviteDestinationKind,
+                      contractValueBuilder: (value) => value.wireValue,
+                      values: _destinationsFor(event),
+                      itemLabelBuilder: (value) =>
+                          _inviteDestinationLabel(context, value),
+                      value:
+                          _inviteDestination ?? _destinationsFor(event).first,
+                      helperText: event.isExternalCompanion
+                          ? context
+                                .l10n
+                                .hostsHostAudienceExternalAttributionExplanation
+                          : context
+                                .l10n
+                                .hostsHostAudienceCatchAttributionExplanation,
+                      states: <WidgetState>{
+                        if (!(_campaign == null)) WidgetState.disabled,
+                      },
+                      onChanged: (value) =>
+                          setState(() => _inviteDestination = value),
+                    ),
+                  ],
                 ],
+                for (final variable in template.variableNames)
+                  if (!hostCampaignIsInviteVariable(variable)) ...[
+                    gapH12,
+                    CatchField.input(
+                      copy: catchFieldCopy(context.l10n),
+                      title: variable,
+                      contractExemption:
+                          'Template-variable keys are provider-defined; the generated contract constrains the map, not each dynamic value field.',
+                      controller: _controllerForVariable(variable),
+                      maxLength: 240,
+                      states: <WidgetState>{
+                        if (!(_campaign == null)) WidgetState.disabled,
+                      },
+                    ),
+                  ],
+                gapH16,
+                if (_campaign == null)
+                  CatchButton(
+                    label: context.l10n.hostsHostAudiencePreviewCampaign,
+                    onPressed: _busy
+                        ? null
+                        : () => _saveAndPreview(
+                            connection,
+                            template,
+                            selectedAudience,
+                          ),
+                    status: (_busy)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
+                  )
+                else
+                  HostCampaignReportSection(
+                    campaign: _campaign!,
+                    busy: _busy,
+                    onApprove: _campaign!.canApprove ? _approveCampaign : null,
+                    onSend: _campaign!.canDispatch ? _dispatchCampaign : null,
+                    onCancel:
+                        _campaign!.status == 'cancelled' ||
+                            _campaign!.status == 'completed' ||
+                            _campaign!.status == 'partiallyFailed'
+                        ? null
+                        : _cancelCampaign,
+                    onRefresh: _refreshCampaign,
+                    onNew: _newCampaign,
+                  ),
               ],
-              for (final variable in template.variableNames)
-                if (!hostCampaignIsInviteVariable(variable)) ...[
-                  gapH12,
-                  CatchField.input(
-                    copy: catchFieldCopy(context.l10n),
-                    title: variable,
-                    contractExemption:
-                        'Template-variable keys are provider-defined; the generated contract constrains the map, not each dynamic value field.',
-                    controller: _controllerForVariable(variable),
-                    maxLength: 240,
-                    states: <WidgetState>{
-                      if (!(_campaign == null)) WidgetState.disabled,
-                    },
-                  ),
-                ],
-              gapH16,
-              if (_campaign == null)
-                CatchButton(
-                  label: context.l10n.hostsHostAudiencePreviewCampaign,
-                  onPressed: _busy
-                      ? null
-                      : () => _saveAndPreview(
-                          connection,
-                          template,
-                          selectedAudience,
-                        ),
-                  status: (_busy)
-                      ? CatchButtonStatus.loading
-                      : CatchButtonStatus.idle,
-                )
-              else
-                HostCampaignReport(
-                  campaign: _campaign!,
-                  busy: _busy,
-                  onApprove: _campaign!.canApprove ? _approveCampaign : null,
-                  onSend: _campaign!.canDispatch ? _dispatchCampaign : null,
-                  onCancel:
-                      _campaign!.status == 'cancelled' ||
-                          _campaign!.status == 'completed' ||
-                          _campaign!.status == 'partiallyFailed'
-                      ? null
-                      : _cancelCampaign,
-                  onRefresh: _refreshCampaign,
-                  onNew: _newCampaign,
-                ),
-            ],
-          ),
-        );
-      },
-    ),
-  );
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   Future<void> _saveAndPreview(
     HostWhatsappConnection connection,
@@ -586,8 +581,8 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
   }
 }
 
-class HostCampaignReport extends StatelessWidget {
-  const HostCampaignReport({
+class HostCampaignReportSection extends StatelessWidget {
+  const HostCampaignReportSection({
     super.key,
     required this.campaign,
     required this.busy,

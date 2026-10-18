@@ -8,8 +8,8 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class HostFormRenderer extends StatefulWidget {
-  const HostFormRenderer({
+class HostFormBody extends StatefulWidget {
+  const HostFormBody({
     super.key,
     required this.definition,
     this.preview = true,
@@ -21,10 +21,10 @@ class HostFormRenderer extends StatefulWidget {
   final VoidCallback? onSubmit;
 
   @override
-  State<HostFormRenderer> createState() => _HostFormRendererState();
+  State<HostFormBody> createState() => _HostFormBodyState();
 }
 
-class _HostFormRendererState extends State<HostFormRenderer> {
+class _HostFormBodyState extends State<HostFormBody> {
   final Map<String, Object?> _answers = {};
 
   @override
@@ -57,7 +57,7 @@ class _HostFormRendererState extends State<HostFormRenderer> {
         for (final indexedSection in sections.indexed)
           CatchSection.fieldRows(
             key: ValueKey(
-              'host-form-renderer-section-${indexedSection.$2.sectionId}',
+              'host-form-body-section-${indexedSection.$2.sectionId}',
             ),
             title: indexedSection.$2.title,
             first: indexedSection.$1 == 0,
@@ -69,7 +69,7 @@ class _HostFormRendererState extends State<HostFormRenderer> {
                   ),
             children: [
               for (final question in indexedSection.$2.questions)
-                _HostFormSchemaQuestionField(
+                HostFormQuestionField(
                   question: question,
                   answer: _answers[question.questionId],
                   onChanged: (answer) =>
@@ -99,8 +99,9 @@ class _HostFormRendererState extends State<HostFormRenderer> {
   }
 }
 
-class _HostFormSchemaQuestionField extends StatelessWidget {
-  const _HostFormSchemaQuestionField({
+class HostFormQuestionField extends StatelessWidget {
+  const HostFormQuestionField({
+    super.key,
     required this.question,
     required this.answer,
     required this.onChanged,
@@ -122,10 +123,10 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
       case HostFormQuestionKind.email:
       case HostFormQuestionKind.url:
       case HostFormQuestionKind.number:
-        field = _HostFormSchemaBoundary(
+        field = CatchFieldLanes.single(
           child: CatchField.input(
             copy: catchFieldCopy(context.l10n),
-            key: ValueKey('host-form-renderer-question-${question.questionId}'),
+            key: ValueKey('host-form-body-question-${question.questionId}'),
             title: question.label,
             initialValue: switch (answer) {
               final String value => value,
@@ -156,10 +157,10 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
           final String value => {value},
           _ => <String>{},
         };
-        field = _HostFormSchemaBoundary(
+        field = CatchFieldLanes.single(
           child: CatchField<String>.choices(
             copy: catchFieldCopy(context.l10n),
-            key: ValueKey('host-form-renderer-question-${question.questionId}'),
+            key: ValueKey('host-form-body-question-${question.questionId}'),
             title: question.label,
             contract: CatchContractConstraints
                 .organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsOptions,
@@ -187,10 +188,10 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
         break;
       case HostFormQuestionKind.boolean:
       case HostFormQuestionKind.acknowledgement:
-        field = _HostFormSchemaBoundary(
+        field = CatchFieldLanes.single(
           child: CatchField.toggle(
             copy: catchFieldCopy(context.l10n),
-            key: ValueKey('host-form-renderer-question-${question.questionId}'),
+            key: ValueKey('host-form-body-question-${question.questionId}'),
             title: question.label,
             body: question.helpText,
             contractExemption:
@@ -201,10 +202,10 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
         );
         break;
       case HostFormQuestionKind.file:
-        field = _HostFormSchemaBoundary(
+        field = CatchFieldLanes.single(
           child: CatchField.action(
             copy: catchFieldCopy(context.l10n),
-            key: ValueKey('host-form-renderer-question-${question.questionId}'),
+            key: ValueKey('host-form-body-question-${question.questionId}'),
             title: question.label,
             body: question.helpText,
             icon: CatchIcons.cloudUploadOutlined,
@@ -214,10 +215,10 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
         );
         break;
       case HostFormQuestionKind.signature:
-        field = _HostFormSchemaBoundary(
+        field = CatchFieldLanes.single(
           child: CatchField.action(
             copy: catchFieldCopy(context.l10n),
-            key: ValueKey('host-form-renderer-question-${question.questionId}'),
+            key: ValueKey('host-form-body-question-${question.questionId}'),
             title: question.label,
             body: question.helpText,
             icon: CatchIcons.editNoteOutlined,
@@ -229,15 +230,6 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
     }
     return field;
   }
-}
-
-class _HostFormSchemaBoundary extends StatelessWidget {
-  const _HostFormSchemaBoundary({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => child;
 }
 
 TextInputType _keyboardType(HostFormQuestionKind kind) => switch (kind) {

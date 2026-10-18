@@ -457,7 +457,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const fieldRequiresSectionContext = LintCode(
     'catch_field_requires_section_context',
-    'Place CatchField inside CatchSection, fieldRows, CatchFieldLanes, or a form-schema composition boundary.',
+    'Place CatchField inside CatchSection, fieldRows or CatchFieldLanes.',
     severity: DiagnosticSeverity.INFO,
   );
 
@@ -1185,9 +1185,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       }
       if (current is InstanceCreationExpression) {
         final typeName = _constructorTypeName(current);
-        if (typeName == 'CatchSection' ||
-            typeName == 'CatchFieldLanes' ||
-            typeName.contains('FormSchema')) {
+        if (typeName == 'CatchSection' || typeName == 'CatchFieldLanes') {
           return true;
         }
       }

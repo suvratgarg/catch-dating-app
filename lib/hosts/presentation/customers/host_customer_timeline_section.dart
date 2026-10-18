@@ -346,18 +346,18 @@ String _originLabel(BuildContext context, HostCustomerOrigin origin) =>
 
 enum HostCustomerHistoryKind { all, forms, events, messages, outreach }
 
-class HostCustomerHistoryFilters extends StatefulWidget {
-  const HostCustomerHistoryFilters({super.key, required this.builder});
+class HostCustomerHistoryFilterSection extends StatefulWidget {
+  const HostCustomerHistoryFilterSection({super.key, required this.builder});
 
   final Widget Function(HostCustomerHistoryKind filter) builder;
 
   @override
-  State<HostCustomerHistoryFilters> createState() =>
-      _HostCustomerHistoryFiltersState();
+  State<HostCustomerHistoryFilterSection> createState() =>
+      _HostCustomerHistoryFilterSectionState();
 }
 
-class _HostCustomerHistoryFiltersState
-    extends State<HostCustomerHistoryFilters> {
+class _HostCustomerHistoryFilterSectionState
+    extends State<HostCustomerHistoryFilterSection> {
   HostCustomerHistoryKind selected = HostCustomerHistoryKind.all;
 
   @override
@@ -478,7 +478,7 @@ class HostCustomerTimelineSection extends StatelessWidget {
               ),
             )
           else
-            _HostCustomerTimelineRows(
+            HostCustomerTimelineList(
               entries: entries,
               onOpenFormResponse: onOpenFormResponse,
               onOpenEvent: onOpenEvent,
@@ -509,8 +509,9 @@ class HostCustomerTimelineSection extends StatelessWidget {
   }
 }
 
-class _HostCustomerTimelineRows extends StatelessWidget {
-  const _HostCustomerTimelineRows({
+class HostCustomerTimelineList extends StatelessWidget {
+  const HostCustomerTimelineList({
+    super.key,
     required this.entries,
     required this.onOpenFormResponse,
     required this.onOpenEvent,

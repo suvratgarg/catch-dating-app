@@ -2,7 +2,7 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/events/data/event_live_position_service.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_control.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';
@@ -33,7 +33,7 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      HostEventLiveLocationControl(event: event),
+      HostEventLiveLocationField(event: event),
       overrides: [
         deviceLocationGatewayProvider.overrideWithValue(locationGateway),
         eventLivePositionPublisherProvider.overrideWithValue(publisher),

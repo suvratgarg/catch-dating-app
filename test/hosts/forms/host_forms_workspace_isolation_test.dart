@@ -17,7 +17,7 @@ import 'package:catch_dating_app/hosts/domain/host_application_import.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
@@ -524,8 +524,8 @@ class _Harness {
   final StreamController<String?> actors;
   final StreamController<List<Club>> clubs;
   Uri get uri => router.routeInformationProvider.value.uri;
-  HostFormResponsesPanel panel(WidgetTester tester) =>
-      tester.widget(find.byType(HostFormResponsesPanel));
+  HostFormResponsesSection panel(WidgetTester tester) =>
+      tester.widget(find.byType(HostFormResponsesSection));
   HostAudienceHeader header(WidgetTester tester) =>
       tester.widget(find.byType(HostAudienceHeader));
   void select(String id) => container

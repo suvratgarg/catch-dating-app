@@ -118,7 +118,7 @@ class HostCustomerDetailBody extends StatelessWidget {
             customer: customer,
             onOpenMemory: onOpenMemory ?? () {},
           ),
-          HostCustomerRecentEvents(
+          HostCustomerRecentEventsList(
             customer: customer,
             onOpenEvent: onOpenEvent,
           ),

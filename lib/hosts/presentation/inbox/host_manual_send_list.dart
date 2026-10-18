@@ -15,17 +15,16 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HostManualSendQueue extends ConsumerStatefulWidget {
-  const HostManualSendQueue({super.key, required this.organizerId});
+class HostManualSendList extends ConsumerStatefulWidget {
+  const HostManualSendList({super.key, required this.organizerId});
 
   final String organizerId;
 
   @override
-  ConsumerState<HostManualSendQueue> createState() =>
-      _HostManualSendQueueState();
+  ConsumerState<HostManualSendList> createState() => _HostManualSendListState();
 }
 
-class _HostManualSendQueueState extends ConsumerState<HostManualSendQueue> {
+class _HostManualSendListState extends ConsumerState<HostManualSendList> {
   List<HostManualSendTask> _additionalTasks = const [];
   String? _additionalNextCursor;
   bool _loadingMore = false;
@@ -53,7 +52,7 @@ class _HostManualSendQueueState extends ConsumerState<HostManualSendQueue> {
         mode: CatchErrorStateMode.compact,
         onRetry: _resetAndReload,
       ),
-      data: (page) => _HostManualSendQueueContent(
+      data: (page) => HostManualSendListBody(
         page: page,
         additionalTasks: _additionalTasks,
         additionalNextCursor: _additionalNextCursor,
@@ -69,7 +68,7 @@ class _HostManualSendQueueState extends ConsumerState<HostManualSendQueue> {
   Future<void> _openTask(HostManualSendTask task) async {
     final changed = await showCatchBottomSheet<bool>(
       context: context,
-      builder: (_) => _HostManualSendTaskSheet(task: task),
+      builder: (_) => HostManualSendTaskSheet(task: task),
     );
     if (!mounted || changed != true) return;
     _resetAndReload();
@@ -116,8 +115,24 @@ class _HostManualSendQueueState extends ConsumerState<HostManualSendQueue> {
       });
       await showCatchBottomSheet<void>(
         context: context,
-        builder: (_) =>
-            _HostManualSendReplanSheet(tasks: tasks, results: _replanResults),
+        builder: (sheetContext) => CatchSheet.standard(
+          title: sheetContext.l10n.hostManualSendReplanTitle,
+          subtitle: sheetContext.l10n.hostManualSendReplanSubtitle,
+          child: CatchSection.fieldRows(
+            first: true,
+            children: [
+              for (final task in tasks.take(50))
+                CatchField.read(
+                  copy: catchFieldCopy(sheetContext.l10n),
+                  title: task.displayName,
+                  body: _manualTaskReplanBody(
+                    sheetContext,
+                    _replanResults[task.taskId],
+                  ),
+                ),
+            ],
+          ),
+        ),
       );
     } on Object catch (error) {
       if (mounted) {
@@ -144,8 +159,9 @@ class _HostManualSendQueueState extends ConsumerState<HostManualSendQueue> {
   }
 }
 
-class _HostManualSendQueueContent extends StatelessWidget {
-  const _HostManualSendQueueContent({
+class HostManualSendListBody extends StatelessWidget {
+  const HostManualSendListBody({
+    super.key,
     required this.page,
     required this.additionalTasks,
     required this.additionalNextCursor,
@@ -224,18 +240,20 @@ class _HostManualSendQueueContent extends StatelessWidget {
   }
 }
 
-class _HostManualSendTaskSheet extends ConsumerStatefulWidget {
-  const _HostManualSendTaskSheet({required this.task});
+/// One manual send: the recipient, the prepared message and its delivery
+/// actions.
+class HostManualSendTaskSheet extends ConsumerStatefulWidget {
+  const HostManualSendTaskSheet({super.key, required this.task});
 
   final HostManualSendTask task;
 
   @override
-  ConsumerState<_HostManualSendTaskSheet> createState() =>
+  ConsumerState<HostManualSendTaskSheet> createState() =>
       _HostManualSendTaskSheetState();
 }
 
 class _HostManualSendTaskSheetState
-    extends ConsumerState<_HostManualSendTaskSheet> {
+    extends ConsumerState<HostManualSendTaskSheet> {
   late HostManualSendTask _task = widget.task;
   bool _busy = false;
 
@@ -347,33 +365,6 @@ class _HostManualSendTaskSheetState
       if (mounted) setState(() => _busy = false);
     }
   }
-}
-
-class _HostManualSendReplanSheet extends StatelessWidget {
-  const _HostManualSendReplanSheet({
-    required this.tasks,
-    required this.results,
-  });
-
-  final List<HostManualSendTask> tasks;
-  final Map<String, HostManualSendTaskReplanResult> results;
-
-  @override
-  Widget build(BuildContext context) => CatchSheet.standard(
-    title: context.l10n.hostManualSendReplanTitle,
-    subtitle: context.l10n.hostManualSendReplanSubtitle,
-    child: CatchSection.fieldRows(
-      first: true,
-      children: [
-        for (final task in tasks.take(50))
-          CatchField.read(
-            copy: catchFieldCopy(context.l10n),
-            title: task.displayName,
-            body: _manualTaskReplanBody(context, results[task.taskId]),
-          ),
-      ],
-    ),
-  );
 }
 
 String _manualTaskBody(BuildContext context, HostManualSendTask task) =>

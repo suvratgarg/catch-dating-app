@@ -17,7 +17,7 @@ test('rejects hand-built loading rows on protected Host and Consumer screens', (
     'lib/hosts/today/presentation/widgets/host_today_body.dart',
     'lib/hosts/events/presentation/widgets/host_events_list.dart',
     'lib/hosts/presentation/customers/host_customers_screen.dart',
-    'lib/hosts/presentation/forms/host_form_responses_panel.dart',
+    'lib/hosts/presentation/forms/host_form_responses_section.dart',
     'lib/hosts/presentation/forms/host_forms_screen.dart',
     'lib/hosts/presentation/forms/host_form_overview_section_list.dart',
     'lib/hosts/presentation/forms/host_form_templates_screen.dart',
@@ -50,7 +50,7 @@ test('allows known Field layouts and bans generic rows in every app file', () =>
   });
   assert.equal(legacy.findings.length, 0);
   assert.equal(legacy.legacyCount, 1);
-  assert.equal(legacyRowAllowanceFor('lib/hosts/presentation/widgets/host_event_attendance_panel.dart'), 0);
+  assert.equal(legacyRowAllowanceFor('lib/hosts/presentation/widgets/host_event_participants_section.dart'), 0);
   assert.equal(legacyRowAllowanceFor('lib/hosts/presentation/widgets/host_loading_skeleton.dart'), 0);
   assert.equal(legacyRowAllowanceFor('lib/hosts/presentation/new_screen.dart'), 0);
   assert.equal(legacyCollectionAllowanceFor('lib/swipes/presentation/swipe_hub_screen.dart'), 0);

@@ -3787,7 +3787,7 @@ Reference files:
 - `lib/hosts/domain/crm/host_communication_plan.dart`
 - `lib/hosts/data/crm/host_communication_repository.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
-- `lib/hosts/presentation/customers/host_customer_detail_cards.dart`
+- `lib/hosts/presentation/customers/host_customer_detail_card.dart`
 
 The server resolves a named communication intent against current identity,
 permission, suppression, endpoint, and sender facts. The result is a momentary
@@ -3845,7 +3845,7 @@ Reference files:
 - `lib/hosts/domain/crm/host_manual_send_task.dart`
 - `lib/hosts/data/crm/host_communication_repository.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
-- `lib/hosts/presentation/inbox/host_manual_send_queue.dart`
+- `lib/hosts/presentation/inbox/host_manual_send_list.dart`
 - `test/hosts/host_crm_repository_test.dart`
 - `test/hosts/host_inbox_screen_test.dart`
 
@@ -3911,7 +3911,7 @@ Reference files:
 - `lib/hosts/presentation/customers/host_customers_screen.dart`
 - `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart`
 - `lib/hosts/presentation/customers/host_saved_audience_editor.dart`
-- `lib/hosts/presentation/inbox/host_campaign_composer.dart`
+- `lib/hosts/presentation/inbox/host_campaign_editor.dart`
 
 Customers owns reusable CRM audience definitions through its first-class
 Audiences peer workspace. The top-level directory is a flat divided list; one
@@ -4729,7 +4729,7 @@ Reference files:
 - `packages/catch_ui/lib/src/patterns/catch_form_list.dart` and the `CatchFormTextField`, `CatchFormChoiceField` and `CatchFormRangeField` members
 - `lib/user_profile/presentation/self_profile_edit_tab_state.dart`
 - `lib/user_profile/presentation/widgets/profile_tab_body.dart`
-- `lib/hosts/presentation/host_operations/host_club_edit_tab.dart`
+- `lib/hosts/presentation/host_operations/host_club_edit_body.dart`
 - `test/core/forms/catch_form_descriptors_test.dart`
 - `test/core/forms/contract_alignment_test.dart`
 - `test/profile/self_profile_edit_tab_state_test.dart`
