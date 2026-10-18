@@ -206,11 +206,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(find.byType(HostAnalyticsPeriodInput), findsOneWidget);
 
     expectSharedChrome();
-    expect(find.byType(HostClubInsightsPane), findsOneWidget);
+    expect(find.byType(HostClubInsightsSection), findsOneWidget);
     final insightsBodyPadding = tester
         .widgetList<SliverPadding>(
           find.ancestor(
-            of: find.byType(HostClubInsightsPane),
+            of: find.byType(HostClubInsightsSection),
             matching: find.byType(SliverPadding),
           ),
         )
@@ -219,7 +219,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
               padding.padding == CatchInsets.pageBody.copyWith(bottom: 0),
         );
     expect(insightsBodyPadding, isEmpty);
-    expect(find.byType(HostAnalyticsTrendPanel), findsOneWidget);
+    expect(find.byType(HostAnalyticsTrendSection), findsOneWidget);
     expect(
       find.descendant(
         of: find.byType(CatchRootScreenScaffold),
@@ -855,7 +855,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     );
     await pumpFeatureUi(tester);
     expect(positionFor(insightsKey).pixels, 0);
-    expect(find.byType(HostClubInsightsPane), findsOneWidget);
+    expect(find.byType(HostClubInsightsSection), findsOneWidget);
 
     final insightsPosition = positionFor(insightsKey);
     expect(insightsPosition.maxScrollExtent, greaterThan(0));
@@ -891,7 +891,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: HostAnalyticsTrendPanel(
+          body: HostAnalyticsTrendSection(
             points: points,
             granularity: HostAnalyticsGranularity.week,
           ),
@@ -899,7 +899,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       ),
     );
 
-    expect(find.byType(HostAnalyticsDualBar), findsNWidgets(30));
+    expect(find.byType(HostAnalyticsBarTile), findsNWidgets(30));
     expect(find.byType(CatchSection), findsOneWidget);
   });
 

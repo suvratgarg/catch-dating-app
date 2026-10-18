@@ -1,7 +1,7 @@
 # Celebration — Audio
 
 Optional one-shot sounds layered on top of the haptic for full-screen
-celebration moments (`CatchCelebrationScreen` via
+celebration moments (`CelebrationScreen` via
 `CelebrationEffectsController`). The haptic always fires; the sound is a
 graceful enhancement that no-ops if the file is absent, so the app ships and
 behaves correctly before these are added.

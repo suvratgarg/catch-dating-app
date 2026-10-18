@@ -72,7 +72,7 @@ class EventSuccessRotationRow extends StatelessWidget {
       padding: eventSuccessRevealAssignmentRowGap,
       child: CatchSurface(
         tone: CatchSurfaceTone.raised,
-        borderColor: t.line,
+        borderRole: CatchBorderRole.separator,
         padding: CatchInsets.contentDense,
         child: Row(
           children: [

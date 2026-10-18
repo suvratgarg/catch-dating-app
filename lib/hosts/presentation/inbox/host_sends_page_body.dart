@@ -13,7 +13,7 @@ import 'package:catch_dating_app/hosts/presentation/host_club_post_controller.da
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_event_announcement_field.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_follower_update_composer.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_follower_update_composer_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_broadcast_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_queue.dart';

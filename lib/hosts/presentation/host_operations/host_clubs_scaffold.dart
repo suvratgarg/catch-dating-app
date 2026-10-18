@@ -251,7 +251,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
                 SliverToBoxAdapter(
                   child: SizedBox(
                     width: double.infinity,
-                    child: HostClubInsightsPane(
+                    child: HostClubInsightsSection(
                       key: ValueKey('host-club-${selectedClub.id}-insights'),
                       club: selectedClub,
                       refreshController: _insightsRefreshController,
@@ -270,7 +270,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
                 'host-club-${selectedClub.id}-preview-scroll',
               ),
               children: [
-                ClubDetailReadOnlyPreviewSliver(
+                ClubDetailReadOnlyPreview(
                   initialClub: selectedClub,
                   currentUid: state.currentUid,
                 ),
@@ -293,7 +293,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
               'host-club-${selectedClub.id}-persistent-preview',
             ),
             slivers: [
-              ClubDetailReadOnlyPreviewSliver(
+              ClubDetailReadOnlyPreview(
                 initialClub: selectedClub,
                 currentUid: state.currentUid,
               ),

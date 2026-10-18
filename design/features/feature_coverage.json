@@ -214,7 +214,7 @@
       "authorityId": "screen.start.welcome",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Member Onboarding extends the same WelcomePage implementation as a logged-out Start projection, preserving its reel, CTA, reduced-motion, text-scale, and fixed-dark states without inventing a duplicate feature.",
+      "reason": "Member Onboarding extends the same OnboardingWelcomeBody implementation as a logged-out Start projection, preserving its reel, CTA, reduced-motion, text-scale, and fixed-dark states without inventing a duplicate feature.",
       "featureContract": "feature.member_onboarding"
     },
     {

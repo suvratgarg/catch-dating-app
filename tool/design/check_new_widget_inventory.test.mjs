@@ -193,7 +193,7 @@ test("new-widget gate uses exact registry and Widgetbook identities without read
     fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
     fs.writeFileSync(path.join(root, file), text);
   };
-  const sourceFile = "lib/core/widgets/catch_button.dart";
+  const sourceFile = "packages/catch_ui/lib/src/components/catch_button.dart";
   write(sourceFile, "class CatchButton extends StatelessWidget { Widget build(BuildContext context) => const SizedBox(); }\n");
   const widgetbookFile = "widgetbook/lib/main.directories.g.dart";
   const registryFile = "design/components/catch.components.json";
@@ -213,10 +213,10 @@ test("new-widget gate uses exact registry and Widgetbook identities without read
   assert.equal("catalogMentioned" in report.addedWidgets[0], false);
   assert.equal(fs.existsSync(path.join(root, "docs")), false);
 
-  registry.components[0].dart.file = "lib/core/widgets/old_button.dart";
+  registry.components[0].dart.file = "packages/catch_ui/lib/src/components/old_button.dart";
   write(registryFile, JSON.stringify(registry));
   // Even a matching prose row cannot make a stale registry path valid.
-  write("docs/widget_catalog.md", "| Widget | File | Purpose |\n|---|---|---|\n| `CatchButton` | lib/core/widgets/catch_button.dart | A button |\n");
+  write("docs/widget_catalog.md", "| Widget | File | Purpose |\n|---|---|---|\n| `CatchButton` | packages/catch_ui/lib/src/components/catch_button.dart | A button |\n");
   const stale = run();
   assert.equal(stale.status, 1);
   assert.deepEqual(JSON.parse(stale.stdout).addedWidgets[0].issues, ["missing-component-contract"]);
@@ -242,6 +242,19 @@ test("new-widget gate uses exact registry and Widgetbook identities without read
   const validFeature = run();
   assert.equal(validFeature.status, 0, validFeature.stderr);
   assert.equal(JSON.parse(validFeature.stdout).summary.coveredNewWidgets, 2);
+
+  // A second implementation under a name an agent would predict is pointed at the original.
+  registry.components[0].id = "catch.button";
+  registry.components[0].aliases = ["PrimaryButton"];
+  write(registryFile, JSON.stringify(registry));
+  write("lib/profile/presentation/primary_button.dart", "class PrimaryButton extends StatelessWidget {}\n");
+  write(widgetbookFile, "WidgetbookComponent(name: 'CatchButton', useCases: [])\n" +
+    "WidgetbookComponent(name: 'ProfileSection', useCases: [])\nWidgetbookComponent(name: 'PrimaryButton', useCases: [])");
+  const duplicate = run();
+  assert.equal(duplicate.status, 1);
+  const added = JSON.parse(duplicate.stdout).addedWidgets.find(({name}) => name === "PrimaryButton");
+  assert.deepEqual(added.issues, ["duplicate-of-registered-component"]);
+  assert.match(added.recommendedAction, /^Use CatchButton \(catch\.button\) instead/u);
 });
 
 test("discovers direct and transitive widget subclasses without matching prose", () => {

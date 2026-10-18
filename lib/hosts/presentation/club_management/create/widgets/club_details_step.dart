@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_contact_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +57,7 @@ class ClubDetailsStep extends StatelessWidget {
                 ),
               ],
             ),
-            CreateClubContactFields(
+            CreateClubContactSection(
               instagramController: instagramController,
               phoneController: phoneController,
               emailController: emailController,

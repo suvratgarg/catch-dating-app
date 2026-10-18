@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-09-15",
-  "sourceDigest": "sha256:d8396e1c037abc450b5cee6f5eea7f0403a57aefa59c7b53abcd3dfe7aff7722",
-  "resolvedDigest": "sha256:97df774714cee814a05ac3aa16751aa4472a14bab0f37646b142c41daa232838",
+  "sourceDigest": "sha256:58e58778dbdf6324ef0fe48e41c8552484fc140d01884deb8e56ce5a53401266",
+  "resolvedDigest": "sha256:fb0d8de365e995a9e8b7d3a7405e91bdb718868f4ef706b22c187a6df62cfba6",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -95,7 +95,7 @@
           {
             "id": "follower_update_composer",
             "language": "dart",
-            "file": "lib/hosts/presentation/inbox/host_follower_update_composer.dart",
+            "file": "lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart",
             "symbol": "showHostFollowerUpdateComposer"
           },
           {
@@ -107,8 +107,8 @@
           {
             "id": "whatsapp_setup",
             "language": "dart",
-            "file": "lib/hosts/presentation/host_operations/host_audience.dart",
-            "symbol": "HostWhatsappSetupPane"
+            "file": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+            "symbol": "HostWhatsappSetupSection"
           },
           {
             "id": "campaign_composer",
@@ -215,7 +215,7 @@
             "test/hosts/host_crm_repository_test.dart"
           ],
           "follower_update_composer": [
-            "test/hosts/host_follower_update_composer_test.dart",
+            "test/hosts/host_follower_update_composer_sheet_test.dart",
             "test/hosts/host_inbox_screen_test.dart",
             "test/hosts/host_crm_repository_test.dart"
           ],
@@ -831,7 +831,7 @@
         {
           "id": "manage_whatsapp_sender",
           "owner": "whatsapp_setup",
-          "codeValue": "HostWhatsappSetupPane",
+          "codeValue": "HostWhatsappSetupSection",
           "cardinality": "singleton",
           "scopeKeys": [
             "viewerUid",
@@ -2844,7 +2844,7 @@
             "captureIds": [],
             "previewIds": [],
             "tests": [
-              "test/hosts/host_follower_update_composer_test.dart",
+              "test/hosts/host_follower_update_composer_sheet_test.dart",
               "test/hosts/host_inbox_screen_test.dart",
               "test/hosts/host_crm_repository_test.dart"
             ]

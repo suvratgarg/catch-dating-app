@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
-import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/clubs/shared/club_host_identity_row.dart';
+import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_external_share_sheet.dart';
@@ -52,7 +52,7 @@ class ClubShareCard extends StatelessWidget {
       aspectRatio: CatchLayout.richShareCardAspectRatio,
       child: CatchSurface(
         backgroundColor: t.bg,
-        borderColor: t.line2,
+        borderRole: CatchBorderRole.boundary,
         padding: CatchInsets.content,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -61,7 +61,7 @@ class ClubShareCard extends StatelessWidget {
               flex: 4,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(CatchRadius.md),
-                child: ClubShareArtwork(club: club),
+                child: ClubShareCover(club: club),
               ),
             ),
             gapH14,
@@ -101,7 +101,7 @@ class ClubShareCard extends StatelessWidget {
                     icon: CatchIcons.group,
                     label: clubMemberCountLabel(club),
                   ),
-                  if (tags.isNotEmpty) ...[gapH10, ClubTagWrap(tags: tags)],
+                  if (tags.isNotEmpty) ...[gapH10, ClubTagList(tags: tags)],
                   const Spacer(),
                   CatchAttributionRow(
                     brandLabel: context.l10n.coreCatchShareCardFooterTextCatch,
@@ -119,8 +119,8 @@ class ClubShareCard extends StatelessWidget {
   }
 }
 
-class ClubShareArtwork extends StatelessWidget {
-  const ClubShareArtwork({super.key, required this.club});
+class ClubShareCover extends StatelessWidget {
+  const ClubShareCover({super.key, required this.club});
 
   final Club club;
 
@@ -135,6 +135,6 @@ class ClubShareArtwork extends StatelessWidget {
         showScrim: false,
       );
     }
-    return OrganizerPosterArtwork(club: club);
+    return ClubPlaceholderCover(club: club);
   }
 }

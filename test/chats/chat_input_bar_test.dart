@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
@@ -16,9 +16,9 @@ void main() {
 
       await _pumpComposer(tester, controller: controller);
 
-      final pillRect = tester.getRect(find.byKey(ChatInputBar.pillKey));
-      final imageRect = tester.getRect(find.byKey(ChatInputBar.imageButtonKey));
-      final sendRect = tester.getRect(find.byKey(ChatInputBar.sendButtonKey));
+      final pillRect = tester.getRect(find.byKey(ChatInput.pillKey));
+      final imageRect = tester.getRect(find.byKey(ChatInput.imageButtonKey));
+      final sendRect = tester.getRect(find.byKey(ChatInput.sendButtonKey));
       final targetExtent = defaultTargetPlatform == TargetPlatform.iOS
           ? 44.0
           : 48.0;
@@ -26,8 +26,7 @@ void main() {
       expect(
         find.byWidgetPredicate(
           (widget) =>
-              widget is CatchDockSurface &&
-              widget.variant == CatchDockSurfaceVariant.utility,
+              widget is CatchDock && widget.variant == CatchDockVariant.utility,
         ),
         findsNothing,
       );
@@ -61,10 +60,10 @@ void main() {
     await _pumpComposer(tester, controller: controller, onSend: () => sends++);
 
     CatchIconAction sendButton() =>
-        tester.widget(find.byKey(ChatInputBar.sendButtonKey));
+        tester.widget(find.byKey(ChatInput.sendButtonKey));
 
     expect(sendButton().status, CatchIconActionStatus.disabled);
-    await tester.tap(find.byKey(ChatInputBar.sendButtonKey));
+    await tester.tap(find.byKey(ChatInput.sendButtonKey));
     expect(sends, 0);
 
     await tester.enterText(find.byType(TextField), '   ');
@@ -74,7 +73,7 @@ void main() {
     await tester.enterText(find.byType(TextField), 'Hello');
     await tester.pump();
     expect(sendButton().status, CatchIconActionStatus.enabled);
-    await tester.tap(find.byKey(ChatInputBar.sendButtonKey));
+    await tester.tap(find.byKey(ChatInput.sendButtonKey));
     expect(sends, 1);
 
     controller.clear();
@@ -89,31 +88,24 @@ void main() {
     addTearDown(controller.dispose);
 
     await _pumpComposer(tester, controller: controller);
-    final beforePill = tester.getRect(find.byKey(ChatInputBar.pillKey));
-    final beforeImage = tester.getRect(find.byKey(ChatInputBar.imageButtonKey));
-    final beforeSend = tester.getRect(find.byKey(ChatInputBar.sendButtonKey));
+    final beforePill = tester.getRect(find.byKey(ChatInput.pillKey));
+    final beforeImage = tester.getRect(find.byKey(ChatInput.imageButtonKey));
+    final beforeSend = tester.getRect(find.byKey(ChatInput.sendButtonKey));
     expect(
-      tester
-          .widget<CatchControlSurface>(find.byKey(ChatInputBar.pillKey))
-          .status,
+      tester.widget<CatchControlSurface>(find.byKey(ChatInput.pillKey)).status,
       CatchControlSurfaceStatus.resting,
     );
 
-    await tester.tap(find.byKey(ChatInputBar.fieldLaneKey));
+    await tester.tap(find.byKey(ChatInput.fieldLaneKey));
     await pumpFeatureUi(tester);
 
     expect(
-      tester
-          .widget<CatchControlSurface>(find.byKey(ChatInputBar.pillKey))
-          .status,
+      tester.widget<CatchControlSurface>(find.byKey(ChatInput.pillKey)).status,
       CatchControlSurfaceStatus.focused,
     );
-    expect(tester.getRect(find.byKey(ChatInputBar.pillKey)), beforePill);
-    expect(
-      tester.getRect(find.byKey(ChatInputBar.imageButtonKey)),
-      beforeImage,
-    );
-    expect(tester.getRect(find.byKey(ChatInputBar.sendButtonKey)), beforeSend);
+    expect(tester.getRect(find.byKey(ChatInput.pillKey)), beforePill);
+    expect(tester.getRect(find.byKey(ChatInput.imageButtonKey)), beforeImage);
+    expect(tester.getRect(find.byKey(ChatInput.sendButtonKey)), beforeSend);
   });
 
   testWidgets(
@@ -123,17 +115,17 @@ void main() {
       addTearDown(controller.dispose);
 
       await _pumpComposer(tester, controller: controller);
-      final initialPill = tester.getRect(find.byKey(ChatInputBar.pillKey));
+      final initialPill = tester.getRect(find.byKey(ChatInput.pillKey));
 
       controller.text = 'Line one\nLine two\nLine three\nLine four';
       await tester.pump();
-      final animationStart = tester.getRect(find.byKey(ChatInputBar.pillKey));
+      final animationStart = tester.getRect(find.byKey(ChatInput.pillKey));
       await pumpFeatureUiFor(tester, const Duration(milliseconds: 60));
-      final animationMiddle = tester.getRect(find.byKey(ChatInputBar.pillKey));
+      final animationMiddle = tester.getRect(find.byKey(ChatInput.pillKey));
       await pumpFeatureUi(tester);
-      final finalPill = tester.getRect(find.byKey(ChatInputBar.pillKey));
-      final imageRect = tester.getRect(find.byKey(ChatInputBar.imageButtonKey));
-      final sendRect = tester.getRect(find.byKey(ChatInputBar.sendButtonKey));
+      final finalPill = tester.getRect(find.byKey(ChatInput.pillKey));
+      final imageRect = tester.getRect(find.byKey(ChatInput.imageButtonKey));
+      final sendRect = tester.getRect(find.byKey(ChatInput.sendButtonKey));
       final targetExtent = defaultTargetPlatform == TargetPlatform.iOS
           ? 44.0
           : 48.0;
@@ -173,12 +165,12 @@ void main() {
     final textField = tester.widget<TextField>(find.byType(TextField));
     expect(textField.focusNode?.hasFocus, isTrue);
 
-    await tester.tap(find.byKey(ChatInputBar.imageButtonKey));
+    await tester.tap(find.byKey(ChatInput.imageButtonKey));
     await tester.pump();
     expect(images, 1);
     expect(textField.focusNode?.hasFocus, isTrue);
 
-    await tester.tap(find.byKey(ChatInputBar.sendButtonKey));
+    await tester.tap(find.byKey(ChatInput.sendButtonKey));
     await tester.pump();
     expect(sends, 1);
     expect(textField.focusNode?.hasFocus, isTrue);
@@ -199,10 +191,10 @@ void main() {
 
     var field = tester.widget<TextField>(find.byType(TextField));
     var image = tester.widget<CatchIconAction>(
-      find.byKey(ChatInputBar.imageButtonKey),
+      find.byKey(ChatInput.imageButtonKey),
     );
     var send = tester.widget<CatchIconAction>(
-      find.byKey(ChatInputBar.sendButtonKey),
+      find.byKey(ChatInput.sendButtonKey),
     );
     final sendingRects = _actionRects(tester);
     expect(field.enabled, isTrue);
@@ -216,11 +208,9 @@ void main() {
 
     field = tester.widget<TextField>(find.byType(TextField));
     image = tester.widget<CatchIconAction>(
-      find.byKey(ChatInputBar.imageButtonKey),
+      find.byKey(ChatInput.imageButtonKey),
     );
-    send = tester.widget<CatchIconAction>(
-      find.byKey(ChatInputBar.sendButtonKey),
-    );
+    send = tester.widget<CatchIconAction>(find.byKey(ChatInput.sendButtonKey));
     expect(field.enabled, isTrue);
     expect(image.onPressed, isNull);
     expect(image.status, CatchIconActionStatus.enabled);
@@ -275,7 +265,7 @@ Future<void> _pumpComposer(
           body: Column(
             children: [
               const Spacer(),
-              ChatInputBar(
+              ChatInput(
                 controller: controller,
                 sending: sending,
                 sendingImage: sendingImage,
@@ -293,6 +283,6 @@ Future<void> _pumpComposer(
 }
 
 (Rect, Rect) _actionRects(WidgetTester tester) => (
-  tester.getRect(find.byKey(ChatInputBar.imageButtonKey)),
-  tester.getRect(find.byKey(ChatInputBar.sendButtonKey)),
+  tester.getRect(find.byKey(ChatInput.imageButtonKey)),
+  tester.getRect(find.byKey(ChatInput.sendButtonKey)),
 );

@@ -4,7 +4,7 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_metrics.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_metric_row.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_overview_section_list.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_header.dart';
@@ -80,12 +80,12 @@ Widget hostFormWorkspaceOverviewPreview(BuildContext context) => ProviderScope(
 
 @widgetbook.UseCase(
   name: 'Unboxed form metrics',
-  type: HostFormMetrics,
+  type: HostFormMetricRow,
   path: '[P1 product surfaces]/Host operations/Forms',
 )
 Widget hostFormMetricsPreview(BuildContext context) => const SizedBox(
   width: WidgetbookPreviewLayout.wideContractWidth,
-  child: HostFormMetrics(
+  child: HostFormMetricRow(
     items: [
       (value: '84', label: 'Responses'),
       (value: '5', label: 'Questions'),

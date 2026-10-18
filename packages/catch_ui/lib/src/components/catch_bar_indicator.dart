@@ -42,7 +42,6 @@ class CatchBarIndicator extends StatelessWidget {
         child: switch (variant) {
           CatchBarIndicatorVariant.rounded => CatchSurface(
             radius: CatchRadius.xs,
-            borderWidth: 0,
             backgroundColor: color,
             child: const SizedBox.expand(),
           ),

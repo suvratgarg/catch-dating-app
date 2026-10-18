@@ -20,7 +20,7 @@ Widget formStepSpecificationStates(BuildContext context) {
     title: 'Form step metadata',
     catalogId: 'catch.screen_body.form_step_spec',
     children: [
-      CatchFormStepRowList(
+      CatchFormStepList(
         fieldCopy: catchFieldCopy(context.l10n),
         statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
         onStepSelected: (_) {},
@@ -30,10 +30,10 @@ Widget formStepSpecificationStates(BuildContext context) {
               index: index,
               title: formTitleForStep(steps, index),
               status: steps[index].optional
-                  ? CatchFormStepRowListStatus.optional
+                  ? CatchFormStepListStatus.optional
                   : index == 0
-                  ? CatchFormStepRowListStatus.complete
-                  : CatchFormStepRowListStatus.needsInformation,
+                  ? CatchFormStepListStatus.complete
+                  : CatchFormStepListStatus.needsInformation,
             ),
         ],
       ),
@@ -59,13 +59,13 @@ Widget formReviewReadinessStates(BuildContext context) =>
                   index: 0,
                   title: 'Event basics',
                   status: complete
-                      ? CatchFormStepRowListStatus.complete
-                      : CatchFormStepRowListStatus.needsInformation,
+                      ? CatchFormStepListStatus.complete
+                      : CatchFormStepListStatus.needsInformation,
                 ),
                 const CatchFormStepReviewItem(
                   index: 1,
                   title: 'Host notes',
-                  status: CatchFormStepRowListStatus.optional,
+                  status: CatchFormStepListStatus.optional,
                 ),
               ]);
               return Column(
@@ -77,7 +77,7 @@ Widget formReviewReadinessStates(BuildContext context) =>
                         : 'Required step ${review.firstIncompleteStep! + 1}',
                     style: CatchTextStyles.bodyM(context),
                   ),
-                  CatchFormStepRowList(
+                  CatchFormStepList(
                     fieldCopy: catchFieldCopy(context.l10n),
                     statusLabelBuilder: catchFormStepStatusLabelBuilder(
                       context.l10n,
@@ -105,7 +105,7 @@ Widget formRowScopeStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Form row scope',
   catalogId: 'catch.field',
   children: [
-    for (final mode in CatchFormRowListMode.values)
+    for (final mode in CatchFormListMode.values)
       _FormRowScopeFields(mode: mode),
   ],
 );
@@ -113,7 +113,7 @@ Widget formRowScopeStates(BuildContext context) => WidgetbookCatalogFrame(
 class _FormRowScopeFields extends StatefulWidget {
   const _FormRowScopeFields({required this.mode});
 
-  final CatchFormRowListMode mode;
+  final CatchFormListMode mode;
 
   @override
   State<_FormRowScopeFields> createState() => _FormRowScopeFieldsState();
@@ -131,9 +131,9 @@ class _FormRowScopeFieldsState extends State<_FormRowScopeFields> {
   }
 
   @override
-  Widget build(BuildContext context) => CatchFormRowList<(String, String)>(
+  Widget build(BuildContext context) => CatchFormList<(String, String)>(
     fieldCopy: catchFieldCopy(context.l10n),
-    title: widget.mode == CatchFormRowListMode.explicit
+    title: widget.mode == CatchFormListMode.explicit
         ? 'Explicit confirmation'
         : 'Save on blur',
     accordion: _accordion,
@@ -172,7 +172,7 @@ class _FormRowScopeFieldsState extends State<_FormRowScopeFields> {
 
 @widgetbook.UseCase(
   name: 'Required, optional and complete steps',
-  type: CatchFormStepRowList,
+  type: CatchFormStepList,
   path: '[Core patterns]/Form review',
 )
 Widget formStepOverviewStates(BuildContext context) =>

@@ -25,7 +25,7 @@
           "id": "start.welcome",
           "routeId": "startScreen",
           "implementationPaths": [
-            "lib/onboarding/presentation/pages/welcome_page.dart"
+            "lib/onboarding/presentation/pages/onboarding_welcome_body.dart"
           ],
           "componentIds": [
             "catch.button"
@@ -69,7 +69,7 @@
               "tests": [
                 "test/onboarding/onboarding_widgets_test.dart"
               ],
-              "notes": "Deterministic WelcomePage(playIntro: false) capture now has a manifest-registered landed-direct design reference."
+              "notes": "Deterministic OnboardingWelcomeBody(playIntro: false) capture now has a manifest-registered landed-direct design reference."
             },
             {
               "id": "cta_navigation",
@@ -135,9 +135,9 @@
           "routeId": "authScreen",
           "implementationPaths": [
             "lib/auth/presentation/auth_screen.dart",
-            "lib/auth/presentation/phone_page.dart",
-            "lib/auth/presentation/otp_page.dart",
-            "lib/core/widgets/catch_startup_loading_screen.dart"
+            "lib/auth/presentation/phone_step.dart",
+            "lib/auth/presentation/otp_step.dart",
+            "lib/core/widgets/splash_screen.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -198,7 +198,7 @@
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "PhonePage renders a country-code selector bound to AuthController.countryCode; deterministic captures cover the picker dialog and a non-default +61 market."
+              "notes": "PhoneStep renders a country-code selector bound to AuthController.countryCode; deterministic captures cover the picker dialog and a non-default +61 market."
             },
             {
               "id": "otp_entry",
@@ -214,7 +214,7 @@
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "After codeSent, Host AuthScreen retains the same logo and card while OtpPage reveals the masked-number summary, distinct Edit number control, compact OTP cells, auto-verification state, and full-width resend control. Empty, partial, resend-ready, mutation, text-scale, reduced-motion, and light/dark captures are current; the historical manifest reference remains advisory."
+              "notes": "After codeSent, Host AuthScreen retains the same logo and card while OtpStep reveals the masked-number summary, distinct Edit number control, compact OTP cells, auto-verification state, and full-width resend control. Empty, partial, resend-ready, mutation, text-scale, reduced-motion, and light/dark captures are current; the historical manifest reference remains advisory."
             },
             {
               "id": "validation_error",
@@ -296,18 +296,18 @@
           "implementationPaths": [
             "lib/onboarding/presentation/onboarding_screen.dart",
             "lib/onboarding/presentation/onboarding_flow_state.dart",
-            "lib/onboarding/presentation/pages/name_dob_page.dart",
-            "lib/onboarding/presentation/pages/name_dob_page_state.dart",
-            "lib/onboarding/presentation/pages/gender_interest_page.dart",
-            "lib/onboarding/presentation/pages/gender_interest_page_state.dart",
-            "lib/onboarding/presentation/pages/instagram_page.dart",
-            "lib/onboarding/presentation/pages/instagram_page_state.dart",
-            "lib/onboarding/presentation/pages/photos_page.dart",
-            "lib/onboarding/presentation/pages/photos_page_state.dart",
-            "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-            "lib/onboarding/presentation/pages/profile_prompts_page_state.dart",
-            "lib/onboarding/presentation/pages/running_prefs_page.dart",
-            "lib/onboarding/presentation/pages/running_prefs_page_state.dart"
+            "lib/onboarding/presentation/pages/onboarding_name_dob_step.dart",
+            "lib/onboarding/presentation/pages/onboarding_name_dob_step_state.dart",
+            "lib/onboarding/presentation/pages/onboarding_gender_interest_step.dart",
+            "lib/onboarding/presentation/pages/onboarding_gender_interest_step_state.dart",
+            "lib/onboarding/presentation/pages/onboarding_instagram_step.dart",
+            "lib/onboarding/presentation/pages/onboarding_instagram_step_state.dart",
+            "lib/onboarding/presentation/pages/onboarding_photos_step.dart",
+            "lib/onboarding/presentation/pages/onboarding_photos_step_state.dart",
+            "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart",
+            "lib/onboarding/presentation/pages/onboarding_profile_prompts_step_state.dart",
+            "lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart",
+            "lib/onboarding/presentation/pages/onboarding_running_prefs_step_state.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -464,7 +464,7 @@
               "tests": [
                 "test/onboarding/onboarding_widgets_test.dart"
               ],
-              "notes": "Deterministic captures cover NameDobPage required-field errors and GenderInterestPage required-selection errors after tapping Continue."
+              "notes": "Deterministic captures cover OnboardingNameDobBody required-field errors and OnboardingGenderInterestBody required-selection errors after tapping Continue."
             },
             {
               "id": "saved_draft",
@@ -490,7 +490,7 @@
               "tests": [
                 "test/onboarding/onboarding_controller_test.dart"
               ],
-              "notes": "OnboardingController.saveProfileMutation owns profile-save operations while step pages render pending/error feedback; deterministic captures cover the GenderInterestPage save pending CTA and visible error banner."
+              "notes": "OnboardingController.saveProfileMutation owns profile-save operations while step pages render pending/error feedback; deterministic captures cover the OnboardingGenderInterestBody save pending CTA and visible error banner."
             },
             {
               "id": "complete_mutation",
@@ -579,11 +579,11 @@
           "implementationPaths": [
             "lib/events/presentation/event_detail_screen.dart",
             "lib/events/presentation/widgets/event_detail_body.dart",
-            "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+            "lib/events/presentation/widgets/event_detail_fact_list.dart",
             "lib/events/presentation/widgets/event_detail_overview_section.dart",
             "lib/events/presentation/widgets/event_detail_social_section.dart",
-            "lib/events/presentation/widgets/event_detail_cta.dart",
-            "lib/events/presentation/widgets/event_detail_hero_app_bar.dart"
+            "lib/events/presentation/widgets/event_detail_dock.dart",
+            "lib/events/presentation/widgets/event_detail_hero_top_bar.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -715,8 +715,8 @@
                 "event_detail_member_ticket"
               ],
               "previewIds": [
-                "EventDetailHeroAppBar/Catalog states",
-                "EventDetailTicketStubBand/Catalog states",
+                "EventDetailHeroTopBar/Catalog states",
+                "EventDetailTicketStubRow/Catalog states",
                 "EventDetailScreen/Screen states"
               ],
               "tests": [
@@ -731,7 +731,7 @@
                 "event_detail_member_spotlight"
               ],
               "previewIds": [
-                "EventDetailHeroAppBar/Catalog states",
+                "EventDetailHeroTopBar/Catalog states",
                 "EventDetailScreen/Screen states"
               ],
               "tests": [
@@ -799,7 +799,7 @@
                 "test/events/event_detail_screen_state_test.dart",
                 "test/events/event_detail_widgets_test.dart"
               ],
-              "notes": "event_detail_booking_pending and event_detail_cancel_pending seed EventBookingController mutations through EventDetailScreen so EventDetailCta renders disabled loading dock states.",
+              "notes": "event_detail_booking_pending and event_detail_cancel_pending seed EventBookingController mutations through EventDetailScreen so EventDetailDock renders disabled loading dock states.",
               "captureIds": [
                 "event_detail_booking_pending",
                 "event_detail_cancel_pending"
@@ -910,7 +910,7 @@
         {
           "id": "DP-EVENT-PREVIEW-001",
           "status": "closed",
-          "nextAction": "Widgetbook entries cover EventHero, TicketStub, Overview, HintList, Itinerary, PhotoStrip, HostCard, MapCard, MechanismList, WhoIsGoing/social proof, Reviews, companion/invite prompts, and provider-free EventBookingDock states. Route captures now cover the missing guest, host-app, offline, text-scale, reduced-motion, and booking-state variants."
+          "nextAction": "Widgetbook entries cover EventHero, TicketStub, Overview, HintList, Itinerary, PhotoStrip, HostCard, MapCard, MechanismList, WhoIsGoingSection/social proof, Reviews, companion/invite prompts, and provider-free EventBookingDock states. Route captures now cover the missing guest, host-app, offline, text-scale, reduced-motion, and booking-state variants."
         }
       ]
     },
@@ -936,7 +936,7 @@
             "lib/explore/presentation/widgets/explore_body.dart",
             "lib/explore/presentation/widgets/explore_events_section.dart",
             "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart",
-            "lib/explore/presentation/widgets/catch_cover_story.dart",
+            "lib/explore/presentation/widgets/featured_event_poster.dart",
             "lib/cross_paths/presentation/cross_paths_explore_card.dart"
           ],
           "componentIds": [
@@ -1049,7 +1049,7 @@
               "kind": "error",
               "status": "captured",
               "previewIds": [
-                "ExploreFeedContentSliver/Feed states"
+                "ExploreFeedSliverBody/Feed states"
               ],
               "tests": [
                 "test/explore/explore_widgets_test.dart"
@@ -1081,7 +1081,7 @@
               "status": "captured",
               "previewIds": [
                 "CatchEmptyState/Empty states",
-                "ExploreFeedContentSliver/Feed states",
+                "ExploreFeedSliverBody/Feed states",
                 "ExploreScreen/Screen states"
               ],
               "tests": [
@@ -1104,7 +1104,7 @@
               ],
               "previewIds": [
                 "ExploreScreen/Screen states",
-                "ExploreFeedContentSliver/Feed states",
+                "ExploreFeedSliverBody/Feed states",
                 "ExploreEventTypeBrowseGrid/Activity states",
                 "CatchButton/Map launcher states"
               ],
@@ -1174,7 +1174,7 @@
                 "explore_unclaimed_host_projection"
               ],
               "previewIds": [
-                "ExploreFeedContentSliver/Feed states",
+                "ExploreFeedSliverBody/Feed states",
                 "ExploreScreen/Screen states"
               ],
               "tests": [
@@ -1463,9 +1463,9 @@
             "lib/clubs/presentation/detail/club_detail_view_model.dart",
             "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
             "lib/clubs/presentation/detail/widgets/club_contact_section.dart",
-            "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
+            "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart",
             "lib/clubs/presentation/detail/widgets/club_host_section.dart",
-            "lib/clubs/presentation/detail/widgets/club_photo_strip.dart",
+            "lib/clubs/presentation/detail/widgets/club_photo_rail.dart",
             "lib/clubs/presentation/detail/widgets/club_schedule_section.dart",
             "lib/clubs/presentation/detail/widgets/club_detail_dock.dart",
             "lib/reviews/shared/reviews_section.dart"
@@ -1804,7 +1804,7 @@
               "previewIds": [
                 "ExploreMapScreen/Map route states"
               ],
-              "notes": "ExploreMapScreen delegates feeds without exact coordinates to EventMapView's shared no-pins branch while keeping route chrome and the deterministic fixture mounted."
+              "notes": "ExploreMapScreen delegates feeds without exact coordinates to EventMap's shared no-pins branch while keeping route chrome and the deterministic fixture mounted."
             },
             {
               "id": "zero_radius_results",
@@ -1840,7 +1840,7 @@
               "previewIds": [
                 "ExploreMapScreen/Map route states"
               ],
-              "notes": "Captured the map route feed-error branch with retry routed through EventMapView."
+              "notes": "Captured the map route feed-error branch with retry routed through EventMap."
             }
           ],
           "gaps": [
@@ -1885,7 +1885,7 @@
           "implementationPaths": [
             "lib/dashboard/presentation/dashboard_screen.dart",
             "lib/dashboard/presentation/dashboard_full_view_model.dart",
-            "lib/dashboard/presentation/widgets/dashboard_empty.dart",
+            "lib/dashboard/presentation/widgets/dashboard_empty_sliver_body.dart",
             "lib/dashboard/presentation/widgets/dashboard_full.dart",
             "lib/dashboard/presentation/widgets/event_focus_rail.dart",
             "lib/dashboard/presentation/widgets/empty_hero_card.dart",
@@ -2301,12 +2301,12 @@
             "lib/event_success/presentation/event_success_controller.dart",
             "lib/event_success/event_success_companion_launcher.dart",
             "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-            "lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart",
-            "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
-            "lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart",
-            "lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart",
-            "lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart",
-            "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
+            "lib/event_success/presentation/companion_parts/event_success_companion_arrival_card.dart",
+            "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart",
+            "lib/event_success/presentation/companion_parts/event_success_companion_questionnaire_section.dart",
+            "lib/event_success/presentation/companion_parts/event_success_companion_wingman_section.dart",
+            "lib/event_success/presentation/companion_parts/event_success_companion_afterglow_card.dart",
+            "lib/event_success/presentation/companion_parts/event_success_companion_feedback_form.dart",
             "lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart"
           ],
           "componentIds": [
@@ -2817,7 +2817,7 @@
             "lib/swipes/presentation/swipe_queue_controller.dart",
             "lib/swipes/presentation/swipe_empty_content.dart",
             "lib/swipes/shared/profile_surface/profile_surface.dart",
-            "lib/swipes/shared/profile_surface/profile_reaction_controls.dart",
+            "lib/swipes/shared/profile_surface/profile_reaction_action.dart",
             "lib/swipes/presentation/widgets/catches_pass_button.dart",
             "lib/swipes/presentation/widgets/swipe_empty_state.dart"
           ],
@@ -2861,7 +2861,7 @@
               "id": "queue_loading",
               "kind": "loading",
               "status": "captured",
-              "notes": "Captured queue loading state now renders CatchesProfileReviewSkeleton with the shared ProfileSurfaceSkeleton, top overlay placeholders, bottom scrim, and pass-button placeholder.",
+              "notes": "Captured queue loading state now renders CatchesProfileBodySkeleton with the shared ProfileSurfaceSkeleton, top overlay placeholders, bottom scrim, and pass-button placeholder.",
               "tests": [
                 "test/swipes/swipe_screen_test.dart"
               ],
@@ -2897,12 +2897,12 @@
               "notes": "CatchesEventScreenState maps non-empty queue data to active deck display data; SwipeScreen renders profile deck, top overlay, reaction controls, pass control, and route-owned CatchesProfileReviewActionState for write-pending display. post_run_catch_window now has a manifest-registered active-profile design reference.",
               "previewIds": [
                 "SwipeScreen/Event deck route states",
-                "CatchesProfileReview/Deck composition",
+                "CatchesProfileBody/Deck composition",
                 "ProfileSurface/Catches profile states",
                 "CatchesTopOverlay/Top overlay states",
-                "CatchesBottomScrim/Bottom scrim states",
+                "CatchesScrimOverlay/Bottom scrim states",
                 "CatchesPassButton/Pass button states",
-                "ProfileReactionControls/Reaction control states"
+                "ProfileReactionAction/Reaction control states"
               ]
             },
             {
@@ -2934,7 +2934,7 @@
               "notes": "Section reactions and comments persist through SwipeQueueNotifier; Widgetbook covers disabled/pending reaction controls and empty/filled comment-sheet states, and captures cover reaction-pending deck state plus empty/filled sheet regions.",
               "previewIds": [
                 "SwipeScreen/Event deck route states",
-                "ProfileReactionControls/Reaction control states",
+                "ProfileReactionAction/Reaction control states",
                 "ProfileReactionCommentSheet/Reaction comment sheet states"
               ],
               "captureIds": [
@@ -3466,9 +3466,9 @@
             "lib/chats/presentation/widgets/chat_event_context_header.dart",
             "lib/chats/presentation/widgets/chat_message_list.dart",
             "lib/chats/presentation/widgets/message_bubble.dart",
-            "lib/chats/presentation/widgets/chat_input_bar.dart",
+            "lib/chats/presentation/widgets/chat_input.dart",
             "lib/chats/presentation/widgets/chat_share_card.dart",
-            "lib/chats/presentation/widgets/suvbot_action_bar.dart"
+            "lib/chats/presentation/widgets/suvbot_dock.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -3744,7 +3744,7 @@
               "tests": [
                 "test/chats/chat_screen_test.dart"
               ],
-              "notes": "Suvbot conversations replace the normal composer with SuvbotActionBar controls.",
+              "notes": "Suvbot conversations replace the normal composer with SuvbotDock controls.",
               "previewIds": [
                 "ChatScreen/Route states"
               ],
@@ -3759,7 +3759,7 @@
               "tests": [
                 "test/chats/suvbot_controller_test.dart"
               ],
-              "notes": "SuvbotController delegates action/text requests to SuvbotRepository and SuvbotActionBar handles pending/error/retry states.",
+              "notes": "SuvbotController delegates action/text requests to SuvbotRepository and SuvbotDock handles pending/error/retry states.",
               "previewIds": [
                 "ChatScreen/Route states"
               ],
@@ -3771,7 +3771,7 @@
               "id": "keyboard_composer",
               "kind": "populated",
               "status": "captured",
-              "notes": "ChatInputBar uses compact pill CatchField with send action, multiline growth, keyboard-safe bottom dock, and image button.",
+              "notes": "ChatInput uses compact pill CatchField with send action, multiline growth, keyboard-safe bottom dock, and image button.",
               "previewIds": [
                 "ChatScreen/Route states"
               ],
@@ -3877,13 +3877,13 @@
             "lib/user_profile/presentation/profile_edit_controller.dart",
             "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
             "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-            "lib/user_profile/presentation/widgets/profile_tab.dart",
+            "lib/user_profile/presentation/widgets/profile_tab_body.dart",
             "lib/user_profile/presentation/widgets/profile_inline_editors.dart",
-            "lib/user_profile/presentation/widgets/inline_editor_choice.dart",
-            "lib/user_profile/presentation/widgets/inline_editor_height.dart",
-            "lib/user_profile/presentation/widgets/inline_editor_prompt.dart",
-            "lib/user_profile/presentation/widgets/inline_editor_range.dart",
-            "lib/user_profile/presentation/widgets/preview_tab.dart",
+            "lib/user_profile/presentation/widgets/profile_inline_choice_editor.dart",
+            "lib/user_profile/presentation/widgets/profile_inline_height_editor.dart",
+            "lib/user_profile/presentation/widgets/profile_inline_prompt_entry_editor.dart",
+            "lib/user_profile/presentation/widgets/profile_inline_range_editor.dart",
+            "lib/user_profile/presentation/widgets/profile_preview_body.dart",
             "lib/image_uploads/shared/photo_grid.dart",
             "lib/image_uploads/shared/photo_upload_controller.dart",
             "lib/swipes/shared/profile_surface/profile_surface.dart"
@@ -4204,7 +4204,7 @@
             "lib/public_profile/presentation/public_profile_controller.dart",
             "lib/public_profile/data/public_profile_repository.dart",
             "lib/swipes/shared/profile_surface/profile_surface.dart",
-            "lib/swipes/shared/profile_surface/catch_profile_view.dart",
+            "lib/swipes/shared/profile_surface/profile_body.dart",
             "lib/swipes/shared/profile_surface/profile_view_mapper.dart"
           ],
           "componentIds": [
@@ -4662,7 +4662,7 @@
               "id": "club_events_error",
               "kind": "error",
               "status": "captured",
-              "notes": "HostEventsClubCard maps event errors into HostEventsWorkspaceState; HostEventsTimelinePage renders CatchLocalizedSliverErrorState in the canonical page viewport with AppErrorContext.event and a typed retry callback. Retained rows with a page failure use a scoped inline retry instead.",
+              "notes": "HostEventsClubCard maps event errors into HostEventsWorkspaceState; HostEventsTimelineBody renders CatchLocalizedSliverErrorState in the canonical page viewport with AppErrorContext.event and a typed retry callback. Retained rows with a page failure use a scoped inline retry instead.",
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates"
@@ -4696,7 +4696,7 @@
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates",
-                "HostEventsTimelinePage/Exact catalog"
+                "HostEventsTimelineBody/Exact catalog"
               ],
               "captureIds": [
                 "host_home_dashboard",
@@ -4767,7 +4767,7 @@
               "notes": "HostTodayScreen and HostEventsRouteScaffold own independent lifecycle-aware event callbacks and push hostAppEventManageScreen with organizer id, event id, event extra, and live/setup/report section. Provider-free Today and Events rows delegate taps to their owning route edges.",
               "previewIds": [
                 "hostHomeRouteStates",
-                "HostEventsTimelinePage/Exact catalog"
+                "HostEventsTimelineBody/Exact catalog"
               ]
             },
             {
@@ -4897,13 +4897,13 @@
             "lib/hosts/presentation/customers/host_customer_editor.dart",
             "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
             "lib/hosts/presentation/customers/host_contact_merge_review.dart",
-            "lib/hosts/presentation/customers/host_customer_memory.dart",
+            "lib/hosts/presentation/customers/host_customer_memory_section.dart",
             "lib/hosts/presentation/customers/host_customers_screen_state.dart",
             "lib/hosts/presentation/customers/host_customers_controller.dart",
             "lib/hosts/data/crm/host_contacts_repository.dart",
             "lib/hosts/data/crm/host_saved_audience_repository.dart",
             "lib/hosts/data/crm/host_communication_repository.dart",
-            "lib/hosts/presentation/host_operations/host_audience.dart",
+            "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
             "lib/hosts/presentation/host_audience_controller.dart"
           ],
           "componentIds": [
@@ -5489,7 +5489,7 @@
           "implementationPaths": [
             "lib/hosts/presentation/host_operations_screen.dart",
             "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
-            "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+            "lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart",
             "lib/hosts/presentation/club_management/host_club_edit_controller.dart",
             "lib/hosts/presentation/club_management/host_club_defaults_saver.dart",
             "lib/clubs/data/clubs_repository.dart",
@@ -5887,7 +5887,7 @@
               "status": "captured",
               "notes": "The Host Clubs Insights tab watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton while analytics load.",
               "previewIds": [
-                "HostClubInsightsPane/Insights scorecard states"
+                "HostClubInsightsSection/Insights scorecard states"
               ],
               "captureIds": [
                 "host_clubs_insights_loading"
@@ -5897,9 +5897,9 @@
               "id": "insights_report",
               "kind": "populated",
               "status": "captured",
-              "notes": "HostAnalyticsReportView renders the canonical scorecard hierarchy inside the Host Clubs Insights tab: all-time overview, a 30-day/90-day/12-month period selector, six primary metrics, disclosed secondary metrics, an accessible demand/bookings trend, optional deterministic Coach recommendations, recent events, and reviews. Labels are client-owned and incomplete metrics use compact localized status badges.",
+              "notes": "HostAnalyticsReportBody renders the canonical scorecard hierarchy inside the Host Clubs Insights tab: all-time overview, a 30-day/90-day/12-month period selector, six primary metrics, disclosed secondary metrics, an accessible demand/bookings trend, optional deterministic Coach recommendations, recent events, and reviews. Labels are client-owned and incomplete metrics use compact localized status badges.",
               "previewIds": [
-                "HostClubInsightsPane/Insights scorecard states"
+                "HostClubInsightsSection/Insights scorecard states"
               ],
               "captureIds": [
                 "host_clubs_insights_report"
@@ -5909,9 +5909,9 @@
               "id": "insights_coach",
               "kind": "populated",
               "status": "implemented",
-              "notes": "HostAnalyticsReportView shows at most two priority-ordered Coach rows when the client-side attendance, checkout drop-off, demand/capacity, or repeat-attendee thresholds fire; Widgetbook and tests also pin the normal hidden state.",
+              "notes": "HostAnalyticsReportBody shows at most two priority-ordered Coach rows when the client-side attendance, checkout drop-off, demand/capacity, or repeat-attendee thresholds fire; Widgetbook and tests also pin the normal hidden state.",
               "previewIds": [
-                "HostClubInsightsPane/Insights scorecard states"
+                "HostClubInsightsSection/Insights scorecard states"
               ]
             },
             {
@@ -5920,7 +5920,7 @@
               "status": "captured",
               "notes": "hostAnalyticsProvider errors render CatchLocalizedErrorState with retry invalidating HostClubInsightsState.query. Captures now cover generic analytics error and offline analytics error.",
               "previewIds": [
-                "HostClubInsightsPane/Insights scorecard states"
+                "HostClubInsightsSection/Insights scorecard states"
               ],
               "captureIds": [
                 "host_clubs_insights_error",
@@ -6088,7 +6088,7 @@
                 "host_team_save_profile_offline"
               ],
               "previewIds": [
-                "HostTeamProfileRows/Covered by host team route states"
+                "HostTeamProfileList/Covered by host team route states"
               ]
             },
             {
@@ -6117,7 +6117,7 @@
                 "host_team_save_profile_offline"
               ],
               "previewIds": [
-                "HostTeamProfileRows/Covered by host team route states"
+                "HostTeamProfileList/Covered by host team route states"
               ]
             },
             {
@@ -6261,7 +6261,7 @@
             "lib/clubs/presentation/detail/club_detail_screen_state.dart",
             "lib/clubs/presentation/detail/club_detail_view_model.dart",
             "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-            "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
+            "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart",
             "lib/clubs/presentation/detail/widgets/club_schedule_section.dart",
             "lib/reviews/shared/reviews_section.dart"
           ],
@@ -6501,7 +6501,7 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "ClubHeroAppBar keeps the icon-only share affordance in host public view; ClubDetailScreen now supplies the share callback and owns the ExternalShareController side effect.",
+              "notes": "ClubHeroTopBar keeps the icon-only share affordance in host public view; ClubDetailScreen now supplies the share callback and owns the ExternalShareController side effect.",
               "previewIds": [
                 "ClubDetailScreen/Public preview states"
               ],
@@ -6730,7 +6730,7 @@
               "id": "club_fetch_loading",
               "kind": "loading",
               "status": "captured",
-              "notes": "Without an initial club extra, fetchClubProvider loading renders CatchStartupLoadingScreen and now has a deterministic route capture.",
+              "notes": "Without an initial club extra, fetchClubProvider loading renders SplashScreen and now has a deterministic route capture.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
               ],
@@ -6991,7 +6991,7 @@
               "id": "submit_pending",
               "kind": "mutation",
               "status": "captured",
-              "notes": "CreateEventController.submitMutation pending drives StepperFooter loading and disables scheduling. A deterministic pending-submit capture now covers this state.",
+              "notes": "CreateEventController.submitMutation pending drives HostStepperDock loading and disables scheduling. A deterministic pending-submit capture now covers this state.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
               ],
@@ -7517,7 +7517,7 @@
               "id": "lifecycle_workspace",
               "kind": "populated",
               "status": "captured",
-              "notes": "HostEventManageScreen renders one Preparation, Live Operations, or Recap workspace from event time and status. Legacy Setup / Guests / Live / Report values remain route-compatible inputs; Guests routes to HostEventRosterPanel and cannot override the lifecycle phase.",
+              "notes": "HostEventManageScreen renders one Preparation, Live Operations, or Recap workspace from event time and status. Legacy Setup / Guests / Live / Report values remain route-compatible inputs; Guests routes to HostEventRosterSection and cannot override the lifecycle phase.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
@@ -7569,7 +7569,7 @@
               "id": "attendance_setup_roster",
               "kind": "populated",
               "status": "captured",
-              "notes": "HostEventRosterPanel renders setup-mode filters and public-profile-backed participant rows without replacing or rebuilding the lifecycle workspace. The prior full-page Guests reference remains historical evidence for roster content, not the active drawer geometry.",
+              "notes": "HostEventRosterSection renders setup-mode filters and public-profile-backed participant rows without replacing or rebuilding the lifecycle workspace. The prior full-page Guests reference remains historical evidence for roster content, not the active drawer geometry.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
@@ -7701,7 +7701,7 @@
               "id": "live_workspace",
               "kind": "populated",
               "status": "captured",
-              "notes": "Live Operations renders the compact Event Success console as the sole primary workspace. Check-in and editable roster controls stay available through the routed HostEventRosterPanel, and the top bar carries only event title plus lifecycle subtitle.",
+              "notes": "Live Operations renders the compact Event Success console as the sole primary workspace. Check-in and editable roster controls stay available through the routed HostEventRosterSection, and the top bar carries only event title plus lifecycle subtitle.",
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
@@ -8509,10 +8509,10 @@
             "lib/hosts/presentation/inbox/host_inbox_view_model.dart",
             "lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart",
             "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart",
-            "lib/hosts/presentation/inbox/host_follower_update_composer.dart",
+            "lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart",
             "lib/hosts/presentation/inbox/host_sends_page_body.dart",
             "lib/hosts/presentation/host_operations_screen.dart",
-            "lib/hosts/presentation/host_operations/host_audience.dart",
+            "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
             "lib/hosts/data/crm/host_campaign_repository.dart",
             "lib/hosts/data/crm/host_communication_repository.dart",
             "lib/hosts/data/crm/host_saved_audience_repository.dart",
@@ -9041,7 +9041,7 @@
               "kind": "mutation",
               "status": "tested",
               "tests": [
-                "test/hosts/host_follower_update_composer_test.dart",
+                "test/hosts/host_follower_update_composer_sheet_test.dart",
                 "test/hosts/host_inbox_screen_test.dart",
                 "functions/src/organizers/organizerPosts.test.ts",
                 "functions/src/organizers/organizerSends.test.ts"
@@ -9146,7 +9146,7 @@
             "packages/catch_ui/lib/src/components/catch_top_bar.dart",
             "lib/chats/presentation/widgets/chat_event_context_header.dart",
             "lib/chats/presentation/widgets/chat_message_list.dart",
-            "lib/chats/presentation/widgets/chat_input_bar.dart",
+            "lib/chats/presentation/widgets/chat_input.dart",
             "lib/chats/presentation/widgets/message_bubble.dart"
           ],
           "componentIds": [
@@ -9366,7 +9366,7 @@
               "id": "composer_enabled",
               "kind": "populated",
               "status": "captured",
-              "notes": "ChatInputBar enabled state is covered by shared send tests plus Host Chat composer-state and keyboard-open multiline captures.",
+              "notes": "ChatInput enabled state is covered by shared send tests plus Host Chat composer-state and keyboard-open multiline captures.",
               "tests": [
                 "test/chats/chat_screen_test.dart"
               ],
@@ -9408,7 +9408,7 @@
               "id": "send_message_pending",
               "kind": "mutation",
               "status": "captured",
-              "notes": "ChatController.sendMessageMutation pending drives the ChatInputBar send loading indicator; Host Chat composer-state capture includes send-pending UI.",
+              "notes": "ChatController.sendMessageMutation pending drives the ChatInput send loading indicator; Host Chat composer-state capture includes send-pending UI.",
               "previewIds": [
                 "ChatScreen/Host chat states"
               ],
@@ -10495,7 +10495,7 @@
             {
               "id": "DP-SAVED-EVENTS-003",
               "status": "closed",
-              "nextAction": "Closed by SavedEventsHeaderSliver, SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, SavedEventsMessage, and SavedEventsListState provider-free section boundaries."
+              "nextAction": "Closed by SavedEventsHeaderSliver, SavedEventsAgendaList, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorState, SavedEventsMessage, and SavedEventsListState provider-free section boundaries."
             },
             {
               "id": "DP-SAVED-EVENTS-004",
@@ -10602,7 +10602,7 @@
               "notes": "Filters default preferences now has a manifest-registered design reference and deterministic capture. Add loading/error, dirty/reset, save mutation, text-scale, reduced-motion, and light/dark captures before promoting beyond captured.",
               "previewIds": [
                 "FiltersScreen/Route states",
-                "FiltersContent/Content states"
+                "FiltersBody/Content states"
               ]
             },
             {
@@ -10617,7 +10617,7 @@
               ],
               "notes": "Local draft state updates age range and gender chip selections before persistence.",
               "previewIds": [
-                "FiltersContent/Content states"
+                "FiltersBody/Content states"
               ]
             },
             {
@@ -10629,7 +10629,7 @@
               ],
               "notes": "The top-bar Reset action restores the local draft from the profile while not saving.",
               "previewIds": [
-                "FiltersContent/Content states"
+                "FiltersBody/Content states"
               ]
             },
             {
@@ -10641,7 +10641,7 @@
               ],
               "notes": "FiltersController.saveFiltersMutation pending drives Apply filters loading and disables reset/apply duplicate work.",
               "previewIds": [
-                "FiltersContent/Content states"
+                "FiltersBody/Content states"
               ]
             },
             {
@@ -10675,7 +10675,7 @@
               "notes": "Text-scale 2.0 Filters capture covers range value, slider, chips, top bar, and bottom dock.",
               "previewIds": [
                 "FiltersScreen/Route states",
-                "FiltersContent/Content states"
+                "FiltersBody/Content states"
               ]
             },
             {
@@ -10688,7 +10688,7 @@
               "notes": "Widgetbook and deterministic route captures render Filters with MediaQuery.disableAnimations enabled.",
               "previewIds": [
                 "FiltersScreen/Route states",
-                "FiltersContent/Content states"
+                "FiltersBody/Content states"
               ]
             }
           ],
@@ -11265,7 +11265,7 @@
               "captureIds": [
                 "notifications_signed_out"
               ],
-              "notes": "A successfully resolved null uid alone renders ActivitySignedOutState with No activity yet copy.",
+              "notes": "A successfully resolved null uid alone renders ActivitySignedOutEmptyState with No activity yet copy.",
               "previewIds": [
                 "ActivityScreen/Screen states"
               ]

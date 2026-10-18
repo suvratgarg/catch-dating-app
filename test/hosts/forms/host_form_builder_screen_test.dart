@@ -126,11 +126,11 @@ void main() {
     );
     expect(
       tester
-          .widget<CatchDockSurface>(
+          .widget<CatchDock>(
             find.byWidgetPredicate(
               (widget) =>
-                  widget is CatchDockSurface &&
-                  widget.variant == CatchDockSurfaceVariant.primary,
+                  widget is CatchDock &&
+                  widget.variant == CatchDockVariant.primary,
             ),
           )
           .buttonMode,
@@ -148,8 +148,7 @@ void main() {
       expect(
         find.byWidgetPredicate(
           (widget) =>
-              widget is CatchDockSurface &&
-              widget.variant == CatchDockSurfaceVariant.primary,
+              widget is CatchDock && widget.variant == CatchDockVariant.primary,
         ),
         findsNothing,
       );

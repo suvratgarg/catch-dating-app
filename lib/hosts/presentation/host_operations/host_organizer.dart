@@ -19,7 +19,8 @@ class HostClubOrganizerOverviewController extends ConsumerWidget {
       children: [
         CatchSection.content(
           title: context.l10n.hostsHostAnalyticsLabelAllTime,
-          child: HostClubOrganizerOverview(
+          child: HostOrganizerMetricGrid(
+            key: const ValueKey('host-club-insights-summary'),
             club: club,
             eventsLoaded: eventsState.hasData,
             eventCount: events.length,
@@ -181,32 +182,6 @@ class _HostCrmChannelRow extends StatelessWidget {
         gapH4,
         Text(status, style: CatchTextStyles.supporting(context, color: t.ink2)),
       ],
-    );
-  }
-}
-
-class HostClubOrganizerOverview extends StatelessWidget {
-  const HostClubOrganizerOverview({
-    super.key,
-    required this.club,
-    required this.eventsLoaded,
-    required this.eventCount,
-    required this.activeEventCount,
-  });
-
-  final Club club;
-  final bool eventsLoaded;
-  final int eventCount;
-  final int activeEventCount;
-
-  @override
-  Widget build(BuildContext context) {
-    return HostOrganizerMetricGrid(
-      key: const ValueKey('host-club-insights-summary'),
-      club: club,
-      eventsLoaded: eventsLoaded,
-      eventCount: eventCount,
-      activeEventCount: activeEventCount,
     );
   }
 }

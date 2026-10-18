@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/presentation/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
-import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -39,7 +39,7 @@ void main() {
     });
   });
 
-  group('CatchAdaptiveTabScaffold', () {
+  group('AdaptiveTabScaffold', () {
     testWidgets('floats navigation and publishes raw obstruction on iOS', (
       tester,
     ) async {
@@ -54,7 +54,7 @@ void main() {
               padding: EdgeInsets.only(bottom: 34),
               viewPadding: EdgeInsets.only(bottom: 34),
             ),
-            child: CatchAdaptiveTabScaffold(
+            child: AdaptiveTabScaffold(
               activeIndex: appShellClubsTabIndex,
               body: SizedBox.expand(),
               navigationBar: SizedBox(key: navigationKey, height: 56),
@@ -105,7 +105,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
-            home: CatchAdaptiveTabScaffold(
+            home: AdaptiveTabScaffold(
               activeIndex: appShellChatsTabIndex,
               body: TextField(
                 key: editorKey,
@@ -189,7 +189,7 @@ void main() {
               padding: EdgeInsets.only(bottom: 34),
               viewPadding: EdgeInsets.only(bottom: 34),
             ),
-            child: CatchAdaptiveTabScaffold(
+            child: AdaptiveTabScaffold(
               activeIndex: appShellClubsTabIndex,
               body: SizedBox.expand(),
               navigationBar: SizedBox(key: navigationKey, height: 56),
@@ -230,7 +230,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
-          home: const CatchAdaptiveTabScaffold(
+          home: const AdaptiveTabScaffold(
             activeIndex: appShellHomeTabIndex,
             body: SizedBox.expand(),
             anchoredFallback: SizedBox(key: fallbackKey, height: 56),
@@ -286,7 +286,7 @@ void main() {
               padding: EdgeInsets.only(bottom: 12),
               viewPadding: EdgeInsets.only(bottom: 34),
             ),
-            child: CatchAdaptiveTabScaffold(
+            child: AdaptiveTabScaffold(
               activeIndex: appShellHomeTabIndex,
               body: CatchScrollTerminalGap(key: terminalKey, extra: 10),
             ),

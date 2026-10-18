@@ -373,19 +373,19 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Route state renderer',
-  type: HostCreateEventRouteStateView,
+  type: HostCreateEventRouteBody,
   path: '[P1 product surfaces]/Host create event',
 )
 Widget hostCreateEventRouteStateViewCatalogStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'HostCreateEventRouteStateView',
+    title: 'HostCreateEventRouteBody',
     contractId: 'component.host.event.create_route_state_view',
     children: [
       WidgetbookPageStateCard(
         label: 'ready',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
-            child: HostCreateEventRouteStateView(
+            child: HostCreateEventRouteBody(
               clubId: widgetbookClub.id,
               state: HostCreateEventRouteState.initial(widgetbookClub),
             ),

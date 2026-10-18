@@ -1,7 +1,7 @@
-part of 'event_detail_design_primitives.dart';
+part of 'event_detail_fact_list.dart';
 
-class TicketStubCellData {
-  const TicketStubCellData({
+class TicketStubTileData {
+  const TicketStubTileData({
     required this.label,
     required this.value,
     this.detail,
@@ -55,16 +55,16 @@ class _VerticalDashedPainter extends CustomPainter {
       oldDelegate.color != color;
 }
 
-List<TicketStubCellData> _ticketStubCells(Event event, AppLocalizations l10n) {
+List<TicketStubTileData> _ticketStubCells(Event event, AppLocalizations l10n) {
   final locationDetail = event.locationNotes;
   return [
-    TicketStubCellData(
+    TicketStubTileData(
       label: l10n.eventsEventDetailDesignPrimitivesLabelWhen,
       value: event.shortDateLabel,
       detail: [event.compactTimeRangeLabel, ?event.eventTimezone].join(' · '),
       icon: CatchIcons.calendarAdd,
     ),
-    TicketStubCellData(
+    TicketStubTileData(
       label: l10n.eventsEventDetailDesignPrimitivesLabelWhere,
       value: event.locationName,
       detail: locationDetail == null || locationDetail.isEmpty
@@ -72,7 +72,7 @@ List<TicketStubCellData> _ticketStubCells(Event event, AppLocalizations l10n) {
           : locationDetail,
     ),
     if (event.eventFormat.isDistanceBased)
-      TicketStubCellData(
+      TicketStubTileData(
         label: l10n.eventsEventDetailDesignPrimitivesVisiblecopyPace,
         value: event.pace.label,
         detail: event.activitySummaryLabel,

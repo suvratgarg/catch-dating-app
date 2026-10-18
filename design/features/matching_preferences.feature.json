@@ -33,7 +33,7 @@
             "id": "filters_content",
             "language": "dart",
             "file": "lib/swipes/presentation/filters_screen.dart",
-            "symbol": "FiltersContent"
+            "symbol": "FiltersBody"
           },
           {
             "id": "filters_controller",

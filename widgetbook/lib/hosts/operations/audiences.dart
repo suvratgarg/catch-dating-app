@@ -143,6 +143,14 @@ Widget hostAudienceHeaderStates(BuildContext context) =>
     hostSavedAudiencesStates(context);
 
 @widgetbook.UseCase(
+  name: 'Sender setup states',
+  type: HostWhatsappSetupSection,
+  path: '[P1 product surfaces]/Host operations/Messaging',
+)
+Widget hostWhatsappSetupSectionStates(BuildContext context) =>
+    hostCustomerMessagingStates(context);
+
+@widgetbook.UseCase(
   name: 'Campaign and sender states',
   type: HostCampaignComposer,
   path: '[P1 product surfaces]/Host operations/Messaging',
@@ -202,7 +210,7 @@ Widget hostCustomerMessagingStates(BuildContext context) {
                   child: CatchSectionList(
                     emptyStateOmitted: true,
                     children: [
-                      HostWhatsappSetupPane(
+                      HostWhatsappSetupSection(
                         club: HostOperationsFixtures.primaryClub,
                       ),
                       HostCampaignComposer(

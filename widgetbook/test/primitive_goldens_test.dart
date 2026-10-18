@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -101,7 +101,7 @@ void main() {
     expect(renderer.visited.toSet().length, registered);
     // Pin the reviewed designation inventory, including toolbar inheritance.
     // Exact visitation below also rejects missing or duplicate registrations.
-    expect(coreGoldenIds, hasLength(307));
+    expect(coreGoldenIds, hasLength(315));
     expect(renderer.selected, unorderedEquals(coreGoldenIds));
     expect(
       coreGoldenIds.map(_corpusStem).toSet(),

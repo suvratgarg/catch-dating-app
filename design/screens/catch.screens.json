@@ -361,7 +361,7 @@
             "hostClubLiveGuideScreen",
             "hostClubPaymentsScreen"
           ],
-          "file": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
+          "file": "lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart",
           "symbol": "HostClubSpokeScaffold",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
@@ -451,7 +451,7 @@
           "routes": [
             "hostCreateEventScreen"
           ],
-          "file": "lib/core/celebration/catch_celebration_screen.dart",
+          "file": "lib/core/celebration/celebration_screen.dart",
           "symbol": "PaperCelebrationScaffold",
           "family": "step-flow",
           "expression": "CatchScaffold.stepFlow",
@@ -506,8 +506,8 @@
             "hostAppAttendanceSheet",
             "hostAppEventSuccessScreen"
           ],
-          "file": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
-          "symbol": "HostEventRosterPanel",
+          "file": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
+          "symbol": "HostEventRosterSection",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "full-bleed",
@@ -566,8 +566,8 @@
           "routes": [
             "hostSavedAudienceDetailScreen"
           ],
-          "file": "lib/hosts/presentation/customers/host_saved_audience_overview.dart",
-          "symbol": "HostSavedAudienceOverview",
+          "file": "lib/hosts/presentation/customers/host_saved_audience_section.dart",
+          "symbol": "HostSavedAudienceSection",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
@@ -779,7 +779,7 @@
           "topEdge": "body-owned"
         }
       ],
-      "reason": "A deterministic route adapter gives the intentionally embeddable WelcomePage an explicit standalone surface owner."
+      "reason": "A deterministic route adapter gives the intentionally embeddable OnboardingWelcomeBody an explicit standalone surface owner."
     },
     "screen.auth.phone_entry": {
       "owners": [
@@ -799,7 +799,7 @@
             "authScreen"
           ],
           "file": "lib/auth/presentation/auth_screen.dart",
-          "symbol": "HostAuthFlowFrame",
+          "symbol": "HostAuthScaffold",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
           "bodyGeometry": "intrinsic",
@@ -1603,7 +1603,7 @@
           "routes": [
             "paymentConfirmationScreen"
           ],
-          "file": "lib/core/celebration/catch_celebration_screen.dart",
+          "file": "lib/core/celebration/celebration_screen.dart",
           "symbol": "_CatchCelebrationScreenState",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
@@ -1931,8 +1931,8 @@
           "routes": [
             "hostEventRosterScreen"
           ],
-          "file": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
-          "symbol": "HostEventRosterPanel",
+          "file": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
+          "symbol": "HostEventRosterSection",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "full-bleed",
@@ -1946,7 +1946,7 @@
     "MatchCelebrationDialog": {
       "owners": [
         {
-          "file": "lib/core/celebration/catch_celebration_screen.dart",
+          "file": "lib/core/celebration/celebration_screen.dart",
           "symbol": "_CatchCelebrationScreenState",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
@@ -1959,7 +1959,7 @@
     "EventJoinedCelebrationScreen": {
       "owners": [
         {
-          "file": "lib/core/celebration/catch_celebration_screen.dart",
+          "file": "lib/core/celebration/celebration_screen.dart",
           "symbol": "_CatchCelebrationScreenState",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
@@ -1972,7 +1972,7 @@
     "EventCheckInCelebrationScreen": {
       "owners": [
         {
-          "file": "lib/core/celebration/catch_celebration_screen.dart",
+          "file": "lib/core/celebration/celebration_screen.dart",
           "symbol": "_CatchCelebrationScreenState",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
@@ -2380,8 +2380,8 @@
             "event_detail_member_ticket"
           ],
           "previewIds": [
-            "EventDetailHeroAppBar/Catalog states",
-            "EventDetailTicketStubBand/Catalog states",
+            "EventDetailHeroTopBar/Catalog states",
+            "EventDetailTicketStubRow/Catalog states",
             "EventDetailScreen/Screen states"
           ],
           "tests": [
@@ -2398,7 +2398,7 @@
             "event_detail_member_spotlight"
           ],
           "previewIds": [
-            "EventDetailHeroAppBar/Catalog states",
+            "EventDetailHeroTopBar/Catalog states",
             "EventDetailScreen/Screen states"
           ],
           "tests": [
@@ -2463,7 +2463,7 @@
           "id": "booking_pending",
           "kind": "mutation",
           "status": "captured",
-          "source": "EventDetailCta listens to EventBookingController mutations and maps pending flags into EventDetailBookingDockState; EventDetailBody routes booking/cancel success feedback through the shared Catch snackbar helper.",
+          "source": "EventDetailDock listens to EventBookingController mutations and maps pending flags into EventDetailBookingDockState; EventDetailBody routes booking/cancel success feedback through the shared Catch snackbar helper.",
           "previewIds": [
             "EventBookingDock/BookingDock states"
           ],
@@ -2481,7 +2481,7 @@
           "id": "booking_failed",
           "kind": "mutation",
           "status": "captured",
-          "source": "Booking/cancel mutation failures are surfaced by the EventDetailBookingDockMutationState and EventDetailCta tests; success feedback uses the shared Catch snackbar helper.",
+          "source": "Booking/cancel mutation failures are surfaced by the EventDetailBookingDockMutationState and EventDetailDock tests; success feedback uses the shared Catch snackbar helper.",
           "previewIds": [
             "EventBookingDock/BookingDock states"
           ],
@@ -2501,7 +2501,7 @@
           "id": "waitlist_sold_out_cancelled_past",
           "kind": "populated",
           "status": "captured",
-          "source": "EventDetailBookingDockState derives sold-out, waitlist, cancellation, and past-event action states from Event and EventParticipation before EventDetailCta renders the provider-free dock.",
+          "source": "EventDetailBookingDockState derives sold-out, waitlist, cancellation, and past-event action states from Event and EventParticipation before EventDetailDock renders the provider-free dock.",
           "previewIds": [
             "EventBookingDock/BookingDock states"
           ],
@@ -2581,8 +2581,8 @@
               "EventHero"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_hero_app_bar.dart",
-              "symbol": "EventDetailHeroAppBar"
+              "file": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart",
+              "symbol": "EventDetailHeroTopBar"
             },
             "currentOwner": "EventDetailBody",
             "targetOwner": "registered Event Detail hero section with view data and user intents",
@@ -2599,7 +2599,7 @@
               "spotlight_dark"
             ],
             "previewIds": [
-              "EventDetailHeroAppBar/Catalog states"
+              "EventDetailHeroTopBar/Catalog states"
             ],
             "migration": "Register the hero section/component contract, move save/calendar visibility into an adapter view model, keep saved/calendar fallback feedback on the shared Catch snackbar helper, and add Widgetbook states for saved, pending, ticket, and dark variants."
           },
@@ -2612,8 +2612,8 @@
               "TicketStub"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-              "symbol": "EventDetailTicketStubBand"
+              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "symbol": "EventDetailTicketStubRow"
             },
             "currentOwner": "EventDetailBody",
             "targetOwner": "registered ticket-stub compound",
@@ -2628,7 +2628,7 @@
               "long_location"
             ],
             "previewIds": [
-              "EventDetailTicketStubBand/Catalog states"
+              "EventDetailTicketStubRow/Catalog states"
             ],
             "migration": "Convert the component to accept explicit cells, keep the Event adapter responsible for deriving when/where/pace copy, and add Widgetbook coverage."
           },
@@ -2668,7 +2668,7 @@
               "HintList"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailHintList"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2695,8 +2695,8 @@
               "Itinerary"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-              "symbol": "EventDetailItinerary"
+              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "symbol": "EventDetailItineraryList"
             },
             "currentOwner": "EventDetailOverviewSection",
             "targetOwner": "registered itinerary compound",
@@ -2709,7 +2709,7 @@
               "long_detail"
             ],
             "previewIds": [
-              "EventDetailItinerary/Catalog states"
+              "EventDetailItineraryList/Catalog states"
             ],
             "migration": "Convert to explicit step input, then keep event-derived default itinerary generation outside the visual component."
           },
@@ -2722,8 +2722,8 @@
               "PhotoStrip"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-              "symbol": "EventDetailPhotoStrip"
+              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
+              "symbol": "EventDetailPhotoGrid"
             },
             "currentOwner": "EventDetailOverviewSection",
             "targetOwner": "registered photo-strip compound",
@@ -2736,7 +2736,7 @@
               "empty_hidden"
             ],
             "previewIds": [
-              "EventDetailPhotoStrip/Catalog states"
+              "EventDetailPhotoGrid/Catalog states"
             ],
             "migration": "Accept explicit cells, caption, and data copy so the same strip can serve event, website, and social proof templates."
           },
@@ -2749,7 +2749,7 @@
               "MapCard"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailMapCard"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2777,7 +2777,7 @@
               "MechanismList"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailMechanismList"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2805,7 +2805,7 @@
               "Section"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+              "file": "lib/events/presentation/widgets/event_detail_fact_list.dart",
               "symbol": "EventDetailGoodToKnowList"
             },
             "currentOwner": "EventDetailOverviewSection",
@@ -2953,7 +2953,7 @@
             ],
             "flutter": {
               "file": "lib/events/presentation/widgets/event_detail_body.dart",
-              "symbol": "EventCompanionEntry"
+              "symbol": "EventCompanionCard"
             },
             "currentOwner": "EventDetailBody",
             "targetOwner": "registered post-booking prompt section",
@@ -2980,7 +2980,7 @@
               "BookingDock"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/event_detail_cta.dart",
+              "file": "lib/events/presentation/widgets/event_detail_dock.dart",
               "symbol": "EventBookingDock"
             },
             "currentOwner": "EventDetailBody",
@@ -3003,7 +3003,7 @@
             "previewIds": [
               "EventBookingDock/BookingDock states"
             ],
-            "migration": "EventDetailCta now maps provider and mutation output through provider-free EventDetailBookingDockState, then renders the result through EventBookingDock while keeping mutation execution at the route/widget edge."
+            "migration": "EventDetailDock now maps provider and mutation output through provider-free EventDetailBookingDockState, then renders the result through EventBookingDock while keeping mutation execution at the route/widget edge."
           }
         ]
       },
@@ -3016,7 +3016,7 @@
         {
           "id": "DS-EVENT-DETAIL-002",
           "status": "closed",
-          "nextAction": "Widgetbook entries now cover EventDetailHeroAppBar, TicketStub, Overview, HintList, Itinerary, PhotoStrip, MapCard, MechanismList, HostCard, WhoIsGoing/social proof, Reviews, Cross Paths event consent, companion/invite prompts, and provider-free EventBookingDock states."
+          "nextAction": "Widgetbook entries now cover EventDetailHeroTopBar, TicketStub, Overview, HintList, Itinerary, PhotoStrip, MapCard, MechanismList, HostCard, WhoIsGoingSection/social proof, Reviews, Cross Paths event consent, companion/invite prompts, and provider-free EventBookingDock states."
         },
         {
           "id": "DS-EVENT-DETAIL-003",
@@ -3409,8 +3409,8 @@
               "ClubHero"
             ],
             "flutter": {
-              "file": "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
-              "symbol": "ClubHeroAppBar"
+              "file": "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart",
+              "symbol": "ClubHeroTopBar"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "registered Club Detail hero section with view data and user intents",
@@ -3427,7 +3427,7 @@
               "host_badge"
             ],
             "previewIds": [
-              "ClubHeroAppBar/Hero states"
+              "ClubHeroTopBar/Hero states"
             ],
             "migration": "Move share handling and host badge visibility into a section adapter, then add Widgetbook states for cover/no-cover/collapsed variants."
           },
@@ -3528,10 +3528,10 @@
               "PhotoStrip"
             ],
             "flutter": {
-              "file": "lib/clubs/presentation/detail/widgets/club_photo_strip.dart",
-              "symbol": "ClubPhotoStrip"
+              "file": "lib/clubs/presentation/detail/widgets/club_photo_rail.dart",
+              "symbol": "ClubPhotoRail"
             },
-            "currentOwner": "ClubPhotoStrip",
+            "currentOwner": "ClubPhotoRail",
             "targetOwner": "registered club photo strip compound",
             "dependencies": [
               "catch.surface"
@@ -3543,7 +3543,7 @@
               "many_photos"
             ],
             "previewIds": [
-              "ClubPhotoStrip/Photo strip states"
+              "ClubPhotoRail/Photo strip states"
             ],
             "migration": "Provider-free photo strip has direct Widgetbook states for one-photo and three-photo variants; keep broken-image and many-photo edge cases as future visual variants if needed."
           },
@@ -3680,7 +3680,7 @@
         {
           "id": "DS-CLUB-DETAIL-003",
           "status": "closed",
-          "nextAction": "Closed by provider-free ClubHostSection, ClubHostRow, ClubContactSection, and ClubPhotoStrip files plus direct Widgetbook states and widget catalog entries."
+          "nextAction": "Closed by provider-free ClubHostSection, ClubHostRow, ClubContactSection, and ClubPhotoRail files plus direct Widgetbook states and widget catalog entries."
         },
         {
           "id": "DS-CLUB-DETAIL-004",
@@ -3917,7 +3917,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {
@@ -4201,7 +4201,7 @@
           "status": "captured",
           "source": "AsyncError from exploreFeedViewModelProvider renders CatchLocalizedErrorState (inline/compact mode) inside the feed sliver.",
           "previewIds": [
-            "ExploreFeedContentSliver/Feed states"
+            "ExploreFeedSliverBody/Feed states"
           ],
           "tests": [
             "test/explore/explore_widgets_test.dart"
@@ -4235,7 +4235,7 @@
           "source": "CatchEmptyState renders with Explore search/filter copy for narrowed query states.",
           "previewIds": [
             "CatchEmptyState/Empty states",
-            "ExploreFeedContentSliver/Feed states",
+            "ExploreFeedSliverBody/Feed states",
             "ExploreScreen/Screen states"
           ],
           "tests": [
@@ -4259,7 +4259,7 @@
           ],
           "previewIds": [
             "ExploreScreen/Screen states",
-            "ExploreFeedContentSliver/Feed states",
+            "ExploreFeedSliverBody/Feed states",
             "ExploreEventTypeBrowseGrid/Activity states",
             "CatchButton/Map launcher states"
           ],
@@ -4368,7 +4368,7 @@
             "explore_unclaimed_host_projection"
           ],
           "previewIds": [
-            "ExploreFeedContentSliver/Feed states",
+            "ExploreFeedSliverBody/Feed states",
             "ExploreScreen/Screen states"
           ],
           "tests": [
@@ -4448,11 +4448,11 @@
           "id": "no_exact_pins",
           "kind": "empty",
           "status": "implemented",
-          "source": "ExploreMapScreen delegates no-exact-pin feed data to EventMapView's shared no-pins empty branch while keeping the route chrome and deterministic Widgetbook fixture.",
+          "source": "ExploreMapScreen delegates no-exact-pin feed data to EventMap's shared no-pins empty branch while keeping the route chrome and deterministic Widgetbook fixture.",
           "previewIds": [
             "ExploreMapScreen/Map route states"
           ],
-          "nextAction": "Keep no-exact-pin route coverage aligned with EventMapView; add a screenshot capture only if map empty-state parity needs pixel review."
+          "nextAction": "Keep no-exact-pin route coverage aligned with EventMap; add a screenshot capture only if map empty-state parity needs pixel review."
         },
         {
           "id": "zero_radius_results",
@@ -4471,7 +4471,7 @@
           "id": "map_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "AsyncLoading from exploreFeedViewModelProvider renders EventMapView loading treatment inside ExploreMapScreen chrome.",
+          "source": "AsyncLoading from exploreFeedViewModelProvider renders EventMap loading treatment inside ExploreMapScreen chrome.",
           "captureIds": [
             "explore_map_loading"
           ],
@@ -4487,7 +4487,7 @@
           "id": "map_error",
           "kind": "error",
           "status": "captured",
-          "source": "AsyncError from exploreFeedViewModelProvider renders EventMapView error and retry inside ExploreMapScreen chrome.",
+          "source": "AsyncError from exploreFeedViewModelProvider renders EventMap error and retry inside ExploreMapScreen chrome.",
           "captureIds": [
             "explore_map_error"
           ],
@@ -4541,7 +4541,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "ExploreScreen composes Scaffold, SafeArea, browse chrome, filter rail, CustomScrollView slivers, membership mutation listener, mixed event/person/organizer feed, empty/error states, and floating map count pill; route provider-wave branch precedence, empty-state derivation, and map count label route through ExploreDiscoveryScreenState, which delegates body loading/error/content/empty branches to ExploreScreenBodyState and map label derivation to ExploreMapLauncherState. Browse/search-open chrome labels and search expansion policy route through ExploreChromeState, city-trigger chrome labels/icons route through ExploreCityTriggerState, filter active-count/sheet-option copy routes through ExploreFilterRailState and ExploreFilterSheetState, cover-story copy routes through ExploreCoverStoryState, and mixed-feed card ordering plus event/external/person/organizer row labels route through ExploreFeedSectionState, ExploreEventRowState, ExploreExternalEventRowState, CrossPathsExploreCard, and ExploreClubCardState. Cross Paths is optional fail-closed enrichment and never replaces its associated event ticket. ExploreMapScreen is a child route that reuses the event map view model; the retired map peek-rail summary/ticket adapters are no longer part of the active composition.",
+        "currentLayout": "ExploreScreen composes Scaffold, SafeArea, browse chrome, filter rail, CustomScrollView slivers, membership mutation listener, mixed event/person/organizer feed, empty/error states, and floating map count pill; route provider-wave branch precedence, empty-state derivation, and map count label route through ExploreDiscoveryScreenState, which delegates body loading/error/content/empty branches to ExploreScreenBodyState and map label derivation to ExploreMapLauncherState. Browse/search-open chrome labels and search expansion policy route through ExploreChromeState, city-trigger chrome labels/icons route through ExploreCityButtonState, filter active-count/sheet-option copy routes through ExploreFilterRailState and ExploreFilterSheetState, cover-story copy routes through ExploreCoverStoryState, and mixed-feed card ordering plus event/external/person/organizer row labels route through ExploreFeedSectionState, ExploreEventRowState, ExploreExternalEventRowState, CrossPathsExploreCard, and ExploreClubCardState. Cross Paths is optional fail-closed enrichment and never replaces its associated event ticket. ExploreMapScreen is a child route that reuses the event map view model; the retired map peek-rail summary/ticket adapters are no longer part of the active composition.",
         "targetLayout": "ExploreScreen should map provider state into an ExploreDiscoveryScreenState and compose registered sections: browse chrome, scope/filter rail, cover story, day ticket feed, club interleaves, cross-paths card, event type browse grid, map launcher, empty/error states, and map route sheet/overlay.",
         "sections": [
           {
@@ -4556,7 +4556,7 @@
               "file": "lib/explore/presentation/widgets/explore_header.dart",
               "symbol": "ExploreDiscoveryCoverHeader"
             },
-            "currentOwner": "ExploreScreen, ExploreChromeState, ExploreCityTriggerState, and ExploreMapLauncherState",
+            "currentOwner": "ExploreScreen, ExploreChromeState, ExploreCityButtonState, and ExploreMapLauncherState",
             "targetOwner": "registered Explore browse chrome section",
             "dependencies": [
               "catch.field",
@@ -4572,7 +4572,7 @@
             "previewIds": [
               "ExploreDiscoveryCoverHeader/Cover header states"
             ],
-            "migration": "ExploreDiscoveryScreenState now maps route provider-wave data before the route composes chrome and body slivers. ExploreChromeState owns browse header title/subtitle/search labels plus cover-versus-search-open policy for the discovery header. ExploreCityTriggerState owns city trigger tooltip, semantic label, scope label, and focused/unfocused icon selection."
+            "migration": "ExploreDiscoveryScreenState now maps route provider-wave data before the route composes chrome and body slivers. ExploreChromeState owns browse header title/subtitle/search labels plus cover-versus-search-open policy for the discovery header. ExploreCityButtonState owns city trigger tooltip, semantic label, scope label, and focused/unfocused icon selection."
           },
           {
             "id": "section.explore.filters",
@@ -4640,9 +4640,9 @@
               "empty"
             ],
             "previewIds": [
-              "ExploreFeedContentSliver/Feed states"
+              "ExploreFeedSliverBody/Feed states"
             ],
-            "migration": "ExploreFeedSectionState owns mixed feed card selection, result-count copy, Cross Paths person insertion, organizer intermix ranking, and This Week promotion. ExploreCoverStoryState owns the ranked cover-story identity and availability-aware CTA copy with an injected clock for tests. Explore event tickets reuse the consent-safe veiled attendee stack, ExploreClubCardState owns organizer context, and CrossPathsExploreCard composes catch.person_polaroid with separate associated-event context and actions from a server-owned sanitized suggestion. DateTicket/EventTicket roles map to catch.event_card; organizer spotlights map to catch.organizer_poster through ExploreOrganizerPosterCard. The old standalone CrossPathsCard proposal remains retired."
+            "migration": "ExploreFeedSectionState owns mixed feed card selection, result-count copy, Cross Paths person insertion, organizer intermix ranking, and This Week promotion. ExploreCoverStoryState owns the ranked cover-story identity and availability-aware CTA copy with an injected clock for tests. Explore event tickets reuse the consent-safe veiled attendee stack, ExploreClubCardState owns organizer context, and CrossPathsExploreCard composes catch.person_polaroid with separate associated-event context and actions from a server-owned sanitized suggestion. DateTicket/EventTicket roles map to catch.event_card; organizer spotlights map to catch.organizer_poster through ClubCard. The old standalone CrossPathsCard proposal remains retired."
           },
           {
             "id": "section.explore.cover_story",
@@ -4653,8 +4653,8 @@
               "CoverStory"
             ],
             "flutter": {
-              "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
-              "symbol": "CatchCoverStory"
+              "file": "lib/explore/presentation/widgets/featured_event_poster.dart",
+              "symbol": "FeaturedEventPoster"
             },
             "currentOwner": "ExploreDiscoveryCoverHeader and ExploreCoverStoryState",
             "targetOwner": "registered Explore CoverStory compound",
@@ -4669,7 +4669,7 @@
               "without_cta"
             ],
             "previewIds": [
-              "CatchCoverStory/Contract states"
+              "FeaturedEventPoster/Contract states"
             ],
             "migration": "ExploreCoverStoryState now owns activity-independent cover copy and test-time clock behavior. CoverStory is promoted through the catch.cover_story component contract, with route-owned CTA/search callbacks staying outside the reusable visual contract."
           },
@@ -4716,7 +4716,7 @@
               "file": "lib/explore/presentation/explore_map_screen.dart",
               "symbol": "ExploreMapScreen"
             },
-            "currentOwner": "ExploreMapScreen and EventMapView",
+            "currentOwner": "ExploreMapScreen and EventMap",
             "targetOwner": "registered Explore map route adapter",
             "dependencies": [
               "catch.button",
@@ -4734,7 +4734,7 @@
             "previewIds": [
               "ExploreMapScreen/Map route states"
             ],
-            "migration": "The dropped Explore map peek-rail lead and selected-pin ticket widgets were retired in the event/club/profile parity handoff. ExploreMapScreen now owns selected-pin route state and renders the selected event through the canonical EventDateRailCard overlay; EventPinsMap renders DS activity map pins for deterministic placeholders and byte-backed native markers. Widgetbook covers ready, selected-card, loading, empty, no-exact-pin, error, and distance-ring route states. Remaining work: map dynamic-region masking, keeping EventMapView as the map primitive, and moving route chrome/provider-wave data into an adapter."
+            "migration": "The dropped Explore map peek-rail lead and selected-pin ticket widgets were retired in the event/club/profile parity handoff. ExploreMapScreen now owns selected-pin route state and renders the selected event through the canonical EventDateRailCard overlay; EventPinsMap renders DS activity map pins for deterministic placeholders and byte-backed native markers. Widgetbook covers ready, selected-card, loading, empty, no-exact-pin, error, and distance-ring route states. Remaining work: map dynamic-region masking, keeping EventMap as the map primitive, and moving route chrome/provider-wave data into an adapter."
           },
           {
             "id": "section.explore.empty_error",
@@ -4763,7 +4763,7 @@
             ],
             "previewIds": [
               "CatchEmptyState/Empty states",
-              "ExploreFeedContentSliver/Feed states",
+              "ExploreFeedSliverBody/Feed states",
               "ExploreScreen/Screen states"
             ],
             "migration": "ExploreDiscoveryScreenState now owns route-level empty-state selection before ExploreScreen composes visual branches. ExploreScreen uses provider-free ExploreScreenBodyState for route loading/error/content/empty branch precedence and ExploreDiscoveryEmptyState for source-club/search/filter empty copy and clear-action cardinality. ExploreEventsSection uses provider-free ExploreEventsEmptyState for feed-empty copy, clear-search/filter intent, and broaden-time-filter intent. Remaining work is only product policy: decide whether feed-only failures should stay inline or promote to the screen-level error contract."
@@ -4803,7 +4803,7 @@
         {
           "id": "DS-EXPLORE-001",
           "status": "closed",
-          "nextAction": "Closed by registering Explore browse chrome, filter rail, mixed feed, cover story, map launcher, map route, empty/error, and activity-grid sections in the screen registry, while mapping reusable compounds to formal component contracts: catch.cover_story, catch.button, catch.event_card, and catch.organizer_poster. DateTicket/EventTicket roles map to catch.event_card ticket states; organizer spotlight roles map to ExploreOrganizerPosterCard and the catch.organizer_poster family."
+          "nextAction": "Closed by registering Explore browse chrome, filter rail, mixed feed, cover story, map launcher, map route, empty/error, and activity-grid sections in the screen registry, while mapping reusable compounds to formal component contracts: catch.cover_story, catch.button, catch.event_card, and catch.organizer_poster. DateTicket/EventTicket roles map to catch.event_card ticket states; organizer spotlight roles map to ClubCard and the catch.organizer_poster family."
         },
         {
           "id": "DS-EXPLORE-002",
@@ -4837,7 +4837,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {
@@ -5210,7 +5210,7 @@
           "id": "recommendations_ready",
           "kind": "populated",
           "status": "captured",
-          "source": "dashboardRecommendedEventsProvider candidates are ranked into DashboardEventRecommendation rows and rendered by Recommendations.",
+          "source": "dashboardRecommendedEventsProvider candidates are ranked into DashboardEventRecommendation rows and rendered by ExploreRecommendationsSection.",
           "captureIds": [
             "dashboard_home"
           ],
@@ -5378,7 +5378,7 @@
               "JourneySteps"
             ],
             "flutter": {
-              "file": "lib/dashboard/presentation/widgets/dashboard_empty.dart",
+              "file": "lib/dashboard/presentation/widgets/dashboard_empty_sliver_body.dart",
               "symbol": "DashboardEmptySliverBody"
             },
             "currentOwner": "DashboardScreen",
@@ -6325,7 +6325,7 @@
               "ArrivalMission"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_arrival_card.dart",
               "symbol": "FirstHelloCheckInCard"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -6355,7 +6355,7 @@
               "PreArrivalPlan"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart",
               "symbol": "PreCheckInPlanningCard"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -6386,7 +6386,7 @@
               "MatchClues"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_questionnaire_section.dart",
               "symbol": "CompatibilityQuestionnaireSection"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -6418,7 +6418,7 @@
               "SocialPrompt"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart",
               "symbol": "LiveStepContextCard"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -6449,7 +6449,7 @@
               "PeopleRows"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart",
               "symbol": "MicroPodCard"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -6512,7 +6512,7 @@
               "CandidateList"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_wingman_section.dart",
               "symbol": "WingmanRequestSection"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -6544,7 +6544,7 @@
               "PostEventOpeners"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_afterglow_card.dart",
               "symbol": "PrivateAfterglowRecapCard"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -6575,7 +6575,7 @@
               "SafetyConcern"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_feedback_form.dart",
               "symbol": "EventSuccessFeedbackForm"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -6639,7 +6639,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {
@@ -6822,7 +6822,7 @@
           "id": "queue_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "swipeQueueProvider AsyncLoading renders CatchesProfileReviewSkeleton with the shared ProfileSurfaceSkeleton, top overlay placeholders, bottom scrim, and pass-button placeholder.",
+          "source": "swipeQueueProvider AsyncLoading renders CatchesProfileBodySkeleton with the shared ProfileSurfaceSkeleton, top overlay placeholders, bottom scrim, and pass-button placeholder.",
           "tests": [
             "test/swipes/swipe_screen_test.dart"
           ],
@@ -6854,19 +6854,19 @@
           "id": "active_profile",
           "kind": "populated",
           "status": "captured",
-          "source": "CatchesEventScreenState maps a non-empty queue to CatchesEventReady, then SwipeScreen renders CatchesProfileReview with ProfileSurface, top overlay, bottom scrim, reaction controls, pass action, and route-owned CatchesProfileReviewActionState for write-pending display.",
+          "source": "CatchesEventScreenState maps a non-empty queue to CatchesEventReady, then SwipeScreen renders CatchesProfileBody with ProfileSurface, top overlay, bottom scrim, reaction controls, pass action, and route-owned CatchesProfileReviewActionState for write-pending display.",
           "captureIds": [
             "post_run_catch_window"
           ],
           "nextAction": "First active-profile reference is manifest-registered and compared against post_run_catch_window. CatchesEventScreenState and CatchesProfileReviewActionState now extract provider-wave and mutation display derivation; add keyboard-open, empty, offline, text-scale, reduced-motion, theme, and optional mutation visual references before visual refactors.",
           "previewIds": [
             "SwipeScreen/Event deck route states",
-            "CatchesProfileReview/Deck composition",
+            "CatchesProfileBody/Deck composition",
             "ProfileSurface/Catches profile states",
             "CatchesTopOverlay/Top overlay states",
-            "CatchesBottomScrim/Bottom scrim states",
+            "CatchesScrimOverlay/Bottom scrim states",
             "CatchesPassButton/Pass button states",
-            "ProfileReactionControls/Reaction control states"
+            "ProfileReactionAction/Reaction control states"
           ]
         },
         {
@@ -6892,7 +6892,7 @@
           "id": "reaction_mutation",
           "kind": "mutation",
           "status": "captured",
-          "source": "ProfileReactionControls pass section target and optional comment into SwipeQueueNotifier.swipe(SwipeDirection.like), while ProfileSurface can disable/mark reaction controls pending from route-owned action state.",
+          "source": "ProfileReactionAction pass section target and optional comment into SwipeQueueNotifier.swipe(SwipeDirection.like), while ProfileSurface can disable/mark reaction controls pending from route-owned action state.",
           "tests": [
             "test/swipes/swipe_queue_notifier_test.dart",
             "test/swipes/profile_card_widget_test.dart"
@@ -6900,7 +6900,7 @@
           "nextAction": "Reaction-pending deck plus comment-sheet empty/filled regions are captured; add keyboard-open capture when the capture harness supports sheet interactions.",
           "previewIds": [
             "SwipeScreen/Event deck route states",
-            "ProfileReactionControls/Reaction control states",
+            "ProfileReactionAction/Reaction control states",
             "ProfileReactionCommentSheet/Reaction comment sheet states"
           ],
           "captureIds": [
@@ -7142,7 +7142,7 @@
             ],
             "flutter": {
               "file": "lib/swipes/presentation/swipe_screen.dart",
-              "symbol": "CatchesProfileReview"
+              "symbol": "CatchesProfileBody"
             },
             "currentOwner": "SwipeScreen",
             "targetOwner": "provider-free Catches event deck section",
@@ -7157,10 +7157,10 @@
               "write_pending",
               "write_failed"
             ],
-            "migration": "CatchesProfileReview is now a public provider-free deck composition. Widgetbook covers active deck composition and the bottom scrim separately while the route still owns queue/provider handling.",
+            "migration": "CatchesProfileBody is now a public provider-free deck composition. Widgetbook covers active deck composition and the bottom scrim separately while the route still owns queue/provider handling.",
             "previewIds": [
-              "CatchesProfileReview/Deck composition",
-              "CatchesBottomScrim/Bottom scrim states"
+              "CatchesProfileBody/Deck composition",
+              "CatchesScrimOverlay/Bottom scrim states"
             ]
           },
           {
@@ -7233,10 +7233,10 @@
               "CommentSheet"
             ],
             "flutter": {
-              "file": "lib/swipes/shared/profile_surface/profile_reaction_controls.dart",
-              "symbol": "ProfileReactionControls"
+              "file": "lib/swipes/shared/profile_surface/profile_reaction_action.dart",
+              "symbol": "ProfileReactionAction"
             },
-            "currentOwner": "ProfileSurface/CatchProfileView",
+            "currentOwner": "ProfileSurface/ProfileBody",
             "targetOwner": "registered reaction-control compound with comment-sheet states",
             "dependencies": [
               "catch.button",
@@ -7250,9 +7250,9 @@
               "pending",
               "failed"
             ],
-            "migration": "ProfileReactionControls has Catches-specific Widgetbook coverage for surface, overlay, vertical, disabled, and pending layouts plus empty/filled comment-sheet states; failure feedback remains route-owned snackbar behavior.",
+            "migration": "ProfileReactionAction has Catches-specific Widgetbook coverage for surface, overlay, vertical, disabled, and pending layouts plus empty/filled comment-sheet states; failure feedback remains route-owned snackbar behavior.",
             "previewIds": [
-              "ProfileReactionControls/Reaction control states",
+              "ProfileReactionAction/Reaction control states",
               "ProfileReactionCommentSheet/Reaction comment sheet states"
             ]
           },
@@ -7350,7 +7350,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {
@@ -8400,7 +8400,7 @@
           "id": "suvbot_controls",
           "kind": "permission",
           "status": "captured",
-          "source": "Suvbot conversations replace the normal composer with SuvbotActionBar controls.",
+          "source": "Suvbot conversations replace the normal composer with SuvbotDock controls.",
           "tests": [
             "test/chats/chat_screen_test.dart"
           ],
@@ -8416,7 +8416,7 @@
           "id": "suvbot_action_mutation",
           "kind": "mutation",
           "status": "captured",
-          "source": "SuvbotController delegates action/text requests to SuvbotRepository and SuvbotActionBar handles pending/error/retry states.",
+          "source": "SuvbotController delegates action/text requests to SuvbotRepository and SuvbotDock handles pending/error/retry states.",
           "tests": [
             "test/chats/suvbot_controller_test.dart"
           ],
@@ -8432,7 +8432,7 @@
           "id": "keyboard_composer",
           "kind": "populated",
           "status": "captured",
-          "source": "ChatInputBar uses compact pill CatchField with send action, multiline growth, keyboard-safe bottom dock, and image button.",
+          "source": "ChatInput uses compact pill CatchField with send action, multiline growth, keyboard-safe bottom dock, and image button.",
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
             "ChatScreen/Route states"
@@ -8636,8 +8636,8 @@
               "SendAction"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/chat_input_bar.dart",
-              "symbol": "ChatInputBar"
+              "file": "lib/chats/presentation/widgets/chat_input.dart",
+              "symbol": "ChatInput"
             },
             "currentOwner": "ChatScreen",
             "targetOwner": "provider-free chat composer section",
@@ -8696,12 +8696,12 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "SuvbotActionBar",
+              "SuvbotDock",
               "DemoActionSheet"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/suvbot_action_bar.dart",
-              "symbol": "SuvbotActionBar"
+              "file": "lib/chats/presentation/widgets/suvbot_dock.dart",
+              "symbol": "SuvbotDock"
             },
             "currentOwner": "ChatScreen",
             "targetOwner": "dev/demo action section unless promoted to product surface",
@@ -8899,7 +8899,7 @@
         {
           "id": "profile_self",
           "status": "captured",
-          "notes": "Deterministic CatchProfileView fixture tagged to profileScreen for flagship profile-surface review."
+          "notes": "Deterministic ProfileBody fixture tagged to profileScreen for flagship profile-surface review."
         },
         {
           "id": "profile_self_loading",
@@ -8944,12 +8944,12 @@
         {
           "id": "profile_self_inline_save_pending",
           "status": "captured",
-          "notes": "Deterministic ProfileTabContent capture opens the Education inline editor, holds the real ProfileEditController save pending, and captures the disabled chip plus loading Done button."
+          "notes": "Deterministic ProfileTabBody capture opens the Education inline editor, holds the real ProfileEditController save pending, and captures the disabled chip plus loading Done button."
         },
         {
           "id": "profile_self_inline_save_error",
           "status": "captured",
-          "notes": "Deterministic ProfileTabContent capture opens a prompt inline editor, drives a failing ProfileEditController save, and captures the retained drawer error state."
+          "notes": "Deterministic ProfileTabBody capture opens a prompt inline editor, drives a failing ProfileEditController save, and captures the retained drawer error state."
         },
         {
           "id": "profile_self_text_scale_2",
@@ -9129,7 +9129,7 @@
           "id": "preview_tab_default",
           "kind": "populated",
           "status": "captured",
-          "source": "PreviewTab maps the current UserProfile into PublicProfile and renders ProfileSurface/CatchProfileView without reaction affordances.",
+          "source": "ProfilePreviewBody maps the current UserProfile into PublicProfile and renders ProfileSurface/ProfileBody without reaction affordances.",
           "captureIds": [
             "profile_self",
             "profile_self_preview_tab"
@@ -9224,7 +9224,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "ProfileScreen owns tab/scroll controllers and preview bridge physics, then renders typed SelfProfileScreenState branches for loading/error/unavailable/ready. SelfProfileEditTabState owns photo-grid and prompt-slot view data. SelfProfilePhotoActionController owns photo editor/delete/reorder intents. SelfProfileInlineEditPatchFactory owns inline edit patch creation, while ProfileTabContent still derives basics/about/running/lifestyle row widget descriptors inline.",
+        "currentLayout": "ProfileScreen owns tab/scroll controllers and preview bridge physics, then renders typed SelfProfileScreenState branches for loading/error/unavailable/ready. SelfProfileEditTabState owns photo-grid and prompt-slot view data. SelfProfilePhotoActionController owns photo editor/delete/reorder intents. SelfProfileInlineEditPatchFactory owns inline edit patch creation, while ProfileTabBody still derives basics/about/running/lifestyle row widget descriptors inline.",
         "targetLayout": "ProfileScreen should resolve current-profile, upload, save, and preview projection into SelfProfileScreenState and compose provider-free header, photo grid, info sections, inline editors, and preview sections from immutable view data plus typed callbacks.",
         "sections": [
           {
@@ -9300,7 +9300,7 @@
               "SectionStack"
             ],
             "flutter": {
-              "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+              "file": "lib/user_profile/presentation/widgets/profile_tab_body.dart",
               "symbol": "ProfileTabSliverBody"
             },
             "currentOwner": "ProfileScreen",
@@ -9315,7 +9315,7 @@
               "long_values",
               "text_scale_2"
             ],
-            "migration": "SelfProfileEditTabState derives photo-grid state, prompt slots, and immutable basics/about/running/lifestyle row descriptors. ProfileTabContent renders those descriptors through canonical CatchSection and CatchField composition while photo and inline-save behavior remain owned by their existing controllers.",
+            "migration": "SelfProfileEditTabState derives photo-grid state, prompt slots, and immutable basics/about/running/lifestyle row descriptors. ProfileTabBody renders those descriptors through canonical CatchSection and CatchField composition while photo and inline-save behavior remain owned by their existing controllers.",
             "previewIds": [
               "ProfileScreen/Self section states"
             ]
@@ -9327,7 +9327,7 @@
             "layer": "compound",
             "claudeComponents": [
               "ProfilePhotoGrid",
-              "PhotoSlot"
+              "PhotoSlotTile"
             ],
             "flutter": {
               "file": "lib/image_uploads/shared/photo_grid.dart",
@@ -9362,7 +9362,7 @@
               "ProfileFieldRow"
             ],
             "flutter": {
-              "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+              "file": "lib/user_profile/presentation/widgets/profile_tab_body.dart",
               "symbol": "ProfileFieldRow"
             },
             "currentOwner": "ProfileTabSliverBody",
@@ -9380,7 +9380,7 @@
               "ungrouped",
               "empty_optional"
             ],
-            "migration": "SelfProfileEditTabState supplies immutable rows and ProfileTabContent renders them through CatchSection/CatchField. Keep the primitive contracts stable across self-profile, host profile, and future settings reuse.",
+            "migration": "SelfProfileEditTabState supplies immutable rows and ProfileTabBody renders them through CatchSection/CatchField. Keep the primitive contracts stable across self-profile, host profile, and future settings reuse.",
             "previewIds": [
               "ProfileScreen/Self section states"
             ]
@@ -9396,7 +9396,7 @@
               "InlineRangeEditor"
             ],
             "flutter": {
-              "file": "lib/user_profile/presentation/widgets/profile_tab.dart",
+              "file": "lib/user_profile/presentation/widgets/profile_tab_body.dart",
               "symbol": "ProfileTabSliverBody"
             },
             "currentOwner": "ProfileTabSliverBody",
@@ -9432,8 +9432,8 @@
               "ProfileSurface"
             ],
             "flutter": {
-              "file": "lib/user_profile/presentation/widgets/preview_tab.dart",
-              "symbol": "PreviewTab"
+              "file": "lib/user_profile/presentation/widgets/profile_preview_body.dart",
+              "symbol": "ProfilePreviewBody"
             },
             "currentOwner": "ProfileScreen",
             "targetOwner": "provider-free profile preview section",
@@ -10122,7 +10122,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "Today and Events delegate to the shared pane header rhythm; selected event management or recap remains adjacent to its root on wide layouts."
       },
       "statePolicy": {
@@ -10436,7 +10436,7 @@
           "id": "club_events_error",
           "kind": "error",
           "status": "captured",
-          "source": "HostEventsClubCard maps event errors into HostEventsWorkspaceState; HostEventsTimelinePage renders CatchLocalizedSliverErrorState in the canonical page viewport with AppErrorContext.event and a typed retry callback.",
+          "source": "HostEventsClubCard maps event errors into HostEventsWorkspaceState; HostEventsTimelineBody renders CatchLocalizedSliverErrorState in the canonical page viewport with AppErrorContext.event and a typed retry callback.",
           "nextAction": "Add nested event-list offline capture if event-specific offline copy diverges from club-load offline.",
           "previewIds": [
             "hostHomeRouteStates"
@@ -10704,7 +10704,7 @@
               "HostOrganizerAvatar"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/widgets/host_organizer_switcher.dart",
+              "file": "lib/hosts/presentation/widgets/host_organizer_switcher_sheet.dart",
               "symbol": "HostOrganizerAvatar"
             },
             "currentOwner": "HostTodayHeader + HostEventsClubSection + HostAppShell",
@@ -10759,7 +10759,7 @@
               "cancelled_filtered",
               "long_titles"
             ],
-            "migration": "HostEventsClubCard maps the paginated event timeline into HostEventsWorkspaceState. The controller independently merges both paging lanes and guards refreshed sessions. HostEventsClubSection supplies a canonical sticky rail and typed page owners. HostEventsTimelinePage selects day-grouped Upcoming or month-grouped Past and page-local loading/error/empty states. Shared section and record primitives own geometry; Today remains separate.",
+            "migration": "HostEventsClubCard maps the paginated event timeline into HostEventsWorkspaceState. The controller independently merges both paging lanes and guards refreshed sessions. HostEventsClubSection supplies a canonical sticky rail and typed page owners. HostEventsTimelineBody selects day-grouped Upcoming or month-grouped Past and page-local loading/error/empty states. Shared section and record primitives own geometry; Today remains separate.",
             "previewIds": [
               "hostHomeRouteStates",
               "hostHomeEventSectionStates"
@@ -10776,9 +10776,9 @@
             ],
             "flutter": {
               "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
-              "symbol": "HostEventsTimelinePage"
+              "symbol": "HostEventsTimelineBody"
             },
-            "currentOwner": "HostEventsTimelinePage + hostEventRecordLayout",
+            "currentOwner": "HostEventsTimelineBody + hostEventRecordLayout",
             "targetOwner": "CatchSection.sliverRows -> CatchField -> CatchRecordLayout",
             "dependencies": [
               "catch.field"
@@ -10793,7 +10793,7 @@
             "migration": "Event-owned projection formats activity, schedule, location and attendance facts as passive RecordLayout values. Section owns month headers and sibling rules; Field owns navigation and interaction.",
             "previewIds": [
               "hostHomeRouteStates",
-              "HostEventsTimelinePage/Exact catalog"
+              "HostEventsTimelineBody/Exact catalog"
             ]
           },
           {
@@ -10895,7 +10895,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {
@@ -11657,7 +11657,7 @@
           "source": "The Host Clubs Insights tab watches hostAnalyticsProvider(HostClubInsightsState.query) and shows HostAnalyticsReportSkeleton while analytics load.",
           "nextAction": "Keep the canonical tab loading capture and Widgetbook scorecard state synced.",
           "previewIds": [
-            "HostClubInsightsPane/Insights scorecard states"
+            "HostClubInsightsSection/Insights scorecard states"
           ],
           "captureIds": [
             "host_clubs_insights_loading"
@@ -11667,10 +11667,10 @@
           "id": "insights_report",
           "kind": "populated",
           "status": "captured",
-          "source": "HostAnalyticsReportView renders the canonical scorecard hierarchy inside the Host Clubs Insights tab: all-time overview, a 30-day/90-day/12-month period selector, six primary metrics, disclosed secondary metrics, an accessible demand/bookings trend, optional deterministic Coach recommendations, recent events, and reviews.",
+          "source": "HostAnalyticsReportBody renders the canonical scorecard hierarchy inside the Host Clubs Insights tab: all-time overview, a 30-day/90-day/12-month period selector, six primary metrics, disclosed secondary metrics, an accessible demand/bookings trend, optional deterministic Coach recommendations, recent events, and reviews.",
           "nextAction": "Keep client-owned labels, tab navigation, partial/missing quality badges, narrow and text-scale variants, and backend response compatibility covered.",
           "previewIds": [
-            "HostClubInsightsPane/Insights scorecard states"
+            "HostClubInsightsSection/Insights scorecard states"
           ],
           "captureIds": [
             "host_clubs_insights_report"
@@ -11680,10 +11680,10 @@
           "id": "insights_coach",
           "kind": "populated",
           "status": "implemented",
-          "source": "HostAnalyticsReportView shows at most two priority-ordered Coach rows when the client-side attendance, checkout drop-off, demand/capacity, or repeat-attendee thresholds fire; the block is absent when no rule fires.",
+          "source": "HostAnalyticsReportBody shows at most two priority-ordered Coach rows when the client-side attendance, checkout drop-off, demand/capacity, or repeat-attendee thresholds fire; the block is absent when no rule fires.",
           "nextAction": "Keep rule thresholds, copy, report/defaults links, and the hidden no-recommendation state pinned by tests and Widgetbook.",
           "previewIds": [
-            "HostClubInsightsPane/Insights scorecard states"
+            "HostClubInsightsSection/Insights scorecard states"
           ]
         },
         {
@@ -11693,7 +11693,7 @@
           "source": "hostAnalyticsProvider errors render CatchLocalizedErrorState with retry invalidating HostClubInsightsState.query.",
           "nextAction": "hostAnalyticsProvider errors render CatchLocalizedErrorState with retry invalidating HostClubInsightsState.query. Captures now cover generic analytics error and offline analytics error.",
           "previewIds": [
-            "HostClubInsightsPane/Insights scorecard states"
+            "HostClubInsightsSection/Insights scorecard states"
           ],
           "captureIds": [
             "host_clubs_insights_error",
@@ -11704,7 +11704,7 @@
           "id": "preview_tab",
           "kind": "populated",
           "status": "captured",
-          "source": "HostClubsScaffold composes ClubDetailReadOnlyPreviewSliver, the same read-only public-profile projection used by the club-detail surface.",
+          "source": "HostClubsScaffold composes ClubDetailReadOnlyPreview, the same read-only public-profile projection used by the club-detail surface.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -11879,7 +11879,7 @@
             "host_team_save_profile_offline"
           ],
           "previewIds": [
-            "HostTeamProfileRows/Covered by host team route states"
+            "HostTeamProfileList/Covered by host team route states"
           ]
         },
         {
@@ -11911,7 +11911,7 @@
             "host_team_save_profile_offline"
           ],
           "previewIds": [
-            "HostTeamProfileRows/Covered by host team route states"
+            "HostTeamProfileList/Covered by host team route states"
           ]
         },
         {
@@ -12071,9 +12071,9 @@
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations/host_organizer.dart",
-              "symbol": "HostClubOrganizerOverview"
+              "symbol": "HostOrganizerMetricGrid"
             },
-            "currentOwner": "HostClubInsightsPane",
+            "currentOwner": "HostClubInsightsSection",
             "targetOwner": "provider-free host insights metric summary",
             "dependencies": [
               "catch.surface"
@@ -12193,11 +12193,11 @@
               "Field"
             ],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/patterns/catch_form_row_list.dart",
-              "symbol": "CatchFormRowList"
+              "file": "packages/catch_ui/lib/src/patterns/catch_form_list.dart",
+              "symbol": "CatchFormList"
             },
             "currentOwner": "HostClubEditTab",
-            "targetOwner": "CatchFormRowList with Host-owned UpdateClubPatch descriptors",
+            "targetOwner": "CatchFormList with Host-owned UpdateClubPatch descriptors",
             "dependencies": [
               "catch.field",
               "catch.button",
@@ -12328,12 +12328,12 @@
             "layer": "section",
             "claudeComponents": [
               "HostClubInsightsState",
-              "HostAnalyticsReportView",
-              "HostAnalyticsTrendPanel"
+              "HostAnalyticsReportBody",
+              "HostAnalyticsTrendSection"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_analytics.dart",
-              "symbol": "HostClubInsightsPane"
+              "file": "lib/hosts/presentation/host_operations/host_club_insights_section.dart",
+              "symbol": "HostClubInsightsSection"
             },
             "currentOwner": "HostClubsScaffold",
             "targetOwner": "provider-free analytics section plus HostAnalytics controller adapter",
@@ -12360,10 +12360,10 @@
               "payment_issues",
               "text_scale"
             ],
-            "migration": "HostClubInsightsState owns only the selected club and one of three range presets; granularity is derived and event scoping/custom dates are absent from the host surface. HostClubInsightsPane owns device-IANA query resolution, ten-minute provider reuse, pull-to-refresh invalidation, and navigation from recent events to the existing per-event Report. HostAnalyticsReportView is provider-free and Widgetbook covers loaded, empty, partial-data, Coach, and text-scale scorecard states.",
+            "migration": "HostClubInsightsState owns only the selected club and one of three range presets; granularity is derived and event scoping/custom dates are absent from the host surface. HostClubInsightsSection owns device-IANA query resolution, ten-minute provider reuse, pull-to-refresh invalidation, and navigation from recent events to the existing per-event Report. HostAnalyticsReportBody is provider-free and Widgetbook covers loaded, empty, partial-data, Coach, and text-scale scorecard states.",
             "previewIds": [
               "HostClubsScreen/Route states",
-              "HostClubInsightsPane/Insights scorecard states"
+              "HostClubInsightsSection/Insights scorecard states"
             ]
           },
           {
@@ -12372,13 +12372,13 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "ClubDetailReadOnlyPreviewSliver"
+              "ClubDetailReadOnlyPreview"
             ],
             "flutter": {
               "file": "lib/clubs/presentation/detail/club_detail_read_only_preview.dart",
-              "symbol": "ClubDetailReadOnlyPreviewSliver"
+              "symbol": "ClubDetailReadOnlyPreview"
             },
-            "currentOwner": "HostClubsScaffold + ClubDetailReadOnlyPreviewSliver",
+            "currentOwner": "HostClubsScaffold + ClubDetailReadOnlyPreview",
             "targetOwner": "shared public club preview sliver",
             "dependencies": [
               "catch.surface"
@@ -12388,7 +12388,7 @@
               "empty_description",
               "open_public_preview"
             ],
-            "migration": "HostClubsScaffold composes the same ClubDetailReadOnlyPreviewSliver used by the public club-detail surface so preview rendering has one canonical owner.",
+            "migration": "HostClubsScaffold composes the same ClubDetailReadOnlyPreview used by the public club-detail surface so preview rendering has one canonical owner.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -12541,13 +12541,13 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostTeamProfileRows"
+              "HostTeamProfileList"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-              "symbol": "HostTeamProfileRows"
+              "symbol": "HostTeamProfileList"
             },
-            "currentOwner": "HostTeamProfileRows inline form",
+            "currentOwner": "HostTeamProfileList inline form",
             "targetOwner": "provider-free host profile editor form",
             "dependencies": [
               "catch.field",
@@ -12558,9 +12558,9 @@
               "save_profile_mutation",
               "create_profile_mutation"
             ],
-            "migration": "HostTeamProfileRows renders display name, role title, status, and bio inside one CatchSection.fieldRows form and exposes the save mutation inline; captures cover ready, pending, failed, and offline save states.",
+            "migration": "HostTeamProfileList renders display name, role title, status, and bio inside one CatchSection.fieldRows form and exposes the save mutation inline; captures cover ready, pending, failed, and offline save states.",
             "previewIds": [
-              "HostTeamProfileRows/Covered by host team route states"
+              "HostTeamProfileList/Covered by host team route states"
             ]
           },
           {
@@ -12694,8 +12694,8 @@
             "symbol": "ClubDetailBody"
           },
           {
-            "file": "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
-            "symbol": "ClubHeroAppBar"
+            "file": "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart",
+            "symbol": "ClubHeroTopBar"
           },
           {
             "file": "lib/clubs/presentation/detail/widgets/club_schedule_section.dart",
@@ -13037,7 +13037,7 @@
           "id": "share_action",
           "kind": "populated",
           "status": "captured",
-          "source": "ClubHeroAppBar keeps the icon-only share affordance in host public view.",
+          "source": "ClubHeroTopBar keeps the icon-only share affordance in host public view.",
           "tests": [
             "test/explore/explore_widgets_test.dart"
           ],
@@ -13172,11 +13172,11 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "ClubHeroAppBar"
+              "ClubHeroTopBar"
             ],
             "flutter": {
-              "file": "lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart",
-              "symbol": "ClubHeroAppBar"
+              "file": "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart",
+              "symbol": "ClubHeroTopBar"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "shared club hero section",
@@ -13262,8 +13262,8 @@
             "layer": "section",
             "claudeComponents": [
               "ClubOverview",
-              "ClubTagWrap",
-              "ClubPhotoStrip",
+              "ClubTagList",
+              "ClubPhotoRail",
               "ClubContactSection"
             ],
             "flutter": {
@@ -13443,7 +13443,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {
@@ -13897,7 +13897,7 @@
           "id": "club_fetch_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "Without an initial club extra, fetchClubProvider loading renders CatchStartupLoadingScreen.",
+          "source": "Without an initial club extra, fetchClubProvider loading renders SplashScreen.",
           "nextAction": "Compare route loading capture against a canonical loading reference if design exports one.",
           "previewIds": [
             "HostCreateEventRouteScreen/Route and wizard states"
@@ -14174,8 +14174,8 @@
           "id": "submit_pending",
           "kind": "mutation",
           "status": "captured",
-          "source": "CreateEventController.submitMutation pending drives StepperFooter loading and disables scheduling.",
-          "nextAction": "CreateEventController.submitMutation pending drives StepperFooter loading and disables scheduling. A deterministic pending-submit capture now covers this state.",
+          "source": "CreateEventController.submitMutation pending drives HostStepperDock loading and disables scheduling.",
+          "nextAction": "CreateEventController.submitMutation pending drives HostStepperDock loading and disables scheduling. A deterministic pending-submit capture now covers this state.",
           "previewIds": [
             "HostCreateEventRouteScreen/Route and wizard states"
           ],
@@ -14475,7 +14475,7 @@
             "layer": "section",
             "claudeComponents": [
               "CreateEventWizardShell",
-              "StepperFooter"
+              "HostStepperDock"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
@@ -14919,8 +14919,8 @@
             "symbol": "HostEventManageScreenState"
           },
           {
-            "file": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
-            "symbol": "HostEventRosterPanel"
+            "file": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
+            "symbol": "HostEventRosterSection"
           },
           {
             "file": "lib/hosts/presentation/host_invite_link_state.dart",
@@ -14993,7 +14993,7 @@
             "symbol": "EventSuccessController"
           }
         ],
-        "notes": "HostEventManageRouteScreen is the defined ARCH-SCREEN-001C host workspace route boundary: it resolves uid, club, and event route state, gates access to hosts of the club, and delegates loaded state to HostEventManageScreen. HostEventManageScreenState resolves one lifecycle workspace from event time and status: Preparation before check-in opens, Live Operations while the event is running, and Recap once it ends or is cancelled. Legacy Setup / Guests / Live / Report route aliases remain stable; Guests routes to HostEventRosterPanel while other aliases cannot override lifecycle relevance. The shared CatchTopBar keeps event title and lifecycle subtitle as the subject, with one durable Guest roster action. Preparation uses canonical field rows before access, staff, summary, actions, and Event Success setup; Live owns compact Event Success controls; Recap owns reviews and reporting with existing configuration under Review event setup. HostEventRosterPanel is ordinary route content in the shared Host workspace, preserving its event ancestor, exposes the roster in every phase, and can hand off to the current event-scoped Inbox route. Existing Host action, private-link, invite-link, participant mutation, report export, Event Success, and controller ownership seams remain authoritative. hostAppAttendanceSheet and hostAppEventSuccessScreen remain route aliases to this canonical surface rather than separate contracts."
+        "notes": "HostEventManageRouteScreen is the defined ARCH-SCREEN-001C host workspace route boundary: it resolves uid, club, and event route state, gates access to hosts of the club, and delegates loaded state to HostEventManageScreen. HostEventManageScreenState resolves one lifecycle workspace from event time and status: Preparation before check-in opens, Live Operations while the event is running, and Recap once it ends or is cancelled. Legacy Setup / Guests / Live / Report route aliases remain stable; Guests routes to HostEventRosterSection while other aliases cannot override lifecycle relevance. The shared CatchTopBar keeps event title and lifecycle subtitle as the subject, with one durable Guest roster action. Preparation uses canonical field rows before access, staff, summary, actions, and Event Success setup; Live owns compact Event Success controls; Recap owns reviews and reporting with existing configuration under Review event setup. HostEventRosterSection is ordinary route content in the shared Host workspace, preserving its event ancestor, exposes the roster in every phase, and can hand off to the current event-scoped Inbox route. Existing Host action, private-link, invite-link, participant mutation, report export, Event Success, and controller ownership seams remain authoritative. hostAppAttendanceSheet and hostAppEventSuccessScreen remain route aliases to this canonical surface rather than separate contracts."
       },
       "designRefs": [
         {
@@ -15333,7 +15333,7 @@
           "id": "attendance_setup_roster",
           "kind": "populated",
           "status": "captured",
-          "source": "HostEventRosterPanel opens beside the lifecycle workspace and renders setup-mode filters and public-profile-backed participant rows without resetting the underlying event workspace.",
+          "source": "HostEventRosterSection opens beside the lifecycle workspace and renders setup-mode filters and public-profile-backed participant rows without resetting the underlying event workspace.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
@@ -16199,7 +16199,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "HostEventManageRouteScreen reads uid, club, and event providers, then HostEventManageScreenState resolves one Preparation, Live Operations, or Recap workspace. CatchTopBar shows event title, lifecycle subtitle, and one durable Guest roster action. HostEventRosterPanel renders an operational roster as the next route-owned pane; its Message guests action hands off to the existing event-scoped Host Inbox. Preparation groups event details, website registration, imported guest sources, private access, staff access, Event Success setup, and host actions. Live owns the compact Event Success console plus a roster-only Add walk-in escape hatch. Recap owns reviews/reporting and a read-only roster, with configuration available under Review event setup.",
+        "currentLayout": "HostEventManageRouteScreen reads uid, club, and event providers, then HostEventManageScreenState resolves one Preparation, Live Operations, or Recap workspace. CatchTopBar shows event title, lifecycle subtitle, and one durable Guest roster action. HostEventRosterSection renders an operational roster as the next route-owned pane; its Message guests action hands off to the existing event-scoped Host Inbox. Preparation groups event details, website registration, imported guest sources, private access, staff access, Event Success setup, and host actions. Live owns the compact Event Success console plus a roster-only Add walk-in escape hatch. Recap owns reviews/reporting and a read-only roster, with configuration available under Review event setup.",
         "targetLayout": "Keep HostEventManageRouteScreen as the ARCH-SCREEN-001C route shell for aliases, loading/access/error, deep-link inputs, and event-scoped navigation effects. Continue moving roster/private-access/invite-link/Event Success/report display waves and typed callbacks into provider-free adapters without reintroducing a persistent section picker, inventing event-scoped Forms, or duplicating the lifecycle resolver.",
         "sections": [
           {
@@ -16303,10 +16303,10 @@
               "HostReportTable"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/widgets/host_event_roster_drawer.dart",
-              "symbol": "HostEventRosterPanel"
+              "file": "lib/hosts/presentation/widgets/host_event_roster_section.dart",
+              "symbol": "HostEventRosterSection"
             },
-            "currentOwner": "HostEventRosterPanel + HostOperationalRosterPanel + HostEventParticipantsPanel",
+            "currentOwner": "HostEventRosterSection + HostOperationalRosterPanel + HostEventParticipantsPanel",
             "targetOwner": "stable overlay drawer fed by provider-free roster adapters",
             "dependencies": [
               "catch.badge",
@@ -16330,7 +16330,7 @@
               "profile_error",
               "mutation_error"
             ],
-            "migration": "HostEventRosterPanel contains roster content while the Host workspace owns pane presentation and retains the event ancestor. HostGuestIntakeField keeps spreadsheet import, manual preparation entry, secure forwarding, and provider setup in Preparation. The roster keeps lifecycle filters, search, rows, claims, check-in mutations, profile lookup, report exports, and only the Live Operations Add walk-in escape hatch. Add compact/wide, swipe, long-name, and text-scale capture coverage without moving provider ownership into the drawer.",
+            "migration": "HostEventRosterSection contains roster content while the Host workspace owns pane presentation and retains the event ancestor. HostGuestIntakeField keeps spreadsheet import, manual preparation entry, secure forwarding, and provider setup in Preparation. The roster keeps lifecycle filters, search, rows, claims, check-in mutations, profile lookup, report exports, and only the Live Operations Add walk-in escape hatch. Add compact/wide, swipe, long-name, and text-scale capture coverage without moving provider ownership into the drawer.",
             "previewIds": [
               "HostEventManageRouteScreen/Route and section states"
             ]
@@ -16833,7 +16833,7 @@
             "symbol": "HostCustomersDirectoryState"
           },
           {
-            "file": "lib/hosts/presentation/customers/host_customer_memory.dart",
+            "file": "lib/hosts/presentation/customers/host_customer_memory_section.dart",
             "symbol": "HostCustomerMemorySection"
           },
           {
@@ -16845,8 +16845,8 @@
             "symbol": "HostSavedAudienceEditorScreen"
           },
           {
-            "file": "lib/hosts/presentation/customers/host_saved_audience_overview.dart",
-            "symbol": "HostSavedAudienceOverview"
+            "file": "lib/hosts/presentation/customers/host_saved_audience_section.dart",
+            "symbol": "HostSavedAudienceSection"
           },
           {
             "file": "lib/hosts/presentation/customers/host_saved_audience_members_controller.dart",
@@ -16933,21 +16933,21 @@
           "id": "customers_error",
           "kind": "error",
           "status": "implemented",
-          "source": "CatchErrorState in HostCustomersDirectory",
+          "source": "CatchErrorState in HostCustomersList",
           "nextAction": "Add retry interaction test."
         },
         {
           "id": "customers_empty",
           "kind": "empty",
           "status": "implemented",
-          "source": "HostCustomersDirectory empty branch",
+          "source": "HostCustomersList empty branch",
           "nextAction": "Capture the first-customer path."
         },
         {
           "id": "customers_populated",
           "kind": "populated",
           "status": "captured",
-          "source": "HostCustomersSummary selected filters + HostCustomersDirectory + HostCustomerRow",
+          "source": "HostCustomersSummarySection selected filters + HostCustomersList + HostCustomerRow",
           "previewIds": [
             "hostCustomersStates"
           ],
@@ -16964,7 +16964,7 @@
           "id": "customers_filtered_empty",
           "kind": "empty",
           "status": "implemented",
-          "source": "HostCustomersDirectory filtered branch",
+          "source": "HostCustomersList filtered branch",
           "tests": [
             "test/hosts/host_customers_screen_state_test.dart"
           ],
@@ -17013,7 +17013,7 @@
           "id": "customer_filter_manual_tag",
           "kind": "populated",
           "status": "tested",
-          "source": "HostCustomerFilterSheet Your tags group + HostCustomerFilterSummary",
+          "source": "HostCustomerFilterSheet Your tags group + HostCustomerFilterSummarySection",
           "tests": [
             "test/hosts/host_customer_filter_summary_test.dart",
             "test/hosts/host_crm_contact_memory_test.dart"
@@ -17024,7 +17024,7 @@
           "id": "customer_campaign_bridge_ready",
           "kind": "populated",
           "status": "tested",
-          "source": "HostCustomerFilterSummary enabled Message these N action + HostSaveAudienceSheet",
+          "source": "HostCustomerFilterSummarySection enabled Message these N action + HostSaveAudienceSheet",
           "tests": [
             "test/hosts/host_customer_filter_summary_test.dart",
             "test/hosts/host_campaign_segment_eligibility_test.dart",
@@ -17036,7 +17036,7 @@
           "id": "customer_campaign_bridge_blocked",
           "kind": "permission",
           "status": "tested",
-          "source": "HostCustomerFilterSummary blocker copy with optional dedicated sender-setup recovery",
+          "source": "HostCustomerFilterSummarySection blocker copy with optional dedicated sender-setup recovery",
           "tests": [
             "test/hosts/host_customer_filter_summary_test.dart",
             "test/hosts/host_campaign_segment_eligibility_test.dart",
@@ -17104,7 +17104,7 @@
           "id": "customer_saved_audience_detail",
           "kind": "populated",
           "status": "tested",
-          "source": "HostSavedAudienceOverview member and rule overview with explicit editing",
+          "source": "HostSavedAudienceSection member and rule overview with explicit editing",
           "tests": [
             "test/hosts/host_saved_audience_workflows_test.dart"
           ],
@@ -17470,7 +17470,7 @@
             "claudeComponents": [],
             "flutter": {
               "file": "lib/hosts/presentation/customers/host_customers_screen.dart",
-              "symbol": "HostCustomersDirectory"
+              "symbol": "HostCustomersList"
             },
             "currentOwner": "hosts.presentation.customers",
             "targetOwner": "hosts.presentation.customers",
@@ -17556,7 +17556,7 @@
             "layer": "section",
             "claudeComponents": [],
             "flutter": {
-              "file": "lib/hosts/presentation/customers/host_customer_memory.dart",
+              "file": "lib/hosts/presentation/customers/host_customer_memory_section.dart",
               "symbol": "HostCustomerMemorySection"
             },
             "currentOwner": "hosts.presentation.customers",
@@ -17629,7 +17629,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The Inbox directory and conversation each own full-height pane chrome, using the same local-width viewport as other Host destinations."
       },
       "statePolicy": {
@@ -17723,8 +17723,8 @@
             "symbol": "ChatsEmptyState"
           },
           {
-            "file": "lib/hosts/presentation/host_operations/host_audience.dart",
-            "symbol": "HostWhatsappSetupPane"
+            "file": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+            "symbol": "HostWhatsappSetupSection"
           },
           {
             "file": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
@@ -17739,7 +17739,7 @@
             "symbol": "HostManualSendQueue"
           },
           {
-            "file": "lib/hosts/presentation/inbox/host_follower_update_composer.dart",
+            "file": "lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart",
             "symbol": "showHostFollowerUpdateComposer"
           },
           {
@@ -18207,7 +18207,7 @@
           "status": "tested",
           "source": "HostSendsPageBody + showHostFollowerUpdateComposer + HostClubPostController",
           "tests": [
-            "test/hosts/host_follower_update_composer_test.dart",
+            "test/hosts/host_follower_update_composer_sheet_test.dart",
             "test/hosts/host_inbox_screen_test.dart",
             "test/hosts/host_crm_repository_test.dart"
           ],
@@ -18228,7 +18228,7 @@
           "id": "customer_messaging_provider_unavailable",
           "kind": "permission",
           "status": "implemented",
-          "source": "HostWhatsappSetupPane provider notice on the dedicated organizer messaging route.",
+          "source": "HostWhatsappSetupSection provider notice on the dedicated organizer messaging route.",
           "nextAction": "Keep provider-gate copy aligned with backend capability state.",
           "previewIds": [
             "HostCampaignComposer/Campaign and sender states"
@@ -18238,7 +18238,7 @@
           "id": "customer_messaging_disconnected",
           "kind": "empty",
           "status": "tested",
-          "source": "HostWhatsappSetupPane sender connection setup on the dedicated organizer messaging route.",
+          "source": "HostWhatsappSetupSection sender connection setup on the dedicated organizer messaging route.",
           "nextAction": "Add a deterministic native-to-web handoff capture.",
           "previewIds": [
             "HostCampaignComposer/Campaign and sender states"
@@ -18251,14 +18251,14 @@
           "id": "customer_messaging_connecting",
           "kind": "mutation",
           "status": "implemented",
-          "source": "HostWhatsappSetupPane pending sender mutation freezes workspace switching and request-defining controls.",
+          "source": "HostWhatsappSetupSection pending sender mutation freezes workspace switching and request-defining controls.",
           "nextAction": "Add a deterministic pending capture."
         },
         {
           "id": "customer_messaging_ready",
           "kind": "populated",
           "status": "captured",
-          "source": "HostWhatsappSetupPane renders the selected organizer's connected WhatsApp sender and approved templates on the dedicated organizer messaging route.",
+          "source": "HostWhatsappSetupSection renders the selected organizer's connected WhatsApp sender and approved templates on the dedicated organizer messaging route.",
           "nextAction": "Keep sender mutation coverage aligned with the HostCrmRepository contract and add a dedicated-route capture only after baseline approval.",
           "previewIds": [
             "HostCampaignComposer/Campaign and sender states"
@@ -18763,8 +18763,8 @@
             "layer": "section",
             "claudeComponents": [],
             "flutter": {
-              "file": "lib/hosts/presentation/host_operations/host_audience.dart",
-              "symbol": "HostWhatsappSetupPane"
+              "file": "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
+              "symbol": "HostWhatsappSetupSection"
             },
             "currentOwner": "hosts.presentation.inbox",
             "targetOwner": "hosts.presentation.inbox",
@@ -18981,8 +18981,8 @@
             "symbol": "ChatMessageList"
           },
           {
-            "file": "lib/chats/presentation/widgets/chat_input_bar.dart",
-            "symbol": "ChatInputBar"
+            "file": "lib/chats/presentation/widgets/chat_input.dart",
+            "symbol": "ChatInput"
           }
         ],
         "mutationOwners": [
@@ -19311,7 +19311,7 @@
           "id": "composer_enabled",
           "kind": "populated",
           "status": "captured",
-          "source": "ChatInputBar is enabled for active non-blocked matches and sends trimmed text through ChatController.sendMessageMutation.",
+          "source": "ChatInput is enabled for active non-blocked matches and sends trimmed text through ChatController.sendMessageMutation.",
           "tests": [
             "test/chats/chat_screen_test.dart"
           ],
@@ -19356,7 +19356,7 @@
           "id": "send_message_pending",
           "kind": "mutation",
           "status": "captured",
-          "source": "ChatController.sendMessageMutation pending flows through ChatRouteState and drives the ChatInputBar send loading indicator while disabling duplicate sends.",
+          "source": "ChatController.sendMessageMutation pending flows through ChatRouteState and drives the ChatInput send loading indicator while disabling duplicate sends.",
           "nextAction": "Move send callback execution and draft retention into a typed action adapter/controller seam after keyboard-state captures exist.",
           "previewIds": [
             "ChatScreen/Host chat states"
@@ -19680,10 +19680,10 @@
               "HostChatComposer"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/widgets/chat_input_bar.dart",
-              "symbol": "ChatInputBar"
+              "file": "lib/chats/presentation/widgets/chat_input.dart",
+              "symbol": "ChatInput"
             },
-            "currentOwner": "ChatInputBar",
+            "currentOwner": "ChatInput",
             "targetOwner": "provider-free host chat composer section",
             "dependencies": [
               "catch.field",
@@ -19860,15 +19860,15 @@
         }
       ],
       "source": {
-        "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-        "symbol": "WelcomePage"
+        "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+        "symbol": "OnboardingWelcomeBody"
       },
       "stateController": {
-        "primary": "WelcomePage + local welcome animation controllers + appAnalyticsProvider",
+        "primary": "OnboardingWelcomeBody + local welcome animation controllers + appAnalyticsProvider",
         "files": [
           {
-            "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-            "symbol": "WelcomePage"
+            "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+            "symbol": "OnboardingWelcomeBody"
           },
           {
             "file": "lib/core/analytics/app_analytics.dart",
@@ -19876,7 +19876,7 @@
           }
         ],
         "mutationOwners": [],
-        "notes": "WelcomePage owns the logged-out start route, local splash/reel animation controllers, reduced-motion landing behavior, analytics events, and CTA routing to auth or clubs. A future StartWelcomeScreenState should make motion mode, landed/direct state, and CTA intents explicit before strict visual comparison."
+        "notes": "OnboardingWelcomeBody owns the logged-out start route, local splash/reel animation controllers, reduced-motion landing behavior, analytics events, and CTA routing to auth or clubs. A future StartWelcomeScreenState should make motion mode, landed/direct state, and CTA intents explicit before strict visual comparison."
       },
       "designRefs": [
         {
@@ -19898,7 +19898,7 @@
         {
           "id": "start_welcome",
           "status": "captured",
-          "notes": "Deterministic WelcomePage(playIntro: false) capture for the landed start state."
+          "notes": "Deterministic OnboardingWelcomeBody(playIntro: false) capture for the landed start state."
         },
         {
           "id": "start_welcome_animated_reel",
@@ -19908,7 +19908,7 @@
         {
           "id": "start_welcome_reduced_motion",
           "status": "captured",
-          "notes": "Reduced-motion capture proving WelcomePage lands immediately when animations are disabled."
+          "notes": "Reduced-motion capture proving OnboardingWelcomeBody lands immediately when animations are disabled."
         },
         {
           "id": "start_welcome_text_scale_2",
@@ -19921,9 +19921,9 @@
           "id": "animated_reel",
           "kind": "populated",
           "status": "captured",
-          "source": "Production WelcomePage starts the object reel and lands on the final welcome composition unless playIntro is false or reduced motion is active.",
+          "source": "Production OnboardingWelcomeBody starts the object reel and lands on the final welcome composition unless playIntro is false or reduced motion is active.",
           "previewIds": [
-            "WelcomePage/Splash states"
+            "OnboardingWelcomeBody/Splash states"
           ],
           "captureIds": [
             "start_welcome_animated_reel"
@@ -19937,9 +19937,9 @@
           "id": "landed_direct",
           "kind": "populated",
           "status": "captured",
-          "source": "WelcomePage(playIntro: false) renders the final Catch welcome state immediately for deterministic captures.",
+          "source": "OnboardingWelcomeBody(playIntro: false) renders the final Catch welcome state immediately for deterministic captures.",
           "previewIds": [
-            "WelcomePage/Splash states"
+            "OnboardingWelcomeBody/Splash states"
           ],
           "captureIds": [
             "start_welcome",
@@ -19956,7 +19956,7 @@
           "status": "captured",
           "source": "The primary CTA routes to auth with the current location as from=, while the secondary CTA routes to the clubs surface.",
           "previewIds": [
-            "WelcomePage/Splash states"
+            "OnboardingWelcomeBody/Splash states"
           ],
           "captureIds": [
             "start_welcome",
@@ -19972,9 +19972,9 @@
           "id": "reduced_motion",
           "kind": "accessibility",
           "status": "captured",
-          "source": "WelcomePage lands immediately when MediaQuery.disableAnimations is true.",
+          "source": "OnboardingWelcomeBody lands immediately when MediaQuery.disableAnimations is true.",
           "previewIds": [
-            "WelcomePage/Splash states"
+            "OnboardingWelcomeBody/Splash states"
           ],
           "captureIds": [
             "start_welcome_reduced_motion"
@@ -19990,7 +19990,7 @@
           "status": "captured",
           "source": "Start Welcome text scale 2.0 capture covers title, body copy, and bottom CTAs.",
           "previewIds": [
-            "WelcomePage/Splash states"
+            "OnboardingWelcomeBody/Splash states"
           ],
           "captureIds": [
             "start_welcome_text_scale_2"
@@ -20003,7 +20003,7 @@
           "status": "captured",
           "source": "The start route intentionally uses the sunset dark landing palette; the current capture covers that dark branded state.",
           "previewIds": [
-            "WelcomePage/Splash states"
+            "OnboardingWelcomeBody/Splash states"
           ],
           "captureIds": [
             "start_welcome",
@@ -20014,7 +20014,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "WelcomePage is a route widget that owns local animation controllers, analytics events, CTA callbacks, responsive scene layout, and the visible splash/reel/landing composition.",
+        "currentLayout": "OnboardingWelcomeBody is a route widget that owns local animation controllers, analytics events, CTA callbacks, responsive scene layout, and the visible splash/reel/landing composition.",
         "targetLayout": "Start Welcome should expose a tiny route adapter for motion mode and CTA intents, then compose provider-free reel, copy, and CTA sections backed by shared tokens and button primitives.",
         "sections": [
           {
@@ -20026,10 +20026,10 @@
               "StartWelcomeScreenState"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-              "symbol": "WelcomePage"
+              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "symbol": "OnboardingWelcomeBody"
             },
-            "currentOwner": "WelcomePage",
+            "currentOwner": "OnboardingWelcomeBody",
             "targetOwner": "StartWelcomeScreenState route adapter",
             "dependencies": [
               "catch.button"
@@ -20048,13 +20048,13 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "WelcomeScene"
+              "WelcomeSceneLayout"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-              "symbol": "WelcomeScene"
+              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "symbol": "WelcomeSceneLayout"
             },
-            "currentOwner": "WelcomePage",
+            "currentOwner": "OnboardingWelcomeBody",
             "targetOwner": "provider-free welcome scene section",
             "dependencies": [
               "catch.surface"
@@ -20076,10 +20076,10 @@
               "WelcomeActions"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-              "symbol": "WelcomePage"
+              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "symbol": "OnboardingWelcomeBody"
             },
-            "currentOwner": "WelcomePage",
+            "currentOwner": "OnboardingWelcomeBody",
             "targetOwner": "provider-free welcome CTA section",
             "dependencies": [
               "catch.button"
@@ -20175,16 +20175,16 @@
             "symbol": "AuthOtpEntryViewState"
           },
           {
-            "file": "lib/auth/presentation/host_auth_widgets.dart",
+            "file": "lib/auth/presentation/host_auth_card.dart",
             "symbol": "HostAuthCard"
           },
           {
-            "file": "lib/auth/presentation/phone_page.dart",
-            "symbol": "PhonePage"
+            "file": "lib/auth/presentation/phone_step.dart",
+            "symbol": "PhoneStep"
           },
           {
-            "file": "lib/auth/presentation/otp_page.dart",
-            "symbol": "OtpPage"
+            "file": "lib/auth/presentation/otp_step.dart",
+            "symbol": "OtpStep"
           }
         ],
         "mutationOwners": [
@@ -20197,7 +20197,7 @@
             "symbol": "AuthRepository"
           }
         ],
-        "notes": "AuthScreen remains the state shell over AuthController.step. Consumer swaps the existing standalone PhonePage/OtpPage presentations. Host uses the user-selected plain Quiet Stage: the existing larger horizontal mark shares a safe-area reading lane with native launch and Flutter startup, and a top-aligned inset HostAuthCard switches between phone entry and inline OTP. One scroll owner reveals focused controls on short screens or with a keyboard. PhonePage owns local phone editing, country picker UI, validation, and send feedback; OtpPage owns OTP text, cooldown, verify/resend feedback, and edit-number navigation. AuthPhoneEntryViewState and AuthOtpEntryViewState expose fixtureable phone, masked-number, OTP, cooldown, mutation, resend, verify, and edit-number display policy."
+        "notes": "AuthScreen remains the state shell over AuthController.step. Consumer swaps the existing standalone PhoneStep/OtpStep presentations. Host uses the user-selected plain Quiet Stage: the existing larger horizontal mark shares a safe-area reading lane with native launch and Flutter startup, and a top-aligned inset HostAuthCard switches between phone entry and inline OTP. One scroll owner reveals focused controls on short screens or with a keyboard. PhoneStep owns local phone editing, country picker UI, validation, and send feedback; OtpStep owns OTP text, cooldown, verify/resend feedback, and edit-number navigation. AuthPhoneEntryViewState and AuthOtpEntryViewState expose fixtureable phone, masked-number, OTP, cooldown, mutation, resend, verify, and edit-number display policy."
       },
       "designRefs": [
         {
@@ -20335,10 +20335,10 @@
           "id": "phone_entry",
           "kind": "populated",
           "status": "captured",
-          "source": "While AuthController.step is AuthStep.phone, Consumer renders the standalone PhonePage and Host renders the shared CatchStartupBrandStage plus an inset HostAuthCard with one unified country/phone control and Send code action. At large text scales the country selector and phone input reflow vertically within that same control.",
+          "source": "While AuthController.step is AuthStep.phone, Consumer renders the standalone PhoneStep and Host renders the shared StartupBrandHeader plus an inset HostAuthCard with one unified country/phone control and Send code action. At large text scales the country selector and phone input reflow vertically within that same control.",
           "previewIds": [
             "AuthScreen/Screen states",
-            "PhonePage/Phone entry states"
+            "PhoneStep/Phone entry states"
           ],
           "captureIds": [
             "auth_phone_entry",
@@ -20354,10 +20354,10 @@
           "id": "country_selector",
           "kind": "populated",
           "status": "captured",
-          "source": "PhonePage renders a country-code selector bound to AuthController.countryCode and resets sendOtpMutation on change.",
+          "source": "PhoneStep renders a country-code selector bound to AuthController.countryCode and resets sendOtpMutation on change.",
           "previewIds": [
             "AuthScreen/Screen states",
-            "CountryCodeSelector/Country code selector states"
+            "PhoneCountryCodePicker/Country code selector states"
           ],
           "captureIds": [
             "auth_country_picker_open",
@@ -20375,7 +20375,7 @@
           "source": "AuthInput validators drive phone/OTP validation copy before send or verify mutations run.",
           "previewIds": [
             "AuthScreen/Screen states",
-            "PhonePage/Phone entry states"
+            "PhoneStep/Phone entry states"
           ],
           "captureIds": [
             "auth_phone_validation_error"
@@ -20393,7 +20393,7 @@
           "source": "AuthController.sendOtpMutation drives the Send code loading state and CatchBanner.error failure surface.",
           "previewIds": [
             "AuthScreen/Screen states",
-            "PhonePage/Phone entry states"
+            "PhoneStep/Phone entry states"
           ],
           "captureIds": [
             "auth_send_code_pending",
@@ -20408,10 +20408,10 @@
           "id": "otp_entry",
           "kind": "populated",
           "status": "captured",
-          "source": "After codeSent, Host AuthScreen keeps the same route and startup-aligned mark while OtpPage reveals masked-number confirmation, a separate Edit number button, CatchCodeInput, auto-verification status, and a full-width resend cooldown/action inside the same HostAuthCard. Consumer retains its standalone OTP presentation.",
+          "source": "After codeSent, Host AuthScreen keeps the same route and startup-aligned mark while OtpStep reveals masked-number confirmation, a separate Edit number button, CatchCodeInput, auto-verification status, and a full-width resend cooldown/action inside the same HostAuthCard. Consumer retains its standalone OTP presentation.",
           "previewIds": [
             "AuthScreen/Screen states",
-            "OtpPage/OTP entry states"
+            "OtpStep/OTP entry states"
           ],
           "captureIds": [
             "auth_otp_entry",
@@ -20432,7 +20432,7 @@
           "source": "AuthController.verifyOtpMutation drives Verify loading/error behavior, while sendOtpMutation also covers resend failures on the OTP page.",
           "previewIds": [
             "AuthScreen/Screen states",
-            "OtpPage/OTP entry states"
+            "OtpStep/OTP entry states"
           ],
           "captureIds": [
             "auth_verify_code_pending",
@@ -20474,7 +20474,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "AuthScreen watches AuthController.step and projects one of two presentation adapters. Consumer keeps the standalone onboarding pages. HostAuthFlowFrame owns a startup-identical CatchStartupBrandStage and one scrollable brand/card column; AnimatedSwitcher replaces the top-aligned inset HostAuthCard content between PhonePage and inline OtpPage. The step widgets retain text controllers, validation, timers, mutation calls, and branded feedback, while provider-free view states own derived labels, masking, loading, cooldown, and action enablement.",
+        "currentLayout": "AuthScreen watches AuthController.step and projects one of two presentation adapters. Consumer keeps the standalone onboarding pages. HostAuthScaffold owns a startup-identical StartupBrandHeader and one scrollable brand/card column; AnimatedSwitcher replaces the top-aligned inset HostAuthCard content between PhoneStep and inline OtpStep. The step widgets retain text controllers, validation, timers, mutation calls, and branded feedback, while provider-free view states own derived labels, masking, loading, cooldown, and action enablement.",
         "targetLayout": "Implemented: keep AuthController as the shared mutation owner, local text/timer lifecycle in the step widgets, and role-specific composition in AuthScreen. Preserve the Host startup/auth logo anchor and one-card inline transition while routing reusable display policy through AuthPhoneEntryViewState and AuthOtpEntryViewState.",
         "sections": [
           {
@@ -20501,7 +20501,7 @@
               "send_code_mutation",
               "verify_otp_mutation"
             ],
-            "migration": "HostAuthFlowFrame now keeps the real Host mark pixel-stable from Flutter startup through phone and OTP states, while only the lower content enters and switches; Consumer retains the standalone adapter. AuthController remains the mutation owner."
+            "migration": "HostAuthScaffold now keeps the real Host mark pixel-stable from Flutter startup through phone and OTP states, while only the lower content enters and switches; Consumer retains the standalone adapter. AuthController remains the mutation owner."
           },
           {
             "id": "section.auth.phone_entry",
@@ -20512,11 +20512,11 @@
               "PhoneEntryStep"
             ],
             "flutter": {
-              "file": "lib/auth/presentation/phone_page.dart",
-              "symbol": "PhonePage"
+              "file": "lib/auth/presentation/phone_step.dart",
+              "symbol": "PhoneStep"
             },
-            "currentOwner": "PhonePage",
-            "targetOwner": "PhonePage over AuthPhoneEntryViewState",
+            "currentOwner": "PhoneStep",
+            "targetOwner": "PhoneStep over AuthPhoneEntryViewState",
             "dependencies": [
               "catch.field",
               "catch.button",
@@ -20529,7 +20529,7 @@
               "send_code_mutation",
               "text_scale_2"
             ],
-            "migration": "PhonePage now derives country and send loading display state through AuthPhoneEntryViewState. Its Host adapter uses one outlined HostAuthCard, unified flag/dial-code/phone field, and rectangular Send code action; validation and mutation error mapping remain local because they depend on Form and BuildContext."
+            "migration": "PhoneStep now derives country and send loading display state through AuthPhoneEntryViewState. Its Host adapter uses one outlined HostAuthCard, unified flag/dial-code/phone field, and rectangular Send code action; validation and mutation error mapping remain local because they depend on Form and BuildContext."
           },
           {
             "id": "section.auth.otp_entry",
@@ -20540,11 +20540,11 @@
               "OtpEntryStep"
             ],
             "flutter": {
-              "file": "lib/auth/presentation/otp_page.dart",
-              "symbol": "OtpPage"
+              "file": "lib/auth/presentation/otp_step.dart",
+              "symbol": "OtpStep"
             },
-            "currentOwner": "OtpPage",
-            "targetOwner": "OtpPage over AuthOtpEntryViewState",
+            "currentOwner": "OtpStep",
+            "targetOwner": "OtpStep over AuthOtpEntryViewState",
             "dependencies": [
               "catch.field",
               "catch.button"
@@ -20555,7 +20555,7 @@
               "verify_otp_mutation",
               "text_scale_2"
             ],
-            "migration": "OtpPage now derives masked phone copy, cooldown label, resend label, verify/resend/edit-number enablement, and verify loading through AuthOtpEntryViewState while keeping timer and text-controller lifecycle local. Its Host adapter reveals these states inline in the same card and auto-verifies a complete code."
+            "migration": "OtpStep now derives masked phone copy, cooldown label, resend label, verify/resend/edit-number enablement, and verify loading through AuthOtpEntryViewState while keeping timer and text-controller lifecycle local. Its Host adapter reveals these states inline in the same card and auto-verifies a complete code."
           },
           {
             "id": "section.auth.error_feedback",
@@ -20566,10 +20566,10 @@
               "AuthErrorFeedback"
             ],
             "flutter": {
-              "file": "lib/auth/presentation/phone_page.dart",
-              "symbol": "PhonePage"
+              "file": "lib/auth/presentation/phone_step.dart",
+              "symbol": "PhoneStep"
             },
-            "currentOwner": "PhonePage + OtpPage",
+            "currentOwner": "PhoneStep + OtpStep",
             "targetOwner": "shared auth feedback section",
             "dependencies": [
               "catch.surface"
@@ -20671,79 +20671,79 @@
             "symbol": "OnboardingTopBarState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-            "symbol": "WelcomePage"
+            "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+            "symbol": "OnboardingWelcomeBody"
           },
           {
-            "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
-            "symbol": "NameDobPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_name_dob_step.dart",
+            "symbol": "OnboardingNameDobBody"
           },
           {
-            "file": "lib/onboarding/presentation/pages/name_dob_page_state.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_name_dob_step_state.dart",
             "symbol": "OnboardingNameDobState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_name_dob_step.dart",
             "symbol": "OnboardingNameDobStep"
           },
           {
-            "file": "lib/onboarding/presentation/pages/gender_interest_page.dart",
-            "symbol": "GenderInterestPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_gender_interest_step.dart",
+            "symbol": "OnboardingGenderInterestBody"
           },
           {
-            "file": "lib/onboarding/presentation/pages/gender_interest_page_state.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_gender_interest_step_state.dart",
             "symbol": "OnboardingGenderInterestState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/gender_interest_page.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_gender_interest_step.dart",
             "symbol": "OnboardingGenderInterestStep"
           },
           {
-            "file": "lib/onboarding/presentation/pages/instagram_page.dart",
-            "symbol": "InstagramPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_instagram_step.dart",
+            "symbol": "OnboardingInstagramBody"
           },
           {
-            "file": "lib/onboarding/presentation/pages/instagram_page_state.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_instagram_step_state.dart",
             "symbol": "OnboardingInstagramState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/instagram_page.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_instagram_step.dart",
             "symbol": "OnboardingInstagramStep"
           },
           {
-            "file": "lib/onboarding/presentation/pages/photos_page.dart",
-            "symbol": "PhotosPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_photos_step.dart",
+            "symbol": "OnboardingPhotosBody"
           },
           {
-            "file": "lib/onboarding/presentation/pages/photos_page_state.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_photos_step_state.dart",
             "symbol": "OnboardingPhotosState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/photos_page.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_photos_step.dart",
             "symbol": "OnboardingPhotosStep"
           },
           {
-            "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-            "symbol": "ProfilePromptsPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart",
+            "symbol": "OnboardingProfilePromptsBody"
           },
           {
-            "file": "lib/onboarding/presentation/pages/profile_prompts_page_state.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step_state.dart",
             "symbol": "OnboardingProfilePromptsState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart",
             "symbol": "OnboardingProfilePromptsStep"
           },
           {
-            "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
-            "symbol": "RunningPrefsPage"
+            "file": "lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart",
+            "symbol": "OnboardingRunningPrefsBody"
           },
           {
-            "file": "lib/onboarding/presentation/pages/running_prefs_page_state.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_running_prefs_step_state.dart",
             "symbol": "OnboardingRunningPrefsState"
           },
           {
-            "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
+            "file": "lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart",
             "symbol": "OnboardingRunningPrefsStep"
           }
         ],
@@ -20961,10 +20961,10 @@
           "id": "welcome_entry",
           "kind": "populated",
           "status": "captured",
-          "source": "OnboardingScreen starts at OnboardingStep.welcome when no signed-in profile/draft entry is available and renders WelcomePage.",
+          "source": "OnboardingScreen starts at OnboardingStep.welcome when no signed-in profile/draft entry is available and renders OnboardingWelcomeBody.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "WelcomePage/Splash states"
+            "OnboardingWelcomeBody/Splash states"
           ],
           "captureIds": [
             "onboarding_welcome"
@@ -20978,10 +20978,10 @@
           "id": "name_dob_step",
           "kind": "populated",
           "status": "captured",
-          "source": "NameDobPage owns the route/provider edge while OnboardingNameDobState and OnboardingNameDobStep own first name, last name, DOB, verified phone display, date policy, validation, and typed submit/date callbacks inside the shared step frame.",
+          "source": "OnboardingNameDobBody owns the route/provider edge while OnboardingNameDobState and OnboardingNameDobStep own first name, last name, DOB, verified phone display, date policy, validation, and typed submit/date callbacks inside the shared step frame.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "NameDobPage/Identity form"
+            "OnboardingNameDobBody/Identity form"
           ],
           "captureIds": [
             "onboarding_name_dob",
@@ -20997,10 +20997,10 @@
           "id": "gender_interest_step",
           "kind": "populated",
           "status": "captured",
-          "source": "GenderInterestPage owns the route/provider edge while OnboardingGenderInterestState and OnboardingGenderInterestStep own selected-chip display, validation copy, save pending/error display, typed submit intent, and typed chip callbacks.",
+          "source": "OnboardingGenderInterestBody owns the route/provider edge while OnboardingGenderInterestState and OnboardingGenderInterestStep own selected-chip display, validation copy, save pending/error display, typed submit intent, and typed chip callbacks.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "GenderInterestPage/Gender and interest form"
+            "OnboardingGenderInterestBody/Gender and interest form"
           ],
           "captureIds": [
             "onboarding_gender_interest",
@@ -21016,10 +21016,10 @@
           "id": "instagram_step",
           "kind": "populated",
           "status": "captured",
-          "source": "InstagramPage owns the route/provider edge while OnboardingInstagramState and OnboardingInstagramStep own optional handle seed text, trimmed continue intent, skip intent, and typed callbacks.",
+          "source": "OnboardingInstagramBody owns the route/provider edge while OnboardingInstagramState and OnboardingInstagramStep own optional handle seed text, trimmed continue intent, skip intent, and typed callbacks.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "InstagramPage/Instagram form"
+            "OnboardingInstagramBody/Instagram form"
           ],
           "captureIds": [
             "onboarding_instagram",
@@ -21032,10 +21032,10 @@
           "id": "photos_photo_gate",
           "kind": "empty",
           "status": "captured",
-          "source": "PhotosPage enforces the required photo gate before profile completion, adapts copy for profileCompletionOnly mode, and routes upload-failure feedback through the shared Catch snackbar helper.",
+          "source": "OnboardingPhotosBody enforces the required photo gate before profile completion, adapts copy for profileCompletionOnly mode, and routes upload-failure feedback through the shared Catch snackbar helper.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "PhotosPage/Photo grid states"
+            "OnboardingPhotosBody/Photo grid states"
           ],
           "captureIds": [
             "onboarding_photos_gate",
@@ -21053,10 +21053,10 @@
           "id": "prompts_step",
           "kind": "populated",
           "status": "captured",
-          "source": "ProfilePromptsPage owns the route/provider edge while OnboardingProfilePromptsState and OnboardingProfilePromptsStep own prompt selection normalization, available prompt options, answer projection, footer progress, completion gating, mutation error display, and typed callbacks.",
+          "source": "OnboardingProfilePromptsBody owns the route/provider edge while OnboardingProfilePromptsState and OnboardingProfilePromptsStep own prompt selection normalization, available prompt options, answer projection, footer progress, completion gating, mutation error display, and typed callbacks.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "ProfilePromptsPage/Prompt form"
+            "OnboardingProfilePromptsBody/Prompt form"
           ],
           "captureIds": [
             "onboarding_prompts_empty",
@@ -21070,10 +21070,10 @@
           "id": "running_prefs_step",
           "kind": "populated",
           "status": "captured",
-          "source": "RunningPrefsPage owns the route/provider edge while OnboardingRunningPrefsState and OnboardingRunningPrefsStep own pace labels, run-preference chip selections, mode-specific footer/reason/time labels, mutation error display, and typed complete-run-preferences submit intent.",
+          "source": "OnboardingRunningPrefsBody owns the route/provider edge while OnboardingRunningPrefsState and OnboardingRunningPrefsStep own pace labels, run-preference chip selections, mode-specific footer/reason/time labels, mutation error display, and typed complete-run-preferences submit intent.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "RunningPrefsPage/Run preferences form"
+            "OnboardingRunningPrefsBody/Run preferences form"
           ],
           "captureIds": [
             "onboarding_running_prefs"
@@ -21091,8 +21091,8 @@
           "source": "Step pages validate required fields before advancing or completing the flow.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "NameDobPage/Identity form",
-            "GenderInterestPage/Gender and interest form"
+            "OnboardingNameDobBody/Identity form",
+            "OnboardingGenderInterestBody/Gender and interest form"
           ],
           "captureIds": [
             "onboarding_name_dob_validation_error",
@@ -21127,7 +21127,7 @@
           "source": "OnboardingController.saveProfileMutation owns profile-save operations while step pages render pending/error feedback.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "GenderInterestPage/Gender and interest form"
+            "OnboardingGenderInterestBody/Gender and interest form"
           ],
           "captureIds": [
             "onboarding_save_profile_pending",
@@ -21145,8 +21145,8 @@
           "source": "OnboardingController.completeMutation owns final completion and controller invalidation once onboarding is done.",
           "previewIds": [
             "OnboardingScreen/Route states",
-            "ProfilePromptsPage/Prompt form",
-            "RunningPrefsPage/Run preferences form"
+            "OnboardingProfilePromptsBody/Prompt form",
+            "OnboardingRunningPrefsBody/Run preferences form"
           ],
           "captureIds": [
             "onboarding_complete_run_prefs_pending",
@@ -21252,10 +21252,10 @@
               "OnboardingWelcomeStep"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/welcome_page.dart",
-              "symbol": "WelcomePage"
+              "file": "lib/onboarding/presentation/pages/onboarding_welcome_body.dart",
+              "symbol": "OnboardingWelcomeBody"
             },
-            "currentOwner": "WelcomePage",
+            "currentOwner": "OnboardingWelcomeBody",
             "targetOwner": "shared welcome/start step section",
             "dependencies": [
               "catch.button"
@@ -21275,10 +21275,10 @@
               "OnboardingIdentitySteps"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/name_dob_page.dart",
-              "symbol": "NameDobPage"
+              "file": "lib/onboarding/presentation/pages/onboarding_name_dob_step.dart",
+              "symbol": "OnboardingNameDobBody"
             },
-            "currentOwner": "NameDobPage adapter over OnboardingNameDobState + OnboardingNameDobStep; GenderInterestPage adapter over OnboardingGenderInterestState + OnboardingGenderInterestStep; InstagramPage adapter over OnboardingInstagramState + OnboardingInstagramStep",
+            "currentOwner": "OnboardingNameDobBody adapter over OnboardingNameDobState + OnboardingNameDobStep; OnboardingGenderInterestBody adapter over OnboardingGenderInterestState + OnboardingGenderInterestStep; OnboardingInstagramBody adapter over OnboardingInstagramState + OnboardingInstagramStep",
             "targetOwner": "provider-free identity step sections",
             "dependencies": [
               "catch.field",
@@ -21304,10 +21304,10 @@
               "OnboardingPhotosStep"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/photos_page.dart",
+              "file": "lib/onboarding/presentation/pages/onboarding_photos_step.dart",
               "symbol": "OnboardingPhotosStep"
             },
-            "currentOwner": "PhotosPage adapter over OnboardingPhotosState + OnboardingPhotosStep",
+            "currentOwner": "OnboardingPhotosBody adapter over OnboardingPhotosState + OnboardingPhotosStep",
             "targetOwner": "provider-free photos step section plus upload controller seam",
             "dependencies": [
               "catch.button",
@@ -21318,7 +21318,7 @@
               "save_profile_mutation",
               "text_scale_2"
             ],
-            "migration": "OnboardingPhotosState owns uploaded photo count, upload pending/error display state, continue availability/hints, supporting copy, and typed slot intents. OnboardingPhotosStep is provider-free and receives typed callbacks while PhotosPage retains provider watches, upload/editor side effects, and controller navigation."
+            "migration": "OnboardingPhotosState owns uploaded photo count, upload pending/error display state, continue availability/hints, supporting copy, and typed slot intents. OnboardingPhotosStep is provider-free and receives typed callbacks while OnboardingPhotosBody retains provider watches, upload/editor side effects, and controller navigation."
           },
           {
             "id": "section.onboarding.prompts_step",
@@ -21329,10 +21329,10 @@
               "OnboardingPromptsStep"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/profile_prompts_page.dart",
-              "symbol": "ProfilePromptsPage"
+              "file": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart",
+              "symbol": "OnboardingProfilePromptsBody"
             },
-            "currentOwner": "ProfilePromptsPage adapter over OnboardingProfilePromptsState + OnboardingProfilePromptsStep",
+            "currentOwner": "OnboardingProfilePromptsBody adapter over OnboardingProfilePromptsState + OnboardingProfilePromptsStep",
             "targetOwner": "provider-free prompts step section",
             "dependencies": [
               "catch.field",
@@ -21343,7 +21343,7 @@
               "required_field_errors",
               "save_profile_mutation"
             ],
-            "migration": "OnboardingProfilePromptsState owns prompt selection normalization, available prompt filtering, answer projection, footer progress, completion gating, pending/error display, and typed submit intent while ProfilePromptsPage retains provider reads, controller listeners, and completion mutation execution."
+            "migration": "OnboardingProfilePromptsState owns prompt selection normalization, available prompt filtering, answer projection, footer progress, completion gating, pending/error display, and typed submit intent while OnboardingProfilePromptsBody retains provider reads, controller listeners, and completion mutation execution."
           },
           {
             "id": "section.onboarding.running_prefs_step",
@@ -21354,10 +21354,10 @@
               "OnboardingRunningPrefsStep"
             ],
             "flutter": {
-              "file": "lib/onboarding/presentation/pages/running_prefs_page.dart",
+              "file": "lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart",
               "symbol": "OnboardingRunningPrefsStep"
             },
-            "currentOwner": "RunningPrefsPage adapter over OnboardingRunningPrefsState + OnboardingRunningPrefsStep",
+            "currentOwner": "OnboardingRunningPrefsBody adapter over OnboardingRunningPrefsState + OnboardingRunningPrefsStep",
             "targetOwner": "provider-free running preferences step section",
             "dependencies": [
               "catch.chip",
@@ -21369,7 +21369,7 @@
               "complete_mutation",
               "text_scale_2"
             ],
-            "migration": "OnboardingRunningPrefsState owns pace label display, selected run-preference chips, run-preferences-only copy variants, completion pending/error display, and typed complete-run-preferences submit intent while RunningPrefsPage retains profile seeding, provider watches, controller mutation execution, and route side effects."
+            "migration": "OnboardingRunningPrefsState owns pace label display, selected run-preference chips, run-preferences-only copy variants, completion pending/error display, and typed complete-run-preferences submit intent while OnboardingRunningPrefsBody retains profile seeding, provider watches, controller mutation execution, and route side effects."
           }
         ]
       },
@@ -21397,7 +21397,7 @@
         {
           "id": "DS-ONBOARDING-005",
           "status": "open",
-          "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: InstagramPage and OnboardingStep.instagram are implemented, captured, and previewed, but standard onboarding exits after saveProfile, profile-completion entry begins at photos/prompts, run-preferences entry begins at runningPrefs, and saved drafts beyond genderInterest are collapsed back to genderInterest. Decide whether to retire the orphaned Instagram step or restore an explicit production transition and route test."
+          "nextAction": "REG-FEATURE-CONTRACT-DRIFT-001: OnboardingInstagramBody and OnboardingStep.instagram are implemented, captured, and previewed, but standard onboarding exits after saveProfile, profile-completion entry begins at photos/prompts, run-preferences entry begins at runningPrefs, and saved drafts beyond genderInterest are collapsed back to genderInterest. Decide whether to retire the orphaned Instagram step or restore an explicit production transition and route test."
         },
         {
           "id": "DS-ONBOARDING-006",
@@ -21920,7 +21920,7 @@
             "symbol": "SavedEventRepository"
           }
         ],
-        "notes": "SavedEventsScreen watches the current uid, streams saved event details, owns CatchRouteScaffold chrome, retry invalidation, club-name lookup, and saved-event detail navigation. SavedEventsListState owns event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input. SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage own provider-free agenda, loading, error, lookup-error, and empty surfaces; the duplicate body headline was removed."
+        "notes": "SavedEventsScreen watches the current uid, streams saved event details, owns CatchRouteScaffold chrome, retry invalidation, club-name lookup, and saved-event detail navigation. SavedEventsListState owns event ordering, saved/past badge labels, tile statuses, today, and club-id lookup input. SavedEventsAgendaList, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorState, and SavedEventsMessage own provider-free agenda, loading, error, lookup-error, and empty surfaces; the duplicate body headline was removed."
       },
       "designRefs": [
         {
@@ -22121,7 +22121,7 @@
         }
       ],
       "composition": {
-        "currentLayout": "SavedEventsScreen owns uid/provider orchestration, CatchRouteScaffold chrome, club-name lookup, retry invalidation, and event-detail navigation, then resolves SavedEventsListState before passing typed data into provider-free SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, and SavedEventsMessage sections.",
+        "currentLayout": "SavedEventsScreen owns uid/provider orchestration, CatchRouteScaffold chrome, club-name lookup, retry invalidation, and event-detail navigation, then resolves SavedEventsListState before passing typed data into provider-free SavedEventsAgendaList, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorState, and SavedEventsMessage sections.",
         "targetLayout": "Saved Events should keep providers at the route boundary, one compact route title in CatchRouteScaffold, SavedEventsListState as the ordered-row adapter, and public section widgets as the owner of agenda, loading/error, lookup-error, and empty surfaces.",
         "sections": [
           {
@@ -22159,10 +22159,10 @@
             ],
             "flutter": {
               "file": "lib/events/presentation/saved_events_screen.dart",
-              "symbol": "SavedEventsAgendaSliver"
+              "symbol": "SavedEventsAgendaList"
             },
-            "currentOwner": "SavedEventsAgendaSliver + SavedEventsListState",
-            "targetOwner": "SavedEventsAgendaSliver + SavedEventsListState",
+            "currentOwner": "SavedEventsAgendaList + SavedEventsListState",
+            "targetOwner": "SavedEventsAgendaList + SavedEventsListState",
             "dependencies": [
               "catch.badge",
               "catch.surface"
@@ -22172,7 +22172,7 @@
               "club_names_loading_error",
               "detail_navigation"
             ],
-            "migration": "SavedEventsAgendaSliver reuses EventAgendaSliverList while SavedEventsListState supplies ordering, badge labels, tile statuses, and today; the route supplies club names and navigation callbacks."
+            "migration": "SavedEventsAgendaList reuses EventAgendaSliverList while SavedEventsListState supplies ordering, badge labels, tile statuses, and today; the route supplies club names and navigation callbacks."
           },
           {
             "id": "section.saved_events.empty_error",
@@ -22186,8 +22186,8 @@
               "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
               "symbol": "CatchEmptyState"
             },
-            "currentOwner": "SavedEventsLoading + SavedEventsError + SavedEventsClubNamesErrorSliver + SavedEventsMessage",
-            "targetOwner": "SavedEventsLoading + SavedEventsError + SavedEventsClubNamesErrorSliver + SavedEventsMessage",
+            "currentOwner": "SavedEventsLoading + SavedEventsError + SavedEventsClubNamesErrorState + SavedEventsMessage",
+            "targetOwner": "SavedEventsLoading + SavedEventsError + SavedEventsClubNamesErrorState + SavedEventsMessage",
             "dependencies": [
               "catch.surface"
             ],
@@ -22215,7 +22215,7 @@
         {
           "id": "DS-SAVED-EVENTS-003",
           "status": "closed",
-          "nextAction": "Closed by one CatchRouteScaffold title plus SavedEventsAgendaSliver, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorSliver, SavedEventsMessage, and SavedEventsListState provider-free section boundaries."
+          "nextAction": "Closed by one CatchRouteScaffold title plus SavedEventsAgendaList, SavedEventsLoading, SavedEventsError, SavedEventsClubNamesErrorState, SavedEventsMessage, and SavedEventsListState provider-free section boundaries."
         },
         {
           "id": "DS-SAVED-EVENTS-004",
@@ -22348,17 +22348,17 @@
         {
           "id": "filters_dirty_edit",
           "status": "captured",
-          "notes": "Provider-free FiltersContent dirty edit state with changed age range and gender chips."
+          "notes": "Provider-free FiltersBody dirty edit state with changed age range and gender chips."
         },
         {
           "id": "filters_reset_restored",
           "status": "captured",
-          "notes": "Provider-free FiltersContent reset-restored defaults state."
+          "notes": "Provider-free FiltersBody reset-restored defaults state."
         },
         {
           "id": "filters_save_pending",
           "status": "captured",
-          "notes": "Provider-free FiltersContent save-pending state with loading apply button."
+          "notes": "Provider-free FiltersBody save-pending state with loading apply button."
         },
         {
           "id": "filters_save_error",
@@ -22442,7 +22442,7 @@
           "nextAction": "Filters default preferences has a manifest-registered design reference plus deterministic light/dark captures.",
           "previewIds": [
             "FiltersScreen/Route states",
-            "FiltersContent/Content states"
+            "FiltersBody/Content states"
           ]
         },
         {
@@ -22458,7 +22458,7 @@
           ],
           "nextAction": "Compare dirty edit treatment against future dirty-state reference if design adds one.",
           "previewIds": [
-            "FiltersContent/Content states"
+            "FiltersBody/Content states"
           ]
         },
         {
@@ -22471,7 +22471,7 @@
           ],
           "nextAction": "Reset-restored visual state is captured; add interaction proof only if reset policy changes.",
           "previewIds": [
-            "FiltersContent/Content states"
+            "FiltersBody/Content states"
           ]
         },
         {
@@ -22487,7 +22487,7 @@
           ],
           "nextAction": "Compare pending apply treatment against future mutation reference if design adds one.",
           "previewIds": [
-            "FiltersContent/Content states"
+            "FiltersBody/Content states"
           ]
         },
         {
@@ -22524,7 +22524,7 @@
           "nextAction": "Compare text-scale layout against future accessibility reference if design adds one.",
           "previewIds": [
             "FiltersScreen/Route states",
-            "FiltersContent/Content states"
+            "FiltersBody/Content states"
           ]
         },
         {
@@ -22538,12 +22538,12 @@
           "nextAction": "Compare reduced-motion behavior against future accessibility reference if design adds one.",
           "previewIds": [
             "FiltersScreen/Route states",
-            "FiltersContent/Content states"
+            "FiltersBody/Content states"
           ]
         }
       ],
       "composition": {
-        "currentLayout": "FiltersScreen owns profile provider state, top-bar close, mutation listener, and pop-on-success behavior while FiltersPreferencesState owns draft values, saved defaults, dirty/reset/apply availability, pending state, and save request fields before composing provider-free FiltersContent.",
+        "currentLayout": "FiltersScreen owns profile provider state, top-bar close, mutation listener, and pop-on-success behavior while FiltersPreferencesState owns draft values, saved defaults, dirty/reset/apply availability, pending state, and save request fields before composing provider-free FiltersBody.",
         "targetLayout": "Filters should keep FiltersPreferencesState as the provider-free adapter for draft values, dirty/reset/apply availability, mutation state, and save request fields while future passes add save-error proof, captures, and visual parity.",
         "sections": [
           {
@@ -22569,10 +22569,10 @@
               "default_preferences",
               "save_pending"
             ],
-            "migration": "FiltersScreen keeps provider waves, mutation listening, and route close/pop behavior at the route edge while FiltersPreferencesState owns saved defaults, draft values, dirty state, reset/apply availability, pending state, and save request fields before composing provider-free FiltersContent.",
+            "migration": "FiltersScreen keeps provider waves, mutation listening, and route close/pop behavior at the route edge while FiltersPreferencesState owns saved defaults, draft values, dirty state, reset/apply availability, pending state, and save request fields before composing provider-free FiltersBody.",
             "previewIds": [
               "FiltersScreen/Route states",
-              "FiltersContent/Content states"
+              "FiltersBody/Content states"
             ]
           },
           {
@@ -22624,9 +22624,9 @@
               "edited_preferences",
               "text_scale_2"
             ],
-            "migration": "FiltersContent exposes range display and changed callbacks through provider-free content state while preserving CatchRangeInput treatment; Widgetbook covers default, dirty, reset, pending, text-scale, reduced-motion, and dark-theme bodies.",
+            "migration": "FiltersBody exposes range display and changed callbacks through provider-free content state while preserving CatchRangeInput treatment; Widgetbook covers default, dirty, reset, pending, text-scale, reduced-motion, and dark-theme bodies.",
             "previewIds": [
-              "FiltersContent/Content states"
+              "FiltersBody/Content states"
             ]
           },
           {
@@ -22651,9 +22651,9 @@
               "edited_preferences",
               "text_scale_2"
             ],
-            "migration": "FiltersContent exposes selected chip set and toggles through provider-free content state while preserving the stronger CatchChip.selectable treatment; Widgetbook covers default, dirty, reset, pending, text-scale, reduced-motion, and dark-theme bodies.",
+            "migration": "FiltersBody exposes selected chip set and toggles through provider-free content state while preserving the stronger CatchChip.selectable treatment; Widgetbook covers default, dirty, reset, pending, text-scale, reduced-motion, and dark-theme bodies.",
             "previewIds": [
-              "FiltersContent/Content states"
+              "FiltersBody/Content states"
             ]
           },
           {
@@ -22666,7 +22666,7 @@
             ],
             "flutter": {
               "file": "lib/swipes/presentation/filters_screen.dart",
-              "symbol": "FiltersContent"
+              "symbol": "FiltersBody"
             },
             "currentOwner": "FiltersScreen",
             "targetOwner": "provider-free apply dock section",
@@ -22679,9 +22679,9 @@
               "save_error",
               "save_success_exit"
             ],
-            "migration": "FiltersContent now renders the apply dock from explicit saving state and typed apply callback; the route Widgetbook state seeds FiltersController.saveFiltersMutation failure to exercise the real snackbar listener.",
+            "migration": "FiltersBody now renders the apply dock from explicit saving state and typed apply callback; the route Widgetbook state seeds FiltersController.saveFiltersMutation failure to exercise the real snackbar listener.",
             "previewIds": [
-              "FiltersContent/Content states"
+              "FiltersBody/Content states"
             ]
           }
         ]
@@ -23088,7 +23088,7 @@
             ],
             "flutter": {
               "file": "lib/swipes/presentation/event_recap_screen.dart",
-              "symbol": "RecapHero"
+              "symbol": "RecapHeader"
             },
             "currentOwner": "EventRecapScreen",
             "targetOwner": "provider-free recap hero section",
@@ -23099,7 +23099,7 @@
               "populated_attendees",
               "text_scale_2"
             ],
-            "migration": "RecapHero now renders EventRecapHeroState display data for event title, distance, checked-in count, and catch-window copy; Widgetbook covers closed and open catch-window preview states."
+            "migration": "RecapHeader now renders EventRecapHeaderState display data for event title, distance, checked-in count, and catch-window copy; Widgetbook covers closed and open catch-window preview states."
           },
           {
             "id": "section.event_recap.vibe_grid",
@@ -23215,7 +23215,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {
@@ -23255,8 +23255,8 @@
             "symbol": "CreateClubScreen"
           },
           {
-            "file": "packages/catch_ui/lib/src/components/catch_dock_surface.dart",
-            "symbol": "CatchDockSurface"
+            "file": "packages/catch_ui/lib/src/components/catch_dock.dart",
+            "symbol": "CatchDock"
           },
           {
             "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
@@ -23757,7 +23757,7 @@
               "details_step",
               "text_scale_2"
             ],
-            "migration": "Keep optional contact fields in shared CreateClubContactFields and add filled/empty previews."
+            "migration": "Keep optional contact fields in shared CreateClubContactSection and add filled/empty previews."
           },
           {
             "id": "section.host.club_create.defaults_steps",
@@ -23793,10 +23793,10 @@
               "CreateClubFooter"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/widgets/stepper_footer.dart",
-              "symbol": "StepperFooter"
+              "file": "lib/hosts/presentation/widgets/host_stepper_dock.dart",
+              "symbol": "HostStepperDock"
             },
-            "currentOwner": "StepperFooter + CreateClubScreen",
+            "currentOwner": "HostStepperDock + CreateClubScreen",
             "targetOwner": "provider-free wizard footer",
             "dependencies": [
               "catch.button"
@@ -23807,7 +23807,7 @@
               "submit_error",
               "success_pop"
             ],
-            "migration": "StepperFooter now renders labels, loading, enabled state, and next/save/create intents from HostClubCreateFooterState while CreateClubScreen executes the typed intents. HostClubSubmitOutcomeState owns close-after-submit-success policy before the route performs Navigator.pop."
+            "migration": "HostStepperDock now renders labels, loading, enabled state, and next/save/create intents from HostClubCreateFooterState while CreateClubScreen executes the typed intents. HostClubSubmitOutcomeState owns close-after-submit-success policy before the route performs Navigator.pop."
           }
         ]
       },
@@ -24473,8 +24473,8 @@
               "EditEventFooter"
             ],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/components/catch_dock_surface.dart",
-              "symbol": "CatchDockSurface"
+              "file": "packages/catch_ui/lib/src/components/catch_dock.dart",
+              "symbol": "CatchDock"
             },
             "currentOwner": "EditHostedEventFooter over EditHostedEventFooterState",
             "targetOwner": "provider-free mutation footer",
@@ -24528,7 +24528,7 @@
       "topBar": {
         "role": "shell",
         "expression": "shell-owned",
-        "owner": "CatchAdaptiveTabScaffold",
+        "owner": "AdaptiveTabScaffold",
         "reason": "The route body relies on shell chrome or a registered nested composition owner."
       },
       "statePolicy": {
@@ -24902,13 +24902,13 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "MapOverlayControls"
+              "MapOverlayTopBar"
             ],
             "flutter": {
-              "file": "lib/events/presentation/widgets/map_overlay_controls.dart",
-              "symbol": "MapOverlayControls"
+              "file": "lib/events/presentation/widgets/map_overlay_top_bar.dart",
+              "symbol": "MapOverlayTopBar"
             },
-            "currentOwner": "MapOverlayControls",
+            "currentOwner": "MapOverlayTopBar",
             "targetOwner": "provider-free floating map controls",
             "dependencies": [
               "catch.icon_button",
@@ -25140,7 +25140,7 @@
           "id": "uid_error",
           "kind": "error",
           "status": "captured",
-          "source": "uidProvider failure renders CatchErrorState with AppErrorContext.auth and an identity retry instead of ActivitySignedOutState.",
+          "source": "uidProvider failure renders CatchErrorState with AppErrorContext.auth and an identity retry instead of ActivitySignedOutEmptyState.",
           "captureIds": [
             "notifications_uid_error"
           ],
@@ -25156,7 +25156,7 @@
           "id": "signed_out",
           "kind": "permission",
           "status": "captured",
-          "source": "A successfully resolved null uid alone renders ActivitySignedOutState; uidProvider failures use the separate uid_error state.",
+          "source": "A successfully resolved null uid alone renders ActivitySignedOutEmptyState; uidProvider failures use the separate uid_error state.",
           "captureIds": [
             "notifications_signed_out"
           ],
@@ -25395,11 +25395,11 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "NotificationDayGroups"
+              "NotificationDayList"
             ],
             "flutter": {
               "file": "lib/dashboard/presentation/widgets/activity_section.dart",
-              "symbol": "NotificationDayGroups"
+              "symbol": "NotificationDayList"
             },
             "currentOwner": "NotificationsListState + _NotificationDayGroups",
             "targetOwner": "provider-free notification day groups",
@@ -25857,13 +25857,13 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "ReviewHistoryItem"
+              "ReviewHistoryRow"
             ],
             "flutter": {
               "file": "lib/reviews/presentation/reviews_history_screen.dart",
-              "symbol": "ReviewHistoryItem"
+              "symbol": "ReviewHistoryRow"
             },
-            "currentOwner": "provider-free ReviewHistoryItem + ReviewsHistoryRow",
+            "currentOwner": "provider-free ReviewHistoryRow + ReviewsHistoryRow",
             "targetOwner": "provider-free review history row",
             "dependencies": [
               "catch.surface"

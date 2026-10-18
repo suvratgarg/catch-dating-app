@@ -113,7 +113,7 @@ Future<void> _pump(
         home: Scaffold(
           body: CustomScrollView(
             slivers: [
-              HostSavedAudiencesDirectory(
+              HostSavedAudiencesList(
                 organizerId: organizerId,
                 query: query,
                 onOpen: (audience) => opened.add(audience.audienceId),

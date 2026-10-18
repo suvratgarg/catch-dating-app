@@ -578,7 +578,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
             ],
           ),
         ),
-        CatchFormRowList<UpdateClubPatch>(
+        CatchFormList<UpdateClubPatch>(
           fieldCopy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleIdentity,
           rows: identityRows,
@@ -586,7 +586,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           onSave: _savePatch,
           errorTextBuilder: _errorText,
         ),
-        CatchFormRowList<UpdateClubPatch>(
+        CatchFormList<UpdateClubPatch>(
           fieldCopy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleContact,
           rows: contactRows,

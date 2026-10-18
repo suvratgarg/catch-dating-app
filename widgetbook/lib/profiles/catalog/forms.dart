@@ -10,7 +10,7 @@ import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Typed descriptor prototype',
-  type: CatchFormRowList,
+  type: CatchFormList,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget catchFormRowListStates(BuildContext context) {
@@ -46,7 +46,7 @@ Widget catchFormRangeFieldStates(BuildContext context) {
 
 Widget _catchFormDescriptorPreview(BuildContext context) {
   return WidgetbookProfileProfileCatalog(
-    title: 'CatchFormRowList',
+    title: 'CatchFormList',
     contractId: 'catch.form.descriptors.prototype',
     children: [
       WidgetbookProfileStateCard(
@@ -55,7 +55,7 @@ Widget _catchFormDescriptorPreview(BuildContext context) {
         child: SizedBox(
           width: WidgetbookPreviewLayout.phoneChromeWidth,
           height: WidgetbookPreviewLayout.profileSheetPreviewHeight,
-          child: CatchFormRowList<_WidgetbookFormPatch>(
+          child: CatchFormList<_WidgetbookFormPatch>(
             fieldCopy: catchFieldCopy(context.l10n),
             title: 'About you',
             rows: [

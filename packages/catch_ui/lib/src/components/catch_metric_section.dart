@@ -129,7 +129,11 @@ class CatchMetricSection extends StatelessWidget {
       padding: padding,
       radius: CatchRadius.md,
       backgroundColor: backgroundColor,
-      borderColor: borderColor ?? t.line,
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.separator,
+        color: borderColor,
+      ),
       child: reflow
           ? Column(
               key: const ValueKey('catch_metric_strip.reflow'),

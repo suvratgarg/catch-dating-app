@@ -127,8 +127,6 @@ const _manualAsyncSnapshotMembers = <String>{
 const _lowLevelTypographyRoles = <String>{'bodyS', 'bodyM', 'titleS'};
 
 const _lowLevelTypographyOwnerPaths = <String>{
-  '/packages/catch_ui/lib/src/components/catch_branded_sheet_header.dart',
-  '/packages/catch_ui/lib/src/components/catch_plain_sheet_header.dart',
   '/packages/catch_ui/lib/src/components/catch_empty_state.dart',
   '/packages/catch_ui/lib/src/components/catch_search_field.dart',
 };
@@ -219,7 +217,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const eventDetailPrefersPhotoThumbnail = LintCode(
     'catch_event_detail_prefers_photo_thumbnail',
-    'Event detail visuals must use CatchEventThumbnail so photos lead when available and activity artwork is only the fallback.',
+    'Event detail visuals must use EventThumbnail so photos lead when available and activity artwork is only the fallback.',
     severity: DiagnosticSeverity.WARNING,
   );
 
@@ -666,10 +664,10 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   bool _isRawChromeExceptionPath(String path) {
     return path.endsWith(
-          '/lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart',
+          '/lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart',
         ) ||
         path.endsWith(
-          '/lib/events/presentation/widgets/event_detail_hero_app_bar.dart',
+          '/lib/events/presentation/widgets/event_detail_hero_top_bar.dart',
         );
   }
 }
@@ -861,7 +859,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     }
 
     if (!_isShellImplementationPath &&
-        (typeName == 'CatchAdaptiveTabScaffold' ||
+        (typeName == 'AdaptiveTabScaffold' ||
             (typeName == 'Scaffold' && _scaffoldOwnsTabNavigation(node)))) {
       _reportAtNode(node, CatchUiLayoutRules.shellOwnsTabScaffold);
     }
@@ -889,7 +887,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       _checkEdgeInsetsSpacing(node);
     }
 
-    if (isEventDetailPath && typeName == 'EventActivityBackdrop') {
+    if (isEventDetailPath && typeName == 'EventBackdropImage') {
       rule.reportAtNode(
         node,
         diagnosticCode: CatchUiLayoutRules.eventDetailPrefersPhotoThumbnail,
@@ -1160,12 +1158,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   }
 
   bool _isThemeIndependentArtAllow(int offset) {
-    final isKnownArtPath =
-        path.endsWith(
-          '/packages/catch_ui/lib/src/primitives/catch_graded_image.dart',
-        ) ||
-        path.endsWith('/lib/core/widgets/event_activity_visuals.dart') ||
-        path.endsWith('/lib/events/presentation/widgets/event_pins_map.dart');
+    final isKnownArtPath = path.endsWith(
+      '/packages/catch_ui/lib/src/primitives/catch_graded_image.dart',
+    );
     return isKnownArtPath &&
         _lineForOffsetText(offset).contains('theme-independent art');
   }
@@ -1226,7 +1221,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     final bottomNavigation = _namedArgument(node, 'bottomNavigationBar');
     if (bottomNavigation == null) return false;
     return RegExp(
-      r'\b(?:BottomNavigationBar|NavigationBar|CupertinoTabBar|CatchTabBar|CatchAdaptiveTabScaffold)\s*\(',
+      r'\b(?:BottomNavigationBar|NavigationBar|CupertinoTabBar|CatchTabBar|AdaptiveTabScaffold)\s*\(',
     ).hasMatch(bottomNavigation.toSource());
   }
 

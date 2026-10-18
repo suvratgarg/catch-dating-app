@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": 17,
-  "updated": "2026-08-14",
+  "version": 18,
+  "updated": "2026-10-17",
   "owner": "web_platform",
   "goal": "Define reusable primitive families shared by the marketing and admin React surfaces and their accepted @catch/web-ui adoption state.",
   "sourceDocs": [
@@ -254,7 +254,7 @@
       "id": "WEB-SHARED-PANEL-001",
       "family": "panel-and-card-containment",
       "priority": "p2",
-      "status": "keep_surface_specific",
+      "status": "planned",
       "packageSymbols": [],
       "website": {
         "source": "website/src/shared/ui/primitives/layout.tsx",
@@ -270,7 +270,7 @@
           "AdminPanel"
         ]
       },
-      "rationale": "Marketing product/claim panels and admin operational panels have different containment semantics; sharing the current wrappers would create variant sprawl."
+      "rationale": "Ratified 2026-10-17 (UI blueprint D13): panel and card containment is one responsibility, so both surfaces fold into CatchSurface recipes in @catch/web-ui, with density as a scope rather than a second component. Blueprint Phase 7 delivers it. Previously keep_surface_specific because marketing and admin panels were judged to have different containment semantics."
     },
     {
       "id": "WEB-SHARED-METRIC-001",
@@ -290,7 +290,7 @@
           "AdminMetricCard"
         ]
       },
-      "rationale": "Marketing metrics are sparse proof points while admin metrics carry operational tone and dense supporting evidence."
+      "rationale": "Marketing metrics are sparse proof points while admin metrics carry operational tone and dense supporting evidence. Re-reviewed 2026-10-17 (UI blueprint D13): stays separate until the blueprint Phase 7 inventory compares both anatomies against CatchMetricSection."
     }
   ]
 }

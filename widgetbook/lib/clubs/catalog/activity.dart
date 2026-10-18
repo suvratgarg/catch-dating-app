@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
-import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/clubs/shared/club_host_identity_row.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

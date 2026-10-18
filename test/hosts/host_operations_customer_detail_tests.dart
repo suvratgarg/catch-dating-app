@@ -32,7 +32,7 @@ void _registerHostOperationsCustomerDetailTests() {
       ],
     );
     expect(requests, 0);
-    expect(find.byType(HostCustomerDetailOverview), findsOneWidget);
+    expect(find.byType(HostCustomerOverviewSectionList), findsOneWidget);
     await tester.tap(find.text('History'));
     await tester.pump();
     expect(requests, 1);
@@ -98,7 +98,7 @@ void _registerHostOperationsCustomerDetailTests() {
       ],
     );
 
-    final summary = find.byType(HostCustomersSummary);
+    final summary = find.byType(HostCustomersSummarySection);
     expect(
       find.descendant(
         of: summary,
@@ -117,7 +117,7 @@ void _registerHostOperationsCustomerDetailTests() {
       findsNothing,
     );
 
-    final controls = find.byType(HostCustomerDirectoryControls);
+    final controls = find.byType(HostCustomerControlSection);
     expect(
       find.descendant(of: controls, matching: find.text('Filters')),
       findsOneWidget,
@@ -237,7 +237,7 @@ void _registerHostOperationsCustomerDetailTests() {
       ],
     );
 
-    final summary = find.byType(HostCustomersSummary);
+    final summary = find.byType(HostCustomersSummarySection);
     final tabRailRect = tester.getRect(find.byType(HostAudienceTabRail));
     final summaryRect = tester.getRect(summary);
     expect(
@@ -267,7 +267,7 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(
       find.ancestor(
         of: find.byKey(const ValueKey('host-customers-filters')),
-        matching: find.byType(HostCustomerDirectoryControls),
+        matching: find.byType(HostCustomerControlSection),
       ),
       findsOneWidget,
     );
@@ -552,7 +552,7 @@ void _registerHostOperationsCustomerDetailTests() {
     );
     expect(find.byType(HostCustomerIdentityCard), findsNothing);
     expect(find.byType(HostCustomerMemoryPreview), findsOneWidget);
-    expect(find.byType(HostCustomerDetailOverview), findsOneWidget);
+    expect(find.byType(HostCustomerOverviewSectionList), findsOneWidget);
     expect(find.byType(HostCustomerReachSection), findsNothing);
     expect(find.byType(HostCustomerRecentEvents), findsOneWidget);
     expect(find.byType(HostCustomerTimelineSection), findsNothing);

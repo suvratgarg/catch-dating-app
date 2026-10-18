@@ -189,8 +189,8 @@ void main() {
       expect(populated.semanticLabel, 'Map, 3 events');
     });
 
-    test('ExploreCityTriggerState derives provider-free city chrome', () {
-      final idle = ExploreCityTriggerState.from(
+    test('ExploreCityButtonState derives provider-free city chrome', () {
+      final idle = ExploreCityButtonState.from(
         city: _city('mumbai'),
         focused: false,
         l10n: _l10n,
@@ -200,7 +200,7 @@ void main() {
       expect(idle.scopeLabel, 'EXPLORE · MUMBAI');
       expect(idle.icon, CatchIcons.locationOnOutlined);
 
-      final focused = ExploreCityTriggerState.from(
+      final focused = ExploreCityButtonState.from(
         city: _city('mumbai'),
         focused: true,
         l10n: _l10n,
