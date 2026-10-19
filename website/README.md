@@ -38,6 +38,10 @@ free. It checks HTML/RSC/data/sitemap publication changes, private-field exclusi
 malformed/synthetic records, 401-row refusal, unavailable readers, private assets
 browser expiry/focus recovery and refusal to promote an unconfigured build. It restores the organizer fixture and removes its own bound
 fixtures on completion. Do not run emulator-mutating acceptance suites concurrently.
+`test:next-failure` uses port 3122 and a read-only loopback gRPC proxy to permit
+the preflight reads, then fail subsequent reads. It verifies the documented
+uncached 500 response contains no stale organizer content. Run it with the same
+emulator variable after seeding the runtime fixture.
 
 `audit:next-browser` checks actual rendered pages with axe and records cold-load
 LCP/CLS/JavaScript bytes at mobile/desktop sizes under documented CPU/network

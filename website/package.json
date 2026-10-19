@@ -46,7 +46,8 @@
     "test:next-policy": "node --experimental-strip-types --test scripts/next/*.test.mjs",
     "test:next-runtime": "node scripts/next/runtimeAcceptance.mjs",
     "test:next-lifecycle": "node scripts/next/lifecycleAcceptance.mjs",
-    "audit:next-browser": "node scripts/next/browserAudit.mjs"
+    "audit:next-browser": "node scripts/next/browserAudit.mjs",
+    "test:next-failure": "node scripts/next/failureAcceptance.mjs"
   },
   "dependencies": {
     "@catch/web-ui": "0.1.0",

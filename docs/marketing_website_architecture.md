@@ -42,7 +42,10 @@ availability, organizer aliases and missing live-route statuses before streaming
 (including RSC, where a late `notFound()` otherwise retains HTTP 200); the render independently
 reauthorizes its data. This currently costs two bounded reads for those pages.
 A failed preflight returns 503; a failure after that preflight can still surface
-as Next's uncached 500. Neither error authorizes stale content or a false 404.
+as Next's uncached 500. The read-only gRPC fault acceptance test permits the
+three preflight queries, then rejects render queries and verifies that exact
+500/no-store response without stale content. Neither error authorizes stale
+content or a false 404.
 The browser refreshes at 25 seconds/focus and withholds its snapshot at 30
 seconds or on transport failure. Refresh requests time out after eight seconds
 so a later focus can recover without reloading. Live withdrawals remove page content and
