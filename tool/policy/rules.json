@@ -2797,7 +2797,6 @@
         "design/components/**",
         "design/admin/**",
         "design/website/**",
-        "design/web-ui/**",
         "lib/**",
         "admin/src/shared/ui/**",
         "website/src/shared/ui/**",

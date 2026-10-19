@@ -117,8 +117,7 @@
         "tool/marketing/**",
         "design/website/**",
         "design/admin/**",
-        "design/web-ui/**",
-        "design/web-ui/shared_primitive_adoption.json",
+        "design/components/catch.components.json",
         "docs/web_surface_architecture.md",
         "docs/marketing_website_architecture.md"
       ],
@@ -133,7 +132,7 @@
         "website/README.md",
         "packages/web-config/README.md",
         "tool/tools_manifest.json",
-        "design/web-ui/shared_primitive_adoption.json"
+        "design/components/README.md"
       ],
       "required_tools": [
         "web:react-architecture-boundaries",
