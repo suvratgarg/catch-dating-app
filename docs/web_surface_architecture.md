@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.30.0
+version: 0.31.0
 updated: 2026-10-20
 owner: web_platform
 status: active
@@ -101,6 +101,37 @@ current static release remain unchanged. Preview runtime/service/image/channel
 identities are retained as workflow artifacts for browser and host-forwarding
 acceptance. A successful preview deployment is not production cutover or proof
 of authenticated/payment flows; the existing cutover gates above still apply.
+
+### Exact-container production promotion
+
+After deployed preview and browser acceptance, dispatch `Next Website Promotion`
+with that successful preview run id. The preview source must still be current
+main with successful CI. The workflow verifies GitHub artifact provenance and
+ZIP digest, bounded archive contents, source/run/attempt identity and the loaded
+Docker image before OIDC. It then verifies the registry image configuration
+against the tested image and checks that the preview still serves that digest
+with the read-only identity. No image is rebuilt during promotion.
+
+The production service is `catch-website-next` in `asia-south1`, with the same
+read-only identity, one CPU, 512 MiB, concurrency 40, a 30-second timeout and
+zero-to-three instances. The workflow records the current live Hosting version
+as its rollback target. It retains the existing API rewrites, redirects, static
+assets and association files while changing the catch-all to the production
+service with `pinTag: true`. An expiring `next-release` channel exercises the
+production configuration before the exact tested Hosting version is cloned to
+live. The request proxy denies indexing on preview/default/custom hosts even
+when they use the production image. `X-Catch-Release` identifies the serving
+source for automated and manual acceptance.
+
+The Next promotion and legacy Hosting promoter share `web-hosting-marketing`.
+The legacy promoter reads the live Hosting configuration under that lock and
+skips static mutation once `catch-website-next` owns it. Future Next releases
+use the preview/promotion pair; a later automatic Vite build cannot overwrite
+Next. A failed metadata read fails closed. No automatic rollback, retry,
+provider activation, database mutation or IAM role grant is added. A failure
+preserves source/image/service/Hosting identities and the prior version for
+operator-reviewed recovery. Production and browser/provider acceptance remain
+unproven until those steps actually run and are inspected.
 
 ## Form embeds and proposed custom-host activation
 

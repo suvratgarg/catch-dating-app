@@ -1,0 +1,133 @@
+name: Next Website Promotion
+
+on:
+  workflow_dispatch:
+    inputs:
+      preview_run_id:
+        description: Successful, browser-accepted Next Website Preview run for current main
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  promote:
+    name: Promote the verified Next container
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: prod-hosting
+    concurrency:
+      group: web-hosting-marketing
+      cancel-in-progress: false
+      queue: max
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    env:
+      PREVIEW_RUN_ID: ${{ inputs.preview_run_id }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Verify accepted preview source and immutable artifact before credentials
+        run: node website/scripts/next/promoteRelease.mjs prepare
+      - name: Install the pinned Hosting client before authentication
+        env:
+          FIREBASE_TOOLS_VERSION: ${{ steps.toolchain.outputs.firebase-tools-version }}
+        run: npm install --global "firebase-tools@$FIREBASE_TOOLS_VERSION"
+      - uses: google-github-actions/setup-gcloud@v3
+      - name: Recheck current accepted source before authentication
+        run: node website/scripts/next/promoteRelease.mjs recheck
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+      - name: Verify the existing read-only runtime identity
+        run: |
+          set -euo pipefail
+          gcloud projects get-iam-policy catch-dating-app-64e51 --format=json > build/next-promote/runtime-policy.json
+          node --input-type=module -e 'import fs from "node:fs"; import {assertRuntimePolicy} from "./website/scripts/next/previewRelease.mjs"; assertRuntimePolicy(JSON.parse(fs.readFileSync("build/next-promote/runtime-policy.json")));'
+          gcloud iam service-accounts keys list \
+            --iam-account github-actions-web-reader@catch-dating-app-64e51.iam.gserviceaccount.com \
+            --project catch-dating-app-64e51 --managed-by=user --format=json > build/next-promote/runtime-keys.json
+          jq -e 'length == 0' build/next-promote/runtime-keys.json
+      - name: Bind the registry digest and currently accepted preview to the tested image
+        run: |
+          set -euo pipefail
+          image="$(cat build/next-promote/image-tag.txt)"
+          digest="$(gcloud artifacts docker images describe "$image" --project catch-dating-app-64e51 --format='value(image_summary.digest)')"
+          [[ "$digest" =~ ^sha256:[a-f0-9]{64}$ ]]
+          pinned="${image%:*}@$digest"
+          gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
+          docker pull "$pinned"
+          test "$(docker image inspect "$pinned" --format '{{.Id}}')" = "$(jq -r .imageId build/next-preview/verified/release.json)"
+          gcloud run services describe catch-website-next-preview --project catch-dating-app-64e51 --region asia-south1 \
+            --format=json > build/next-promote/preview-service.json
+          PINNED_IMAGE="$pinned" node --input-type=module -e 'import fs from "node:fs"; import {assertPreviewRuntime} from "./website/scripts/next/promoteRelease.mjs"; assertPreviewRuntime(JSON.parse(fs.readFileSync("build/next-promote/preview-service.json")), process.env.GITHUB_SHA, process.env.PINNED_IMAGE);'
+          printf '%s\n' "$pinned" > build/next-promote/image-digest.txt
+      - name: Preserve the current Hosting rollback version
+        run: node website/scripts/next/hostingState.mjs snapshot
+      - name: Deploy the same image as a bounded production runtime
+        run: |
+          set -euo pipefail
+          node website/scripts/next/promoteRelease.mjs recheck
+          gcloud run services list --project catch-dating-app-64e51 --region asia-south1 --format=json > build/next-promote/services-before.json
+          node --input-type=module -e 'import fs from "node:fs"; import {assertProductionTarget} from "./website/scripts/next/promoteRelease.mjs"; assertProductionTarget(JSON.parse(fs.readFileSync("build/next-promote/services-before.json")));'
+          gcloud run deploy catch-website-next --project catch-dating-app-64e51 --region asia-south1 \
+            --image "$(cat build/next-promote/image-digest.txt)" \
+            --service-account github-actions-web-reader@catch-dating-app-64e51.iam.gserviceaccount.com \
+            --allow-unauthenticated --ingress all --cpu 1 --memory 512Mi --concurrency 40 \
+            --min-instances 0 --max-instances 3 --timeout 30 --port 8080 \
+            --set-env-vars "CATCH_WEBSITE_STAGE=production,CATCH_PUBLIC_FIRESTORE_PROJECT=catch-dating-app-64e51,CATCH_RELEASE_SHA=$GITHUB_SHA" \
+            --labels "catch-surface=website,source-sha=$GITHUB_SHA" --quiet
+          gcloud run services describe catch-website-next --project catch-dating-app-64e51 --region asia-south1 \
+            --format=json > build/next-promote/production-service.json
+      - name: Exercise the production configuration on an expiring channel first
+        run: |
+          set -euo pipefail
+          node website/scripts/next/promoteRelease.mjs recheck
+          cd build/next-preview/verified
+          firebase hosting:channel:deploy next-release --expires 3d --project catch-dating-app-64e51 \
+            --only marketing --config firebase.production.json --non-interactive --json > ../../next-promote/candidate.json
+          url="$(jq -er '.result.marketing.url' ../../next-promote/candidate.json)"
+          node "$GITHUB_WORKSPACE/website/scripts/next/deployedSmoke.mjs" "$url" > ../../next-promote/candidate-checks.json
+      - name: Promote only the exact tested Hosting version
+        run: |
+          set -euo pipefail
+          node website/scripts/next/promoteRelease.mjs recheck
+          node website/scripts/next/hostingState.mjs assert-current
+          version="$(jq -er '.result.marketing.version' build/next-promote/candidate.json)"
+          [[ "$version" =~ ^[a-z0-9]+$ ]]
+          firebase hosting:clone "catch-dating-app-64e51@$version" catch-dating-app-64e51:live \
+            --project catch-dating-app-64e51 --non-interactive --json > build/next-promote/promotion.json
+          EXPECTED_HOSTING_VERSION="$version" node website/scripts/next/hostingState.mjs verify-next
+          node website/scripts/next/deployedSmoke.mjs https://catchdates.com > build/next-promote/live-checks.json
+      - name: Retain exact release and rollback identities
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: next-production-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            build/next-promote/authorization.json
+            build/next-promote/image-digest.txt
+            build/next-promote/preview-service.json
+            build/next-promote/production-service.json
+            build/next-promote/rollback.json
+            build/next-promote/candidate.json
+            build/next-promote/candidate-checks.json
+            build/next-promote/promotion.json
+            build/next-promote/production-hosting.json
+            build/next-promote/live-checks.json
+          if-no-files-found: warn
+          retention-days: 30

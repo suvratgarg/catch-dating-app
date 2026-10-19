@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.9.0
+version: 2.10.0
 updated: 2026-10-20
 owner: recursive_audit_loop
 status: active
@@ -689,13 +689,18 @@ Firebase deploy and data-validation workflows use GitHub OIDC rather than
 long-lived service-account JSON secrets. Use GitHub Environments named `dev`,
 `staging`, `prod-hosting`, `prod-mobile`, `backend-review`, `prod-backend`, and `prod`. `prod-hosting` is
 approval-free and limited to the automatic web Hosting workflows and the
-main-only `Next Website Preview` workflow. That manual preview requires current
+main-only `Next Website Preview` and `Next Website Promotion` workflows. The preview requires current
 main's successful CI and exact-source captures, builds without cloud credentials,
 and verifies the tested container archive before OIDC deployment to the fixed
 preview service/channel. Its scale-to-zero runtime has a one-instance cap and
 uses only the existing Firestore read-only web identity; it cannot publish the
-live Hosting channel. See `docs/web_surface_architecture.md` for the preview
-contract and the separate production cutover gates. `prod-mobile` is approval-free and `main`-only; it contains
+live Hosting channel. The separate promotion workflow accepts only a successful,
+browser-accepted preview of current main, verifies the tested image and Hosting
+bytes before OIDC, preserves the prior live version, tests an expiring production
+channel and clones that exact Hosting version to live. It shares the marketing
+Hosting lock; the legacy promoter checks actual live runtime ownership and
+skips static mutation after Next takes over. See `docs/web_surface_architecture.md`
+for the preview, production limits, rollback and acceptance contracts. `prod-mobile` is approval-free and `main`-only; it contains
 only mobile signing, Maps, App Store Connect, and Play-publisher credentials.
 The producer has a matching fail-closed ref guard. Store mutation is isolated in
 the exact promoter, whose four role/platform targets each have their own bounded

@@ -1,5 +1,5 @@
 import {productionIndexing, validatePublicRuntimeEnvironment} from "./src/server/publicEnvironment";
-import {isCatchWebsiteHost, requestHostname} from "./src/app/surfaceHostPolicy";
+import {isCatchWebsiteHost, isCatchIndexingHost, requestHostname} from "./src/app/surfaceHostPolicy";
 import {resolvePublicRoute} from "./src/server/publicRoute";
 import {availabilityCopy} from "./src/content/availability";
 import {NextRequest, NextResponse} from "next/server";
@@ -64,8 +64,12 @@ export async function proxy(request: NextRequest) {
   catch {return new NextResponse(null, {status: 503, headers: {
     "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow", "Retry-After": "30",
   }});}
-  const response = await handleRequest(request);
-  if (!productionIndexing()) response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  const indexable = productionIndexing() && isCatchIndexingHost(requestHostname(request.headers.get("host")));
+  const response = !indexable && request.nextUrl.pathname === "/robots.txt"
+    ? new NextResponse("User-agent: *\nDisallow: /\n", {headers: {"Content-Type": "text/plain", "Cache-Control": "no-store"}})
+    : await handleRequest(request);
+  if (!indexable) response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  if (/^[a-f0-9]{40}$/.test(process.env.CATCH_RELEASE_SHA ?? "")) response.headers.set("X-Catch-Release", process.env.CATCH_RELEASE_SHA!);
   return response;
 }
 export const config = {matcher: "/:path*"};

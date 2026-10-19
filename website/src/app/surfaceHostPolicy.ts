@@ -19,3 +19,8 @@ export function requestHostname(authority: string | null): string | null {
     return url.hostname.toLowerCase();
   } catch {return null;}
 }
+
+/** Only canonical production domains may be indexed, even on a production image. */
+export function isCatchIndexingHost(hostname: string | null): boolean {
+  return hostname === "catchdates.com" || hostname === "www.catchdates.com";
+}

@@ -301,3 +301,14 @@ Claim conversion events use the ads contract keys `club_id` and `claim_role`.
 Consent-based marketing events are still recorded for public organizer pages
 whose App Check-protected host analytics callable is disabled; only the
 callable dispatch is suppressed in that state.
+
+After browser/provider acceptance of the deployed preview, dispatch
+`.github/workflows/website-next-promote.yml` with its `preview_run_id`. Both runs
+must use the same current-main commit and successful CI. Promotion verifies and
+reuses the exact tested image; it does not rebuild. It preserves the prior
+Hosting version, deploys the bounded `catch-website-next` service, validates an
+expiring production channel, then clones its exact version to live. Release and
+rollback identities are saved as workflow artifacts. The legacy static promoter
+shares its lock and retires once it observes Next in the live Hosting config.
+Subsequent Next updates use this same preview/promotion pair. Source workflow
+availability alone is not deployment or live acceptance.

@@ -97,10 +97,10 @@ function prepare() {
   const hash = digest(fs.readFileSync("build/next-preview/release.tgz"));
   fs.appendFileSync(process.env.GITHUB_OUTPUT, `release_sha256=${hash}\n`);
 }
-function unpack() {
+export function unpackPreview({sourceSha, runId, runAttempt, archiveHash}) {
   const archive = "build/next-preview/release.tgz";
-  assert.match(process.env.RELEASE_SHA256 ?? "", /^[a-f0-9]{64}$/u);
-  assert.equal(digest(fs.readFileSync(archive)), process.env.RELEASE_SHA256, "Preview bytes differ from build job");
+  assert.match(archiveHash ?? "", /^[a-f0-9]{64}$/u);
+  assert.equal(digest(fs.readFileSync(archive)), archiveHash, "Preview bytes differ from build job");
   const entries = JSON.parse(command("python3", ["-c", `import json,tarfile,sys
 with tarfile.open(sys.argv[1],'r:gz') as archive:
  print(json.dumps([{'name':m.name,'regular':m.isfile(),'size':m.size} for m in archive.getmembers()]))`, archive]));
@@ -119,9 +119,9 @@ with tarfile.open(sys.argv[1],'r:gz') as archive:
    shutil.copyfileobj(source,target)`, archive, output]);
   const release = JSON.parse(fs.readFileSync(`${output}/release.json`, "utf8"));
   assert.equal(release.schema, "catch.next-preview/v1");
-  assert.equal(release.sourceSha, process.env.GITHUB_SHA);
-  assert.equal(release.runId, process.env.GITHUB_RUN_ID);
-  assert.equal(release.runAttempt, process.env.GITHUB_RUN_ATTEMPT);
+  assert.equal(release.sourceSha, sourceSha);
+  assert.equal(release.runId, runId);
+  assert.equal(release.runAttempt, runAttempt);
   for (const [key, value] of Object.entries(preview)) assert.equal(release[key], value);
   const expectedConfig = JSON.parse(fs.readFileSync("website/next-hosting.preview.json", "utf8"));
   expectedConfig.hosting.public = "hosting";
@@ -135,6 +135,6 @@ with tarfile.open(sys.argv[1],'r:gz') as archive:
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   if (process.argv[2] === "authorize") await authorize();
   else if (process.argv[2] === "prepare") prepare();
-  else if (process.argv[2] === "unpack") unpack();
+  else if (process.argv[2] === "unpack") unpackPreview({sourceSha: process.env.GITHUB_SHA, runId: process.env.GITHUB_RUN_ID, runAttempt: process.env.GITHUB_RUN_ATTEMPT, archiveHash: process.env.RELEASE_SHA256});
   else throw new Error("Expected authorize, prepare, or unpack");
 }
