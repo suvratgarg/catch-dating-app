@@ -924,6 +924,72 @@ test("materialized inventories replace only exact drift commands with checked cu
 });
 
 
+test("verified generated inventories cannot expand the affected execution plan", context => {
+  const root = createRunnerFixture(context);
+  const write = (file, contents) => {
+    fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+    fs.writeFileSync(path.join(root, file), contents);
+  };
+  fs.copyFileSync(path.join(repositoryRoot, "tool/harness/component_graph.json"),
+    path.join(root, "tool/harness/component_graph.json"));
+  const source = "widgetbook/lib/programs/workspace_use_cases.dart";
+  const generated = "tool/ui_capture/route_inventory.json";
+  write(source, "original source\n");
+  write(generated, "committed inventory\n");
+  write("tool/extra.mjs", "throw new Error('unplanned-dependency-sentinel');\n");
+  // Real receipt/source/byte validation is covered by generated_inventories.test.
+  // This fixture exercises the actual planner and dispatcher with dirty output.
+  write("tool/ci/generated_inventories.mjs", `import fs from 'node:fs';
+    import {execFileSync} from 'node:child_process';
+    if (process.argv[2] !== '--verify-materialized' || process.env.GITHUB_ACTIONS !== 'true')
+      throw new Error('inventory proof refused');
+    const dirty = execFileSync('git', ['diff', 'HEAD', '--name-only'], {encoding: 'utf8'}).trim();
+    if ((dirty && dirty !== '${generated}') || fs.readFileSync('${generated}', 'utf8') !== 'materialized\\n')
+      throw new Error('inventory proof refused');`);
+  mutateFixtureManifest(root, doc => {
+    doc.tools[0].impactPaths = [source];
+    doc.tools.push({...doc.tools[0], id: "fixture:extra", path: "tool/extra.mjs",
+      impactPaths: [generated], checks: ["node tool/extra.mjs"],
+      ciRequirements: {repositoryView: "full", setup: ["node", "root-npm"]}});
+    doc.tools.push({id: "fixture:inventory-proof", category: "fixture", status: "internal",
+      path: "tool/ci/generated_inventories.mjs"});
+  });
+  runGit(root, ["add", "."]);
+  runGit(root, ["commit", "-m", "source and inventory fixture"]);
+  write(source, "changed source\n");
+  runGit(root, ["add", source]);
+  runGit(root, ["commit", "-m", "authored change"]);
+  const args = ["affected-tools", "--base", "HEAD^", "--head", "HEAD"];
+  const planned = run([...args, "--json"], {cwd: root});
+  assert.equal(planned.status, 0, planned.stderr);
+  const plan = JSON.parse(planned.stdout);
+  assert.deepEqual(plan.toolIds, ["fixture:check"]);
+  assert.deepEqual(plan.setupRequirements, ["node"]);
+  write(generated, "materialized\n");
+  const local = run([...args, "--json"], {cwd: root});
+  assert.equal(local.status, 0, local.stderr);
+  assert.deepEqual(JSON.parse(local.stdout).toolIds, ["fixture:check", "fixture:extra"]);
+  const flags = ["--check", "--generated-inventories-materialized"];
+  const env = {...process.env, GITHUB_ACTIONS: "true"};
+  const checked = run([...args, ...flags], {cwd: root, env});
+  assert.equal(checked.status, 0, checked.stderr);
+  assert.match(checked.stdout, /Affected tool checks: fixture:check\n/u);
+  assert.match(checked.stdout, /Tool checks passed/u);
+  assert.doesNotMatch(checked.stdout, /fixture:extra/u);
+  write(source, "uncommitted authored change\n");
+  const refused = run([...args, ...flags], {cwd: root, env});
+  assert.equal(refused.status, 1);
+  assert.match(refused.stderr, /inventory proof refused/u);
+  assert.doesNotMatch(refused.stdout, /==>/u);
+  write(source, "changed source\n");
+  runGit(root, ["add", generated]);
+  runGit(root, ["commit", "-m", "authored inventory change"]);
+  const committed = run([...args, ...flags], {cwd: root, env});
+  assert.equal(committed.status, 1);
+  assert.match(committed.stdout, /fixture:extra/u);
+  assert.match(committed.stderr, /unplanned-dependency-sentinel/u);
+});
+
 test("sparse planner runs without loading or launching full-checkout producer verifiers", context => {
   const root = createRunnerFixture(context);
   fs.copyFileSync(path.join(repositoryRoot, "tool/harness/component_graph.json"),

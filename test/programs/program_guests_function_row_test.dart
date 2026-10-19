@@ -51,7 +51,11 @@ Future<void> _pumpRow(
       ),
     ),
   );
-  await pumpFeatureUi(tester);
+  if (pending) {
+    await pumpUntilFound(tester, find.byType(CatchLoadingIndicator));
+  } else {
+    await pumpFeatureUi(tester);
+  }
 }
 
 void main() {
@@ -173,5 +177,6 @@ void main() {
     expect(find.text('Sangeet: Attending'), findsOneWidget);
     expect(find.byType(CatchChoiceInput<String>), findsNothing);
     expect(find.byType(CatchLoadingIndicator), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }
