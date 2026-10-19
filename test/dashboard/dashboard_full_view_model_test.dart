@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
@@ -6,11 +5,8 @@ import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_mode
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
-import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/explore/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
-import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
-import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
@@ -24,22 +20,6 @@ import '../events/events_test_helpers.dart';
 import '../support/dashboard_test_helpers.dart';
 
 final _l10n = AppLocalizationsEn();
-
-PhysicalActivity _platformActivity({
-  required String id,
-  required DateTime startTime,
-  required double distanceMeters,
-}) {
-  return PhysicalActivity(
-    stableId: id,
-    provider: PhysicalActivityProvider.appleHealth,
-    type: ActivityKind.running,
-    startTime: startTime,
-    endTime: startTime.add(const Duration(hours: 1)),
-    distanceMeters: distanceMeters,
-    sourceName: 'Apple Watch',
-  );
-}
 
 void main() {
   group('dashboardHomeScreenStateProvider', () {
@@ -121,6 +101,8 @@ void main() {
 
     test('returns signed-in idle as a full live-layer state', () {
       final user = buildUser();
+      var healthReads = 0;
+      var recommendationReads = 0;
       final container = ProviderContainer(
         overrides: [
           dashboardNowProvider.overrideWithValue(DateTime(2026, 5, 13, 8)),
@@ -135,21 +117,29 @@ void main() {
           watchAttendedEventsProvider(
             user.uid,
           ).overrideWithValue(const AsyncData<List<Event>>([])),
-          weeklyActivityProvider.overrideWithValue(
-            emptyWeeklyActivitySnapshot(),
-          ),
+          weeklyActivityProvider.overrideWith((ref) {
+            healthReads++;
+            throw StateError('Home must not subscribe to Health activity');
+          }),
           watchReviewsByUserProvider(
             user.uid,
           ).overrideWithValue(const AsyncData<List<Review>>([])),
           exploreRecommendedEventsProvider(
             recommendationsQueryFor(user.uid, const []),
-          ).overrideWithValue(noRecommendationCandidates),
+          ).overrideWith((ref) {
+            recommendationReads++;
+            throw StateError(
+              'Home must not subscribe to Explore recommendations',
+            );
+          }),
         ],
       );
       addTearDown(container.dispose);
 
       final state = container.read(dashboardHomeScreenStateProvider);
       expect(state.status, DashboardHomeScreenStatus.full);
+      expect(healthReads, 0);
+      expect(recommendationReads, 0);
       expect(state.notificationUid, user.uid);
       expect(
         dashboardHomeLiveStateFor(state, now: DateTime(2026, 5, 13, 8)),
@@ -159,6 +149,8 @@ void main() {
 
     test('returns full state with pinned header copy and followed clubs', () {
       final user = buildUser();
+      var healthReads = 0;
+      var recommendationReads = 0;
       final event = buildEvent(startTime: DateTime(2026, 5, 14, 8));
       final container = ProviderContainer(
         overrides: [
@@ -176,21 +168,29 @@ void main() {
           watchAttendedEventsProvider(
             user.uid,
           ).overrideWithValue(const AsyncData<List<Event>>([])),
-          weeklyActivityProvider.overrideWithValue(
-            emptyWeeklyActivitySnapshot(),
-          ),
+          weeklyActivityProvider.overrideWith((ref) {
+            healthReads++;
+            throw StateError('Home must not subscribe to Health activity');
+          }),
           watchReviewsByUserProvider(
             user.uid,
           ).overrideWithValue(const AsyncData<List<Review>>([])),
           exploreRecommendedEventsProvider(
             recommendationsQueryFor(user.uid, const ['club-a']),
-          ).overrideWithValue(noRecommendationCandidates),
+          ).overrideWith((ref) {
+            recommendationReads++;
+            throw StateError(
+              'Home must not subscribe to Explore recommendations',
+            );
+          }),
         ],
       );
       addTearDown(container.dispose);
 
       final state = container.read(dashboardHomeScreenStateProvider);
       expect(state.status, DashboardHomeScreenStatus.full);
+      expect(healthReads, 0);
+      expect(recommendationReads, 0);
       expect(state.header.title(_l10n), 'Morning, Runner');
       expect(state.followedClubIds, ['club-a']);
       expect(state.viewModel?.nextEvent?.id, event.id);
@@ -209,7 +209,6 @@ void main() {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: [later, earlier],
         attendedEventsAsync: const AsyncData<List<Event>>([]),
-        recommendedEventsAsync: noRecommendationCandidates,
         now: now,
       );
 
@@ -234,7 +233,6 @@ void main() {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: [past, upcoming],
         attendedEventsAsync: const AsyncData<List<Event>>([]),
-        recommendedEventsAsync: noRecommendationCandidates,
         now: now,
       );
 
@@ -249,7 +247,6 @@ void main() {
           Exception('boom'),
           StackTrace.empty,
         ),
-        recommendedEventsAsync: noRecommendationCandidates,
       );
 
       expect(viewModel.attendedEventsSection.hasError, isTrue);
@@ -278,113 +275,10 @@ void main() {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
         attendedEventsAsync: AsyncData<List<Event>>([older, latest]),
-        recommendedEventsAsync: noRecommendationCandidates,
         now: now,
       );
 
       expect(viewModel.activeSwipeEvent?.id, latest.id);
-    });
-
-    test('uses Catch attended events as the weekly activity fallback', () {
-      final now = DateTime(2026, 5, 13, 12);
-      final attendedRun = buildEvent(
-        id: 'catch-event',
-        startTime: DateTime(2026, 5, 11, 6),
-      );
-
-      final viewModel = buildDashboardFullViewModel(
-        signedUpEvents: const [],
-        attendedEventsAsync: AsyncData<List<Event>>([attendedRun]),
-        weeklyActivityAsync: AsyncData(
-          WeeklyActivitySnapshot.permissionRequired(
-            referenceDate: now,
-            platformLabel: 'Apple Health',
-          ),
-        ),
-        recommendedEventsAsync: noRecommendationCandidates,
-        now: now,
-      );
-
-      final snapshot = viewModel.weeklyActivitySection.data!;
-      expect(snapshot.source, WeeklyActivitySource.catchFallback);
-      expect(snapshot.canRequestPermission, isTrue);
-      expect(snapshot.summary.totalDistanceKm, 5);
-      expect(snapshot.summary.activityCount, 1);
-    });
-
-    test(
-      'merges connected platform activity with non-overlapping Catch events',
-      () {
-        final now = DateTime(2026, 5, 13, 12);
-        final catchEvent = buildEvent(
-          id: 'catch-event',
-          startTime: DateTime(2026, 5, 12, 7),
-        );
-        final platformActivity = _platformActivity(
-          id: 'health-event',
-          startTime: DateTime(2026, 5, 11, 7),
-          distanceMeters: 3000,
-        );
-
-        final viewModel = buildDashboardFullViewModel(
-          signedUpEvents: const [],
-          attendedEventsAsync: AsyncData<List<Event>>([catchEvent]),
-          weeklyActivityAsync: AsyncData(
-            WeeklyActivitySnapshot.connected(
-              referenceDate: now,
-              platformLabel: 'Apple Health',
-              activities: [platformActivity],
-            ),
-          ),
-          recommendedEventsAsync: noRecommendationCandidates,
-          now: now,
-        );
-
-        final snapshot = viewModel.weeklyActivitySection.data!;
-        expect(snapshot.source, WeeklyActivitySource.mixed);
-        expect(snapshot.summary.totalDistanceKm, 8);
-        expect(snapshot.summary.activityCount, 2);
-        expect(snapshot.activities.map((activity) => activity.stableId), [
-          'health-event',
-          'catch:catch-event',
-        ]);
-      },
-    );
-
-    test('does not double count overlapping platform and Catch activity', () {
-      final now = DateTime(2026, 5, 13, 12);
-      final catchEvent = buildEvent(
-        id: 'catch-event',
-        startTime: DateTime(2026, 5, 12, 7),
-        endTime: DateTime(2026, 5, 12, 8),
-      );
-      final platformActivity = _platformActivity(
-        id: 'health-event',
-        startTime: DateTime(2026, 5, 12, 7, 10),
-        distanceMeters: 5100,
-      );
-
-      final viewModel = buildDashboardFullViewModel(
-        signedUpEvents: const [],
-        attendedEventsAsync: AsyncData<List<Event>>([catchEvent]),
-        weeklyActivityAsync: AsyncData(
-          WeeklyActivitySnapshot.connected(
-            referenceDate: now,
-            platformLabel: 'Apple Health',
-            activities: [platformActivity],
-          ),
-        ),
-        recommendedEventsAsync: noRecommendationCandidates,
-        now: now,
-      );
-
-      final snapshot = viewModel.weeklyActivitySection.data!;
-      expect(snapshot.source, WeeklyActivitySource.healthPlatform);
-      expect(snapshot.summary.totalDistanceMeters, 5100);
-      expect(snapshot.summary.activityCount, 1);
-      expect(snapshot.activities.map((activity) => activity.stableId), [
-        'health-event',
-      ]);
     });
 
     test('selects the latest attended event that has not been reviewed', () {
@@ -409,7 +303,6 @@ void main() {
         reviewsByUserAsync: AsyncData<List<Review>>([
           buildReview(id: 'reviewed-event~runner-1', eventId: reviewedEvent.id),
         ]),
-        recommendedEventsAsync: noRecommendationCandidates,
         now: now,
       );
 
@@ -453,9 +346,7 @@ void main() {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
         uid: user.uid,
-        viewer: user,
         attendedEventsAsync: const AsyncData<List<Event>>([]),
-        recommendedEventsAsync: noRecommendationCandidates,
         clubPostNotifications: posts,
         now: now,
       );
@@ -472,153 +363,6 @@ void main() {
       ]);
     });
 
-    test('surfaces recommendation loading state', () {
-      final viewModel = buildDashboardFullViewModel(
-        signedUpEvents: const [],
-        attendedEventsAsync: const AsyncData<List<Event>>([]),
-        recommendedEventsAsync:
-            const AsyncLoading<List<ExploreEventRecommendationCandidate>>(),
-      );
-
-      expect(viewModel.recommendationsSection.isLoading, isTrue);
-      expect(
-        viewModel.recommendationsSection.message,
-        'Loading recommended events...',
-      );
-    });
-
-    test('removes already booked events from recommendations', () {
-      final booked = buildEvent(id: 'booked');
-      final unbooked = buildEvent(id: 'recommended');
-
-      final viewModel = buildDashboardFullViewModel(
-        signedUpEvents: [booked],
-        attendedEventsAsync: const AsyncData<List<Event>>([]),
-        recommendedEventsAsync:
-            AsyncData<List<ExploreEventRecommendationCandidate>>([
-              recommendationCandidate(booked),
-              recommendationCandidate(unbooked),
-            ]),
-      );
-
-      expect(
-        viewModel.recommendationsSection.data?.map((item) => item.event.id),
-        ['recommended'],
-      );
-    });
-
-    test('ranks recommendations by preferences, proximity, and event time', () {
-      final now = DateTime(2026, 4, 23, 9);
-      final viewer = buildUser().copyWith(
-        city: 'in-mh-mumbai',
-        latitude: 19.076,
-        longitude: 72.8777,
-        activityPreferences: const ActivityPreferences(
-          running: RunningPreferences(
-            paceMinSecsPerKm: 330,
-            paceMaxSecsPerKm: 390,
-            preferredDistances: [PreferredDistance.tenK],
-          ),
-        ),
-      );
-      final morningHistory = buildEvent(
-        id: 'morning-history',
-        startTime: now.subtract(const Duration(days: 3, hours: 2)),
-      );
-      final strongMatch = buildEvent(
-        id: 'strong-match',
-        distanceKm: 10,
-        pace: PaceLevel.moderate,
-        startTime: DateTime(2026, 4, 24, 7),
-        startingPointLat: 19.08,
-        startingPointLng: 72.88,
-      );
-      final weakMatch = buildEvent(
-        id: 'weak-match',
-        pace: PaceLevel.competitive,
-        startTime: DateTime(2026, 4, 24, 19),
-        startingPointLat: 19.30,
-        startingPointLng: 72.90,
-      );
-
-      final recommendations = rankDashboardEventRecommendations(
-        candidates: [
-          recommendationCandidate(
-            weakMatch,
-            clubName: 'Late Miles',
-            clubLocation: 'delhi',
-          ),
-          recommendationCandidate(strongMatch, clubName: 'Bandra Club'),
-        ],
-        signedUpEventIds: const {},
-        attendedEvents: [morningHistory],
-        signedUpEvents: const [],
-        viewer: viewer,
-        now: now,
-      );
-
-      expect(recommendations.map((item) => item.event.id), [
-        'strong-match',
-        'weak-match',
-      ]);
-      expect(recommendations.first.clubName, 'Bandra Club');
-      expect(
-        recommendations.first.reasonLabel,
-        'Matches your 10 km preference',
-      );
-    });
-
-    test('filters past, cancelled, full, booked, and ineligible events', () {
-      final now = DateTime(2026, 4, 23, 9);
-      final viewer = buildUser();
-      final eligible = buildEvent(
-        id: 'eligible',
-        startTime: now.add(const Duration(hours: 3)),
-      );
-      final booked = buildEvent(
-        id: 'booked',
-        startTime: now.add(const Duration(hours: 4)),
-      );
-      final cancelled = buildEvent(
-        id: 'cancelled',
-        startTime: now.add(const Duration(hours: 5)),
-        status: EventLifecycleStatus.cancelled,
-      );
-      final full = buildEvent(
-        id: 'full',
-        startTime: now.add(const Duration(hours: 6)),
-        capacityLimit: 2,
-        bookedCount: 2,
-      );
-      final ineligible = buildEvent(
-        id: 'ineligible',
-        startTime: now.add(const Duration(hours: 7)),
-        constraints: const EventConstraints(minAge: 45),
-      );
-      final past = buildEvent(
-        id: 'past',
-        startTime: now.subtract(const Duration(hours: 1)),
-      );
-
-      final recommendations = rankDashboardEventRecommendations(
-        candidates: [
-          eligible,
-          booked,
-          cancelled,
-          full,
-          ineligible,
-          past,
-        ].map(recommendationCandidate).toList(),
-        signedUpEventIds: {'booked'},
-        attendedEvents: const [],
-        signedUpEvents: const [],
-        viewer: viewer,
-        now: now,
-      );
-
-      expect(recommendations.map((item) => item.event.id), ['eligible']);
-    });
-
     test('selects self check-in during the event check-in window', () {
       final now = DateTime(2026, 4, 23, 8, 55);
       final event = buildEvent(
@@ -631,7 +375,6 @@ void main() {
         signedUpEvents: [event],
         uid: 'runner-1',
         attendedEventsAsync: const AsyncData<List<Event>>([]),
-        recommendedEventsAsync: noRecommendationCandidates,
         now: now,
       );
 

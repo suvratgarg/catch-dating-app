@@ -6,6 +6,7 @@ import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/domain/event_profile_requirements.dart';
 import 'package:catch_dating_app/events/domain/event_service.dart';
 import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
@@ -19,7 +20,11 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 bool eventDetailHasBookingReadyProfile(
   UserProfile? userProfile, {
   required DateTime now,
-}) => userProfile?.hasBookingReadyIdentityOn(now) == true;
+  Event? event,
+}) =>
+    userProfile != null &&
+    (event?.hasRequiredProfileDetails(userProfile, now) ??
+        userProfile.hasBookingReadyIdentityOn(now));
 
 enum EventDetailBookingDockAction {
   none,
@@ -509,6 +514,7 @@ EventSignUpStatus eventSignUpStatusForViewerAvailability(
   ViewerEventAvailabilityStatus.fullForViewer ||
   ViewerEventAvailabilityStatus.inviteRequired ||
   ViewerEventAvailabilityStatus.membershipRequired ||
+  ViewerEventAvailabilityStatus.profileRequired ||
   ViewerEventAvailabilityStatus.ageRestricted ||
   ViewerEventAvailabilityStatus.cancelled => EventSignUpStatus.ineligible,
 };

@@ -1,3 +1,10 @@
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import type {PropsWithChildren} from "react";
+import {waitFor} from "@testing-library/react";
+const accountApi = vi.hoisted(() => ({watch: vi.fn(), read: vi.fn(), follow: vi.fn()}));
+vi.mock("../../firebase", async (original) => ({...await original<object>(), watchWebsiteAccountAuthState: accountApi.watch,
+  manageWebsiteAccount: accountApi.read, setWebsiteOrganizerFollow: accountApi.follow}));
+const wrapper = ({children}: PropsWithChildren) => <QueryClientProvider client={new QueryClient({defaultOptions: {queries: {retry: false}}})}>{children}</QueryClientProvider>;
 import {act, renderHook} from "@testing-library/react";
 import {beforeEach, describe, expect, it, vi} from "vitest";
 import {hostListings} from "./data";
@@ -14,11 +21,17 @@ describe("useHostListingPageController", () => {
   beforeEach(() => {
     window.localStorage.clear();
     vi.clearAllMocks();
+    accountApi.watch.mockImplementation((callback) => {callback({uid: "one", phoneNumber: "+919876543210"}); return vi.fn();});
+    accountApi.read.mockResolvedValue({uid: "one", accountReady: true, following: false, displayName: "Ada", profileRevision: 1, eventAge: null});
+    accountApi.follow.mockImplementation(async (_id, following) => {
+      accountApi.read.mockResolvedValue({uid: "one", accountReady: true, following, displayName: "Ada", profileRevision: 1, eventAge: null});
+      return {following};
+    });
   });
 
-  it("persists organizer saves and exposes event-aware navigation", () => {
+  it("persists account-backed follows and exposes event-aware navigation", async () => {
     const listing = hostListings[0];
-    const {result} = renderHook(() => useHostListingPageController(listing));
+    const {result} = renderHook(() => useHostListingPageController(listing), {wrapper});
 
     expect(result.current.nav).toContainEqual({href: "#about", label: "About"});
     expect(result.current.nav).toContainEqual({href: "#reviews", label: "Reviews"});
@@ -31,10 +44,43 @@ describe("useHostListingPageController", () => {
     expect(result.current.footerLinks.map((item) => item.href)).toEqual(expect.arrayContaining([
       "/host/", "#profile", "#fit", "/organizers/",
     ]));
-    act(() => result.current.handleSaveListing());
-    expect(result.current.isSaved).toBe(true);
-    expect(JSON.parse(window.localStorage.getItem("catch_saved_organizers_v1") ?? "[]"))
-      .toContain(listing.id);
+    await waitFor(() => expect(result.current.account.ready).toBe(true));
+    act(() => result.current.handleFollowListing());
+    await waitFor(() => expect(result.current.isFollowing).toBe(true));
+    expect(accountApi.follow).toHaveBeenCalledWith(listing.id, true, "one");
+    expect(window.localStorage.getItem("catch_saved_organizers_v1")).toBeNull();
+    act(() => result.current.handleFollowListing());
+    await waitFor(() => expect(result.current.isFollowing).toBe(false));
+
+  });
+
+  it("keeps following state unchanged when persistence fails", async () => {
+    accountApi.follow.mockRejectedValueOnce(new Error("unavailable"));
+    const {result} = renderHook(() => useHostListingPageController(hostListings[0]), {wrapper});
+    await waitFor(() => expect(result.current.account.ready).toBe(true));
+    act(() => result.current.handleFollowListing());
+    await waitFor(() => expect(result.current.followError).not.toBe(""));
+    expect(result.current.isFollowing).toBe(false);
+  });
+
+  it("resumes the requested follow after account completion", async () => {
+    accountApi.read.mockResolvedValue({uid: "one", accountReady: false, following: false, displayName: "", profileRevision: 0, eventAge: null});
+    const {result} = renderHook(() => useHostListingPageController(hostListings[0]), {wrapper});
+    await waitFor(() => expect(result.current.account.loading).toBe(false));
+    act(() => result.current.handleFollowListing());
+    expect(result.current.followRequested).toBe(true);
+    expect(accountApi.follow).not.toHaveBeenCalled();
+    accountApi.read.mockResolvedValue({uid: "one", accountReady: true, following: false, displayName: "Ada", profileRevision: 1, eventAge: null});
+    await act(async () => {await result.current.account.refresh();});
+    await waitFor(() => expect(result.current.isFollowing).toBe(true));
+    expect(accountApi.follow).toHaveBeenCalledTimes(1);
+  });
+
+  it("reads an existing follow on a new page mount", async () => {
+    accountApi.read.mockResolvedValue({uid: "one", accountReady: true, following: true, displayName: "Ada", profileRevision: 1, eventAge: null});
+    const {result} = renderHook(() => useHostListingPageController(hostListings[0]), {wrapper});
+    await waitFor(() => expect(result.current.isFollowing).toBe(true));
+    expect(accountApi.follow).not.toHaveBeenCalled();
   });
 
   it("exposes Events for external-only supply without inventing a booking action", () => {
@@ -46,7 +92,7 @@ describe("useHostListingPageController", () => {
       sourceHref: "https://example.com/events/official", externalLinkCount: 1,
       dedupeKey: "official-test",
     }]};
-    const {result} = renderHook(() => useHostListingPageController(listing));
+    const {result} = renderHook(() => useHostListingPageController(listing), {wrapper});
     expect(result.current.nav).toContainEqual({href: "#events", label: "Events"});
     expect(result.current.hasEventSupply).toBe(true);
   });
@@ -58,7 +104,7 @@ describe("useHostListingPageController", () => {
       configurable: true,
       value: {writeText},
     });
-    const {result} = renderHook(() => useHostListingPageController(listing));
+    const {result} = renderHook(() => useHostListingPageController(listing), {wrapper});
 
     await act(async () => result.current.handleShareListing());
 

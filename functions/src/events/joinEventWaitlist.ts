@@ -1,3 +1,4 @@
+import {eventAgeEligibility} from "../profiles/eventProfileRequirements";
 import {hasEventCommunityMembership} from
   "../memberships/communityMembershipAuthority";
 import {onCall, HttpsError, CallableRequest} from
@@ -142,7 +143,11 @@ export async function joinEventWaitlistHandler(
       );
     }
 
-    assertBookingReadyUserProfile(user);
+    assertBookingReadyUserProfile(user, event);
+    if (eventAgeEligibility(event, user, new Date())?.eligible === false) {
+      throw new HttpsError("failed-precondition",
+        "Your age does not meet this event's requirements.");
+    }
     assertRunPreferencesReadyForEvent(user, event);
 
     if (existingParticipation?.status === "waitlisted") {

@@ -228,6 +228,7 @@ bool _isExploreHeroCandidate(ExploreEventItem item, DateTime now) {
     ViewerEventAvailabilityStatus.inviteRequired ||
     ViewerEventAvailabilityStatus.membershipRequired ||
     ViewerEventAvailabilityStatus.runPreferencesRequired ||
+    ViewerEventAvailabilityStatus.profileRequired ||
     ViewerEventAvailabilityStatus.ageRestricted ||
     ViewerEventAvailabilityStatus.past ||
     ViewerEventAvailabilityStatus.cancelled => false,
@@ -278,6 +279,7 @@ EventTileStatus _statusForAvailability(
     ViewerEventAvailabilityStatus.fullForViewer ||
     ViewerEventAvailabilityStatus.inviteRequired ||
     ViewerEventAvailabilityStatus.membershipRequired ||
+    ViewerEventAvailabilityStatus.profileRequired ||
     ViewerEventAvailabilityStatus.ageRestricted => EventTileStatus.ineligible,
     ViewerEventAvailabilityStatus.past => EventTileStatus.past,
     ViewerEventAvailabilityStatus.cancelled => EventTileStatus.cancelled,

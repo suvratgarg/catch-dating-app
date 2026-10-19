@@ -594,11 +594,11 @@ function privateProfileValue(
   case "givenName": return text(profile.firstName);
   case "familyName": return text(profile.lastName);
   case "displayName": return text(profile.displayName);
-  case "dateOfBirth": return answerValue({
+  case "dateOfBirth": return !profile.dateOfBirth ? null : answerValue({
     valueKind: "date",
     dateValue: profile.dateOfBirth.toDate().toISOString().slice(0, 10),
   });
-  case "age": return answerValue({
+  case "age": return !profile.dateOfBirth ? null : answerValue({
     valueKind: "number",
     numberValue: ageAt(profile.dateOfBirth.toDate(), now.toDate()),
   });

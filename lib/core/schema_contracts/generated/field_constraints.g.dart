@@ -100955,6 +100955,132 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const manageWebsiteAccountCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallablePayload.action',
+    required: true,
+  );
+
+  static const manageWebsiteAccountCallablePayloadDateOfBirth = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallablePayload.dateOfBirth',
+    valueTypes: <String>['string'],
+    format: 'date',
+  );
+
+  static const manageWebsiteAccountCallablePayloadDisplayName = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallablePayload.displayName',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '.*\\S.*',
+  );
+
+  static const manageWebsiteAccountCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageWebsiteAccountCallablePayloadExpectedProfileRevision = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallablePayload.expectedProfileRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const manageWebsiteAccountCallablePayloadExpectedUid = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallablePayload.expectedUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageWebsiteAccountCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageWebsiteAccountCallableResponseAccountReady = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallableResponse.accountReady',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageWebsiteAccountCallableResponseDateOfBirth = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallableResponse.dateOfBirth',
+    valueTypes: <String>['string'],
+    format: 'date',
+  );
+
+  static const manageWebsiteAccountCallableResponseDisplayName = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallableResponse.displayName',
+    maxLength: 120,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageWebsiteAccountCallableResponseEventAgeEligible = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallableResponse.eventAge.eligible',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageWebsiteAccountCallableResponseEventAgeMaximum = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallableResponse.eventAge.maximum',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 120,
+  );
+
+  static const manageWebsiteAccountCallableResponseEventAgeMinimum = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallableResponse.eventAge.minimum',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 120,
+  );
+
+  static const manageWebsiteAccountCallableResponseEventAgeNeedsDateOfBirth = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallableResponse.eventAge.needsDateOfBirth',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageWebsiteAccountCallableResponseFollowing = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallableResponse.following',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageWebsiteAccountCallableResponsePhoneNumber = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallableResponse.phoneNumber',
+    maxLength: 32,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageWebsiteAccountCallableResponseProfileRevision = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallableResponse.profileRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const manageWebsiteAccountCallableResponseUid = CatchContractFieldConstraints(
+    path: 'manageWebsiteAccountCallableResponse.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const markEventAttendanceCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'markEventAttendanceCallablePayload.eventId',
     maxLength: 180,
@@ -101448,10 +101574,8 @@ abstract final class CatchContractConstraints {
   static const mobileFormStateOnboardingDateOfBirthText = CatchContractFieldConstraints(
     path: 'mobileFormState.onboardingDateOfBirthText',
     maxLength: 11,
-    minLength: 11,
-    required: true,
     valueTypes: <String>['string'],
-    pattern: '^\\d{2} [A-Z][a-z]{2} \\d{4}\$',
+    pattern: '^(?:\\d{2} [A-Z][a-z]{2} \\d{4})?\$',
   );
 
   static const mobileFormStateSuvbotTesterPhoneNumber = CatchContractFieldConstraints(
@@ -113222,6 +113346,14 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,119}\$',
   );
 
+  static const organizerFollowCallablePayloadExpectedUid = CatchContractFieldConstraints(
+    path: 'organizerFollowCallablePayload.expectedUid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerFollowCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'organizerFollowCallablePayload.organizerId',
     maxLength: 180,
@@ -120515,6 +120647,30 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerMomentRunDocumentTravelOccurrenceCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.travelOccurrence.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentRunDocumentTravelOccurrenceMomentRevision = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.travelOccurrence.momentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerMomentRunDocumentTravelOccurrenceOccurredAtMillis = CatchContractFieldConstraints(
+    path: 'organizerMomentRunDocument.travelOccurrence.occurredAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const organizerMomentRunDocumentTravelPlanHash = CatchContractFieldConstraints(
     path: 'organizerMomentRunDocument.travelPlanHash',
     valueTypes: <String>['string'],
@@ -120559,7 +120715,7 @@ abstract final class CatchContractConstraints {
   static const organizerMomentSendDocumentDeliveryState = CatchContractFieldConstraints(
     path: 'organizerMomentSendDocument.deliveryState',
     valueTypes: <String>['string'],
-    enumValues: <String>['accepted', 'unknown', 'delivered', 'read', 'failed', 'revoked'],
+    enumValues: <String>['accepted', 'unknown', 'delivered', 'read', 'failed', 'revoked', 'notDispatched'],
   );
 
   static const organizerMomentSendDocumentDuty = CatchContractFieldConstraints(
@@ -131313,6 +131469,12 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['catchActivity', 'fcm'],
   );
 
+  static const programDeliveryAttemptBindingPushSuppressionReason = CatchContractFieldConstraints(
+    path: 'programDeliveryAttempt.binding.pushSuppressionReason',
+    valueTypes: <String>['string'],
+    enumValues: <String>['noEndpoint', 'preferenceOff'],
+  );
+
   static const programDeliveryAttemptBindingRecipientEndpointId = CatchContractFieldConstraints(
     path: 'programDeliveryAttempt.binding.recipientEndpointId',
     maxLength: 160,
@@ -131538,6 +131700,12 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['catchActivity', 'fcm'],
   );
 
+  static const programDeliveryMessageDocumentAttemptsItemsBindingPushSuppressionReason = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.attempts.items.binding.pushSuppressionReason',
+    valueTypes: <String>['string'],
+    enumValues: <String>['noEndpoint', 'preferenceOff'],
+  );
+
   static const programDeliveryMessageDocumentAttemptsItemsBindingRecipientEndpointId = CatchContractFieldConstraints(
     path: 'programDeliveryMessageDocument.attempts.items.binding.recipientEndpointId',
     maxLength: 160,
@@ -131706,11 +131874,76 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const programDeliveryMessageDocumentIntentActivityActionDuty = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.activity.actionDuty',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentIntentActivityActionKind = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.activity.actionKind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentIntentActivityAppRole = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.activity.appRole',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentIntentActivityAudienceDuty = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.activity.audienceDuty',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentIntentActivityNotificationType = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.activity.notificationType',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentIntentActivityPreferenceKey = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.activity.preferenceKey',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentIntentActivityScopeIds = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.activity.scopeIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 200,
+  );
+
+  static const programDeliveryMessageDocumentIntentActivityScopeIdsItems = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.activity.scopeIds.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageDocumentIntentActivitySeverity = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageDocument.intent.activity.severity',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['info', 'warning', 'urgent'],
+  );
+
   static const programDeliveryMessageDocumentIntentBody = CatchContractFieldConstraints(
     path: 'programDeliveryMessageDocument.intent.body',
     maxLength: 8000,
-    minLength: 1,
-    required: true,
+    minLength: 0,
     valueTypes: <String>['string'],
   );
 
@@ -131945,11 +132178,76 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const programDeliveryMessageIntentActivityActionDuty = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.activity.actionDuty',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageIntentActivityActionKind = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.activity.actionKind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageIntentActivityAppRole = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.activity.appRole',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageIntentActivityAudienceDuty = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.activity.audienceDuty',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageIntentActivityNotificationType = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.activity.notificationType',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageIntentActivityPreferenceKey = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.activity.preferenceKey',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageIntentActivityScopeIds = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.activity.scopeIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 200,
+  );
+
+  static const programDeliveryMessageIntentActivityScopeIdsItems = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.activity.scopeIds.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programDeliveryMessageIntentActivitySeverity = CatchContractFieldConstraints(
+    path: 'programDeliveryMessageIntent.activity.severity',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['info', 'warning', 'urgent'],
+  );
+
   static const programDeliveryMessageIntentBody = CatchContractFieldConstraints(
     path: 'programDeliveryMessageIntent.body',
     maxLength: 8000,
-    minLength: 1,
-    required: true,
+    minLength: 0,
     valueTypes: <String>['string'],
   );
 
@@ -166186,7 +166484,6 @@ abstract final class CatchContractConstraints {
 
   static const userProfileDocumentGender = CatchContractFieldConstraints(
     path: 'userProfileDocument.gender',
-    required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['man', 'woman', 'nonBinary', 'other'],
   );
@@ -182792,6 +183089,24 @@ abstract final class CatchContractConstraints {
     'managePublicEventCheckoutCallableResponse.quote.registrationRevision': managePublicEventCheckoutCallableResponseQuoteRegistrationRevision,
     'managePublicEventCheckoutCallableResponse.quote.startTimeMillis': managePublicEventCheckoutCallableResponseQuoteStartTimeMillis,
     'managePublicEventCheckoutCallableResponse.serverTimeMillis': managePublicEventCheckoutCallableResponseServerTimeMillis,
+    'manageWebsiteAccountCallablePayload.action': manageWebsiteAccountCallablePayloadAction,
+    'manageWebsiteAccountCallablePayload.dateOfBirth': manageWebsiteAccountCallablePayloadDateOfBirth,
+    'manageWebsiteAccountCallablePayload.displayName': manageWebsiteAccountCallablePayloadDisplayName,
+    'manageWebsiteAccountCallablePayload.eventId': manageWebsiteAccountCallablePayloadEventId,
+    'manageWebsiteAccountCallablePayload.expectedProfileRevision': manageWebsiteAccountCallablePayloadExpectedProfileRevision,
+    'manageWebsiteAccountCallablePayload.expectedUid': manageWebsiteAccountCallablePayloadExpectedUid,
+    'manageWebsiteAccountCallablePayload.organizerId': manageWebsiteAccountCallablePayloadOrganizerId,
+    'manageWebsiteAccountCallableResponse.accountReady': manageWebsiteAccountCallableResponseAccountReady,
+    'manageWebsiteAccountCallableResponse.dateOfBirth': manageWebsiteAccountCallableResponseDateOfBirth,
+    'manageWebsiteAccountCallableResponse.displayName': manageWebsiteAccountCallableResponseDisplayName,
+    'manageWebsiteAccountCallableResponse.eventAge.eligible': manageWebsiteAccountCallableResponseEventAgeEligible,
+    'manageWebsiteAccountCallableResponse.eventAge.maximum': manageWebsiteAccountCallableResponseEventAgeMaximum,
+    'manageWebsiteAccountCallableResponse.eventAge.minimum': manageWebsiteAccountCallableResponseEventAgeMinimum,
+    'manageWebsiteAccountCallableResponse.eventAge.needsDateOfBirth': manageWebsiteAccountCallableResponseEventAgeNeedsDateOfBirth,
+    'manageWebsiteAccountCallableResponse.following': manageWebsiteAccountCallableResponseFollowing,
+    'manageWebsiteAccountCallableResponse.phoneNumber': manageWebsiteAccountCallableResponsePhoneNumber,
+    'manageWebsiteAccountCallableResponse.profileRevision': manageWebsiteAccountCallableResponseProfileRevision,
+    'manageWebsiteAccountCallableResponse.uid': manageWebsiteAccountCallableResponseUid,
     'markEventAttendanceCallablePayload.eventId': markEventAttendanceCallablePayloadEventId,
     'markEventAttendanceCallablePayload.userId': markEventAttendanceCallablePayloadUserId,
     'markEventAttendanceCallableResponse.attended': markEventAttendanceCallableResponseAttended,
@@ -184475,6 +184790,7 @@ abstract final class CatchContractConstraints {
     'organizerEventVenueDocument.updatedAt._nanoseconds': organizerEventVenueDocumentUpdatedAtNanoseconds,
     'organizerEventVenueDocument.updatedAt._seconds': organizerEventVenueDocumentUpdatedAtSeconds,
     'organizerEventVenueDocument.venueId': organizerEventVenueDocumentVenueId,
+    'organizerFollowCallablePayload.expectedUid': organizerFollowCallablePayloadExpectedUid,
     'organizerFollowCallablePayload.organizerId': organizerFollowCallablePayloadOrganizerId,
     'organizerFollowDocument.followedAt._nanoseconds': organizerFollowDocumentFollowedAtNanoseconds,
     'organizerFollowDocument.followedAt._seconds': organizerFollowDocumentFollowedAtSeconds,
@@ -185500,6 +185816,9 @@ abstract final class CatchContractConstraints {
     'organizerMomentRunDocument.suppressed': organizerMomentRunDocumentSuppressed,
     'organizerMomentRunDocument.suppressedNoEndpoint': organizerMomentRunDocumentSuppressedNoEndpoint,
     'organizerMomentRunDocument.targetFunctionId': organizerMomentRunDocumentTargetFunctionId,
+    'organizerMomentRunDocument.travelOccurrence.createdAtMillis': organizerMomentRunDocumentTravelOccurrenceCreatedAtMillis,
+    'organizerMomentRunDocument.travelOccurrence.momentRevision': organizerMomentRunDocumentTravelOccurrenceMomentRevision,
+    'organizerMomentRunDocument.travelOccurrence.occurredAtMillis': organizerMomentRunDocumentTravelOccurrenceOccurredAtMillis,
     'organizerMomentRunDocument.travelPlanHash': organizerMomentRunDocumentTravelPlanHash,
     'organizerMomentSendDocument.actionKind': organizerMomentSendDocumentActionKind,
     'organizerMomentSendDocument.createdAtMillis': organizerMomentSendDocumentCreatedAtMillis,
@@ -186990,6 +187309,7 @@ abstract final class CatchContractConstraints {
     'programDeliveryAttempt.binding.bindingRevision': programDeliveryAttemptBindingBindingRevision,
     'programDeliveryAttempt.binding.fallbackOwner': programDeliveryAttemptBindingFallbackOwner,
     'programDeliveryAttempt.binding.provider': programDeliveryAttemptBindingProvider,
+    'programDeliveryAttempt.binding.pushSuppressionReason': programDeliveryAttemptBindingPushSuppressionReason,
     'programDeliveryAttempt.binding.recipientEndpointId': programDeliveryAttemptBindingRecipientEndpointId,
     'programDeliveryAttempt.binding.routeId': programDeliveryAttemptBindingRouteId,
     'programDeliveryAttempt.binding.senderId': programDeliveryAttemptBindingSenderId,
@@ -187020,6 +187340,7 @@ abstract final class CatchContractConstraints {
     'programDeliveryMessageDocument.attempts.items.binding.bindingRevision': programDeliveryMessageDocumentAttemptsItemsBindingBindingRevision,
     'programDeliveryMessageDocument.attempts.items.binding.fallbackOwner': programDeliveryMessageDocumentAttemptsItemsBindingFallbackOwner,
     'programDeliveryMessageDocument.attempts.items.binding.provider': programDeliveryMessageDocumentAttemptsItemsBindingProvider,
+    'programDeliveryMessageDocument.attempts.items.binding.pushSuppressionReason': programDeliveryMessageDocumentAttemptsItemsBindingPushSuppressionReason,
     'programDeliveryMessageDocument.attempts.items.binding.recipientEndpointId': programDeliveryMessageDocumentAttemptsItemsBindingRecipientEndpointId,
     'programDeliveryMessageDocument.attempts.items.binding.routeId': programDeliveryMessageDocumentAttemptsItemsBindingRouteId,
     'programDeliveryMessageDocument.attempts.items.binding.senderId': programDeliveryMessageDocumentAttemptsItemsBindingSenderId,
@@ -187043,6 +187364,15 @@ abstract final class CatchContractConstraints {
     'programDeliveryMessageDocument.attempts.items.state.reconcileAfter': programDeliveryMessageDocumentAttemptsItemsStateReconcileAfter,
     'programDeliveryMessageDocument.createdAt': programDeliveryMessageDocumentCreatedAt,
     'programDeliveryMessageDocument.deliveryConflict': programDeliveryMessageDocumentDeliveryConflict,
+    'programDeliveryMessageDocument.intent.activity.actionDuty': programDeliveryMessageDocumentIntentActivityActionDuty,
+    'programDeliveryMessageDocument.intent.activity.actionKind': programDeliveryMessageDocumentIntentActivityActionKind,
+    'programDeliveryMessageDocument.intent.activity.appRole': programDeliveryMessageDocumentIntentActivityAppRole,
+    'programDeliveryMessageDocument.intent.activity.audienceDuty': programDeliveryMessageDocumentIntentActivityAudienceDuty,
+    'programDeliveryMessageDocument.intent.activity.notificationType': programDeliveryMessageDocumentIntentActivityNotificationType,
+    'programDeliveryMessageDocument.intent.activity.preferenceKey': programDeliveryMessageDocumentIntentActivityPreferenceKey,
+    'programDeliveryMessageDocument.intent.activity.scopeIds': programDeliveryMessageDocumentIntentActivityScopeIds,
+    'programDeliveryMessageDocument.intent.activity.scopeIds.items': programDeliveryMessageDocumentIntentActivityScopeIdsItems,
+    'programDeliveryMessageDocument.intent.activity.severity': programDeliveryMessageDocumentIntentActivitySeverity,
     'programDeliveryMessageDocument.intent.body': programDeliveryMessageDocumentIntentBody,
     'programDeliveryMessageDocument.intent.context.mode': programDeliveryMessageDocumentIntentContextMode,
     'programDeliveryMessageDocument.intent.context.organizerId': programDeliveryMessageDocumentIntentContextOrganizerId,
@@ -187074,6 +187404,15 @@ abstract final class CatchContractConstraints {
     'programDeliveryMessageDocument.revision': programDeliveryMessageDocumentRevision,
     'programDeliveryMessageDocument.schemaVersion': programDeliveryMessageDocumentSchemaVersion,
     'programDeliveryMessageDocument.updatedAt': programDeliveryMessageDocumentUpdatedAt,
+    'programDeliveryMessageIntent.activity.actionDuty': programDeliveryMessageIntentActivityActionDuty,
+    'programDeliveryMessageIntent.activity.actionKind': programDeliveryMessageIntentActivityActionKind,
+    'programDeliveryMessageIntent.activity.appRole': programDeliveryMessageIntentActivityAppRole,
+    'programDeliveryMessageIntent.activity.audienceDuty': programDeliveryMessageIntentActivityAudienceDuty,
+    'programDeliveryMessageIntent.activity.notificationType': programDeliveryMessageIntentActivityNotificationType,
+    'programDeliveryMessageIntent.activity.preferenceKey': programDeliveryMessageIntentActivityPreferenceKey,
+    'programDeliveryMessageIntent.activity.scopeIds': programDeliveryMessageIntentActivityScopeIds,
+    'programDeliveryMessageIntent.activity.scopeIds.items': programDeliveryMessageIntentActivityScopeIdsItems,
+    'programDeliveryMessageIntent.activity.severity': programDeliveryMessageIntentActivitySeverity,
     'programDeliveryMessageIntent.body': programDeliveryMessageIntentBody,
     'programDeliveryMessageIntent.context.mode': programDeliveryMessageIntentContextMode,
     'programDeliveryMessageIntent.context.organizerId': programDeliveryMessageIntentContextOrganizerId,

@@ -785,6 +785,8 @@ function event(overrides: FakeData = {}): FakeData {
 
 function user(overrides: FakeData = {}): FakeData {
   return {
+    name: "Runner",
+    phoneNumber: "+919876543210",
     gender: "man",
     interestedInGenders: ["woman"],
     ...overrides,
@@ -1014,4 +1016,97 @@ function cancellationEffectSnapshot(firestore: FakeFirestore): string {
     firestore.get("eventSeatLedgers/event-1"),
     firestore.get("payments/pay-1"),
   ]);
+}
+
+
+test("minimal accounts cancel and receive unrestricted seats",
+  async () => {
+    const minimal = {name: "Ada", phoneNumber: "+919876543210"};
+    const edge = (uid: string, status: string) => ({
+      ...participation(uid, status),
+      genderAtSignup: null,
+      cohortAtSignup: "unspecified",
+    });
+    const h = harness({
+      "events/event-1": event({
+        bookedCount: 1,
+        waitlistedCount: 1,
+        genderCounts: {},
+        cohortCounts: {unspecified: 1},
+      }),
+      "users/runner-1": minimal,
+      "users/runner-2": minimal,
+      "eventParticipations/event-1_runner-1": edge("runner-1", "signedUp"),
+      "eventParticipations/event-1_runner-2": edge("runner-2", "waitlisted"),
+    });
+    await cancelEventSignUpHandler(request("runner-1"), h.deps);
+    assert.equal(
+      h.firestore.get("eventParticipations/event-1_runner-1")?.status,
+      "cancelled",
+    );
+    assert.equal(
+      h.firestore.get("eventParticipations/event-1_runner-2")?.status,
+      "signedUp",
+    );
+    assert.deepEqual(h.firestore.get("events/event-1")?.genderCounts, {});
+    assert.equal(
+      h.firestore.get("eventParticipations/event-1_runner-2")
+        ?.genderAtSignup,
+      null,
+    );
+  });
+
+for (const blocked of [
+  {},
+  {
+    dateOfBirth: admin.firestore.Timestamp.fromDate(
+      new Date("2015-01-01"),
+    ),
+  },
+  {
+    phoneNumber: "",
+    dateOfBirth: admin.firestore.Timestamp.fromDate(
+      new Date("1995-01-01"),
+    ),
+  },
+]) {
+  test(`promotion skips ineligible details ${JSON.stringify(blocked)}`,
+    async () => {
+      const h = harness({
+        "events/event-1": event({
+          bookedCount: 1,
+          waitlistedCount: 2,
+          constraints: {minAge: 18, maxAge: 99},
+        }),
+        "users/runner-1": user(),
+        "users/runner-2": user(blocked),
+        "users/runner-3": user({
+          dateOfBirth: admin.firestore.Timestamp.fromDate(
+            new Date("1995-01-01"),
+          ),
+        }),
+        "eventParticipations/event-1_runner-1": participation(
+          "runner-1",
+          "signedUp",
+        ),
+        "eventParticipations/event-1_runner-2": participation(
+          "runner-2",
+          "waitlisted",
+        ),
+        "eventParticipations/event-1_runner-3": {
+          ...participation("runner-3", "waitlisted"),
+          waitlistedAt: 2,
+        },
+      });
+      await cancelEventSignUpHandler(request("runner-1"), h.deps);
+      assert.equal(
+        h.firestore.get("eventParticipations/event-1_runner-2")?.status,
+        "waitlisted",
+      );
+      assert.equal(
+        h.firestore.get("eventParticipations/event-1_runner-3")?.status,
+        "signedUp",
+      );
+      assert.equal(h.firestore.get("events/event-1")?.waitlistedCount, 1);
+    });
 }

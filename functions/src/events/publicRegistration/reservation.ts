@@ -1,3 +1,4 @@
+import {assertPublicEventAge} from "../../profiles/eventProfileRequirements";
 import {createHash} from "node:crypto";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -112,6 +113,7 @@ export async function reservePublicPayment(input: {
       tx,
       eventId,
     });
+    await assertPublicEventAge({db, tx, uid, event, nowMillis});
     const quote = publicCheckoutQuote(eventId, event, organizer, nowMillis,
       await publicGuestMembership({db, tx, event, uid, nowMillis}));
     assertReviewedPublicQuote(reviewedQuote, quote);
