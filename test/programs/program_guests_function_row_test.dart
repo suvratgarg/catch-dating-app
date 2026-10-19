@@ -44,7 +44,7 @@ Future<void> _pumpRow(
           guest: _guest,
           functions: const [_function],
           selectedFunction: selected ? _function : null,
-          joinIndex: {if (join != null) 'guest-a:sangeet': join},
+          joinIndex: {'guest-a:sangeet': ?join},
           pending: pending,
           onRsvp: onRsvp ?? (_, _) {},
         ),
