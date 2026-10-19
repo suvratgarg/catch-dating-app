@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.13.0
+version: 0.14.0
 updated: 2026-10-19
 owner: marketing_website
 status: active
@@ -55,7 +55,8 @@ initial HTML visible with JavaScript disabled. Legacy Host redirects remain
 
 Existing `/join`, `/booking`, `/offer`, `/event-update`, `/rehearse`, `/invite`,
 `/rsvp`, `/f` and `/demo` flows retain the existing browser app. A fixed shell is
-built into `public/_legacy` and served by `app/private-shell/route.ts` with
+built in `.next-legacy` and copied only into the standalone runtime's
+`public/_legacy`, then served by `app/private-shell/route.ts` with
 `no-store`, `noindex,nofollow` and `no-referrer`. Signed path/query/fragment values
 never enter RSC props. The request gate parses the actual Host authority; unknown
 hosts receive only this shell and the existing custom-form domain gate. They

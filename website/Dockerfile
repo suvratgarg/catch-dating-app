@@ -25,6 +25,7 @@ WORKDIR /app
 COPY --from=build --chown=node:node /app/website/.next/standalone ./
 COPY --from=build --chown=node:node /app/website/.next/static ./website/.next/static
 COPY --from=build --chown=node:node /app/website/public ./website/public
+COPY --from=build --chown=node:node /app/website/.next-legacy ./website/public/_legacy
 USER node
 WORKDIR /app/website
 EXPOSE 8080

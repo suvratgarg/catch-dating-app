@@ -1,12 +1,10 @@
-import {cp, mkdir} from "node:fs/promises";
+import {prepareStandalone} from "./prepareStandalone.mjs";
 import {fileURLToPath} from "node:url";
 import {spawn} from "node:child_process";
 import path from "node:path";
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const runtime = path.join(root, ".next/standalone/website");
-await mkdir(path.join(runtime, ".next"), {recursive: true});
-await cp(path.join(root, "public"), path.join(runtime, "public"), {recursive: true});
-await cp(path.join(root, ".next/static"), path.join(runtime, ".next/static"), {recursive: true});
+await prepareStandalone(root);
 const child = spawn(process.execPath, [path.join(runtime, "server.js")], {
   stdio: "inherit", env: {...process.env, HOSTNAME: "127.0.0.1", PORT: process.env.PORT ?? "3107"},
 });

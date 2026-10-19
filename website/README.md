@@ -13,10 +13,12 @@ and the existing Vite/Firebase Hosting production artifact.
 Vite deployment artifact, then builds the Next standalone candidate. To build
 only the candidate, use `npm run build:next --workspace catch-marketing`.
 `npm run start:next --workspace catch-marketing` copies public/static assets into
-the standalone tree and starts it on `127.0.0.1:3107` (override `PORT` as needed).
+the standalone tree (including the private shell from `.next-legacy`) and starts it on `127.0.0.1:3107` (override `PORT` as needed).
 Set the explicit public build variables and runtime project in `env.example`.
 Runtime credentials are ADC with read-only Firestore authority; they are never
-browser variables. The current deploy workflow still publishes Vite `dist`.
+browser variables. The current deploy workflow still publishes Vite `dist`. Generated private-shell
+assets never enter the checked-in public source directory or the Vite artifact.
+Packaging replaces old runtime chunks rather than accumulating earlier builds.
 
 For isolated runtime acceptance, start the Firestore emulator on loopback port
 8765 with project `demo-catch-nextjs`. Start the packaged server with
