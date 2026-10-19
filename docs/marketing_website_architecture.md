@@ -1264,3 +1264,14 @@ ownership without recreating duplicate marketing destinations.
   manual review notes.
 - Decide whether React Hook Form is worth adding during a specific long-form
   refactor after routing and server-state conventions are in place.
+
+### Host landing content and format explorer
+
+The public `/host/` entry balances event-business workflows with guest participation.
+`src/content/hostLanding.ts` owns its authored copy and five illustrative before/during/after formats;
+`features/host/sections/hostLandingSections.tsx` composes the page and owns the local accessible tab selection.
+Named visual wrappers live in `shared/ui/primitives/hostLanding.tsx`, with styling in `styles/host-landing.css`.
+Examples are fictional and do not execute booking, messaging, grouping, or payment actions.
+Existing tool and persona detail remains behind disclosures; `#features`, `#how-it-works`, `#use-cases`,
+`#existing-tools`, and `#pricing` retain their retired-route destinations. The only acquisition form is
+`/host/apply/`; the selected free live-event pilot is distinct from broader capabilities and future terms.

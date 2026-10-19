@@ -103,30 +103,15 @@ export const VisitorDiscovery: Story = {
 export const Host: Story = {
   name: "/host/",
   parameters: {
-    a11y: {test: "todo"},
+    a11y: {test: "error"},
     catchRoute: {
-      id: "host",
-      path: "/host/",
-      reviewStates: [
-        "default",
-        "beta-offer",
-        "application-link",
-        "capture-placeholders",
-      ],
-      stateCoverage: {
-        storybook: ["default"],
-        manual: ["beta-offer", "application-link", "capture-placeholders"],
-      },
+      id: "host", path: "/host/",
+      reviewStates: ["default", "run-club", "dinner", "games", "pickleball", "pub-crawl", "pilot-offer", "application-link", "existing-tools"],
+      stateCoverage: {storybook: ["default"], manual: ["run-club", "dinner", "games", "pickleball", "pub-crawl", "pilot-offer", "application-link", "existing-tools"]},
     },
     catchComponent: {
-      id: "route_host",
-      routeIds: ["host"],
-      states: [
-        "default",
-        "beta-offer",
-        "application-link",
-        "capture-placeholders",
-      ],
+      id: "route_host", routeIds: ["host"],
+      states: ["default", "run-club", "dinner", "games", "pickleball", "pub-crawl", "pilot-offer", "application-link", "existing-tools"],
     },
   },
   render: () => <HostPage captures={captures} />,

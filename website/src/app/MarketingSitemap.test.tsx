@@ -1,9 +1,9 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {cleanup, render, screen, within} from "@testing-library/react";
+import {cleanup, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 import {HostPage} from "../features/host/HostPage";
 import {HostApplicationPage} from "../features/host/HostApplicationPage";
-import {hostProductCopy, hostWorkflowExamples} from "@content/hostProduct";
+import {hostProductCopy} from "@content/hostProduct";
 import {retiredMarketingDestination} from "./retiredMarketingRoutes";
 import {getPageKey, pageMetaForHostPath} from "./pageMeta";
 const redirects = [
@@ -24,19 +24,14 @@ describe("consolidated public sitemap", () => {
     expect(actions.length).toBeGreaterThan(0);
     for (const link of actions) expect(link.getAttribute("href")).toBe("/host/apply/");
   });
-  it("preserves separate workflow decisions and each persona and tool-category explanation", () => {
-    renderPage(<HostPage captures={{}} />);
-    for (const example of hostWorkflowExamples) {
-      const section = within(screen.getByRole("region", {name: example.title}));
-      expect(section.getByText(example.boundary)).toBeTruthy();
-      for (const step of example.steps) expect(section.getByText(step.title)).toBeTruthy();
-    }
-    expect(screen.getByText("Separate decision; not automatically changed")).toBeTruthy();
+  it("retains detailed persona and tool handoffs behind progressive disclosure", () => {
+    const {container} = renderPage(<HostPage captures={{}} />);
     for (const item of [...hostProductCopy.useCases.items, ...hostProductCopy.tools.items]) {
       expect(screen.getByText(item.question)).toBeTruthy();
-      expect(screen.getByText(item.answer)).toBeTruthy();
+      const answer = screen.getByText(item.answer);
+      expect(answer.closest("details")?.open).toBe(false);
     }
-    expect(screen.getByText(/adoption paths, not purchasable pricing tiers/)).toBeTruthy();
+    expect(container.textContent).toContain("Application approval, membership, payment, and event admission are separate decisions.");
   });
   it("mounts the existing application at the canonical apply page", () => {
     const {container} = renderPage(<HostApplicationPage />);

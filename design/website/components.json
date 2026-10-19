@@ -845,7 +845,8 @@
         "website/src/styles/host-foundation.css",
         "website/src/styles/host.css",
         "website/src/styles/flows.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/host-landing.css"
       ],
       "storybook": {
         "status": "ready",
@@ -853,12 +854,17 @@
         "exportName": "Host",
         "states": [
           "default",
-          "beta-offer",
+          "run-club",
+          "dinner",
+          "games",
+          "pickleball",
+          "pub-crawl",
+          "pilot-offer",
           "application-link",
-          "capture-placeholders"
+          "existing-tools"
         ]
       },
-      "notes": "Canonical public host beta route for standalone live-event tooling alongside external booking platforms; current tools precede an explicit coming-later boundary."
+      "notes": "Host landing page balances business workflows and guest participation, with five interactive before/during/after format examples, audience insights, flexible adoption and selected pilot access. Existing retired-route anchors remain. Application lives at /host/apply/."
     },
     {
       "id": "host_hero_section",
