@@ -43,6 +43,8 @@ export function ownerArea(surface, owner) {
  */
 export function buildReactComponentInventory({graph, registry, surfaceRegistries}) {
   const components = new Map(graph.components.map((component) => [component.id, component]));
+  // Public registry names can alias one declaration; references use that declaration.
+  const declarationId = (id) => components.get(id)?.declarationId ?? id;
   const consumers = new Map();
   const uses = new Map();
   for (const reference of graph.references) {
@@ -56,7 +58,7 @@ export function buildReactComponentInventory({graph, registry, surfaceRegistries
       if (id.includes("::")) push(declarationsInFile, id.split("::")[0], id);
     }
   }
-  for (const component of graph.components) push(declarationsInFile, component.file, component.id);
+  for (const component of graph.components) push(declarationsInFile, component.file, declarationId(component.id));
 
   const ownersOf = memoizedOwners({consumers, declarationsInFile});
   const contracts = new Map(registry.components.map((component) => [component.id, component]));
@@ -66,7 +68,7 @@ export function buildReactComponentInventory({graph, registry, surfaceRegistries
     const react = contract.react;
     if (!react) continue;
     for (const symbol of [react.symbol, ...(react.additionalSymbols ?? [])]) {
-      const id = `${react.file}::${symbol}`;
+      const id = declarationId(`${react.file}::${symbol}`);
       reactImplementations.set(id, contract.id);
       push(implementationsOf, contract.id, id);
     }
@@ -75,7 +77,7 @@ export function buildReactComponentInventory({graph, registry, surfaceRegistries
   for (const [surface, document] of Object.entries(surfaceRegistries)) {
     for (const entry of document.components ?? []) {
       entries.set(`${entry.source}::${entry.exportName}`, {...entry, surface});
-      if (entry.componentId) push(implementationsOf, entry.componentId, `${entry.source}::${entry.exportName}`);
+      if (entry.componentId) push(implementationsOf, entry.componentId, declarationId(`${entry.source}::${entry.exportName}`));
     }
   }
   const candidateIndex = conceptCandidateIndex(registry);
@@ -84,7 +86,7 @@ export function buildReactComponentInventory({graph, registry, surfaceRegistries
 
   for (const component of graph.components) {
     const area = areaOf(component.file);
-    const owners = [...ownersOf(component.id)].sort();
+    const owners = [...ownersOf(declarationId(component.id))].sort();
     const entry = entries.get(component.id) ?? null;
     const row = {
       id: component.id,
@@ -98,7 +100,7 @@ export function buildReactComponentInventory({graph, registry, surfaceRegistries
       mapping: null,
       candidates: [],
     };
-    const reactConcept = reactImplementations.get(component.id);
+    const reactConcept = reactImplementations.get(declarationId(component.id));
     if (reactConcept) {
       row.mapping = {kind: "concept", componentId: reactConcept};
     } else if (entry?.componentId) {
@@ -116,7 +118,7 @@ export function buildReactComponentInventory({graph, registry, surfaceRegistries
     }
 
     if (isSharedLayerFile(component.file) && row.mapping?.kind !== "concept" && row.mapping?.kind !== "adapter" && owners.length > 0) {
-      const used = uses.get(component.id) ?? [];
+      const used = uses.get(declarationId(component.id)) ?? [];
       const rendersImplementationOf = (contractId) =>
         used.some((target) => (implementationsOf.get(contractId) ?? []).includes(target));
       const open = new Map();

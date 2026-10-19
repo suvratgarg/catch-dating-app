@@ -1,3 +1,4 @@
+import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -45,7 +46,7 @@ export function graphProbeProblems() {
     if (deadUses.length !== 1 || deadUses[0].file !== "src/shared/Dead.stories.tsx") {
       failures.push("story uses must stay visible as the only, non-production use of an export");
     }
-    return failures;
+    return [...failures, ...aliasProbeProblems()];
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }
@@ -157,4 +158,42 @@ export function inventoryProbeProblems() {
   }
   if (mapping("ButtonControl")?.componentId !== "catch.button") failures.push("a react record was not mapped to its concept");
   return failures;
+}
+
+// Resolve public export identities to declarations for ownership and composition.
+function aliasProbeProblems() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'catch-react-alias-regression-'));
+  const sources = {
+    'tsconfig.json': JSON.stringify({compilerOptions:{jsx:'preserve',module:'esnext',moduleResolution:'bundler',target:'es2022',noEmit:true},include:['website','packages']}),
+    'packages/web-ui/src/control.tsx': 'function InternalControl(){ return <button/>; } export {InternalControl as ButtonControl};',
+    'website/src/shared/ui/alias.tsx': 'function Original(){ return <span/>; } export {Original as AliasThing, Original as SecondThing};',
+    'website/src/shared/ui/adapter.tsx': 'import {ButtonControl as Control} from "../../../../packages/web-ui/src/control"; function InternalAdapter(){ return <Control/>; } export {InternalAdapter as AdapterThing};',
+    'website/src/shared/ui/compound.tsx': 'import {AdapterThing as Adapted} from "./adapter"; function InternalComposite(){ return <Adapted/>; } export {InternalComposite as ChoiceButton};',
+    'website/src/shared/ui/dead.tsx': 'function StoryOnly(){ return <span/>; } export {StoryOnly as DeadAlias};',
+    'website/src/shared/ui/dead.stories.tsx': 'import {DeadAlias} from "./dead"; export const Story=()=> <DeadAlias/>;',
+    'website/src/shared/index.ts': 'export {AliasThing as ThroughBarrel, SecondThing} from "./ui/alias"; export {ChoiceButton} from "./ui/compound";',
+    'website/src/features/a/Page.tsx': 'import {ThroughBarrel as Rendered, ChoiceButton} from "../../shared"; export function PageA(){ return <><Rendered/><ChoiceButton/></>; }',
+    'website/src/features/b/Page.tsx': 'import {SecondThing as Rendered, ChoiceButton} from "../../shared"; export function PageB(){ return <><Rendered/><ChoiceButton/></>; }',
+  };
+  try {
+   for (const [file,source] of Object.entries(sources)) { fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});fs.writeFileSync(path.join(root,file),source); }
+   const graph=buildReactComponentGraph({repoRoot:root,surfaces:[{id:'website',root:'website/src',tsconfig:'tsconfig.json'},{id:'web-ui',root:'packages/web-ui/src',tsconfig:'tsconfig.json'}]});
+   const registry={roleNounRedirects:{},components:[{id:'catch.button',tier:'T1',level:'L3',roleNoun:'Button',dart:{symbol:'CatchButton'},react:{file:'packages/web-ui/src/control.tsx',symbol:'ButtonControl'}}]};
+   const inventory=buildReactComponentInventory({graph,registry,surfaceRegistries:{website:{components:[{id:'adapter',source:'website/src/shared/ui/adapter.tsx',exportName:'AdapterThing',componentId:'catch.button'}]}}});
+   const row=name=>{const item=inventory.rows.find(x=>x.name===name);assert.ok(item,`missing ${name}`);return item;};
+   const owners=['website:features/a','website:features/b'];
+   assert.deepEqual(row('AliasThing').owners,owners,'local export alias must retain production consumers through barrel and import aliases');
+   assert.deepEqual(row('SecondThing').owners,owners,'multiple public aliases must share declaration ownership');
+   assert.equal(row('AliasThing').mapping.kind,'t4');
+   assert.deepEqual(row('ButtonControl').owners,owners,'React implementation alias must retain transitive consumers');
+   assert.deepEqual(row('ButtonControl').mapping,{kind:'concept',componentId:'catch.button'});
+   assert.deepEqual(row('AdapterThing').mapping,{kind:'adapter',componentId:'catch.button'});
+   assert.deepEqual(row('ChoiceButton').owners,owners,'aliased shared composite must retain its consumers');
+   assert.deepEqual(row('ChoiceButton').candidates,[],'rendering a registered aliased adapter must suppress a redundant name candidate');
+   assert.equal(row('DeadAlias').mapping.kind,'delete','a story-only alias stays unused by production');
+   assert.deepEqual(inventory.problems,[]);
+   return [];
+  } catch (error) {
+   return [`export alias ownership: ${error.message}`];
+  } finally {fs.rmSync(root,{recursive:true,force:true});}
 }

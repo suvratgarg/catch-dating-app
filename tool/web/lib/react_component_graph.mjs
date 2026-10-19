@@ -87,6 +87,7 @@ function declaredComponents(file, checker, relative, surface) {
     if (!isComponentName(name) || !isComponentDeclaration(declaration, symbol, checker)) continue;
     output.push({
       id: `${relative}::${name}`,
+      declarationId: `${relative}::${declarationName(declaration, symbol)}`,
       surface,
       file: relative,
       name,
