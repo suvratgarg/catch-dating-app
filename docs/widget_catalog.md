@@ -1029,7 +1029,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostTodayEventMetadataRow</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_section.dart:127</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayEventMetricTile</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_section.dart:157</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayEventSection</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_section.dart:10</code> | — | — | No class documentation or registry summary. |
-| <code>HostTodayAttentionSection</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:151</code> | — | — | No class documentation or registry summary. |
+| <code>HostTodayAttentionSection</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:166</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayOverview</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>HostWorkPageBody</code> | <code>lib/hosts/work/presentation/host_work_screen.dart:121</code> | — | — | The resolved assignment picker, grouped by organizer. |
 | <code>PhotoGrid</code> | <code>lib/image_uploads/shared/photo_grid.dart:31</code> | — | — | A 3×2 grid of photo slots for displaying and editing a user's profile photos. |
