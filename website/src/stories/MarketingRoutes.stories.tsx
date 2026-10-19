@@ -21,6 +21,8 @@ import {PageShell} from "../shared/site";
 import {captures} from "./fixtures/marketingCaptures";
 import {
   catchEventDetailFixture,
+  completeEventDetailFixture,
+  completePastEventDetailFixture,
   externalEventDetailFixture,
 } from "./fixtures/eventDetails";
 import type {EventDetailRecord} from "../features/events/eventDetailModel";
@@ -557,4 +559,19 @@ export const EventDetailSparse: Story = {
   name: "/events/:eventId/ · Sparse event",
   parameters: {a11y: {test: "error"}},
   render: () => <EventDetailRouteStory event={{...catchEventDetailFixture, photoUrl: null, itinerary: [], summary: "", requirements: "", accessibility: ""}} />,
+};
+
+export const EventDetailComplete: Story = {
+  name: "/events/:eventId/ · Fully populated preview",
+  parameters: {a11y: {test: "error"}, catchComponent: {id: "route_event_detail", routeIds: ["event_detail_canonical"], states: ["catch-native", "desktop-invitation", "mobile-sticky-action"]}},
+  render: () => <><aside aria-label="Preview disclosure" style={{padding: "14px 24px", background: "#e9ece3", color: "#16140f", fontSize: 14}}>
+    <strong>Design preview · fictional event.</strong> Artwork, venue information and organiser figures are examples. This uses the real page component with supplied fixture data; it does not prove the live data connection or complete a booking.
+  </aside><EventDetailRouteStory event={completeEventDetailFixture} /></>,
+};
+export const EventDetailCompletePast: Story = {
+  name: "/events/:eventId/ · Completed event with reviews",
+  parameters: {a11y: {test: "error"}, catchComponent: {id: "route_event_detail", routeIds: ["event_detail_canonical"], states: ["catch-native", "event-reviews"]}},
+  render: () => <><aside aria-label="Preview disclosure" style={{padding: "14px 24px", background: "#e9ece3", color: "#16140f", fontSize: 14}}>
+    <strong>Past-event design preview · all reviews are fictional.</strong> This demonstrates event-scoped reviews and a host reply using supplied fixture data. No reviews of a future event are implied; booking actions are not live acceptance evidence.
+  </aside><EventDetailRouteStory event={completePastEventDetailFixture} /></>,
 };
