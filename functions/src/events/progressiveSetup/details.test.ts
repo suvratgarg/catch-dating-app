@@ -364,3 +364,25 @@ test("private itinerary enforces route and schedule validation", async () => {
   }}), (error) => code(error, "invalid-argument"));
   assert.deepEqual(store.writes, []);
 });
+
+
+test("private guest notes persist and clear through revision-checked saves",
+  async () => {
+    const {store, command, save} = await setup();
+    const format = {version: 1 as const, activityKind: "dinner" as const,
+      interactionModel: "seatedTable" as const, activityDetails: {
+        privateNotes: "Host-only note", publicDetails: {
+          accessibility: "Step-free entrance", included: "Dinner",
+        },
+      }};
+    await save({...command,
+      details: {eventFormat: {mode: "set", value: format}}});
+    assert.deepEqual(store.rows.get("events/event1")?.eventFormat, format);
+    const cleared = {...format,
+      activityDetails: {privateNotes: "Host-only note"}};
+    await save({...command, requestId: "clear-guest-notes",
+      expectedSetupRevision: 2,
+      details: {eventFormat: {mode: "set", value: cleared}}});
+    assert.deepEqual(store.rows.get("events/event1")?.eventFormat, cleared);
+    assert.equal(store.rows.get("events/event1")?.publicationState, "private");
+  });

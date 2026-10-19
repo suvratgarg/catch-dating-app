@@ -40679,6 +40679,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Approved community members can book directly. Other guests request approval. Capacity, eligibility and payment still apply.'**
   String get hostsCreateEventPolicyStateDescriptionMembersSkipReview;
+
+  /// Section title for optional public event notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest information'**
+  String get hostsEventGuestDetailsTitle;
+
+  /// Explains visibility and optionality of host-authored guest notes.
+  ///
+  /// In en, this message translates to:
+  /// **'These notes appear on your public event page. Leave blank to hide them.'**
+  String get hostsEventGuestDetailsVisibility;
+
+  /// Field title for what an event booking includes.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'\'s included'**
+  String get hostsEventIncludedTitle;
+
+  /// Example content for included items without asserting they are provided.
+  ///
+  /// In en, this message translates to:
+  /// **'For example: equipment, refreshments, entry fees or a guided session.'**
+  String get hostsEventIncludedHint;
+
+  /// Field title for factual venue and activity accessibility information.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessibility notes'**
+  String get hostsEventAccessibilityTitle;
+
+  /// Prompts factual accessibility information, not a guarantee.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe step-free access, seating, accessible toilets or activity demands.'**
+  String get hostsEventAccessibilityHint;
+
+  /// Saves both public guest notes on private event setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Save guest information'**
+  String get hostsEventGuestDetailsSave;
 }
 
 class _AppLocalizationsDelegate

@@ -10,6 +10,8 @@ class CreateEventDraftSnapshot {
     required this.capacity,
     required this.price,
     required this.description,
+    this.accessibility,
+    this.included,
     this.externalBookingMode = false,
     this.externalBookingProvider,
     this.externalEventUrl,
@@ -57,6 +59,8 @@ class CreateEventDraftSnapshot {
   final String? capacity;
   final String? price;
   final String? description;
+  final String? accessibility;
+  final String? included;
   final bool externalBookingMode;
   final String? externalBookingProvider;
   final String? externalEventUrl;
@@ -104,6 +108,8 @@ class CreateEventDraftSnapshot {
     capacity: capacity,
     price: price,
     description: description,
+    accessibility: accessibility,
+    included: included,
     externalBookingMode: externalBookingMode,
     externalBookingProvider: externalBookingProvider,
     externalEventUrl: externalEventUrl,
@@ -160,6 +166,8 @@ class CreateEventDraftSnapshot {
       capacity: capacity,
       price: price,
       description: description,
+      accessibility: accessibility,
+      included: included,
       externalBookingMode: externalBookingMode,
       externalBookingProvider: externalBookingProvider,
       externalEventUrl: externalEventUrl,

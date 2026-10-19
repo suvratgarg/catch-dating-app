@@ -1931,3 +1931,45 @@ test("host cancellation replay retries staging without false refund success",
     assert.equal(calls, 2);
     assert.equal(h.firestore.get("payments/payment-1")?.status, "completed");
   });
+
+
+test("guest notes survive create and edit, can be cleared, and are bounded",
+  async () => {
+    const publicDetails = {
+      accessibility: "Step-free entrance", included: "Water",
+    };
+    const eventFormat = {version: 1, activityKind: "dinner",
+      interactionModel: "seatedTable", activityDetails: {publicDetails,
+        privateNotes: "Host-only note"}};
+    const h = harness({"organizers/club-1": club()});
+    await createEventHandler(request("host-1", payload({eventFormat})), h.deps);
+    const saved = h.firestore.get("events/event-1")?.eventFormat;
+    assert.deepEqual((saved as typeof eventFormat).activityDetails,
+      eventFormat.activityDetails);
+    const updatedFormat = {...eventFormat, activityDetails: {
+      ...eventFormat.activityDetails,
+      publicDetails: {accessibility: "Lift at the rear", included: "Dinner"},
+    }};
+    await updateEventHandler(request("host-1", {eventId: "event-1",
+      fields: {eventFormat: updatedFormat}}), h.deps);
+    assert.deepEqual((h.firestore.get("events/event-1")?.eventFormat as
+      typeof updatedFormat).activityDetails, updatedFormat.activityDetails);
+    const clearedFormat = {...eventFormat, activityDetails: {
+      privateNotes: "Host-only note",
+    }};
+    await updateEventHandler(request("host-1", {eventId: "event-1",
+      fields: {eventFormat: clearedFormat}}), h.deps);
+    assert.deepEqual((h.firestore.get("events/event-1")?.eventFormat as
+      typeof clearedFormat).activityDetails, clearedFormat.activityDetails);
+    for (const value of ["x".repeat(2001), {text: "Invalid"}]) {
+      const invalidFormat = {...eventFormat, activityDetails: {
+        publicDetails: {accessibility: value},
+      }};
+      await assert.rejects(() => updateEventHandler(request("host-1", {
+        eventId: "event-1", fields: {eventFormat: invalidFormat},
+      }), h.deps), (error) => assertHttpsCode(error, "invalid-argument"));
+      await assert.rejects(() => createEventHandler(request("host-1",
+        payload({eventFormat: invalidFormat})), h.deps),
+      (error) => assertHttpsCode(error, "invalid-argument"));
+    }
+  });

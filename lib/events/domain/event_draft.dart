@@ -36,6 +36,8 @@ abstract class EventDraft with _$EventDraft {
     String? capacity,
     String? price,
     String? description,
+    @JsonKey(includeIfNull: false) String? accessibility,
+    @JsonKey(includeIfNull: false) String? included,
     @Default(false) bool externalBookingMode,
     String? externalBookingProvider,
     String? externalEventUrl,
@@ -104,6 +106,8 @@ extension EventDraftX on EventDraft {
       capacity == null &&
       price == null &&
       description == null &&
+      accessibility == null &&
+      included == null &&
       externalBookingMode == false &&
       externalBookingProvider == null &&
       externalEventUrl == null &&

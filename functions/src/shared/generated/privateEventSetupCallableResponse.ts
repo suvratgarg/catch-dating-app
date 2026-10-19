@@ -160,6 +160,15 @@ export interface PrivateEventSetupCallableResponse {
             retentionMinutes: number;
           };
         };
+        /**
+         * Optional host-authored notes for public event pages. Blank notes are omitted.
+         */
+        publicDetails?: {
+          requirements?: string;
+          accessibility?: string;
+          included?: string;
+          [k: string]: unknown;
+        };
         [k: string]: unknown;
       };
     };

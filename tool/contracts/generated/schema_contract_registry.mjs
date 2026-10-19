@@ -53424,6 +53424,25 @@ export const updatePrivateEventDetailsCallablePayloadSchema = {
                               }
                             }
                           }
+                        },
+                        "publicDetails": {
+                          "type": "object",
+                          "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                          "additionalProperties": true,
+                          "properties": {
+                            "requirements": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "accessibility": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "included": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          }
                         }
                       }
                     }
@@ -183321,6 +183340,25 @@ export const eventDocumentSchema = {
                   }
                 }
               }
+            },
+            "publicDetails": {
+              "type": "object",
+              "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+              "additionalProperties": true,
+              "properties": {
+                "requirements": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "accessibility": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "included": {
+                  "type": "string",
+                  "maxLength": 2000
+                }
+              }
             }
           }
         }
@@ -216057,6 +216095,25 @@ export const eventRehearsalDocumentSchema = {
                       }
                     }
                   }
+                },
+                "publicDetails": {
+                  "type": "object",
+                  "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                  "additionalProperties": true,
+                  "properties": {
+                    "requirements": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "accessibility": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "included": {
+                      "type": "string",
+                      "maxLength": 2000
+                    }
+                  }
                 }
               }
             }
@@ -247642,6 +247699,25 @@ export const adminUpdateEventDetailsCallablePayloadSchema = {
                       }
                     }
                   }
+                },
+                "publicDetails": {
+                  "type": "object",
+                  "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                  "additionalProperties": true,
+                  "properties": {
+                    "requirements": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "accessibility": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "included": {
+                      "type": "string",
+                      "maxLength": 2000
+                    }
+                  }
                 }
               }
             }
@@ -252807,6 +252883,25 @@ export const privateEventSetupCallableResponseSchema = {
                           }
                         }
                       }
+                    },
+                    "publicDetails": {
+                      "type": "object",
+                      "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                      "additionalProperties": true,
+                      "properties": {
+                        "requirements": {
+                          "type": "string",
+                          "maxLength": 2000
+                        },
+                        "accessibility": {
+                          "type": "string",
+                          "maxLength": 2000
+                        },
+                        "included": {
+                          "type": "string",
+                          "maxLength": 2000
+                        }
+                      }
                     }
                   }
                 }
@@ -254791,6 +254886,25 @@ export const createEventCallablePayloadSchema = {
                   }
                 }
               }
+            },
+            "publicDetails": {
+              "type": "object",
+              "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+              "additionalProperties": true,
+              "properties": {
+                "requirements": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "accessibility": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "included": {
+                  "type": "string",
+                  "maxLength": 2000
+                }
+              }
             }
           }
         }
@@ -255754,6 +255868,25 @@ export const updateEventCallablePayloadSchema = {
                           "maximum": 1440
                         }
                       }
+                    }
+                  }
+                },
+                "publicDetails": {
+                  "type": "object",
+                  "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                  "additionalProperties": true,
+                  "properties": {
+                    "requirements": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "accessibility": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "included": {
+                      "type": "string",
+                      "maxLength": 2000
                     }
                   }
                 }
@@ -264162,6 +264295,25 @@ export const createEventRehearsalCallablePayloadSchema = {
                       }
                     }
                   }
+                },
+                "publicDetails": {
+                  "type": "object",
+                  "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                  "additionalProperties": true,
+                  "properties": {
+                    "requirements": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "accessibility": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "included": {
+                      "type": "string",
+                      "maxLength": 2000
+                    }
+                  }
                 }
               }
             }
@@ -265387,6 +265539,25 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                               "maximum": 1440
                             }
                           }
+                        }
+                      }
+                    },
+                    "publicDetails": {
+                      "type": "object",
+                      "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                      "additionalProperties": true,
+                      "properties": {
+                        "requirements": {
+                          "type": "string",
+                          "maxLength": 2000
+                        },
+                        "accessibility": {
+                          "type": "string",
+                          "maxLength": 2000
+                        },
+                        "included": {
+                          "type": "string",
+                          "maxLength": 2000
                         }
                       }
                     }
@@ -275478,6 +275649,25 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                           }
                         }
                       }
+                    },
+                    "publicDetails": {
+                      "type": "object",
+                      "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                      "additionalProperties": true,
+                      "properties": {
+                        "requirements": {
+                          "type": "string",
+                          "maxLength": 2000
+                        },
+                        "accessibility": {
+                          "type": "string",
+                          "maxLength": 2000
+                        },
+                        "included": {
+                          "type": "string",
+                          "maxLength": 2000
+                        }
+                      }
                     }
                   }
                 }
@@ -278528,6 +278718,25 @@ export const updateEventRehearsalSetupCallablePayloadSchema = {
                           "maximum": 1440
                         }
                       }
+                    }
+                  }
+                },
+                "publicDetails": {
+                  "type": "object",
+                  "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                  "additionalProperties": true,
+                  "properties": {
+                    "requirements": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "accessibility": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "included": {
+                      "type": "string",
+                      "maxLength": 2000
                     }
                   }
                 }
@@ -285107,6 +285316,25 @@ export const eventRehearsalReproductionCallableResponseSchema = {
                           "maximum": 1440
                         }
                       }
+                    }
+                  }
+                },
+                "publicDetails": {
+                  "type": "object",
+                  "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                  "additionalProperties": true,
+                  "properties": {
+                    "requirements": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "accessibility": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "included": {
+                      "type": "string",
+                      "maxLength": 2000
                     }
                   }
                 }

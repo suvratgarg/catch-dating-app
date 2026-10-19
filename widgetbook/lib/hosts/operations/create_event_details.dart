@@ -12,6 +12,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/cre
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_details_step.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_guest_details_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -295,6 +296,12 @@ class _EventDetailsStepFrameState extends State<_EventDetailsStepFrame> {
   late final TextEditingController _distanceController;
   late final TextEditingController _customActivityLabelController;
   late final TextEditingController _descriptionController;
+  final _accessibilityController = TextEditingController(
+    text: 'Step-free meeting point; the route includes uneven paths.',
+  );
+  final _includedController = TextEditingController(
+    text: 'A guided route, pace groups and water at the finish.',
+  );
   late ActivityKind _activityKind;
   late EventInteractionModel _interactionModel;
   RouteEventPlan? _routePlan;
@@ -323,6 +330,8 @@ class _EventDetailsStepFrameState extends State<_EventDetailsStepFrame> {
     _distanceController.dispose();
     _customActivityLabelController.dispose();
     _descriptionController.dispose();
+    _accessibilityController.dispose();
+    _includedController.dispose();
     super.dispose();
   }
 
@@ -339,6 +348,8 @@ class _EventDetailsStepFrameState extends State<_EventDetailsStepFrame> {
       distanceController: _distanceController,
       customActivityLabelController: _customActivityLabelController,
       descriptionController: _descriptionController,
+      accessibilityController: _accessibilityController,
+      includedController: _includedController,
       selectedActivityKind: _activityKind,
       onActivityKindChanged: (activityKind) => setState(() {
         _activityKind = activityKind;
@@ -494,4 +505,20 @@ class _WhenStepFrameState extends State<_WhenStepFrame> {
           : null,
     );
   }
+}
+
+@widgetbook.UseCase(
+  name: 'Guest information',
+  type: EventGuestDetailsSection,
+  path: '[P1 product surfaces]/Host create event',
+)
+Widget eventGuestDetailsSectionPreview(BuildContext context) {
+  return WidgetbookHostDeviceFrame(
+    child: EventGuestDetailsSection(
+      included: 'Equipment, a guided session and refreshments.',
+      accessibility:
+          'Step-free entrance and accessible toilets. The activity includes standing and walking.',
+      onSave: (_, _) {},
+    ),
+  );
 }

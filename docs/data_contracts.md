@@ -2102,6 +2102,14 @@ Firebase packages.
 
 ### Event Field Ownership And Optionality
 
+Host guest notes use `eventFormat.activityDetails.publicDetails.accessibility`
+and `.included`, optional strings bounded to 2000 characters by the shared
+format contract. The Host editors trim authored values and omit blank notes;
+editing or clearing a note preserves other public details and operational
+format settings. These notes survive local drafts and repeat prefills. Private
+setup uses the existing revision-checked format update and format lock. The
+website projects only explicitly allowlisted guest notes and hides absent rows.
+
 The event document is a lifecycle union, not a form specification. A private
 first save requires identity and a civil schedule; publication additionally
 requires a usable venue, duration, format and admission terms. A field omitted

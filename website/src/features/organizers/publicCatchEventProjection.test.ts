@@ -113,3 +113,18 @@ it("projects only explicitly public guest notes and canonical admission constrai
     eventFormat: {activityKind: "dinner", activityDetails: {publicDetails: {requirements: "x".repeat(2001), accessibility: {secret: true}}}},
   })?.event.requirements).toBeUndefined();
 });
+
+it("reflects edited and cleared host guest notes without stale fallbacks", () => {
+  for (const publicDetails of [
+    {accessibility: "Step-free entrance", included: "Dinner"},
+    {accessibility: "Lift at the rear", included: "Water"},
+    {},
+  ]) {
+    const record = project("event", {...base(), eventFormat: {
+      activityKind: "dinner", activityDetails: {publicDetails, privateNotes: "Private marker"},
+    }})?.event;
+    expect(record?.accessibility).toBe(publicDetails.accessibility);
+    expect(record?.included).toBe(publicDetails.included);
+    expect(JSON.stringify(record)).not.toContain("Private marker");
+  }
+});

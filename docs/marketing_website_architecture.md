@@ -543,9 +543,11 @@ The website is already split out of the old monolithic shell:
   are read only from `eventFormat.activityDetails.publicDetails` (requirements,
   accessibility, included; nonblank strings up to 2000 characters each). This
   existing extension namespace is opt-in public content; other activity details
-  never enter the DTO. Existing Host editors do not yet expose these three notes;
-  absent notes stay absent. Public location/address and itinerary duration are
-  rendered without inventing missing values. Registration context is separate
+  never enter the DTO. Host creation, saved drafts, repeat prefills,
+  published-event editing and private setup expose accessibility and inclusion notes through this namespace.
+  Clearing either note removes it without replacing sibling format settings;
+  absent notes stay absent. Requirements remain available to existing producers.
+  Public location/address and itinerary duration are rendered without inventing missing values. Registration context is separate
   from the account controller: restricted web registration is not a closed event,
   and closed events retain booking recovery. The route
   retains authorized `/join/` entry rather than recreating the live runtime;

@@ -9821,6 +9821,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'EventGuestDetailsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Guest information',
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_details
+                        .eventGuestDetailsSectionPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'EventPolicyStep',
             useCases: [
               _widgetbook.WidgetbookUseCase(

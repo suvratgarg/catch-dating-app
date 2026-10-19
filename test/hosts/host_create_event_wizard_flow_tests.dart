@@ -15,6 +15,8 @@ void _registerCreateEventWizardFlowTests() {
         clubId: 'club-1',
         savedAt: now,
         name: 'Meet the neighborhood',
+        accessibility: 'Step-free entrance',
+        included: 'Tea and snacks',
         activityKind: 'openActivity',
         capacity: '24',
         price: '0',
@@ -39,6 +41,14 @@ void _registerCreateEventWizardFlowTests() {
       ActivityKind.openActivity,
     );
     expect(repository.createdEvent!.description, isEmpty);
+    expect(
+      repository.createdEvent!.eventFormat.accessibilityNotes,
+      'Step-free entrance',
+    );
+    expect(
+      repository.createdEvent!.eventFormat.includedNotes,
+      'Tea and snacks',
+    );
   });
 
   testWidgets(
@@ -96,6 +106,8 @@ void _registerCreateEventWizardFlowTests() {
       await _tapPrimaryButton(tester, 'Create event');
       expect(repository.createdEvent, isNotNull);
       expect(repository.createdEvent!.description, isEmpty);
+      expect(repository.createdEvent!.eventFormat.accessibilityNotes, isNull);
+      expect(repository.createdEvent!.eventFormat.includedNotes, isNull);
       expect(repository.createdEvent!.eventPhotos, isEmpty);
       expect(repository.createdEvent!.priceInPaise, 0);
       expect(

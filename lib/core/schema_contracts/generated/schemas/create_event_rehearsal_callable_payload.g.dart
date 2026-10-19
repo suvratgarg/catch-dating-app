@@ -830,6 +830,25 @@ const schemaCreateEventRehearsalCallablePayloadSchema = <String, Object?>{
                     },
                   },
                 },
+                'publicDetails': <String, Object?>{
+                  'type': 'object',
+                  'description': 'Optional host-authored notes for public event pages. Blank notes are omitted.',
+                  'additionalProperties': true,
+                  'properties': <String, Object?>{
+                    'requirements': <String, Object?>{
+                      'type': 'string',
+                      'maxLength': 2000,
+                    },
+                    'accessibility': <String, Object?>{
+                      'type': 'string',
+                      'maxLength': 2000,
+                    },
+                    'included': <String, Object?>{
+                      'type': 'string',
+                      'maxLength': 2000,
+                    },
+                  },
+                },
               },
             },
           },

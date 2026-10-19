@@ -13843,6 +13843,24 @@ abstract final class CatchContractConstraints {
     maximum: 100,
   );
 
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsPublicDetailsAccessibility = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.publicDetails.accessibility',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsPublicDetailsIncluded = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.publicDetails.included',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsPublicDetailsRequirements = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.publicDetails.requirements',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
   static const adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
     path: 'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.groupStrategy',
     required: true,
@@ -25401,6 +25419,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const createEventCallablePayloadEventFormatActivityDetailsPublicDetailsAccessibility = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.publicDetails.accessibility',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsPublicDetailsIncluded = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.publicDetails.included',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventCallablePayloadEventFormatActivityDetailsPublicDetailsRequirements = CatchContractFieldConstraints(
+    path: 'createEventCallablePayload.eventFormat.activityDetails.publicDetails.requirements',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
   static const createEventCallablePayloadEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
     path: 'createEventCallablePayload.eventFormat.activityDetails.routePlan.groupStrategy',
     required: true,
@@ -26621,6 +26657,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 30,
     maximum: 360,
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsPublicDetailsAccessibility = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.publicDetails.accessibility',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsPublicDetailsIncluded = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.publicDetails.included',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsPublicDetailsRequirements = CatchContractFieldConstraints(
+    path: 'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.publicDetails.requirements',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
   );
 
   static const createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
@@ -48151,6 +48205,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventDocumentEventFormatActivityDetailsPublicDetailsAccessibility = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.publicDetails.accessibility',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentEventFormatActivityDetailsPublicDetailsIncluded = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.publicDetails.included',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventDocumentEventFormatActivityDetailsPublicDetailsRequirements = CatchContractFieldConstraints(
+    path: 'eventDocument.eventFormat.activityDetails.publicDetails.requirements',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
   static const eventDocumentEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
     path: 'eventDocument.eventFormat.activityDetails.routePlan.groupStrategy',
     required: true,
@@ -61104,6 +61176,24 @@ abstract final class CatchContractConstraints {
     maximum: 360,
   );
 
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsPublicDetailsAccessibility = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.publicDetails.accessibility',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsPublicDetailsIncluded = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.publicDetails.included',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsPublicDetailsRequirements = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.publicDetails.requirements',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
   static const eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.groupStrategy',
     required: true,
@@ -63617,6 +63707,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 30,
     maximum: 360,
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsPublicDetailsAccessibility = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.publicDetails.accessibility',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsPublicDetailsIncluded = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.publicDetails.included',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentSetupEventFormatActivityDetailsPublicDetailsRequirements = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.eventFormat.activityDetails.publicDetails.requirements',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
   );
 
   static const eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
@@ -69936,6 +70044,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 30,
     maximum: 360,
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsPublicDetailsAccessibility = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.publicDetails.accessibility',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsPublicDetailsIncluded = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.publicDetails.included',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsPublicDetailsRequirements = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.publicDetails.requirements',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
   );
 
   static const eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
@@ -129217,6 +129343,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsPublicDetailsAccessibility = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.publicDetails.accessibility',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsPublicDetailsIncluded = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.publicDetails.included',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsPublicDetailsRequirements = CatchContractFieldConstraints(
+    path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.publicDetails.requirements',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
   static const privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
     path: 'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.groupStrategy',
     required: true,
@@ -158725,6 +158869,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsPublicDetailsAccessibility = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.publicDetails.accessibility',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsPublicDetailsIncluded = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.publicDetails.included',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventCallablePayloadFieldsEventFormatActivityDetailsPublicDetailsRequirements = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.publicDetails.requirements',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
   static const updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
     path: 'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.groupStrategy',
     required: true,
@@ -159800,6 +159962,24 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 30,
     maximum: 360,
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsPublicDetailsAccessibility = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.publicDetails.accessibility',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsPublicDetailsIncluded = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.publicDetails.included',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsPublicDetailsRequirements = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.publicDetails.requirements',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
   );
 
   static const updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanGroupStrategy = CatchContractFieldConstraints(
@@ -162592,6 +162772,24 @@ abstract final class CatchContractConstraints {
   static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatMode = CatchContractFieldConstraints(
     path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.mode',
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsPublicDetailsAccessibility = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.publicDetails.accessibility',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsPublicDetailsIncluded = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.publicDetails.included',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsPublicDetailsRequirements = CatchContractFieldConstraints(
+    path: 'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.publicDetails.requirements',
+    maxLength: 2000,
     valueTypes: <String>['string'],
   );
 
@@ -171434,6 +171632,9 @@ abstract final class CatchContractConstraints {
     'adminUpdateEventDetailsCallablePayload.fields.crossPathsDiscoveryEnabled': adminUpdateEventDetailsCallablePayloadFieldsCrossPathsDiscoveryEnabled,
     'adminUpdateEventDetailsCallablePayload.fields.description': adminUpdateEventDetailsCallablePayloadFieldsDescription,
     'adminUpdateEventDetailsCallablePayload.fields.distanceKm': adminUpdateEventDetailsCallablePayloadFieldsDistanceKm,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.publicDetails.accessibility': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsPublicDetailsAccessibility,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.publicDetails.included': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsPublicDetailsIncluded,
+    'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.publicDetails.requirements': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsPublicDetailsRequirements,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.groupStrategy': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanGroupStrategy,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': adminUpdateEventDetailsCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
@@ -172997,6 +173198,9 @@ abstract final class CatchContractConstraints {
     'createEventCallablePayload.description': createEventCallablePayloadDescription,
     'createEventCallablePayload.distanceKm': createEventCallablePayloadDistanceKm,
     'createEventCallablePayload.endTimeMillis': createEventCallablePayloadEndTimeMillis,
+    'createEventCallablePayload.eventFormat.activityDetails.publicDetails.accessibility': createEventCallablePayloadEventFormatActivityDetailsPublicDetailsAccessibility,
+    'createEventCallablePayload.eventFormat.activityDetails.publicDetails.included': createEventCallablePayloadEventFormatActivityDetailsPublicDetailsIncluded,
+    'createEventCallablePayload.eventFormat.activityDetails.publicDetails.requirements': createEventCallablePayloadEventFormatActivityDetailsPublicDetailsRequirements,
     'createEventCallablePayload.eventFormat.activityDetails.routePlan.groupStrategy': createEventCallablePayloadEventFormatActivityDetailsRoutePlanGroupStrategy,
     'createEventCallablePayload.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': createEventCallablePayloadEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
     'createEventCallablePayload.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': createEventCallablePayloadEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
@@ -173167,6 +173371,9 @@ abstract final class CatchContractConstraints {
     'createEventRehearsalCallablePayload.seed': createEventRehearsalCallablePayloadSeed,
     'createEventRehearsalCallablePayload.setup.attendeePrompt': createEventRehearsalCallablePayloadSetupAttendeePrompt,
     'createEventRehearsalCallablePayload.setup.durationMinutes': createEventRehearsalCallablePayloadSetupDurationMinutes,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.publicDetails.accessibility': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsPublicDetailsAccessibility,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.publicDetails.included': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsPublicDetailsIncluded,
+    'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.publicDetails.requirements': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsPublicDetailsRequirements,
     'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.groupStrategy': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanGroupStrategy,
     'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
     'createEventRehearsalCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': createEventRehearsalCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
@@ -176029,6 +176236,9 @@ abstract final class CatchContractConstraints {
     'eventDocument.endTime._nanoseconds': eventDocumentEndTimeNanoseconds,
     'eventDocument.endTime._seconds': eventDocumentEndTimeSeconds,
     'eventDocument.eventCityId': eventDocumentEventCityId,
+    'eventDocument.eventFormat.activityDetails.publicDetails.accessibility': eventDocumentEventFormatActivityDetailsPublicDetailsAccessibility,
+    'eventDocument.eventFormat.activityDetails.publicDetails.included': eventDocumentEventFormatActivityDetailsPublicDetailsIncluded,
+    'eventDocument.eventFormat.activityDetails.publicDetails.requirements': eventDocumentEventFormatActivityDetailsPublicDetailsRequirements,
     'eventDocument.eventFormat.activityDetails.routePlan.groupStrategy': eventDocumentEventFormatActivityDetailsRoutePlanGroupStrategy,
     'eventDocument.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': eventDocumentEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
     'eventDocument.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': eventDocumentEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
@@ -177772,6 +177982,9 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.session.seed': eventRehearsalBootstrapCallableResponseSessionSeed,
     'eventRehearsalBootstrapCallableResponse.session.setup.attendeePrompt': eventRehearsalBootstrapCallableResponseSessionSetupAttendeePrompt,
     'eventRehearsalBootstrapCallableResponse.session.setup.durationMinutes': eventRehearsalBootstrapCallableResponseSessionSetupDurationMinutes,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.publicDetails.accessibility': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsPublicDetailsAccessibility,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.publicDetails.included': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsPublicDetailsIncluded,
+    'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.publicDetails.requirements': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsPublicDetailsRequirements,
     'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.groupStrategy': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanGroupStrategy,
     'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
     'eventRehearsalBootstrapCallableResponse.session.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': eventRehearsalBootstrapCallableResponseSessionSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
@@ -178116,6 +178329,9 @@ abstract final class CatchContractConstraints {
     'eventRehearsalDocument.seed': eventRehearsalDocumentSeed,
     'eventRehearsalDocument.setup.attendeePrompt': eventRehearsalDocumentSetupAttendeePrompt,
     'eventRehearsalDocument.setup.durationMinutes': eventRehearsalDocumentSetupDurationMinutes,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.publicDetails.accessibility': eventRehearsalDocumentSetupEventFormatActivityDetailsPublicDetailsAccessibility,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.publicDetails.included': eventRehearsalDocumentSetupEventFormatActivityDetailsPublicDetailsIncluded,
+    'eventRehearsalDocument.setup.eventFormat.activityDetails.publicDetails.requirements': eventRehearsalDocumentSetupEventFormatActivityDetailsPublicDetailsRequirements,
     'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.groupStrategy': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanGroupStrategy,
     'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
     'eventRehearsalDocument.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': eventRehearsalDocumentSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
@@ -178947,6 +179163,9 @@ abstract final class CatchContractConstraints {
     'eventRehearsalReproductionCallableResponse.sessionId': eventRehearsalReproductionCallableResponseSessionId,
     'eventRehearsalReproductionCallableResponse.setup.attendeePrompt': eventRehearsalReproductionCallableResponseSetupAttendeePrompt,
     'eventRehearsalReproductionCallableResponse.setup.durationMinutes': eventRehearsalReproductionCallableResponseSetupDurationMinutes,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.publicDetails.accessibility': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsPublicDetailsAccessibility,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.publicDetails.included': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsPublicDetailsIncluded,
+    'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.publicDetails.requirements': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsPublicDetailsRequirements,
     'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.groupStrategy': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanGroupStrategy,
     'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
     'eventRehearsalReproductionCallableResponse.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': eventRehearsalReproductionCallableResponseSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
@@ -187095,6 +187314,9 @@ abstract final class CatchContractConstraints {
     'privateEventSetupCallableResponse.eventDetails.description': privateEventSetupCallableResponseEventDetailsDescription,
     'privateEventSetupCallableResponse.eventDetails.distanceKm': privateEventSetupCallableResponseEventDetailsDistanceKm,
     'privateEventSetupCallableResponse.eventDetails.endTimeMillis': privateEventSetupCallableResponseEventDetailsEndTimeMillis,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.publicDetails.accessibility': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsPublicDetailsAccessibility,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.publicDetails.included': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsPublicDetailsIncluded,
+    'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.publicDetails.requirements': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsPublicDetailsRequirements,
     'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.groupStrategy': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanGroupStrategy,
     'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
     'privateEventSetupCallableResponse.eventDetails.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': privateEventSetupCallableResponseEventDetailsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
@@ -191142,6 +191364,9 @@ abstract final class CatchContractConstraints {
     'updateEventCallablePayload.fields.description': updateEventCallablePayloadFieldsDescription,
     'updateEventCallablePayload.fields.distanceKm': updateEventCallablePayloadFieldsDistanceKm,
     'updateEventCallablePayload.fields.endTimeMillis': updateEventCallablePayloadFieldsEndTimeMillis,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.publicDetails.accessibility': updateEventCallablePayloadFieldsEventFormatActivityDetailsPublicDetailsAccessibility,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.publicDetails.included': updateEventCallablePayloadFieldsEventFormatActivityDetailsPublicDetailsIncluded,
+    'updateEventCallablePayload.fields.eventFormat.activityDetails.publicDetails.requirements': updateEventCallablePayloadFieldsEventFormatActivityDetailsPublicDetailsRequirements,
     'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.groupStrategy': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanGroupStrategy,
     'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
     'updateEventCallablePayload.fields.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': updateEventCallablePayloadFieldsEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
@@ -191289,6 +191514,9 @@ abstract final class CatchContractConstraints {
     'updateEventRehearsalSetupCallablePayload.sessionId': updateEventRehearsalSetupCallablePayloadSessionId,
     'updateEventRehearsalSetupCallablePayload.setup.attendeePrompt': updateEventRehearsalSetupCallablePayloadSetupAttendeePrompt,
     'updateEventRehearsalSetupCallablePayload.setup.durationMinutes': updateEventRehearsalSetupCallablePayloadSetupDurationMinutes,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.publicDetails.accessibility': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsPublicDetailsAccessibility,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.publicDetails.included': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsPublicDetailsIncluded,
+    'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.publicDetails.requirements': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsPublicDetailsRequirements,
     'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.groupStrategy': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanGroupStrategy,
     'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.mode': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
     'updateEventRehearsalSetupCallablePayload.setup.eventFormat.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': updateEventRehearsalSetupCallablePayloadSetupEventFormatActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,
@@ -191678,6 +191906,9 @@ abstract final class CatchContractConstraints {
     'updatePrivateEventDetailsCallablePayload.details.durationMinutes.mode': updatePrivateEventDetailsCallablePayloadDetailsDurationMinutesMode,
     'updatePrivateEventDetailsCallablePayload.details.durationMinutes.value': updatePrivateEventDetailsCallablePayloadDetailsDurationMinutesValue,
     'updatePrivateEventDetailsCallablePayload.details.eventFormat.mode': updatePrivateEventDetailsCallablePayloadDetailsEventFormatMode,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.publicDetails.accessibility': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsPublicDetailsAccessibility,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.publicDetails.included': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsPublicDetailsIncluded,
+    'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.publicDetails.requirements': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsPublicDetailsRequirements,
     'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.groupStrategy': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanGroupStrategy,
     'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.liveTrackingPolicy.mode': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanLiveTrackingPolicyMode,
     'updatePrivateEventDetailsCallablePayload.details.eventFormat.value.activityDetails.routePlan.liveTrackingPolicy.retentionMinutes': updatePrivateEventDetailsCallablePayloadDetailsEventFormatValueActivityDetailsRoutePlanLiveTrackingPolicyRetentionMinutes,

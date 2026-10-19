@@ -20,6 +20,9 @@ void main() {
       eventFormat: EventFormatSnapshot.custom(
         label: 'Trivia',
         interactionModel: EventInteractionModel.teamRotations,
+        activityDetails: const {
+          'publicDetails': {'accessibility': 'Step-free', 'included': 'Dinner'},
+        },
       ),
       distanceKm: 0,
       pace: PaceLevel.moderate,
@@ -57,6 +60,8 @@ void main() {
     expect(values.customActivityLabel, 'Trivia');
     expect(values.interactionModel, EventInteractionModel.teamRotations.name);
     expect(values.description, event.description);
+    expect(values.accessibility, 'Step-free');
+    expect(values.included, 'Dinner');
     expect(values.meetingPoint, 'The Daily Bar');
     expect(values.meetingLocationAddress, 'Bandra West, Mumbai');
     expect(values.sourceVenueId, isNull);

@@ -5,6 +5,7 @@ import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -25,6 +26,8 @@ class HostEventEditSaveRequest {
   factory HostEventEditSaveRequest.fromForm({
     required Event event,
     String? name,
+    String? accessibility,
+    String? included,
     List<EventItineraryItem>? itinerary,
     bool routePlanChanged = false,
     RouteEventPlan? routePlan,
@@ -130,7 +133,10 @@ class HostEventEditSaveRequest {
         startingPointLng: meetingLocation.longitude,
         locationDetails: meetingLocation.notes,
         itinerary: itinerary ?? event.itinerary,
-        eventFormat: eventFormat,
+        eventFormat: eventFormat.withPublicDetails(
+          accessibility: accessibility,
+          included: included,
+        ),
         distanceKm: distanceKm,
         pace: event.eventFormat.activityKind.isDistanceBased
             ? selectedPace

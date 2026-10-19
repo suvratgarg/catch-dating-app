@@ -6,12 +6,14 @@ import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
+import 'package:catch_dating_app/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/events.dart'
     show EventMeetingLocation, LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/hosts/data/private_event_details_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_guest_details_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_itinerary_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/route_event_plan_editor.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -82,6 +84,23 @@ class PrivateEventContentSection extends StatelessWidget {
                     : null,
               ),
             ],
+          ),
+        if (format != null)
+          EventGuestDetailsSection(
+            key: ValueKey('private-guest-details-${event.eventId}'),
+            accessibility: format.accessibilityNotes,
+            included: format.includedNotes,
+            enabled: formatEditable,
+            onSave: (accessibility, included) => _format(
+              Map<String, dynamic>.from(
+                format
+                    .withPublicDetails(
+                      accessibility: accessibility,
+                      included: included,
+                    )
+                    .toJson(),
+              ),
+            ),
           ),
         if (format?.activityKind == ActivityKind.openActivity)
           CatchSection.fieldRows(
