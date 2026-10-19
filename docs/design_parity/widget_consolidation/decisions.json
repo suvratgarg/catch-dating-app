@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "description": "Consolidation decisions for widget_similarity.json clusters. decidedBy 'owner+claude' entries are taste decisions; execution status lives in codex_worklog.md.",
+  "description": "Consolidation decisions for widget_similarity.json clusters. decidedBy 'owner+claude' entries are taste decisions; mechanical rules live in consolidation_rules.md and execution history in Git.",
   "decisions": [
     {
       "clusterId": "c008-live-section-header (stats subset)",

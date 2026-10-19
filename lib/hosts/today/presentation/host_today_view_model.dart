@@ -90,7 +90,11 @@ HostTodayState buildHostTodayState(
       data?.attentionIssues ?? const <HostTodayAttentionIssue>[];
   if (featuredEvent == null &&
       attentionItems.isEmpty &&
-      attentionIssues.isEmpty) {
+      attentionIssues.isEmpty &&
+      data?.historyError == null) {
+    if (data?.hasPendingSources ?? false) {
+      return const HostTodayState(status: HostTodayStatus.loading);
+    }
     return HostTodayState(
       status: HostTodayStatus.empty,
       hasPastEvents: data?.hasPastEvents ?? false,
@@ -116,6 +120,8 @@ HostTodayState buildHostTodayState(
     ),
     attentionCountIsComplete:
         data != null &&
+        !data.attentionPending &&
+        !data.attendancePending &&
         data.attentionIssues.isEmpty &&
         data.localAttendanceMerged &&
         data.attentionCoverage.map((c) => c.kind).toSet().length ==
@@ -128,5 +134,8 @@ HostTodayState buildHostTodayState(
         ),
     laterEvents: List<HostTodayEventRowData>.unmodifiable(laterEvents),
     hasPastEvents: data?.hasPastEvents ?? false,
+    hasPendingSources: data?.hasPendingSources ?? false,
+    historyError: data?.historyError,
+    historyStackTrace: data?.historyStackTrace,
   );
 }

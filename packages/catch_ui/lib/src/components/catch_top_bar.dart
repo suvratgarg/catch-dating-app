@@ -312,6 +312,7 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
 enum _TopBarKind { route, identity, screen, primaryRail, brand }
 
 class _CatchTopBarState extends State<CatchTopBar> {
+  final _searchSubtreeKey = GlobalKey();
   bool _searchOpen = false;
 
   bool get _searchEnabled => widget.search?.enabled ?? false;
@@ -664,28 +665,35 @@ class _CatchTopBarState extends State<CatchTopBar> {
     );
   }
 
-  Widget _searchField(CatchTopBarSearch search, double maxWidth) =>
-      CatchSearchField.expanding(
-        copy: search.copy,
-        key: search.fieldKey,
-        status: _searchOpenEffective
-            ? CatchSearchFieldStatus.expanded
-            : CatchSearchFieldStatus.collapsed,
-        maxWidth: maxWidth,
-        value: search.value,
-        contract: search.contract,
-        contractExemption: search.contractExemption,
-        onChanged: search.onChanged,
-        placeholder: search.placeholder,
-        autofocus: search.autofocus,
-        textInputAction: search.textInputAction,
-        onSubmitted: search.onSubmitted,
-        onFocusChanged: search.onFocusChanged,
-        semanticLabel: search.semanticLabel,
-        onOpenSearch: () => _setSearchOpen(true),
-        onCloseSearch: () => _setSearchOpen(false),
-        tooltip: search.tooltip,
-      );
+  Widget _searchField(
+    CatchTopBarSearch search,
+    double maxWidth,
+  ) => KeyedSubtree(
+    // Reflow moves this single editor between title and controls rows. Keep
+    // its focus and selection; the inner public key still owns query identity.
+    key: _searchSubtreeKey,
+    child: CatchSearchField.expanding(
+      copy: search.copy,
+      key: search.fieldKey,
+      status: _searchOpenEffective
+          ? CatchSearchFieldStatus.expanded
+          : CatchSearchFieldStatus.collapsed,
+      maxWidth: maxWidth,
+      value: search.value,
+      contract: search.contract,
+      contractExemption: search.contractExemption,
+      onChanged: search.onChanged,
+      placeholder: search.placeholder,
+      autofocus: search.autofocus,
+      textInputAction: search.textInputAction,
+      onSubmitted: search.onSubmitted,
+      onFocusChanged: search.onFocusChanged,
+      semanticLabel: search.semanticLabel,
+      onOpenSearch: () => _setSearchOpen(true),
+      onCloseSearch: () => _setSearchOpen(false),
+      tooltip: search.tooltip,
+    ),
+  );
 
   Widget _selectorControls(Widget? leading, double width) {
     final search = _searchEnabled ? widget.search : null;

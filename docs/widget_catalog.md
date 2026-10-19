@@ -94,8 +94,8 @@ and Widgetbook identities without requiring a separate hand-authored table.
 
 [CatchField doctrine](design_language.md#73-catchfield-doctrine) owns labelled
 field behavior. [App architecture](app_architecture.md) owns layering and
-naming; the [consolidation worklog](design_parity/widget_consolidation/codex_worklog.md)
-owns active keep, replace and delete decisions. Git preserves former inventory
+naming; the [consolidation decisions](design_parity/widget_consolidation/decisions.json)
+own active keep, replace and delete decisions. Git preserves former inventory
 and candidate discussions; this document has no parallel status ledger.
 
 <!-- BEGIN GENERATED WIDGET INVENTORY -->
@@ -1029,7 +1029,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostTodayEventMetadataRow</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_section.dart:127</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayEventMetricTile</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_section.dart:157</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayEventSection</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_section.dart:10</code> | — | — | No class documentation or registry summary. |
-| <code>HostTodayAttentionSection</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:151</code> | — | — | No class documentation or registry summary. |
+| <code>HostTodayAttentionSection</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:166</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayOverview</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>HostWorkPageBody</code> | <code>lib/hosts/work/presentation/host_work_screen.dart:121</code> | — | — | The resolved assignment picker, grouped by organizer. |
 | <code>PhotoGrid</code> | <code>lib/image_uploads/shared/photo_grid.dart:31</code> | — | — | A 3×2 grid of photo slots for displaying and editing a user's profile photos. |
@@ -1043,14 +1043,14 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>MapPreview</code> | <code>lib/locations/shared/map_preview.dart:13</code> | <code>Preview</code> | — | A read-only, attribution-safe Google Maps viewport for compact previews. Also called: <code>LocationPreview</code>, <code>StaticMap</code>, <code>MiniMap</code>, <code>MapThumbnail</code>. |
 | <code>MatchCelebrationDialog</code> | <code>lib/matches/shared/match_celebration_dialog.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>ForegroundNotificationListener</code> | <code>lib/notifications/presentation/foreground_notification_listener.dart:12</code> | — | — | App-level presentation adapter. Delivery never reads BuildContext; the shared notice never parses FCM, authenticates a user or chooses a route. |
-| <code>OnboardingStepBody</code> | <code>lib/onboarding/presentation/onboarding_screen.dart:132</code> | — | — | No class documentation or registry summary. |
-| <code>OnboardingTopBar</code> | <code>lib/onboarding/presentation/onboarding_screen.dart:165</code> | — | — | No class documentation or registry summary. |
+| <code>OnboardingStepBody</code> | <code>lib/onboarding/presentation/onboarding_screen.dart:140</code> | — | — | No class documentation or registry summary. |
+| <code>OnboardingTopBar</code> | <code>lib/onboarding/presentation/onboarding_screen.dart:180</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingGenderInterestBody</code> | <code>lib/onboarding/presentation/pages/onboarding_gender_interest_step.dart:14</code> | — | — | No class documentation or registry summary. |
-| <code>OnboardingGenderInterestStep</code> | <code>lib/onboarding/presentation/pages/onboarding_gender_interest_step.dart:105</code> | — | — | No class documentation or registry summary. |
+| <code>OnboardingGenderInterestStep</code> | <code>lib/onboarding/presentation/pages/onboarding_gender_interest_step.dart:113</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingInstagramBody</code> | <code>lib/onboarding/presentation/pages/onboarding_instagram_step.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingInstagramStep</code> | <code>lib/onboarding/presentation/pages/onboarding_instagram_step.dart:70</code> | — | — | No class documentation or registry summary. |
-| <code>OnboardingNameDobBody</code> | <code>lib/onboarding/presentation/pages/onboarding_name_dob_step.dart:12</code> | — | — | No class documentation or registry summary. |
-| <code>OnboardingNameDobStep</code> | <code>lib/onboarding/presentation/pages/onboarding_name_dob_step.dart:130</code> | — | — | No class documentation or registry summary. |
+| <code>OnboardingNameDobBody</code> | <code>lib/onboarding/presentation/pages/onboarding_name_dob_step.dart:13</code> | — | — | No class documentation or registry summary. |
+| <code>OnboardingNameDobStep</code> | <code>lib/onboarding/presentation/pages/onboarding_name_dob_step.dart:172</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingPhotosBody</code> | <code>lib/onboarding/presentation/pages/onboarding_photos_step.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingPhotosStep</code> | <code>lib/onboarding/presentation/pages/onboarding_photos_step.dart:91</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingProfilePromptsBody</code> | <code>lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart:17</code> | — | — | No class documentation or registry summary. |
@@ -1273,7 +1273,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventSuccessCompanionRouteScreen</code> | <code>lib/event_success/presentation/event_success_companion_screen.dart:201</code> | — | — | No class documentation or registry summary. |
 | <code>CalendarLoadingScreen</code> | <code>lib/events/presentation/calendar/calendar_loading_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>CalendarScreen</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:25</code> | — | — | No class documentation or registry summary. |
-| <code>EventDetailScreen</code> | <code>lib/events/presentation/event_detail_screen.dart:53</code> | — | — | No class documentation or registry summary. |
+| <code>EventDetailScreen</code> | <code>lib/events/presentation/event_detail_screen.dart:54</code> | — | — | No class documentation or registry summary. |
 | <code>EventLocationMapScreen</code> | <code>lib/events/presentation/event_location_map_body_screen.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>EventLocationMapRouteScreen</code> | <code>lib/events/presentation/event_location_map_screen.dart:21</code> | — | — | No class documentation or registry summary. |
 | <code>LocationPickerScreen</code> | <code>lib/events/presentation/location_picker_screen.dart:18</code> | — | — | No class documentation or registry summary. |
@@ -1340,7 +1340,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostWorkScreen</code> | <code>lib/hosts/work/presentation/host_work_screen.dart:25</code> | — | — | Unified entry point for restricted Host staff. |
 | <code>ProfilePhotoEditorScreen</code> | <code>lib/image_uploads/shared/profile_photo_editor_screen.dart:22</code> | — | — | No class documentation or registry summary. |
 | <code>LaunchAccessApplicationScreen</code> | <code>lib/launch_access/presentation/launch_access_application_screen.dart:17</code> | — | — | No class documentation or registry summary. |
-| <code>OnboardingScreen</code> | <code>lib/onboarding/presentation/onboarding_screen.dart:19</code> | — | — | No class documentation or registry summary. |
+| <code>OnboardingScreen</code> | <code>lib/onboarding/presentation/onboarding_screen.dart:20</code> | — | — | No class documentation or registry summary. |
 | <code>StartWelcomeRouteScreen</code> | <code>lib/onboarding/presentation/start_welcome_route_screen.dart:9</code> | — | — | Route-level surface owner for the logged-out Welcome experience. |
 | <code>PaymentConfirmationLoadingScreen</code> | <code>lib/payments/presentation/payment_confirmation_loading_screen.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentConfirmationScreen</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:32</code> | — | — | No class documentation or registry summary. |
