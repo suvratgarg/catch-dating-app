@@ -41,7 +41,7 @@ export function PublicProviders({children, catalog, pathname, initialSearch = ""
       controller.signal.addEventListener("abort", abort, {once: true});
       const deadline = window.setTimeout(abort, 8_000);
       try {
-        const response = await fetch("/api/public-catalog", {cache: "no-store", credentials: "omit", signal: request.signal});
+        const response = await fetch(`/api/public-catalog?path=${encodeURIComponent(pathname)}`, {cache: "no-store", credentials: "omit", signal: request.signal});
         if (!response.ok) throw new Error("Catalog unavailable");
         const value: PublicCatalog = await response.json();
         if (active && Array.isArray(value.listings) && Number.isFinite(value.readAt)) accept(value);
@@ -55,7 +55,7 @@ export function PublicProviders({children, catalog, pathname, initialSearch = ""
     window.addEventListener("focus", focus);
     return () => {active = false; controller.abort(); clearInterval(timer); clearTimeout(expiry);
       document.removeEventListener("visibilitychange", focus); window.removeEventListener("focus", focus);};
-  }, [catalog, live]);
+  }, [catalog, live, pathname]);
   const navigator = useMemo(() => {
     const navigate = (to: To, replace = false) => {
       const target = typeof to === "string" ? to : createPath(to);

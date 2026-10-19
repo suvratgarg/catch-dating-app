@@ -316902,10 +316902,25 @@ export const websiteHostListingProjectionSchema = {
         }
       }
     },
+    "reviewReadState": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "unavailable"
+      ]
+    },
     "metrics": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "followerCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verifiedReviewCount": {
+          "type": "integer",
+          "minimum": 0
+        },
         "memberCount": {
           "type": "integer",
           "minimum": 0
@@ -317239,6 +317254,44 @@ export const websiteHostListingProjectionSchema = {
           },
           "accessibility": {
             "type": "string"
+          },
+          "included": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "registrationAccess": {
+            "type": "string",
+            "enum": [
+              "open",
+              "restricted",
+              "app"
+            ]
+          },
+          "admissionLabels": {
+            "type": "array",
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "approval",
+                "invitation",
+                "membership",
+                "balanced"
+              ]
+            }
+          },
+          "waitlistAvailable": {
+            "type": "boolean"
+          },
+          "cancellationPolicy": {
+            "type": "string",
+            "enum": [
+              "notApplicable",
+              "flexible",
+              "standard",
+              "strict"
+            ]
           },
           "capacityLimit": {
             "type": "integer",
@@ -318096,6 +318149,14 @@ export const websiteHostListingProjectionSchema = {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "followerCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verifiedReviewCount": {
+          "type": "integer",
+          "minimum": 0
+        },
         "memberCount": {
           "type": "integer",
           "minimum": 0
@@ -318427,6 +318488,44 @@ export const websiteHostListingProjectionSchema = {
         },
         "accessibility": {
           "type": "string"
+        },
+        "included": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "registrationAccess": {
+          "type": "string",
+          "enum": [
+            "open",
+            "restricted",
+            "app"
+          ]
+        },
+        "admissionLabels": {
+          "type": "array",
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "approval",
+              "invitation",
+              "membership",
+              "balanced"
+            ]
+          }
+        },
+        "waitlistAvailable": {
+          "type": "boolean"
+        },
+        "cancellationPolicy": {
+          "type": "string",
+          "enum": [
+            "notApplicable",
+            "flexible",
+            "standard",
+            "strict"
+          ]
         },
         "capacityLimit": {
           "type": "integer",

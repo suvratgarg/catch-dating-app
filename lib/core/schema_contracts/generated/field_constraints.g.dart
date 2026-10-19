@@ -167896,6 +167896,22 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const websiteHostListingProjectionCatchEventsItemsAdmissionLabels = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.admissionLabels',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['approval', 'invitation', 'membership', 'balanced'],
+    maxItems: 4,
+    uniqueItems: true,
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsAdmissionLabelsItems = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.admissionLabels.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['approval', 'invitation', 'membership', 'balanced'],
+  );
+
   static const websiteHostListingProjectionCatchEventsItemsAmountPaise = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.catchEvents.items.amountPaise',
     valueTypes: <String>['integer'],
@@ -167908,6 +167924,12 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsCancellationPolicy = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.cancellationPolicy',
+    valueTypes: <String>['string'],
+    enumValues: <String>['notApplicable', 'flexible', 'standard', 'strict'],
   );
 
   static const websiteHostListingProjectionCatchEventsItemsCapacityLimit = CatchContractFieldConstraints(
@@ -167963,6 +167985,12 @@ abstract final class CatchContractConstraints {
     path: 'websiteHostListingProjection.catchEvents.items.id',
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsIncluded = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.included',
+    maxLength: 2000,
     valueTypes: <String>['string'],
   );
 
@@ -168142,6 +168170,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const websiteHostListingProjectionCatchEventsItemsRegistrationAccess = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.registrationAccess',
+    valueTypes: <String>['string'],
+    enumValues: <String>['open', 'restricted', 'app'],
+  );
+
   static const websiteHostListingProjectionCatchEventsItemsRegistrationMode = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.catchEvents.items.registrationMode',
     valueTypes: <String>['string'],
@@ -168192,6 +168226,11 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsWaitlistAvailable = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.waitlistAvailable',
+    valueTypes: <String>['boolean'],
   );
 
   static const websiteHostListingProjectionCatchEventsItemsWaitlistedCount = CatchContractFieldConstraints(
@@ -168622,6 +168661,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const websiteHostListingProjectionMetricsFollowerCount = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.metrics.followerCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const websiteHostListingProjectionMetricsMemberCount = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.metrics.memberCount',
     valueTypes: <String>['integer'],
@@ -168647,6 +168692,12 @@ abstract final class CatchContractConstraints {
 
   static const websiteHostListingProjectionMetricsReviewCount = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.metrics.reviewCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const websiteHostListingProjectionMetricsVerifiedReviewCount = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.metrics.verifiedReviewCount',
     valueTypes: <String>['integer'],
     minimum: 0,
   );
@@ -168704,6 +168755,12 @@ abstract final class CatchContractConstraints {
     path: 'websiteHostListingProjection.region',
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const websiteHostListingProjectionReviewReadState = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.reviewReadState',
+    valueTypes: <String>['string'],
+    enumValues: <String>['ready', 'unavailable'],
   );
 
   static const websiteHostListingProjectionReviews = CatchContractFieldConstraints(
@@ -192365,8 +192422,11 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.catchEvents': websiteHostListingProjectionCatchEvents,
     'websiteHostListingProjection.catchEvents.items.accessibility': websiteHostListingProjectionCatchEventsItemsAccessibility,
     'websiteHostListingProjection.catchEvents.items.activityKind': websiteHostListingProjectionCatchEventsItemsActivityKind,
+    'websiteHostListingProjection.catchEvents.items.admissionLabels': websiteHostListingProjectionCatchEventsItemsAdmissionLabels,
+    'websiteHostListingProjection.catchEvents.items.admissionLabels.items': websiteHostListingProjectionCatchEventsItemsAdmissionLabelsItems,
     'websiteHostListingProjection.catchEvents.items.amountPaise': websiteHostListingProjectionCatchEventsItemsAmountPaise,
     'websiteHostListingProjection.catchEvents.items.bookedCount': websiteHostListingProjectionCatchEventsItemsBookedCount,
+    'websiteHostListingProjection.catchEvents.items.cancellationPolicy': websiteHostListingProjectionCatchEventsItemsCancellationPolicy,
     'websiteHostListingProjection.catchEvents.items.capacityLimit': websiteHostListingProjectionCatchEventsItemsCapacityLimit,
     'websiteHostListingProjection.catchEvents.items.catchExperienceActivities': websiteHostListingProjectionCatchEventsItemsCatchExperienceActivities,
     'websiteHostListingProjection.catchEvents.items.catchExperienceActivities.items': websiteHostListingProjectionCatchEventsItemsCatchExperienceActivitiesItems,
@@ -192375,6 +192435,7 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.catchEvents.items.date': websiteHostListingProjectionCatchEventsItemsDate,
     'websiteHostListingProjection.catchEvents.items.endTime': websiteHostListingProjectionCatchEventsItemsEndTime,
     'websiteHostListingProjection.catchEvents.items.id': websiteHostListingProjectionCatchEventsItemsId,
+    'websiteHostListingProjection.catchEvents.items.included': websiteHostListingProjectionCatchEventsItemsIncluded,
     'websiteHostListingProjection.catchEvents.items.itinerary': websiteHostListingProjectionCatchEventsItemsItinerary,
     'websiteHostListingProjection.catchEvents.items.itinerary.items.description': websiteHostListingProjectionCatchEventsItemsItineraryItemsDescription,
     'websiteHostListingProjection.catchEvents.items.itinerary.items.durationMinutes': websiteHostListingProjectionCatchEventsItemsItineraryItemsDurationMinutes,
@@ -192400,6 +192461,7 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.catchEvents.items.photoUrl': websiteHostListingProjectionCatchEventsItemsPhotoUrl,
     'websiteHostListingProjection.catchEvents.items.priceLabel': websiteHostListingProjectionCatchEventsItemsPriceLabel,
     'websiteHostListingProjection.catchEvents.items.publicRegistrationEnabled': websiteHostListingProjectionCatchEventsItemsPublicRegistrationEnabled,
+    'websiteHostListingProjection.catchEvents.items.registrationAccess': websiteHostListingProjectionCatchEventsItemsRegistrationAccess,
     'websiteHostListingProjection.catchEvents.items.registrationMode': websiteHostListingProjectionCatchEventsItemsRegistrationMode,
     'websiteHostListingProjection.catchEvents.items.requirements': websiteHostListingProjectionCatchEventsItemsRequirements,
     'websiteHostListingProjection.catchEvents.items.role': websiteHostListingProjectionCatchEventsItemsRole,
@@ -192408,6 +192470,7 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.catchEvents.items.timeline': websiteHostListingProjectionCatchEventsItemsTimeline,
     'websiteHostListingProjection.catchEvents.items.timezone': websiteHostListingProjectionCatchEventsItemsTimezone,
     'websiteHostListingProjection.catchEvents.items.title': websiteHostListingProjectionCatchEventsItemsTitle,
+    'websiteHostListingProjection.catchEvents.items.waitlistAvailable': websiteHostListingProjectionCatchEventsItemsWaitlistAvailable,
     'websiteHostListingProjection.catchEvents.items.waitlistedCount': websiteHostListingProjectionCatchEventsItemsWaitlistedCount,
     'websiteHostListingProjection.category': websiteHostListingProjectionCategory,
     'websiteHostListingProjection.city': websiteHostListingProjectionCity,
@@ -192471,11 +192534,13 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.logo.mode': websiteHostListingProjectionLogoMode,
     'websiteHostListingProjection.logo.status': websiteHostListingProjectionLogoStatus,
     'websiteHostListingProjection.logo.text': websiteHostListingProjectionLogoText,
+    'websiteHostListingProjection.metrics.followerCount': websiteHostListingProjectionMetricsFollowerCount,
     'websiteHostListingProjection.metrics.memberCount': websiteHostListingProjectionMetricsMemberCount,
     'websiteHostListingProjection.metrics.nextEventAt': websiteHostListingProjectionMetricsNextEventAt,
     'websiteHostListingProjection.metrics.nextEventLabel': websiteHostListingProjectionMetricsNextEventLabel,
     'websiteHostListingProjection.metrics.rating': websiteHostListingProjectionMetricsRating,
     'websiteHostListingProjection.metrics.reviewCount': websiteHostListingProjectionMetricsReviewCount,
+    'websiteHostListingProjection.metrics.verifiedReviewCount': websiteHostListingProjectionMetricsVerifiedReviewCount,
     'websiteHostListingProjection.missingEvidence': websiteHostListingProjectionMissingEvidence,
     'websiteHostListingProjection.missingEvidence.items': websiteHostListingProjectionMissingEvidenceItems,
     'websiteHostListingProjection.name': websiteHostListingProjectionName,
@@ -192484,6 +192549,7 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.publicApi.reason': websiteHostListingProjectionPublicApiReason,
     'websiteHostListingProjection.publicApi.state': websiteHostListingProjectionPublicApiState,
     'websiteHostListingProjection.region': websiteHostListingProjectionRegion,
+    'websiteHostListingProjection.reviewReadState': websiteHostListingProjectionReviewReadState,
     'websiteHostListingProjection.reviews': websiteHostListingProjectionReviews,
     'websiteHostListingProjection.reviews.items.comment': websiteHostListingProjectionReviewsItemsComment,
     'websiteHostListingProjection.reviews.items.createdAt': websiteHostListingProjectionReviewsItemsCreatedAt,

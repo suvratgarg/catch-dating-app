@@ -77,3 +77,14 @@
   .consumer-event-page .event-guest-dialog__heading h2 { font-size: 26px; }
   .consumer-event-page .site-footer { padding-bottom: 124px; }
 }
+
+.consumer-event-page .event-detail-itinerary > li > span small {display: block; margin-top: .35rem; font-weight: 400;}
+
+.consumer-event-page .event-detail-ticket__review-preview {margin: 22px 0; padding: 18px 0; border-top: 1px solid var(--website-line); border-bottom: 1px solid var(--website-line);}
+.consumer-event-page .event-detail-ticket__review-preview > div:first-child {display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; font-size: 13px;}
+.consumer-event-page .event-detail-ticket__review-preview .ui-label {color: var(--website-copy-label);}
+.consumer-event-page .event-detail-ticket__review-preview p {margin: 8px 0 0; font-size: 14px; color: var(--website-copy-muted);}
+.consumer-event-page .event-detail-ticket__review-preview a {text-decoration: underline; text-underline-offset: 3px;}
+.consumer-event-page .event-detail-organizer-panel__metrics {display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 0;}
+.consumer-event-page .event-detail-organizer-panel__metrics dd {margin: 0 0 5px; font-size: 23px; font-weight: 650;}
+.consumer-event-page .event-detail-organizer-panel__metrics dt {font-size: 13px; color: var(--website-copy-muted); line-height: 1.5;}

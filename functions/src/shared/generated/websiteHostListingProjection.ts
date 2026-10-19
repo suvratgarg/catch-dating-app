@@ -42,7 +42,10 @@ export interface WebsiteHostListingProjection {
     label: string;
     value: string;
   }[];
+  reviewReadState?: "ready" | "unavailable";
   metrics?: {
+    followerCount?: number;
+    verifiedReviewCount?: number;
     memberCount?: number;
     rating?: number;
     reviewCount?: number;
@@ -112,6 +115,14 @@ export interface WebsiteHostListingProjection {
     }[];
     requirements?: string;
     accessibility?: string;
+    included?: string;
+    registrationAccess?: "open" | "restricted" | "app";
+    /**
+     * @maxItems 4
+     */
+    admissionLabels?: ("approval" | "invitation" | "membership" | "balanced")[];
+    waitlistAvailable?: boolean;
+    cancellationPolicy?: "notApplicable" | "flexible" | "standard" | "strict";
     capacityLimit: number;
     bookedCount: number;
     checkedInCount: number;

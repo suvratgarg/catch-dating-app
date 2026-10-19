@@ -100,7 +100,7 @@ try {
   await page.goto(origins[0] + "/organizers/next-proof/");
   await page.getByRole("button", {name: "Essential only", exact: true}).click();
   // A request that never completes cannot keep already-visible data indefinitely.
-  await page.route("**/api/public-catalog", () => new Promise(() => {}));
+  await page.route("**/api/public-catalog*", () => new Promise(() => {}));
   // Real elapsed time preserves the relationship between the browser and the
   // server readAt clock; advancing only the browser clock falsifies freshness.
   await page.getByRole("heading", {level: 1, name: fixture.name, exact: true}).waitFor({state: "hidden", timeout: 35_000});

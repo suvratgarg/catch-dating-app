@@ -533,6 +533,21 @@ The website is already split out of the old monolithic shell:
   poster is a synthetic Storybook fixture only. The public display contract
   references canonical event media, meeting-location and itinerary definitions;
   generated browser schemas validate those optional projections. The route
+  loads bounded published reviews for the resolved organiser/event only (50 per
+  query), preserving moderation, anonymity and review capability checks. Failures
+  render an unavailable state, never a zero-review claim. Upcoming events use
+  explicitly labelled organiser feedback; completed events prefer their own
+  reviews. Public rating counts distinguish verified attendance from followers.
+  Age requirements come from canonical constraints; admission, waitlist and
+  cancellation labels come from event policy. Optional host-authored guest notes
+  are read only from `eventFormat.activityDetails.publicDetails` (requirements,
+  accessibility, included; nonblank strings up to 2000 characters each). This
+  existing extension namespace is opt-in public content; other activity details
+  never enter the DTO. Existing Host editors do not yet expose these three notes;
+  absent notes stay absent. Public location/address and itinerary duration are
+  rendered without inventing missing values. Registration context is separate
+  from the account controller: restricted web registration is not a closed event,
+  and closed events retain booking recovery. The route
   retains authorized `/join/` entry rather than recreating the live runtime;
   shared Catch tokens own its type, color, spacing, radius, and activity accent.
 - `website/src/styles/catch-language.css` is the single design-language layer,

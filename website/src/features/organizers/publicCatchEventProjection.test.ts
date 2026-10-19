@@ -97,3 +97,19 @@ it("publishes the badge only for explicit participation declarations", () => {
     expect(project("event", {...base(), catchExperienceActivities:value, eventFormat:{activityKind:"singlesMixer",defaultModuleIds:["firstHello"]}})?.event.catchExperienceActivities).toBeUndefined();
   }
 });
+
+it("projects only explicitly public guest notes and canonical admission constraints", () => {
+  const event = project("event", {...base(), constraints: {minAge: 21, maxAge: 35},
+    eventFormat: {activityKind: "dinner", activityDetails: {privateNotes: "PRIVATE", publicDetails: {
+      requirements: "Bring ID.", accessibility: "Step-free access.", included: "Dinner.", privateField: "PRIVATE",
+    }}}, eventPolicy: {admission: {format: "manualApproval", manualApprovalRequired: true,
+      privateAccessPolicy: {mode: "none", code: "SECRET"}, waitlistPolicy: {mode: "manualReview"}},
+      pricing: {basePriceInPaise: 0}, cancellation: {policyId: "standard"}},
+  })?.event;
+  expect(event).toMatchObject({requirements: "Ages 21–35. Bring ID.", accessibility: "Step-free access.",
+    included: "Dinner.", admissionLabels: ["approval"], registrationAccess: "restricted", waitlistAvailable: true, cancellationPolicy: "standard"});
+  expect(JSON.stringify(event)).not.toMatch(/PRIVATE|SECRET/);
+  expect(project("event", {...base(), constraints: {minAge: 40, maxAge: 20},
+    eventFormat: {activityKind: "dinner", activityDetails: {publicDetails: {requirements: "x".repeat(2001), accessibility: {secret: true}}}},
+  })?.event.requirements).toBeUndefined();
+});

@@ -46,10 +46,10 @@ export function EventDetailBodyLayout({children, host}: {children: ReactNode; ho
 }
 
 export function EventDetailItinerary({items}: {items: Array<{
-  id: string; time: string; title: string; description?: ReactNode; location?: ReactNode;
+  id: string; time: string; title: string; duration?: string; description?: ReactNode; location?: ReactNode;
 }>}) {
   return <ol className="event-detail-itinerary">{items.map((item) => <li key={item.id}>
-    <span>{item.time}</span><div><h3>{item.title}</h3>
+    <span>{item.time}{item.duration ? <small>{item.duration}</small> : null}</span><div><h3>{item.title}</h3>
       {item.description ? <p>{item.description}</p> : null}
       {item.location ? <p>{item.location}</p> : null}</div>
   </li>)}</ol>;

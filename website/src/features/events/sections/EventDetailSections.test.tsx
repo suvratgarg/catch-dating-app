@@ -82,7 +82,7 @@ describe("Event Detail sections", () => {
   });
 
   it("hands Catch booking to the web guest journey and renders only event-scoped reviews", () => {
-    const event = catchEvent();
+    const event = {...catchEvent(), isUpcoming: false};
     render(
       <>
         <EventDetailHeroSection event={event} />
@@ -100,7 +100,7 @@ describe("Event Detail sections", () => {
     render(<EventDetailHeroSection event={{...catchEvent(), registrationState: "closed"}}
       guestEntry={<p>Account-owned booking recovery</p>} />);
     expect(screen.getByText("Account-owned booking recovery")).toBeTruthy();
-    expect(screen.queryByText("Registration is closed for this event.")).toBeNull();
+    expect(screen.getByText("Registration is closed for this event.")).toBeTruthy();
   });
 
   it("omits absent optional content and unrelated reviews", () => {
@@ -112,6 +112,50 @@ describe("Event Detail sections", () => {
     }
     expect(screen.queryByRole("img")).toBeNull();
     expect(screen.queryByRole("link", {name: "Claim this organizer listing"})).toBeNull();
+  });
+
+  it("labels organiser feedback on upcoming events and never presents it as this event’s reviews", () => {
+    const event = catchEvent();
+    render(<EventDetailReviewsSection event={event} />);
+    expect(screen.queryByText("Scoped attendee")).toBeNull();
+    expect(screen.getByText("Organizer-only reviewer")).toBeTruthy();
+    expect(screen.getByText("Unverified public review")).toBeTruthy();
+    expect(screen.getByText(/not reviews of this upcoming event/)).toBeTruthy();
+  });
+
+  it("never labels an unverified event-linked review as verified attendance", () => {
+    const event = catchEvent();
+    const unverified = {...event.eventReviews[0], id: "unverified", reviewerName: "Unverified guest", verificationStatus: "unverified" as const};
+    render(<EventDetailReviewsSection event={{...event, isUpcoming: false, eventReviews: [...event.eventReviews, unverified]}} />);
+    expect(screen.getByText("Scoped attendee")).toBeTruthy();
+    expect(screen.queryByText("Unverified guest")).toBeNull();
+  });
+
+  it("distinguishes unavailable reviews from an empty successful read", () => {
+    const event = {...catchEvent(), eventReviews: []};
+    const {rerender} = render(<EventDetailReviewsSection event={{...event, listing: {...event.listing, reviews: [], reviewReadState: "unavailable"}}} />);
+    expect(screen.getByText(/Reviews couldn’t be loaded/)).toBeTruthy();
+    expect(screen.queryByText("No published reviews to show yet.")).toBeNull();
+    rerender(<EventDetailReviewsSection event={{...event, listing: {...event.listing, reviews: [], reviewReadState: "ready"}}} />);
+    expect(screen.getByText("No published reviews to show yet.")).toBeTruthy();
+  });
+
+  it("shows public details, honest organiser metrics and a waitlist without replacing account recovery", () => {
+    const event = {...catchEvent(), remainingCapacity: 0, waitlistAvailable: true,
+      included: "Dinner and drinks", cancellationPolicy: "standard" as const,
+      admissionLabels: ["approval" as const], meetingLocation: {name: "Public café", latitude: 0, longitude: 0, address: "Public street"},
+      itinerary: [{id: "welcome", kind: "gather" as const, offsetMinutes: 0, title: "Welcome", durationMinutes: 20}],
+      listing: {...catchEvent().listing, metrics: {followerCount: 42, rating: 4.8, reviewCount: 12, verifiedReviewCount: 8}}};
+    render(<><EventDetailHeroSection event={event} guestEntry={<p>Booking controller</p>} /><EventDetailFactsSection event={event} /></>);
+    expect(screen.getByText("All general places are currently taken.")).toBeTruthy();
+    expect(screen.getByText("A waitlist is available. Sign in to check your options.")).toBeTruthy();
+    expect(screen.getByText("Booking controller")).toBeTruthy();
+    expect(screen.getByText("20 min")).toBeTruthy();
+    expect(screen.getByText("Dinner and drinks")).toBeTruthy();
+    expect(screen.getByRole("link", {name: "Public café · Public street"}).getAttribute("href")).toContain("query=0%2C0");
+    expect(screen.getByText("42")).toBeTruthy();
+    expect(screen.getByText("8")).toBeTruthy();
+    expect(screen.queryByText("12")).toBeNull();
   });
 
   it("renders the real cover and structured itinerary, including zero coordinates", () => {

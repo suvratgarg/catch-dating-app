@@ -190,10 +190,25 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
         },
       },
     },
+    'reviewReadState': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'ready',
+        'unavailable',
+      ],
+    },
     'metrics': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
       'properties': <String, Object?>{
+        'followerCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'verifiedReviewCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
         'memberCount': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
@@ -527,6 +542,44 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
           },
           'accessibility': <String, Object?>{
             'type': 'string',
+          },
+          'included': <String, Object?>{
+            'type': 'string',
+            'maxLength': 2000,
+          },
+          'registrationAccess': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'open',
+              'restricted',
+              'app',
+            ],
+          },
+          'admissionLabels': <String, Object?>{
+            'type': 'array',
+            'maxItems': 4,
+            'uniqueItems': true,
+            'items': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'approval',
+                'invitation',
+                'membership',
+                'balanced',
+              ],
+            },
+          },
+          'waitlistAvailable': <String, Object?>{
+            'type': 'boolean',
+          },
+          'cancellationPolicy': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'notApplicable',
+              'flexible',
+              'standard',
+              'strict',
+            ],
           },
           'capacityLimit': <String, Object?>{
             'type': 'integer',
@@ -1384,6 +1437,14 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
       'properties': <String, Object?>{
+        'followerCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+        'verifiedReviewCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
         'memberCount': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
@@ -1715,6 +1776,44 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
         },
         'accessibility': <String, Object?>{
           'type': 'string',
+        },
+        'included': <String, Object?>{
+          'type': 'string',
+          'maxLength': 2000,
+        },
+        'registrationAccess': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'open',
+            'restricted',
+            'app',
+          ],
+        },
+        'admissionLabels': <String, Object?>{
+          'type': 'array',
+          'maxItems': 4,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'approval',
+              'invitation',
+              'membership',
+              'balanced',
+            ],
+          },
+        },
+        'waitlistAvailable': <String, Object?>{
+          'type': 'boolean',
+        },
+        'cancellationPolicy': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'notApplicable',
+            'flexible',
+            'standard',
+            'strict',
+          ],
         },
         'capacityLimit': <String, Object?>{
           'type': 'integer',

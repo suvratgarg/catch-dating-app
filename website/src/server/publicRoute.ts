@@ -1,6 +1,6 @@
 import {productionIndexing} from "./publicEnvironment";
 import {cache} from "react";
-import {readPublicCatalog} from "./publicCatalog";
+import {readPublicCatalog, readPublicListingReviews} from "./publicCatalog";
 import {pageMeta, pageMetaForHostPath, pageMetaForListing, pageMetaForEvent, type PageKey} from "../app/pageMeta";
 import {getHostListingRouteForPath} from "../features/organizers/routing";
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../features/events/eventDetailModel";
@@ -8,9 +8,16 @@ import type {Metadata} from "next";
 export const resolvePublicRoute = cache(async (pathname: string) => {
   const key = pathname.replace(/\/+$/, "") || "/";
   const live = key === "/" || key === "/explore" || /^\/(organizers|events|claim)(\/|$)/.test(key);
-  const catalog = live ? await readPublicCatalog() : {listings: [], readAt: 0};
-  const listingRoute = getHostListingRouteForPath(pathname, catalog.listings);
-  const event = getEventDetailForPath(pathname, buildPublicEventDetailRecords(catalog.listings, catalog.readAt));
+  let catalog = live ? await readPublicCatalog() : {listings: [], readAt: 0};
+  let listingRoute = getHostListingRouteForPath(pathname, catalog.listings);
+  let event = getEventDetailForPath(pathname, buildPublicEventDetailRecords(catalog.listings, catalog.readAt));
+  const target = event?.listing ?? listingRoute?.listing;
+  if (target) {
+    const enriched = await readPublicListingReviews(target, event?.eventId);
+    catalog = {...catalog, listings: catalog.listings.map(listing => listing.id === target.id ? enriched : listing)};
+    listingRoute = getHostListingRouteForPath(pathname, catalog.listings);
+    event = getEventDetailForPath(pathname, buildPublicEventDetailRecords(catalog.listings, catalog.readAt));
+  }
   const routes: Record<string, PageKey> = {"/": "home", "/explore": "visitor_discovery", "/host": "host",
     "/host/apply": "host", "/organizers": "organizers", "/privacy": "privacy", "/terms": "terms", "/help": "help", "/claim": "claim"};
   const page: PageKey = listingRoute ? "listing" : event ? "event_detail" : routes[key] ??
