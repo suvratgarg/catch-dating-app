@@ -42,6 +42,9 @@ if (args.summary || warnings.length > 0) {
     [
       `Admin component registry ok: ${registry.components.length} component contract(s).`,
       `Preview-ready components: ${registry.components.filter((component) => component.preview?.status === "ready").length}.`,
+      `Feature components awaiting their Phase 7e move out of shared/ui: ${registry.components.filter((component) =>
+        component.kind === "feature-component" &&
+        normalizeRepoPath(component.source ?? "").startsWith("admin/src/shared/ui/")).length}.`,
       `Contract: ${path.relative(fromRepo("."), componentsPath)}`,
     ].join("\n"),
   );
@@ -77,7 +80,7 @@ function validateComponents(components) {
   const componentById = new Map();
   const readyStorySources = new Map();
   const sourceExportsByPath = new Map();
-  const allowedKinds = new Set(["route", "workspace", "shared-primitive", "provider"]);
+  const allowedKinds = new Set(["route", "workspace", "shared-primitive", "feature-component", "provider"]);
   const allowedPreviewStatuses = new Set(["ready", "planned", "not-required"]);
 
   for (const component of components) {
@@ -234,9 +237,25 @@ function validateKindAgainstSource(component, label) {
   if (component.kind === "shared-primitive" && !source.startsWith("admin/src/shared/ui/")) {
     errors.push(`${label}: shared-primitive components must live under admin/src/shared/ui.`);
   }
+  if (component.kind === "feature-component") {
+    errors.push(...featureComponentPlacementErrors(component, label));
+  }
   if (component.kind === "provider" && !source.startsWith("admin/src/shared/feedback/")) {
     errors.push(`${label}: provider components must live under admin/src/shared/feedback.`);
   }
+}
+
+// A component that one feature (or only the app shell) renders belongs to that
+// owner. Entries still under shared/ui are the files Phase 7e moves.
+function featureComponentPlacementErrors(component, label) {
+  const source = normalizeRepoPath(component.source ?? "");
+  const owner = component.owner ?? "";
+  if (!/^(?:features\/[a-z0-9-]+|app)$/u.test(owner)) {
+    return [`${label}: feature-component owner must be features/<feature> or app, not ${owner}.`];
+  }
+  const home = owner === "app" ? "admin/src/app/" : `admin/src/${owner}/`;
+  if (source.startsWith(home) || source.startsWith("admin/src/shared/ui/")) return [];
+  return [`${label}: feature-component owned by ${owner} must live under ${home} (or await its Phase 7e move from admin/src/shared/ui).`];
 }
 
 function validateExportCoverage(components) {
@@ -550,6 +569,23 @@ export const StatusBannerStory = {
       states: ["success", "error"],
     },
   ]);
+
+  const featureComponent = (owner, source) => ({kind: "feature-component", owner, source});
+  for (const [owner, source] of [
+    ["features/marketing", "admin/src/features/marketing/ui/MarketingStudioGrid.tsx"],
+    ["features/marketing", "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx"],
+    ["app", "admin/src/app/AdminShell.tsx"],
+  ]) {
+    assert.deepEqual(featureComponentPlacementErrors(featureComponent(owner, source), "probe"), []);
+  }
+  assert.deepEqual(
+    featureComponentPlacementErrors(featureComponent("shared/ui", "admin/src/shared/ui/AdminPrimitives/cards.tsx"), "probe"),
+    ["probe: feature-component owner must be features/<feature> or app, not shared/ui."],
+  );
+  assert.deepEqual(
+    featureComponentPlacementErrors(featureComponent("features/intake", "admin/src/features/marketing/ui/Grid.tsx"), "probe"),
+    ["probe: feature-component owned by features/intake must live under admin/src/features/intake/ (or await its Phase 7e move from admin/src/shared/ui)."],
+  );
 
   const validChrome = `
     <AdminBrandTitle>Catch Admin</AdminBrandTitle>

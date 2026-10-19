@@ -3,6 +3,8 @@
 
 import {createRequire} from "node:module";
 import {
+  manageWebsiteAccountCallablePayloadSchema,
+  manageWebsiteAccountCallableResponseSchema,
   hostResponseSummaryDocumentSchema,
   hostGroupDetailDocumentSchema,
   hostGroupSummaryDocumentSchema,
@@ -1264,6 +1266,8 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateManageWebsiteAccountCallablePayload = ajv.compile(manageWebsiteAccountCallablePayloadSchema);
+export const validateManageWebsiteAccountCallableResponse = ajv.compile(manageWebsiteAccountCallableResponseSchema);
 export const validateHostResponseSummaryDocument = ajv.compile(hostResponseSummaryDocumentSchema);
 export const validateHostGroupDetailDocument = ajv.compile(hostGroupDetailDocumentSchema);
 export const validateHostGroupSummaryDocument = ajv.compile(hostGroupSummaryDocumentSchema);

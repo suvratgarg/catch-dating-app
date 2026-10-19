@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-10-19",
   "id": "feature.organizer_detail",
   "name": "Organizer Detail",
   "owner": "organizers",
@@ -997,7 +997,7 @@
         "id": "organizer_listing_canonical"
       },
       "actionScope": {
-        "included": "Public organizer listing save, share, claim-request, and public-review mutations with indexing, runtime, event-supply, and claim capability states.",
+        "included": "Public organizer account-backed follow, share, claim-request, and public-review mutations with indexing, runtime, event-supply, and claim capability states.",
         "excluded": [
           "Anchor navigation, canonical/legacy path resolution, event and source links, recommended-organizer navigation, and metadata emission retain route, static-output, and section owners."
         ]
@@ -1131,22 +1131,22 @@
       },
       "actions": [
         {
-          "id": "save_listing",
+          "id": "follow_listing",
           "owner": "listing_controller",
-          "codeValue": "handleSaveListing",
-          "cardinality": "unbounded",
+          "codeValue": "handleFollowListing",
+          "cardinality": "singleton",
           "scopeKeys": [
-            "browserProfileId",
+            "uid",
             "listingId",
-            "savedStateVersion"
+            "desiredFollowing"
           ],
           "outcomes": [
             {
               "kind": "side_effect",
-              "id": "organizer.web_saved_state_persisted"
+              "id": "organizer.account_follow_persisted"
             }
           ],
-          "description": "Toggles the local saved-organizer state and records organizer-save analytics when saved."
+          "description": "Completes a minimal account inline when needed, then follows or unfollows through the authenticated server operation. Prevents duplicate pending writes and preserves the prior follow state on failure."
         },
         {
           "id": "share_listing",
@@ -1223,7 +1223,7 @@
           {
             "id": "read_only_listing",
             "enabledActions": [
-              "save_listing",
+              "follow_listing",
               "share_listing"
             ]
           }
@@ -1235,7 +1235,7 @@
             {
               "id": "read_only",
               "enabledActions": [
-                "save_listing",
+                "follow_listing",
                 "share_listing"
               ]
             },
@@ -1245,7 +1245,7 @@
                 "review": "writable"
               },
               "enabledActions": [
-                "save_listing",
+                "follow_listing",
                 "share_listing",
                 "submit_public_review"
               ]
@@ -1265,7 +1265,7 @@
             {
               "id": "read_only",
               "enabledActions": [
-                "save_listing",
+                "follow_listing",
                 "share_listing"
               ],
               "disabledActions": [
@@ -1283,7 +1283,7 @@
             {
               "id": "source_backed",
               "enabledActions": [
-                "save_listing",
+                "follow_listing",
                 "share_listing"
               ]
             }
@@ -1297,7 +1297,7 @@
             {
               "id": "claimable",
               "enabledActions": [
-                "save_listing",
+                "follow_listing",
                 "share_listing",
                 "request_claim"
               ]
@@ -1308,7 +1308,7 @@
                 "review": "writable"
               },
               "enabledActions": [
-                "save_listing",
+                "follow_listing",
                 "share_listing",
                 "request_claim",
                 "submit_public_review"
@@ -1320,7 +1320,7 @@
                 "claim": "submitting"
               },
               "enabledActions": [
-                "save_listing",
+                "follow_listing",
                 "share_listing"
               ],
               "disabledActions": [

@@ -171,7 +171,7 @@ export async function signUpUserForEvent(
       userSnap,
       "UserProfileDocument"
     );
-    assertBookingReadyUserProfile(user);
+    assertBookingReadyUserProfile(user, event);
     assertRunPreferencesReadyForEvent(user, event);
     const existingParticipation = participationSnap.exists ?
       participationSnap.data() as {
@@ -437,7 +437,9 @@ export async function signUpUserForEvent(
     const eventUpdate: Record<string, unknown> = {
       bookedCount: seatMode === "ready" ? nextBookedCount :
         admin.firestore.FieldValue.increment(1),
-      [`genderCounts.${gender}`]: admin.firestore.FieldValue.increment(1),
+      ...(gender ? {
+        [`genderCounts.${gender}`]: admin.firestore.FieldValue.increment(1),
+      } : {}),
       cohortCounts: incrementCount(event.cohortCounts ?? {}, cohortId),
       ...eventDiscoveryProjection({
         event,

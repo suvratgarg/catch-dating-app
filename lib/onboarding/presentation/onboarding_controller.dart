@@ -9,7 +9,6 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
-import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
 import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
@@ -77,6 +76,7 @@ class OnboardingController extends _$OnboardingController {
 
   Future<void>? _saveProfileInFlight;
   Future<void>? _completionInFlight;
+  final _editedProfileFields = <String>{};
 
   @override
   OnboardingData build() => const OnboardingData();
@@ -84,23 +84,35 @@ class OnboardingController extends _$OnboardingController {
   Future<void> initStep({
     bool profileCompletionOnly = false,
     bool runPreferencesOnly = false,
+    List<String>? eventRequirements,
   }) => syncEntryStep(
     profileCompletionOnly: profileCompletionOnly,
     runPreferencesOnly: runPreferencesOnly,
+    eventRequirements: eventRequirements,
   );
 
   Future<void> syncEntryStep({
     bool profileCompletionOnly = false,
     bool runPreferencesOnly = false,
+    List<String>? eventRequirements,
   }) async {
     final uid = ref.read(uidProvider).asData?.value;
-    final userProfile = ref.read(watchUserProfileProvider).asData?.value;
+    final profileAsync = ref.read(watchUserProfileProvider);
 
     if (uid == null) {
       _setStateIfChanged(state.copyWith(step: OnboardingStep.welcome));
       return;
     }
 
+    // The router owns profile-read recovery. Do not resume a new-account draft
+    // while the profile is unresolved, or treat a failed read as absence.
+    if (profileAsync.isLoading ||
+        (profileAsync.hasError && profileAsync.value == null)) {
+      return;
+    }
+    final userProfile = profileAsync.value;
+
+    _editedProfileFields.clear();
     final today = DateTime.now();
     if (runPreferencesOnly &&
         userProfile != null &&
@@ -120,7 +132,10 @@ class OnboardingController extends _$OnboardingController {
         userProfile.hasBookingReadyIdentityOn(today)) {
       _setStateIfChanged(
         state.copyWith(
-          step: _firstMissingSocialProfileStep(userProfile),
+          step: _firstMissingProfileStep(
+            userProfile,
+            eventRequirements: eventRequirements,
+          ),
           phoneVerified: true,
           profileDraft: _profileDraftFromUserProfile(userProfile),
         ),
@@ -201,7 +216,7 @@ class OnboardingController extends _$OnboardingController {
     if (!userProfile.hasBookingReadyIdentityOn(today)) {
       _setStateIfChanged(
         state.copyWith(
-          step: _firstMissingBookingIdentityStep(userProfile, today: today),
+          step: OnboardingStep.nameDob,
           phoneVerified: _authPhoneNumber.isNotEmpty,
           profileDraft: _profileDraftFromUserProfile(userProfile),
         ),
@@ -225,10 +240,12 @@ class OnboardingController extends _$OnboardingController {
   void setNameDob({
     required String firstName,
     required String lastName,
-    required DateTime dateOfBirth,
+    required DateTime? dateOfBirth,
     required String phoneNumber,
     required String countryCode,
   }) {
+    if (_hasPendingOperation) return;
+    _editedProfileFields.add('dateOfBirth');
     state = state.copyWith(
       profileDraft: state.profileDraft.copyWith(
         firstName: firstName,
@@ -245,6 +262,7 @@ class OnboardingController extends _$OnboardingController {
     required List<Gender> interestedInGenders,
   }) {
     if (_saveProfileInFlight != null) return;
+    _editedProfileFields.addAll(['gender', 'interestedInGenders']);
     state = state.copyWith(
       profileDraft: state.profileDraft.copyWith(
         gender: gender,
@@ -271,7 +289,7 @@ class OnboardingController extends _$OnboardingController {
   void advanceToGenderInterest({
     required String firstName,
     required String lastName,
-    required DateTime dateOfBirth,
+    required DateTime? dateOfBirth,
     required String phoneNumber,
     required String countryCode,
   }) {
@@ -309,26 +327,85 @@ class OnboardingController extends _$OnboardingController {
     completeMutation.reset(ref);
   }
 
-  Future<void> saveProfile() {
+  Future<void> saveProfile({
+    bool socialIdentityOnly = false,
+    List<String>? eventRequirements,
+  }) {
     final existingRequest = _saveProfileInFlight;
     if (existingRequest != null) return existingRequest;
 
     _setOperationPending(true);
     late final Future<void> trackedRequest;
-    trackedRequest = _saveProfile().whenComplete(() {
-      if (identical(_saveProfileInFlight, trackedRequest)) {
-        _saveProfileInFlight = null;
-        _setOperationPending(false);
-      }
-    });
+    trackedRequest =
+        _saveProfile(
+          socialIdentityOnly: socialIdentityOnly,
+          eventRequirements: eventRequirements,
+        ).whenComplete(() {
+          if (identical(_saveProfileInFlight, trackedRequest)) {
+            _saveProfileInFlight = null;
+            _setOperationPending(false);
+          }
+        });
     _saveProfileInFlight = trackedRequest;
     return trackedRequest;
   }
 
-  Future<void> _saveProfile() async {
+  Future<void> _saveProfile({
+    required bool socialIdentityOnly,
+    List<String>? eventRequirements,
+  }) async {
     final uid = requireSignedInUid(ref, action: 'save profile');
-    final draft = _requireProfileDraft();
-    final verifiedPhoneNumber = _requireVerifiedAuthPhoneNumber();
+    final draft = _requireProfileDraft(
+      socialIdentityOnly: socialIdentityOnly,
+      eventRequirements: eventRequirements,
+    );
+    final verifiedPhoneNumber = _requireVerifiedAuthPhoneNumber(uid);
+
+    if (socialIdentityOnly || eventRequirements != null) {
+      final profile = ref.read(watchUserProfileProvider).asData?.value;
+      if (profile == null || profile.uid != uid) {
+        throw const DocumentNotFoundException('users/current');
+      }
+      await ref
+          .read(userProfileRepositoryProvider)
+          .updateUserProfile(
+            uid: uid,
+            patch: UpdateUserProfilePatch(
+              dateOfBirth:
+                  _editedProfileFields.contains('dateOfBirth') &&
+                      (eventRequirements == null ||
+                          eventRequirements.contains('ageRestricted'))
+                  ? draft.dateOfBirth
+                  : null,
+              gender:
+                  _editedProfileFields.contains('gender') &&
+                      (eventRequirements == null ||
+                          eventRequirements.contains('cohortRestricted'))
+                  ? draft.gender
+                  : null,
+              interestedInGenders:
+                  _editedProfileFields.contains('interestedInGenders') &&
+                      (eventRequirements == null ||
+                          eventRequirements.contains('cohortRestricted'))
+                  ? draft.interestedInGenders
+                  : null,
+            ),
+          );
+      if (!ref.mounted ||
+          ref.read(authRepositoryProvider).currentUser?.uid != uid) {
+        return;
+      }
+      if (eventRequirements == null) {
+        state = state.copyWith(
+          step: profile.hasMinimumSocialPhotos
+              ? OnboardingStep.prompts
+              : OnboardingStep.photos,
+        );
+      }
+      _editedProfileFields.clear();
+      await _deleteDraftNow();
+      return;
+    }
 
     await ref
         .read(userProfileRepositoryProvider)
@@ -339,8 +416,8 @@ class OnboardingController extends _$OnboardingController {
             firstName: draft.firstName.trim(),
             lastName: draft.lastName.trim(),
             displayName: draft.firstName.trim(),
-            dateOfBirth: draft.dateOfBirth!,
-            gender: draft.gender!,
+            dateOfBirth: draft.dateOfBirth,
+            gender: draft.gender,
             phoneNumber: verifiedPhoneNumber,
             countryCode: draft.countryCode,
             interestedInGenders: draft.interestedInGenders,
@@ -349,9 +426,17 @@ class OnboardingController extends _$OnboardingController {
                 : draft.instagramHandle?.trim(),
             profilePrompts: draft.profilePrompts,
             profileComplete: false,
+            prefsNewCatches: false,
+            prefsRunStatusUpdates: false,
+            prefsClubUpdates: false,
+            prefsShowOnMap: false,
           ),
         );
 
+    if (!ref.mounted ||
+        ref.read(authRepositoryProvider).currentUser?.uid != uid) {
+      return;
+    }
     await _deleteDraftNow();
   }
 
@@ -461,68 +546,44 @@ class OnboardingController extends _$OnboardingController {
     state = state.copyWith(operationPending: pending);
   }
 
-  OnboardingProfileDraft _requireProfileDraft() {
+  OnboardingProfileDraft _requireProfileDraft({
+    required bool socialIdentityOnly,
+    List<String>? eventRequirements,
+  }) {
     final draft = state.profileDraft.copyWith(
       firstName: state.firstName.trim(),
       lastName: state.lastName.trim(),
       phoneNumber: state.phoneNumber.trim(),
     );
-    final dateOfBirth = draft.dateOfBirth;
-    final gender = draft.gender;
-    final today = DateTime.now();
-
-    if (validateRequiredProfileName(
-              draft.firstName,
-              label: StructuredDomainCopy.onboardingFirstName,
-            ) !=
-            null ||
-        validateRequiredProfileName(
-              draft.lastName,
-              label: StructuredDomainCopy.onboardingLastName,
-            ) !=
-            null ||
-        validateRequiredDateOfBirth(dateOfBirth, today: today) != null) {
+    final capability = eventRequirements != null
+        ? 'eventBooking'
+        : socialIdentityOnly
+        ? 'socialIdentity'
+        : 'account';
+    if (draft
+            .missingFields(
+              capability,
+              today: DateTime.now(),
+              eventRequirements: eventRequirements ?? const [],
+            )
+            .isNotEmpty ||
+        validateOptionalDateOfBirth(draft.dateOfBirth, today: DateTime.now()) !=
+            null) {
       throw const ValidationException(
-        'Please complete your basic profile details before continuing.',
+        'Please complete the details required for this feature.',
         code: 'onboarding-incomplete-profile',
       );
     }
-
-    if (gender == null) {
-      throw const ValidationException(
-        'Please choose your dating preferences before continuing.',
-        code: 'onboarding-missing-gender',
-      );
-    }
-
-    if (draft.interestedInGenders.isEmpty) {
-      throw const ValidationException(
-        'Please choose who you want to see before continuing.',
-        code: 'onboarding-missing-interest',
-      );
-    }
-
-    if (validateRequiredPhoneNumber(draft.phoneNumber) != null) {
-      throw const ValidationException(
-        'Please add a valid phone number before continuing.',
-        code: 'onboarding-invalid-phone',
-      );
-    }
-
-    if (!state.phoneVerified) {
-      throw const ValidationException(
-        'Please verify your phone number before continuing.',
-        code: 'onboarding-phone-unverified',
-      );
-    }
-
     return draft;
   }
 
   String get _authPhoneNumber =>
       ref.read(authRepositoryProvider).currentUser?.phoneNumber ?? '';
 
-  String _requireVerifiedAuthPhoneNumber() {
+  String _requireVerifiedAuthPhoneNumber(String expectedUid) {
+    if (ref.read(authRepositoryProvider).currentUser?.uid != expectedUid) {
+      throw const SignInRequiredException('save profile');
+    }
     if (!state.phoneVerified) {
       throw const ValidationException(
         'Please verify your phone number before continuing.',
@@ -564,26 +625,24 @@ class OnboardingController extends _$OnboardingController {
   }
 
   OnboardingStep _bookingIdentityStepForDraft(OnboardingStep draftStep) {
-    if (draftStep.index > OnboardingStep.genderInterest.index) {
-      return OnboardingStep.genderInterest;
+    if (draftStep.index > OnboardingStep.nameDob.index) {
+      return OnboardingStep.nameDob;
     }
     return draftStep;
   }
 
-  OnboardingStep _firstMissingBookingIdentityStep(
+  OnboardingStep _firstMissingProfileStep(
     UserProfile userProfile, {
-    required DateTime today,
+    List<String>? eventRequirements,
   }) {
-    if (!userProfile.hasBookingReadyName ||
-        validateRequiredDateOfBirth(userProfile.dateOfBirth, today: today) !=
-            null ||
-        validateRequiredPhoneNumber(userProfile.phoneNumber) != null) {
-      return OnboardingStep.nameDob;
-    }
-    return OnboardingStep.genderInterest;
-  }
-
-  OnboardingStep _firstMissingSocialProfileStep(UserProfile userProfile) {
+    final missing = _profileDraftFromUserProfile(userProfile).missingFields(
+      eventRequirements != null ? 'eventBooking' : 'socialIdentity',
+      today: DateTime.now(),
+      eventRequirements: eventRequirements ?? const [],
+    );
+    if (missing.contains('dateOfBirth')) return OnboardingStep.nameDob;
+    if (missing.isNotEmpty) return OnboardingStep.genderInterest;
+    if (eventRequirements != null) return OnboardingStep.nameDob;
     if (!userProfile.hasMinimumSocialPhotos) return OnboardingStep.photos;
     return OnboardingStep.prompts;
   }

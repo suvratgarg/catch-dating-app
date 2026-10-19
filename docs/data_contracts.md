@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.170.0
-updated: 2026-10-16
+version: 1.172.0
+updated: 2026-10-19
 owner: recursive_audit_loop
 status: active
 ---
@@ -47,6 +47,39 @@ Read this before changing:
 
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
+
+### Profile information by capability
+
+`contracts/catalogs/profile_requirements.json` owns required fields for account,
+organizer following, event booking, social identity and social discovery. The
+schema generator emits the same policy evaluator for Functions, website and Flutter. Account and
+following require name and verified phone. Event booking adds DOB only when the
+event has age restrictions, and cohort fields only when admission or pricing
+uses them. Public website registration does not offer cohort-dependent booking.
+Social discovery retains adult DOB, gender, matching preferences, photos,
+answered prompts and profile completion. An account alone grants none of those
+social capabilities. Native signup stops after the same minimal identity step;
+its later social setup collects missing demographics before photos and prompts,
+using a profile patch that preserves the existing account. Native event
+completion requests only the birthday or cohort fields that event needs and
+returns to booking without asking for social photos or prompts; URL hints
+select questions, while server admission still checks the live event policy.
+
+The private users schema permits absent DOB and gender. Required empty arrays
+and preference defaults are storage shape, not questions for the user.
+`manageWebsiteAccount` creates or completes that same Firebase UID/document
+with live Auth phone ownership, disabled/deleted-account checks, an expected UID
+and a profile-revision comparison. Omitted DOB and richer existing fields are
+preserved. Minimal accounts remain absent from public social projections.
+Website follow reads and mutations use canonical `organizerFollows` edges;
+legacy browser saves do not become follows or notification consent.
+
+Public free registration, paid reservation and paid admission all recheck the
+stored birthday against an age-restricted event. The website requests a missing
+birthday inline and resumes the intended event/follow journey. Matching photos
+and prompts are never collected for these website actions. Deploy the updated
+Functions and profile readers before enabling the new website bundle; a local
+or CI pass does not establish production rollout or live OTP acceptance.
 
 ### Rehearsal Assistance Generation
 

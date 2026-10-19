@@ -1,15 +1,38 @@
+import 'package:catch_dating_app/core/schema_contracts/generated/profile_requirements.g.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 extension UserProfileReadiness on UserProfile {
-  bool hasBookingReadyIdentityOn(DateTime today) {
-    return hasBookingReadyName &&
-        validateRequiredDateOfBirth(dateOfBirth, today: today) == null &&
-        validateRequiredPhoneNumber(phoneNumber) == null &&
-        interestedInGenders.isNotEmpty;
-  }
+  bool get hasAccountReadyIdentity => missingProfileFields(
+    'account',
+    (field) => switch (field) {
+      'name' => hasBookingReadyName,
+      'phoneNumber' => validateRequiredPhoneNumber(phoneNumber) == null,
+      _ => false,
+    },
+  ).isEmpty;
+
+  bool hasBookingReadyIdentityOn(
+    DateTime today, {
+    bool ageRestricted = false,
+    bool cohortRestricted = false,
+  }) => missingProfileFields(
+    'eventBooking',
+    (field) => switch (field) {
+      'name' => hasBookingReadyName,
+      'phoneNumber' => validateRequiredPhoneNumber(phoneNumber) == null,
+      'dateOfBirth' => dateOfBirth != null && !dateOfBirth!.isAfter(today),
+      'gender' => gender != null,
+      'interestedInGenders' => interestedInGenders.isNotEmpty,
+      _ => false,
+    },
+    eventRequirements: [
+      if (ageRestricted) 'ageRestricted',
+      if (cohortRestricted) 'cohortRestricted',
+    ],
+  ).isEmpty;
 
   bool get hasBookingReadyName {
     return name.trim().isNotEmpty ||
@@ -18,10 +41,21 @@ extension UserProfileReadiness on UserProfile {
   }
 
   bool hasSocialReadyProfileOn(DateTime today) {
-    return hasBookingReadyIdentityOn(today) &&
-        profileComplete &&
-        hasMinimumSocialPhotos &&
-        hasRequiredProfilePrompts;
+    return missingProfileFields(
+      'socialDiscovery',
+      (field) => switch (field) {
+        'name' => hasBookingReadyName,
+        'phoneNumber' => validateRequiredPhoneNumber(phoneNumber) == null,
+        'dateOfBirth' =>
+          validateRequiredDateOfBirth(dateOfBirth, today: today) == null,
+        'gender' => gender != null,
+        'interestedInGenders' => interestedInGenders.isNotEmpty,
+        'profileComplete' => profileComplete,
+        'profilePhotos' => hasMinimumSocialPhotos,
+        'profilePrompts' => hasRequiredProfilePrompts,
+        _ => false,
+      },
+    ).isEmpty;
   }
 
   bool get hasCurrentRunPreferences {

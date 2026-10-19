@@ -173,9 +173,10 @@ const schemaOrganizerMomentSendDocumentSchema = <String, Object?>{
         'read',
         'failed',
         'revoked',
+        'notDispatched',
         null,
       ],
-      'description': 'Latest confirmed provider state projected from the delivery evidence. \'sent\' decisions with an unknown outcome stay honest — never implies confirmed delivery.',
+      'description': 'Outbox evidence projected for this recipient. Unknown never implies confirmed delivery. notDispatched is a proven-unsent retry projection; the original run window and authority still apply.',
     },
   },
 };

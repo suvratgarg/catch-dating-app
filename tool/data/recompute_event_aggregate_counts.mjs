@@ -1,22 +1,17 @@
 #!/usr/bin/env node
-import fs from "node:fs";
-import path from "node:path";
-import {createRequire} from "node:module";
-import {fileURLToPath, pathToFileURL} from "node:url";
+import {isMain, parseRecomputeArgs} from "../lib/cli_args.mjs";
+import {createFunctionsRequire} from "../lib/repo_paths.mjs";
+import {resolveFirebaseProjectId} from "../lib/firebase_project.mjs";
 
-const toolDir = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(toolDir, "../..");
-const requireFromFunctions = createRequire(
-  path.join(repoRoot, "functions/package.json")
-);
+const requireFromFunctions = createFunctionsRequire();
 const admin = requireFromFunctions("firebase-admin");
 
-if (isMain()) {
+if (isMain(import.meta.url)) {
   await main();
 }
 
 export async function main(argv = process.argv.slice(2)) {
-  const args = parseArgs(argv);
+  const args = parseRecomputeArgs(argv);
   if (args.help) {
     printHelp();
     return;
@@ -26,7 +21,9 @@ export async function main(argv = process.argv.slice(2)) {
     process.env.FIRESTORE_EMULATOR_HOST = args.emulatorHost;
   }
 
-  admin.initializeApp({projectId: resolveProjectId(args)});
+  admin.initializeApp({
+    projectId: resolveFirebaseProjectId({...args, defaultEnv: null}),
+  });
   const db = admin.firestore();
   const plan = await buildEventAggregateRepairPlan(db);
 
@@ -156,61 +153,6 @@ function normalizeObject(value) {
   return Object.fromEntries(Object.entries(value ?? {}).sort());
 }
 
-function parseArgs(argv) {
-  const parsed = {
-    env: null,
-    project: null,
-    emulatorHost: null,
-    apply: false,
-    json: false,
-    help: false,
-  };
-
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i];
-    if (arg === "--help" || arg === "-h") parsed.help = true;
-    else if (arg === "--apply") parsed.apply = true;
-    else if (arg === "--json") parsed.json = true;
-    else if (arg === "--emulator") parsed.emulatorHost = "127.0.0.1:8080";
-    else if (arg === "--emulator-host") {
-      parsed.emulatorHost = requireValue(argv, ++i, arg);
-    } else if (arg === "--env") {
-      parsed.env = requireValue(argv, ++i, arg);
-    } else if (arg === "--project") {
-      parsed.project = requireValue(argv, ++i, arg);
-    } else {
-      throw new Error(`Unknown argument: ${arg}`);
-    }
-  }
-
-  return parsed;
-}
-
-function requireValue(argv, index, flag) {
-  const value = argv[index];
-  if (!value || value.startsWith("--")) {
-    throw new Error(`${flag} requires a value.`);
-  }
-  return value;
-}
-
-function resolveProjectId(parsed) {
-  if (parsed.project) return parsed.project;
-  if (parsed.env) {
-    const firebaserc = JSON.parse(
-      fs.readFileSync(path.join(repoRoot, ".firebaserc"), "utf8")
-    );
-    const project = firebaserc.projects?.[parsed.env];
-    if (!project) {
-      throw new Error(`No Firebase project alias found for env: ${parsed.env}`);
-    }
-    return project;
-  }
-  return process.env.GCLOUD_PROJECT ||
-    process.env.GOOGLE_CLOUD_PROJECT ||
-    "catchdates-dev";
-}
-
 function printHelp() {
   console.log(`Usage: node tool/data/recompute_event_aggregate_counts.mjs [options]
 
@@ -254,9 +196,4 @@ function printSummary(summary) {
       console.log(`... ${summary.warnings.length - 100} more warnings`);
     }
   }
-}
-
-function isMain() {
-  return process.argv[1] &&
-    import.meta.url === pathToFileURL(process.argv[1]).href;
 }

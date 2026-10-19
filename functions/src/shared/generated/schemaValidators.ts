@@ -5,6 +5,8 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateManageWebsiteAccountCallablePayload} from "./validators/manageWebsiteAccountInput";
+export {validateManageWebsiteAccountCallableResponse} from "./validators/manageWebsiteAccountOutput";
 export {validateHostResponseSummaryDocument} from "./validators/hostResponseSummaryDocument";
 export {validateHostGroupDetailDocument} from "./validators/hostGroupDetailDocument";
 export {validateHostGroupSummaryDocument} from "./validators/hostGroupSummaryDocument";
