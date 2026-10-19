@@ -1,5 +1,6 @@
 export const hostLandingCopy = {
-  nav: [{href: "/explore/", label: "Find events"}, {href: "#how-it-works", label: "How it works"}, {href: "#pricing", label: "Pricing & access"}],
+  navLabel: "Explore Catch Host",
+  nav: [{href: "#how-it-works", label: "How it works"}, {href: "#adoption", label: "Ways to use Catch"}, {href: "#pricing", label: "Pricing & access"}],
   apply: "Apply for a pilot", seeHow: "See how it works", example: "Illustrative example · fictional data",
   hero: {
     title: "Run great events. Build a business around them.",
@@ -27,19 +28,35 @@ export const hostLandingCopy = {
     stages: ["Before", "During", "After"], host: "Host view", guest: "Guest view",
     note: "Illustrative experiences. Your pilot’s tools and setup are agreed with the team.",
   },
+  participation: {
+    title: "A little guidance. More room to connect.",
+    body: "A prompt gives someone a reason to approach. A shared activity makes conversation expected. Technology should help the interaction begin, then leave people to enjoy it.",
+    items: [
+      {title: "Brief moments on a phone.", body: "A first hello, a new partner, or the next table. Use the lightest touch that helps, then bring attention back to the people in the room."},
+      {title: "A quieter way to say hello.", body: "With Help me say hi, a guest can privately ask the host for an introduction. The other person isn’t notified of the request; the host decides whether and how to help."},
+      {title: "People stay in control.", body: "Guests can skip a prompt or request another. Hosts choose the activities and can adjust groups or override assignments when the room changes."},
+    ],
+  },
   insights: {
     title: "Know what brings people in—and brings them back.",
     body: "Get to know your guests across bookings, attendance, and feedback. See which campaigns and referral links lead to paid bookings, and use that understanding to plan your next move.",
     guestTitle: "A guest record that grows with you.", guestBody: "Find your regulars, welcome newcomers, and send a relevant invitation instead of starting from a new spreadsheet every time.",
-    recordTitle: "Asha’s guest history", visits: "3 events attended", preference: "Social play · weekend sessions", feedback: "Would join another beginner session", invitation: "Next invitation: Sunday social play",
+    recordTitle: "Asha’s guest history", visits: "3 events attended", preference: "Social play · weekend sessions", feedback: "Opted in to beginner-session invitations", invitation: "Next invitation: Sunday social play",
     campaignTitle: "See what your promotion brings in.", campaignBody: "Give a partner, promoter, or campaign its own link. Follow the path from a visit to a paid booking, then decide where to put your next effort.",
     tableCaption: "Campaign performance", tableHeaders: ["Link", "Visits", "Bookings", "Revenue"],
     campaigns: [{name: "Community newsletter", visits: 180, bookings: 24, revenue: 14400}, {name: "Partner · Meera", visits: 120, bookings: 18, revenue: 10800}, {name: "Instagram bio", visits: 240, bookings: 12, revenue: 7200}],
+    privacyTitle: "Useful insights. Private answers stay private.",
+    privacyBody: "Keep booking details and agreed follow-up preferences in your guest records. Private social questionnaire answers, introduction requests, and matching choices stay separate. For private event feedback, hosts see combined patterns—not individual responses—so they can improve the next event without exposing a guest’s answers.",
     note: "Illustrative data and product direction. Link attribution measures recorded activity; it doesn’t reveal private forwards. Private matching choices stay private.",
   },
   adoption: {
-    title: "Start with what you need.", body: "Give your events a public home, simplify bookings, or add tools for the experience itself. Bring more of your workflow together when it makes sense for you.",
-    items: [{title: "Set up your presence", body: "Give guests one place to discover your events and get to know your club, community, or business."}, {title: "Connect your bookings", body: "Bring applications, approvals, payments, and guest messages into a clearer flow."}, {title: "Add to the experience", body: "Keep your current booking platform and explore introductions, groups, and live activities."}],
+    title: "Start with what you need.", body: "Use Catch alongside your existing setup, bring your bookings onto Catch, or connect with the wider network. Each layer builds on the one inside it. You choose how far to go.",
+    circlesLabel: "Ways to use Catch", circlesHint: "Choose a circle to see what it adds.", layersNote: "Ways to use Catch, not fixed pricing plans. Tools and availability are agreed for your event.",
+    layers: [
+      {id: "tools", label: "Catch tools", kicker: "Alongside your existing setup", title: "Keep your tools. Add to the experience.", body: "Bring a guest list from the platform you already use. Add check-in, introductions, groups, and activities that help your event run well and your guests join in.", bullets: ["Your booking platform can stay.", "Guests join supported live experiences in a mobile browser.", "Choose the tools that earn their place in your event."]},
+      {id: "booking", label: "Catch booking", kicker: "Connect more of the workflow", title: "From application to payment to arrival.", body: "Bring registration, approvals, UPI payments, reminders, and attendance together. With booking connected, guest records and tracked links can tell you more about what brings people in.", bullets: ["Forms, approvals, and payments in one flow.", "Guest communication stays connected to the booking.", "Follow promotion through to paid bookings."]},
+      {id: "network", label: "Catch network", kicker: "Connect beyond one event", title: "Give your community somewhere to grow.", body: "Build a public organiser presence so people can discover your events, follow what you do, and find their next reason to return. Optional member experiences can help connections continue after a shared event.", bullets: ["A public home for your club, community, or business.", "Discovery and repeat attendance across events.", "Optional post-event connections, with private, mutual choices." ]},
+    ],
     toolsTitle: "Already have tools you like?", toolsBody: "Start with a reviewed CSV or XLSX guest-list import. Keep what works, and agree the handoffs with our team. A file import doesn’t require changing your ticketing platform.",
     toolsSummary: "Booking, payments, messaging, and other tool handoffs",
     scopeSummary: "Other formats, larger programmes, and detailed workflow options",
@@ -50,8 +67,8 @@ export const hostLandingCopy = {
     {question: "Is Catch only for singles events?", answer: "No. Catch is for independent hosts, clubs, communities, and event teams. Runs, dinners, games, sports, and nights out can all benefit from easier coordination and more opportunities to participate. Social tools are optional."},
     {question: "Do my guests need to download an app?", answer: "For supported live-event pilots, guests use a phone-verified mobile browser. They don’t need to download the app or create a dating profile. Participation is scoped to your event; the wider Catch member network is separate."},
     {question: "Do I have to move my bookings to Catch?", answer: "No. You can keep your existing booking or RSVP tool and start with a reviewed CSV or XLSX guest-list import. We’ll confirm the handoff and capacity together. Direct sync with another platform isn’t implied."},
-    {question: "Can I choose which activities guests see?", answer: "Yes. Agree the tools and format during setup, and use the host controls for the live event. Introductions, prompts, and group activities are optional. Guests can choose to skip them."},
-    {question: "What guest information can my team see?", answer: "Plan staff access around each person’s role. Use the information guests provide for the event and the communication they have agreed to receive. Private matching choices are separate from your guest record. Application approval, membership, payment, and event admission are separate decisions."},
+    {question: "Can I choose which activities guests see?", answer: "Yes. Agree the tools and format during setup, and use the host controls to adjust groups or override assignments during the live event. Introductions, prompts, and group activities are optional. Guests can choose to skip them."},
+    {question: "What guest information can my team see?", answer: "Your team uses booking and application information guests provide for the event, with access appropriate to each person’s role. Private social questionnaire answers and matching choices are not part of the CRM. Introduction requests are shared only with the host who can help. Private feedback is summarised as combined patterns, not individual answers. Application approval, membership, payment, and event admission are separate decisions."},
     {question: "What does the pilot involve?", answer: "Apply with a real upcoming event, your current setup, and the tools you’d like to try. If it’s a fit, we’ll agree the scope, review your guest list, and help you prepare and rehearse. Afterwards, we’ll review what worked and what to improve."},
   ],
   close: {

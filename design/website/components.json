@@ -861,10 +861,14 @@
           "pub-crawl",
           "pilot-offer",
           "application-link",
-          "existing-tools"
+          "existing-tools",
+          "adoption-tools",
+          "adoption-booking",
+          "adoption-network",
+          "participation-privacy"
         ]
       },
-      "notes": "Host landing page balances business workflows and guest participation, with five interactive before/during/after format examples, audience insights, flexible adoption and selected pilot access. Existing retired-route anchors remain. Application lives at /host/apply/."
+      "notes": "Host landing page balances business workflows and guest participation, with five interactive before/during/after format examples, audience insights, flexible adoption and selected pilot access. Existing retired-route anchors remain. Application lives at /host/apply/. Includes selectable adoption circles and participation/privacy guidance."
     },
     {
       "id": "host_hero_section",

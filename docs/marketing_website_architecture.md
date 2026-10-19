@@ -1267,6 +1267,21 @@ ownership without recreating duplicate marketing destinations.
 
 ### Host landing content and format explorer
 
+Home, Host and Explore select the same consumer `PublicSiteHeader` and
+`PublicSiteFooter` configuration (Find events, Organisers, For organisers).
+Their typography and responsive chrome are owned by that shared consumer
+wrapper, not the surrounding page. Host-specific section links and the pilot
+action sit in a separately labelled navigation row below the global header.
+The Host adoption section restores three selectable concentric circles:
+Catch tools, Catch booking and Catch network. It uses native buttons with
+pressed state and one announced detail region; selection is independent of
+the five-format explorer. These describe optional adoption layers, not fixed
+commercial tiers. Brief phone interactions, private introduction requests,
+host overrides and aggregate private feedback are explained explicitly.
+The illustrative CRM shows a follow-up opt-in rather than an individual
+private feedback answer.
+
+
 The public `/host/` entry balances event-business workflows with guest participation.
 `src/content/hostLanding.ts` owns its authored copy and five illustrative before/during/after formats;
 `features/host/sections/hostLandingSections.tsx` composes the page and owns the local accessible tab selection.

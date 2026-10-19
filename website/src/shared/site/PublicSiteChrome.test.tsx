@@ -163,3 +163,17 @@ it("guest chrome keeps event navigation and legal links without host claim promp
   expect(screen.getByRole("link", {name: "Privacy"})).toBeTruthy();
   expect(screen.getByRole("navigation", {name: "Primary"}).textContent).toBe("Organizers");
 });
+
+it("uses the same consumer links in the header, mobile menu and footer", () => {
+  const {container} = render(<><PublicSiteHeader audience="consumer" /><PublicSiteFooter audience="consumer" /></>);
+  const destinations = ["/explore/", "/organizers/", "/host/"];
+  const primary = screen.getByRole("navigation", {name: "Primary"});
+  expect(within(primary).getAllByRole("link").map(item => item.getAttribute("href"))).toEqual(destinations);
+  expect(primary.closest(".consumer-home")).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", {name: "Menu"}));
+  const dialog = screen.getByRole("dialog");
+  expect(within(dialog).getAllByRole("link").map(item => item.getAttribute("href"))).toEqual(destinations);
+  fireEvent.keyDown(document, {key: "Escape"});
+  expect(container.querySelector('[role="dialog"]')?.hasAttribute("inert")).toBe(true);
+  expect(within(screen.getByRole("navigation", {name: "Footer"})).getAllByRole("link").slice(0,3).map(item => item.getAttribute("href"))).toEqual(destinations);
+});

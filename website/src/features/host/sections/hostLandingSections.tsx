@@ -11,10 +11,22 @@ import {
   HostFormatTabs, HostFormatTab, HostFormatPanel, HostFormatStages, HostFormatStage,
   HostFormatStageCopy, HostFormatStageLabel, HostFormatPhone, HostFormatHighlight,
   HostFormatStatus, HostFormatConnection, HostInsightGrid, HostInsightExample,
-  HostLandingSteps, HostLandingDetails, HostLandingCloseGrid,
+  HostLandingSteps, HostLandingDetails, HostLandingCloseGrid, HostSectionNav,
+  HostParticipationGrid, HostPrivacyCopy, HostAdoptionLayout, HostAdoptionCircles, HostAdoptionCircle, HostAdoptionDetail,
 } from "../../../shared/ui/primitives/hostLanding";
 
 const money = new Intl.NumberFormat(activeMarket.locale, {style: "currency", currency: activeMarket.currencyCode, maximumFractionDigits: 0});
+
+export function renderHostSectionNav() {
+  return <HostSectionNav aria-label={copy.navLabel}>{copy.nav.map(item => <PlainLink key={item.href} href={item.href}>{item.label}</PlainLink>)}<PlainLink href="/host/apply/">{copy.apply}<ArrowRight size={15} aria-hidden="true" /></PlainLink></HostSectionNav>;
+}
+
+export function renderHostLandingParticipation() {
+  return <HostLandingSection variant="participation" aria-labelledby="host-participation-title">
+    <HostLandingHeading><h2 id="host-participation-title">{copy.participation.title}</h2><p>{copy.participation.body}</p></HostLandingHeading>
+    <HostParticipationGrid>{copy.participation.items.map(item => <article key={item.title}><h3>{item.title}</h3><p>{item.body}</p></article>)}</HostParticipationGrid>
+  </HostLandingSection>;
+}
 
 export function renderHostLandingHero() {
   return <HostLandingHero aria-labelledby="host-title">
@@ -95,14 +107,29 @@ export function renderHostLandingInsights() {
         <DataTable ariaLabel={copy.insights.tableCaption}><caption>{copy.insights.tableCaption}</caption><thead><tr>{copy.insights.tableHeaders.map(label => <th scope="col" key={label}>{label}</th>)}</tr></thead><tbody>{copy.insights.campaigns.map(row => <tr key={row.name}><th scope="row">{row.name}</th><td>{row.visits}</td><td>{row.bookings}</td><td>{money.format(row.revenue)}</td></tr>)}</tbody></DataTable>
       </HostInsightExample></article>
     </HostInsightGrid>
+    <HostPrivacyCopy><h3>{copy.insights.privacyTitle}</h3><p>{copy.insights.privacyBody}</p></HostPrivacyCopy>
     <HostLandingNote>{copy.insights.note}</HostLandingNote>
   </HostLandingSection>;
 }
 
+function HostAdoptionExplorer() {
+  const [selected, setSelected] = useState(0);
+  const layer = copy.adoption.layers[selected];
+  return <HostAdoptionLayout>
+    <div><HostAdoptionCircles role="group" aria-label={copy.adoption.circlesLabel}>
+      {copy.adoption.layers.map((item, index) => <HostAdoptionCircle key={item.id} layer={item.id} type="button" aria-pressed={selected === index} aria-controls="host-adoption-detail" onClick={() => setSelected(index)}><span>{item.label}</span></HostAdoptionCircle>)}
+    </HostAdoptionCircles><HostLandingNote>{copy.adoption.circlesHint}</HostLandingNote></div>
+    <HostAdoptionDetail id="host-adoption-detail" aria-live="polite" aria-atomic="true" aria-labelledby="host-layer-title">
+      <p>{layer.kicker}</p><h3 id="host-layer-title">{layer.title}</h3><p>{layer.body}</p><ul>{layer.bullets.map(item => <li key={item}>{item}</li>)}</ul>
+    </HostAdoptionDetail>
+  </HostAdoptionLayout>;
+}
+
 export function renderHostLandingAdoption() {
-  return <HostLandingSection variant="adoption" aria-labelledby="host-adoption-title">
+  return <HostLandingSection variant="adoption" id="adoption" aria-labelledby="host-adoption-title">
     <HostLandingHeading><h2 id="host-adoption-title">{copy.adoption.title}</h2><p>{copy.adoption.body}</p></HostLandingHeading>
-    <HostLandingSteps>{copy.adoption.items.map(item => <li key={item.title}><h3>{item.title}</h3><p>{item.body}</p></li>)}</HostLandingSteps>
+    <HostAdoptionExplorer />
+    <HostLandingNote>{copy.adoption.layersNote}</HostLandingNote>
     <div id="existing-tools"><h3>{copy.adoption.toolsTitle}</h3><p>{copy.adoption.toolsBody}</p>
       <HostLandingDetails><summary>{copy.adoption.toolsSummary}</summary>{hostProductCopy.tools.items.map(item => <div key={item.question}><h4>{item.question}</h4><p>{item.answer}</p></div>)}</HostLandingDetails>
     </div>

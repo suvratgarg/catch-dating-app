@@ -7,7 +7,7 @@ export function HostLandingHero(props: ComponentProps<"section">) { return <sect
 export function HostLandingHeroCopy(props: ComponentProps<"div">) { return <div {...props} className="host-landing-hero__copy" />; }
 export function HostLandingMedia(props: ComponentProps<"div">) { return <div {...props} className="host-landing-media" />; }
 export function HostLandingPhotoMessage(props: ComponentProps<"div">) { return <div {...props} className="host-landing-photo-message" />; }
-export function HostLandingSection({variant, ...props}: ComponentProps<"section"> & {variant?: "formats" | "insights" | "adoption" | "close" | "faq"}) { return <section {...props} className={`host-landing-section${variant ? ` host-landing-section--${variant}` : ""}`} />; }
+export function HostLandingSection({variant, ...props}: ComponentProps<"section"> & {variant?: "formats" | "insights" | "adoption" | "participation" | "close" | "faq"}) { return <section {...props} className={`host-landing-section${variant ? ` host-landing-section--${variant}` : ""}`} />; }
 export function HostLandingHeading(props: ComponentProps<"div">) { return <div {...props} className="host-landing-heading" />; }
 export function HostLandingNote(props: ComponentProps<"p">) { return <p {...props} className="host-landing-note" />; }
 export function HostLandingActions(props: ComponentProps<"div">) { return <div {...props} className="host-landing-actions" />; }
@@ -31,3 +31,11 @@ export function HostInsightExample(props: ComponentProps<"div">) { return <div {
 export function HostLandingSteps(props: ComponentProps<"ol">) { return <ol {...props} className="host-landing-steps" />; }
 export function HostLandingDetails(props: ComponentProps<"details">) { return <details {...props} className="host-landing-details" />; }
 export function HostLandingCloseGrid(props: ComponentProps<"div">) { return <div {...props} className="host-landing-close-grid" />; }
+
+export function HostSectionNav(props: ComponentProps<"nav">) { return <nav {...props} className="host-section-nav" />; }
+export function HostParticipationGrid(props: ComponentProps<"div">) { return <div {...props} className="host-participation-grid" />; }
+export function HostPrivacyCopy(props: ComponentProps<"div">) { return <div {...props} className="host-privacy-copy" />; }
+export function HostAdoptionLayout(props: ComponentProps<"div">) { return <div {...props} className="host-adoption-layout" />; }
+export function HostAdoptionCircles(props: ComponentProps<"div">) { return <div {...props} className="host-adoption-circles" />; }
+export function HostAdoptionCircle({layer, ...props}: ComponentProps<typeof PlainButton> & {layer: string}) { return <PlainButton {...props} className={`host-adoption-circle host-adoption-circle--${layer}`} />; }
+export function HostAdoptionDetail(props: ComponentProps<"section">) { return <section {...props} className="host-adoption-detail" />; }

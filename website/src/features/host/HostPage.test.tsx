@@ -52,3 +52,28 @@ describe("Host format explorer", () => {
     expect(screen.getByRole("table", {name: copy.insights.tableCaption})).toBeTruthy();
   });
 });
+
+describe("Host adoption layers", () => {
+  it("selects each circle without disturbing the event-format choice", () => {
+    render(<HostPage captures={{}} />);
+    fireEvent.click(screen.getByRole("tab", {name: "Pickleball"}));
+    const circles = screen.getByRole("group", {name: copy.adoption.circlesLabel});
+    for (const layer of copy.adoption.layers) {
+      const button = within(circles).getByRole("button", {name: layer.label});
+      fireEvent.click(button);
+      expect(button.getAttribute("aria-pressed")).toBe("true");
+      expect(within(circles).getAllByRole("button").filter(item => item.getAttribute("aria-pressed") === "true")).toHaveLength(1);
+      const panel = screen.getByRole("region", {name: layer.title});
+      expect(button.getAttribute("aria-controls")).toBe(panel.id);
+      expect(within(panel).getByText(layer.body)).toBeTruthy();
+      expect(screen.getByRole("tab", {name: "Pickleball"}).getAttribute("aria-selected")).toBe("true");
+    }
+  });
+  it("keeps business section links separate from stable global navigation", () => {
+    render(<HostPage captures={{}} />);
+    expect(within(screen.getByRole("navigation", {name: "Primary"})).getAllByRole("link").map(item => item.getAttribute("href"))).toEqual(["/explore/", "/organizers/", "/host/"]);
+    const local = screen.getByRole("navigation", {name: copy.navLabel});
+    for (const item of copy.nav) expect(within(local).getByRole("link", {name: item.label}).getAttribute("href")).toBe(item.href);
+    expect(within(local).getByRole("link", {name: copy.apply}).getAttribute("href")).toBe("/host/apply/");
+  });
+});
