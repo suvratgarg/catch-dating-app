@@ -2,6 +2,7 @@ import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/domain/event_profile_requirements.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 /// Pure Dart service class for Event domain business logic.
@@ -23,11 +24,18 @@ class EventService {
     bool hasValidInvite = false,
   }) {
     if (!event.isUpcomingAt(now)) return const EventPast();
+    if (!event.hasRequiredProfileDetails(user, now)) {
+      return const ProfileDetailsRequired();
+    }
     final userAge = user.ageOn(now);
-    if (userAge < event.constraints.minAge) {
+    if (event.requiresAgeDetails &&
+        userAge != null &&
+        userAge < event.constraints.minAge) {
       return AgeTooYoung(event.constraints.minAge);
     }
-    if (userAge > event.constraints.maxAge) {
+    if (event.requiresAgeDetails &&
+        userAge != null &&
+        userAge > event.constraints.maxAge) {
       return AgeTooOld(event.constraints.maxAge);
     }
 

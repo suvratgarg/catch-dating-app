@@ -12,7 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OnboardingGenderInterestBody extends ConsumerStatefulWidget {
-  const OnboardingGenderInterestBody({super.key});
+  const OnboardingGenderInterestBody({super.key, this.eventRequirements});
+
+  final List<String>? eventRequirements;
 
   @override
   ConsumerState<OnboardingGenderInterestBody> createState() =>
@@ -48,9 +50,15 @@ class _OnboardingGenderInterestBodyState
           interestedInGenders: intent.interestedInGenders,
         );
 
+    // The mutation retains failures for the inline error banner and retry.
     OnboardingController.saveProfileMutation.run(ref, (tx) async {
-      await tx.get(onboardingControllerProvider.notifier).saveProfile();
-    });
+      await tx
+          .get(onboardingControllerProvider.notifier)
+          .saveProfile(
+            socialIdentityOnly: true,
+            eventRequirements: widget.eventRequirements,
+          );
+    }).ignore();
   }
 
   OnboardingGenderInterestState _stateFor({

@@ -1,3 +1,5 @@
+import {useWebsiteAccountController} from "../account/useWebsiteAccountController";
+import {renderAccountForm} from "../account/accountForm";
 import {useFreeEventRegistrationController} from "./useFreeEventRegistrationController";
 import {PublicPaidEventRegistration} from "./PublicPaidEventRegistration";
 import {EventWhatsappPreferencesPanel} from "../eventMessaging/EventWhatsappPreferencesPanel";
@@ -18,21 +20,29 @@ import {
 import {eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
 
 export function PublicEventRegistration({eventId, inviteToken, mode = "free", allowNewBookings = true}: {eventId: string; inviteToken?: string | null; mode?: "free" | "paid"; allowNewBookings?: boolean}) {
-  return mode === "paid" ? <PublicPaidEventRegistration key={eventId} eventId={eventId} allowNewBookings={allowNewBookings} inviteToken={inviteToken ?? eventInviteTokenFromLocation()} /> :
-    <FreeEventRegistration key={eventId} eventId={eventId} inviteToken={inviteToken} />;
+  if (!allowNewBookings && mode === "paid") return <PublicPaidEventRegistration key={eventId} eventId={eventId} allowNewBookings={false} inviteToken={inviteToken ?? null} />;
+  return <AccountEventRegistration key={eventId} eventId={eventId} inviteToken={inviteToken} mode={mode} />;
+}
+function AccountEventRegistration({eventId, inviteToken, mode}: {eventId: string; inviteToken?: string | null; mode: "free" | "paid"}) {
+  const account = useWebsiteAccountController({eventId});
+  if (!account.ready) return renderAccountForm(account);
+  return mode === "paid" ? <PublicPaidEventRegistration key={account.uid} eventId={eventId} initialDisplayName={account.account?.displayName} inviteToken={inviteToken ?? eventInviteTokenFromLocation()} /> :
+    <FreeEventRegistration key={account.uid} eventId={eventId} initialDisplayName={account.account?.displayName} inviteToken={inviteToken} />;
 }
 
 function FreeEventRegistration({
   eventId,
   inviteToken: inviteTokenOverride,
+  initialDisplayName,
 }: {
   eventId: string;
   inviteToken?: string | null;
+  initialDisplayName?: string;
 }) {
   const {reactId, recaptchaContainerId, displayName, setDisplayName,
     phoneNumber, setPhoneNumber, code, setCode, whatsappUpdates, setWhatsappUpdates,
     smsUpdates, setSmsUpdates, stage, registeredScope, pending, status,
-    verified, handleSubmit} = useFreeEventRegistrationController(eventId, inviteTokenOverride);
+    verified, handleSubmit} = useFreeEventRegistrationController(eventId, inviteTokenOverride, initialDisplayName);
   const copy = eventDetailCopy.hero.webRegistration;
 
   return (

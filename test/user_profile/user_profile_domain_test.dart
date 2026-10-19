@@ -33,6 +33,25 @@ void main() {
     expect(user.prefsShowInCrossPaths, isFalse);
   });
 
+  test('minimal website profiles preserve absent age and gender', () {
+    final source = buildUser(dateOfBirth: DateTime(1995)).toJson()
+      ..remove('dateOfBirth')
+      ..remove('gender');
+    final profile = UserProfile.fromJson({...source, 'uid': 'user-1'});
+    expect(profile.dateOfBirth, isNull);
+    expect(profile.gender, isNull);
+    expect(profile.ageOn(DateTime(2026)), isNull);
+    expect(profile.toJson().containsKey('dateOfBirth'), isFalse);
+    expect(profile.toJson().containsKey('gender'), isFalse);
+    expect(profile.hasAccountReadyIdentity, isTrue);
+    expect(profile.hasBookingReadyIdentityOn(DateTime(2026)), isTrue);
+    expect(
+      profile.hasBookingReadyIdentityOn(DateTime(2026), ageRestricted: true),
+      isFalse,
+    );
+    expect(profile.hasSocialReadyProfileOn(DateTime(2026)), isFalse);
+  });
+
   group('UserProfile.ageOn', () {
     test('#21 birthday earlier this year — full year counted', () {
       // DOB = Jan 1, (today.year - 30). Birthday has already passed this year.
@@ -76,6 +95,16 @@ void main() {
         ),
     ];
 
+    test('account readiness does not require social profile details', () {
+      final user = buildUser(
+        dateOfBirth: DateTime(2015),
+      ).copyWith(profileComplete: false, interestedInGenders: const []);
+      expect(user.hasAccountReadyIdentity, isTrue);
+      expect(user.hasSocialReadyProfileOn(today), isFalse);
+      expect(user.copyWith(phoneNumber: '').hasAccountReadyIdentity, isFalse);
+      expect(user.copyWith(name: '').hasAccountReadyIdentity, isFalse);
+    });
+
     test('booking-ready identity does not require photos or prompts', () {
       final user = buildUser(
         dateOfBirth: DateTime(1995, 6, 15),
@@ -85,12 +114,16 @@ void main() {
       expect(user.hasSocialReadyProfileOn(today), isFalse);
     });
 
-    test('booking-ready identity requires interested-in genders', () {
+    test('only cohort-restricted booking requires interested-in genders', () {
       final user = buildUser(
         dateOfBirth: DateTime(1995, 6, 15),
       ).copyWith(interestedInGenders: const []);
 
-      expect(user.hasBookingReadyIdentityOn(today), isFalse);
+      expect(user.hasBookingReadyIdentityOn(today), isTrue);
+      expect(
+        user.hasBookingReadyIdentityOn(today, cohortRestricted: true),
+        isFalse,
+      );
       expect(user.hasSocialReadyProfileOn(today), isFalse);
     });
 

@@ -923,3 +923,5 @@ export {onEventApplicationApprovalNotification,
   onEventApprovalNotificationPreference, onEventApprovalNotificationMessage,
   onEventApprovalWhatsappReceipt, retryEventApprovalNotifications} from
   "./events/approvalNotifications/triggers";
+
+export {manageWebsiteAccount} from "./profiles/websiteAccount";

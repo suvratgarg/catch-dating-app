@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
@@ -404,6 +405,25 @@ void _verifyEventDetail(
     expect(signupExpectation['disposition'], 'visibleSignInGate');
   } else if (!bookingReady) {
     expect(signupExpectation['disposition'], 'visibleProfileGate');
+  } else if (availability == 'profileRequired') {
+    final event = events.buildEvent(
+      startTime: _matrixNow.add(const Duration(hours: 2)),
+      constraints: const EventConstraints(minAge: 18),
+    );
+    final account = userProfile!.copyWith(dateOfBirth: null);
+    expect(eventDetailHasBookingReadyProfile(account, now: _matrixNow), isTrue);
+    expect(
+      eventDetailHasBookingReadyProfile(account, now: _matrixNow, event: event),
+      isFalse,
+    );
+    final resolved = resolveViewerEventAvailability(
+      event: event,
+      userProfile: account,
+      now: _matrixNow,
+    );
+    expect(resolved.status, ViewerEventAvailabilityStatus.profileRequired);
+    expect(signupExpectation['disposition'], 'visibleProfileGate');
+    expect(signupExpectation['variant'], 'complete-event-details');
   } else if (values['event.paymentCapability'] != 'notRequired') {
     final supported = values['event.paymentCapability'] == 'supported';
     final event = events.buildEvent(

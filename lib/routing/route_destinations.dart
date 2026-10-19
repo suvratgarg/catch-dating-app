@@ -49,17 +49,36 @@ String _locationWithFrom(String path, {String? from}) {
   ).toString();
 }
 
-String profileCompletionLocation({String? from}) {
+String profileCompletionLocation({
+  String? from,
+  List<String>? eventRequirements,
+}) {
   final safeFrom = _sanitizeFrom(from);
   return Uri(
     path: Routes.onboardingScreen.path,
     queryParameters: {
       _onboardingIntentQueryParam: _completeProfileIntent,
+      if (eventRequirements != null)
+        'eventRequirements': eventRequirements.join(','),
       if (safeFrom != null &&
           Uri.parse(safeFrom).path != Routes.onboardingScreen.path)
         _fromQueryParam: safeFrom,
     },
   ).toString();
+}
+
+/// URL hints choose questions only; event admission rechecks live requirements.
+List<String>? _eventRequirementsFromUri(Uri uri) {
+  final value = uri.queryParameters['eventRequirements'];
+  if (value == null) return null;
+  final requirements = value
+      .split(',')
+      .where((part) => part.isNotEmpty)
+      .toSet()
+      .toList();
+  return requirements.every(eventProfileRequirements.containsKey)
+      ? requirements
+      : null;
 }
 
 String runPreferencesCompletionLocation({String? from}) {
@@ -168,6 +187,13 @@ String? appRedirect({
   final onOnboarding = matchedLocation == Routes.onboardingScreen.path;
   final onAuth = matchedLocation == Routes.authScreen.path;
   final isHostApp = AppConfig.appRole.isHost;
+  final pendingOnboardingIntent = onOnboarding || onLoading
+      ? switch (uri.queryParameters[_onboardingIntentQueryParam]) {
+          _completeProfileIntent => _completeProfileIntent,
+          _completeRunPreferencesIntent => _completeRunPreferencesIntent,
+          _ => null,
+        }
+      : null;
 
   final isWaitingOnAuth = uidAsync.isLoading;
   // Owning an account is independent of dating/booking readiness. These exact
@@ -176,7 +202,7 @@ String? appRedirect({
   if (!isHostApp && !isWaitingOnAuth && uidAsync.value != null) {
     if (_isOwnAccountRoute(matchedLocation)) return null;
     final isAccountResume =
-        onLoading ||
+        (onLoading && pendingOnboardingIntent == null) ||
         onStart ||
         onAuth ||
         (onOnboarding &&
@@ -186,23 +212,39 @@ String? appRedirect({
       if (_isOwnAccountRoute(Uri.parse(resume).path)) return resume;
     }
   }
-  final isWaitingOnProfile =
+  // Only a successful null read establishes that an account needs a profile.
+  // A failed refresh may retain a real profile, but cached null is not identity.
+  final isBlockedOnProfile =
       !isHostApp &&
       uidAsync.hasValue &&
       uidAsync.value != null &&
-      userProfileAsync.isLoading;
+      (userProfileAsync.isLoading ||
+          (userProfileAsync.hasError && userProfileAsync.value == null));
 
-  if (isWaitingOnAuth || isWaitingOnProfile) {
+  if (isWaitingOnAuth || isBlockedOnProfile) {
     if (!isHostApp &&
         isGuestPublicRoute(matchedLocation) &&
         !_isTransientRoute(matchedLocation)) {
       return null;
     }
     if (onLoading) return null;
-    return _locationWithFrom(
+    final loading = _locationWithFrom(
       Routes.loadingScreen.path,
       from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
     );
+    if (pendingOnboardingIntent == null) return loading;
+    final loadingUri = Uri.parse(loading);
+    return loadingUri
+        .replace(
+          queryParameters: {
+            ...loadingUri.queryParameters,
+            _onboardingIntentQueryParam: pendingOnboardingIntent,
+            if (pendingOnboardingIntent == _completeProfileIntent &&
+                _eventRequirementsFromUri(uri) != null)
+              'eventRequirements': _eventRequirementsFromUri(uri)!.join(','),
+          },
+        )
+        .toString();
   }
 
   final uid = uidAsync.value;
@@ -243,6 +285,18 @@ String? appRedirect({
     return null;
   }
 
+  // Explicit completion flows can return to an otherwise ungated account
+  // route. Resume the requested flow before considering that final destination.
+  if (onLoading && pendingOnboardingIntent != null) {
+    final from = uri.queryParameters[_fromQueryParam];
+    return pendingOnboardingIntent == _completeProfileIntent
+        ? profileCompletionLocation(
+            from: from,
+            eventRequirements: _eventRequirementsFromUri(uri),
+          )
+        : runPreferencesCompletionLocation(from: from);
+  }
+
   final onProfileCompletionOnboarding =
       onOnboarding &&
       uri.queryParameters[_onboardingIntentQueryParam] ==
@@ -254,7 +308,15 @@ String? appRedirect({
   final today = DateTime.now();
 
   if (userProfile == null || !userProfile.hasBookingReadyIdentityOn(today)) {
-    if (onOnboarding) return null;
+    if (onOnboarding) {
+      if (_eventRequirementsFromUri(uri) != null) {
+        return _locationWithFrom(
+          Routes.onboardingScreen.path,
+          from: uri.queryParameters[_fromQueryParam],
+        );
+      }
+      return null;
+    }
     // Public discovery remains readable for a signed-in viewer whose profile
     // is incomplete. Only the action that needs profile data is gated.
     if (!isHostApp &&
@@ -269,7 +331,15 @@ String? appRedirect({
   }
 
   if (onProfileCompletionOnboarding) {
-    if (!userProfile.hasSocialReadyProfileOn(today)) return null;
+    final requirements = _eventRequirementsFromUri(uri);
+    final ready = requirements == null
+        ? userProfile.hasSocialReadyProfileOn(today)
+        : userProfile.hasBookingReadyIdentityOn(
+            today,
+            ageRestricted: requirements.contains('ageRestricted'),
+            cohortRestricted: requirements.contains('cohortRestricted'),
+          );
+    if (!ready) return null;
     return _resumeDestination(uri);
   }
 

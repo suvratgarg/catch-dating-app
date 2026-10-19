@@ -4,6 +4,8 @@ part 'event_eligibility.freezed.dart';
 
 @freezed
 sealed class EventEligibility with _$EventEligibility {
+  const factory EventEligibility.profileDetailsRequired() =
+      ProfileDetailsRequired;
   const factory EventEligibility.eligible() = Eligible;
   const factory EventEligibility.alreadySignedUp() = AlreadySignedUp;
   const factory EventEligibility.onWaitlist() = OnWaitlist;

@@ -13,6 +13,7 @@ import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_profil
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,10 +22,12 @@ class OnboardingScreen extends ConsumerStatefulWidget {
     super.key,
     this.profileCompletionOnly = false,
     this.runPreferencesOnly = false,
+    this.eventRequirements,
   });
 
   final bool profileCompletionOnly;
   final bool runPreferencesOnly;
+  final List<String>? eventRequirements;
 
   @override
   ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -44,6 +47,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             .initStep(
               profileCompletionOnly: widget.profileCompletionOnly,
               runPreferencesOnly: widget.runPreferencesOnly,
+              eventRequirements: widget.eventRequirements,
             ),
       );
     });
@@ -53,7 +57,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   void didUpdateWidget(covariant OnboardingScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.profileCompletionOnly == widget.profileCompletionOnly &&
-        oldWidget.runPreferencesOnly == widget.runPreferencesOnly) {
+        oldWidget.runPreferencesOnly == widget.runPreferencesOnly &&
+        listEquals(oldWidget.eventRequirements, widget.eventRequirements)) {
       return;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -66,6 +71,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             .initStep(
               profileCompletionOnly: widget.profileCompletionOnly,
               runPreferencesOnly: widget.runPreferencesOnly,
+              eventRequirements: widget.eventRequirements,
             ),
       );
     });
@@ -79,6 +85,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       data: data,
       profileCompletionOnly: widget.profileCompletionOnly,
       runPreferencesOnly: widget.runPreferencesOnly,
+      eventRequirements: widget.eventRequirements,
     );
     final currentStep = KeyedSubtree(
       key: ValueKey(flowState.step),
@@ -86,6 +93,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         step: flowState.step,
         profileCompletionOnly: widget.profileCompletionOnly,
         runPreferencesOnly: widget.runPreferencesOnly,
+        eventRequirements: widget.eventRequirements,
       ),
     );
 
@@ -135,18 +143,25 @@ class OnboardingStepBody extends StatelessWidget {
     required this.step,
     required this.profileCompletionOnly,
     required this.runPreferencesOnly,
+    this.eventRequirements,
   });
 
   final OnboardingStep step;
   final bool profileCompletionOnly;
   final bool runPreferencesOnly;
+  final List<String>? eventRequirements;
 
   @override
   Widget build(BuildContext context) {
     return switch (step) {
       OnboardingStep.welcome => const OnboardingWelcomeBody(),
-      OnboardingStep.nameDob => const OnboardingNameDobBody(),
-      OnboardingStep.genderInterest => const OnboardingGenderInterestBody(),
+      OnboardingStep.nameDob => OnboardingNameDobBody(
+        profileCompletionOnly: profileCompletionOnly,
+        eventRequirements: eventRequirements,
+      ),
+      OnboardingStep.genderInterest => OnboardingGenderInterestBody(
+        eventRequirements: eventRequirements,
+      ),
       OnboardingStep.instagram => const OnboardingInstagramBody(),
       OnboardingStep.photos => OnboardingPhotosBody(
         profileCompletionOnly: profileCompletionOnly,

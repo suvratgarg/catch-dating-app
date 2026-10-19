@@ -7,4 +7,5 @@
  */
 export interface OrganizerFollowCallablePayload {
   organizerId: string;
+  expectedUid?: string;
 }

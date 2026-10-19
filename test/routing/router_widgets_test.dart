@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
@@ -15,9 +18,15 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
+import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
+import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
+import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,7 +34,29 @@ import 'package:go_router/go_router.dart';
 
 import '../clubs/clubs_test_helpers.dart' as club_helpers;
 import '../events/events_test_helpers.dart' as run_helpers;
+import '../onboarding/onboarding_test_helpers.dart' as onboarding_helpers;
+import '../support/profile_readiness_fixtures.dart';
 import '../test_pump_helpers.dart';
+
+class _ControlledProfileRepository
+    extends onboarding_helpers.FakeOnboardingUserProfileRepository {
+  final reads = <String?>[];
+  final attempts = <StreamController<UserProfile?>>[];
+
+  @override
+  Stream<UserProfile?> watchUserProfile({required String? uid}) {
+    reads.add(uid);
+    final attempt = StreamController<UserProfile?>.broadcast();
+    attempts.add(attempt);
+    return attempt.stream;
+  }
+
+  Future<void> dispose() async {
+    for (final attempt in attempts) {
+      await attempt.close();
+    }
+  }
+}
 
 class _FakeMatchRepository extends Fake implements MatchRepository {
   _FakeMatchRepository({this.match});
@@ -162,7 +193,99 @@ Future<void> _settleRoute(WidgetTester tester) async {
   await pumpFeatureUi(tester);
 }
 
+// Profile recovery deliberately renders an animating loading indicator.
+// Advance route/provider frames without waiting for that animation to settle.
+Future<void> _pumpProfileRoute(WidgetTester tester) async {
+  await tester.pump();
+  await pumpFeatureUiFor(tester, const Duration(milliseconds: 400));
+  await tester.pump();
+}
+
 void main() {
+  for (final profileExists in [true, false]) {
+    testWidgets(
+      'production router retries profile failure before '
+      '${profileExists ? 'resuming the exact destination' : 'starting onboarding'}',
+      (tester) async {
+        const destination = '/payment-history?source=receipt&item=one%20two';
+        final profiles = _ControlledProfileRepository();
+        final auth = onboarding_helpers.FakeAuthRepository()
+          ..currentUserValue = onboarding_helpers.TestUser(
+            uid: 'runner-1',
+            phoneNumber: '+919876543210',
+          );
+        final container = onboarding_helpers.createOnboardingTestContainer(
+          overrides: [
+            app_router.initialAppLocationProvider.overrideWith(
+              (ref) => destination,
+            ),
+            uidProvider.overrideWithValue(const AsyncData('runner-1')),
+            authRepositoryProvider.overrideWithValue(auth),
+            userProfileRepositoryProvider.overrideWithValue(profiles),
+            onboardingDraftRepositoryProvider.overrideWithValue(
+              onboarding_helpers.FakeOnboardingDraftRepository(),
+            ),
+            watchPaymentsForUserProvider(
+              'runner-1',
+            ).overrideWith((ref) => Stream.value(const [])),
+          ],
+        );
+        addTearDown(() async {
+          await tester.pumpWidget(const SizedBox.shrink());
+          container.dispose();
+          await profiles.dispose();
+          await auth.dispose();
+        });
+        final router = container.read(app_router.consumerGoRouterProvider);
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp.router(
+              theme: AppTheme.light,
+              routerConfig: router,
+            ),
+          ),
+        );
+        await _pumpProfileRoute(tester);
+        expect(profiles.reads, ['runner-1']);
+        profiles.attempts.single.addError(StateError('profile unavailable'));
+        await _pumpProfileRoute(tester);
+
+        expect(find.byType(CatchLocalizedErrorState), findsOneWidget);
+        expect(find.byType(OnboardingScreen), findsNothing);
+        expect(router.routeInformationProvider.value.uri.path, '/loading');
+        expect(
+          router.routeInformationProvider.value.uri.queryParameters['from'],
+          destination,
+        );
+
+        await tester.tap(find.text('Reload profile'));
+        await _pumpProfileRoute(tester);
+        expect(profiles.reads, ['runner-1', 'runner-1']);
+        expect(find.byType(CatchLocalizedErrorState), findsNothing);
+        expect(find.byType(OnboardingScreen), findsNothing);
+        expect(router.routeInformationProvider.value.uri.path, '/loading');
+        profiles.attempts.last.add(
+          profileExists ? buildSocialReadyUser() : null,
+        );
+        await _pumpProfileRoute(tester);
+
+        final uri = router.routeInformationProvider.value.uri;
+        if (profileExists) {
+          expect(uri.toString(), destination);
+          expect(find.byType(PaymentHistoryScreen), findsOneWidget);
+          expect(find.byType(OnboardingScreen), findsNothing);
+        } else {
+          expect(uri.path, '/onboarding');
+          expect(uri.queryParameters['from'], destination);
+          expect(find.byType(OnboardingScreen), findsOneWidget);
+          expect(find.byType(PaymentHistoryScreen), findsNothing);
+        }
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   test(
     'legacy Programs URL preserves organizer, saved ID and remaining query on Events',
     () {

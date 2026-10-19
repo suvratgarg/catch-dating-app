@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   evaluateCondition,
+  travelOccurrenceId,
   type TravelLegEvent,
 } from "./momentConditions";
 import {planRun, resolveFireDisposition} from "./momentPlanning";
@@ -249,11 +250,12 @@ test("lateArrivalGateAlert routes staffAttention to the gate duty", () => {
   const arrived: TravelLegEvent = {
     kind: "travelLegReadinessChanged", legId: "leg1", programId: "prog",
     previousReadiness: "enRoute", readiness: "arrived",
+    source: "programTravelLegs", eventId: "event-1",
     observedAtMillis: 10_100_000,
   };
   const result = evaluateCondition(moment, arrived, facts, 10_100_000);
   assert.deepEqual(result.kind === "fire" && result.run, {
-    runId: "prog_sangeet_late_arrival_gate_alert_leg1_arrived",
+    runId: travelOccurrenceId(moment, arrived),
     momentId: "prog_sangeet_late_arrival_gate_alert",
     dueAtMillis: 10_100_000,
     anchorRevision: 7,
@@ -283,13 +285,14 @@ test("flightDisruptionAlert escalates to the dispatcher as urgent", () => {
   const disrupted: TravelLegEvent = {
     kind: "travelLegFlightStatusChanged", legId: "leg9",
     programId: "prog", previousFlightStatus: "delayed",
-    flightStatus: "cancelled", observedAtMillis: 2_100_000,
+    flightStatus: "cancelled", source: "programTravelLegs",
+    eventId: "event-1", observedAtMillis: 2_100_000,
   };
   const result = evaluateCondition(moment, disrupted, facts, 2_100_000);
   assert.equal(result.kind, "fire");
   if (result.kind === "fire") {
     assert.equal(result.run.runId,
-      "prog_leg9_flight_disruption_alert_leg9_cancelled");
+      travelOccurrenceId(moment, disrupted));
     assert.equal(result.run.anchorRevision, 0);
     assert.equal(result.run.targetFunctionId, undefined);
   }
@@ -306,7 +309,8 @@ test("flightDisruptionAlert carries function context when supplied", () => {
   const disrupted: TravelLegEvent = {
     kind: "travelLegFlightStatusChanged", legId: "leg9",
     programId: "prog", previousFlightStatus: "scheduled",
-    flightStatus: "diverted", observedAtMillis: 2_100_000,
+    flightStatus: "diverted", source: "programTravelLegs",
+    eventId: "event-1", observedAtMillis: 2_100_000,
   };
   const result = evaluateCondition(moment, disrupted, facts, 2_100_000);
   assert.equal(result.kind, "fire");

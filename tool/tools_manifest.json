@@ -403,6 +403,81 @@
       }
     },
     {
+      "id": "firebase:form-domain-hosting",
+      "category": "firebase",
+      "path": "tool/firebase/form_domain_hosting.mjs",
+      "command": "node --test tool/firebase/form_domain_hosting.test.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Reads exact Firebase Hosting custom-domain readiness and provisions only a missing resource with a current binding guard.",
+      "checks": [
+        "node --check tool/firebase/form_domain_hosting.mjs",
+        "node --test tool/firebase/form_domain_hosting.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/firebase/form_domain_hosting.test.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
+    {
+      "id": "firebase:form-domain-origins",
+      "category": "firebase",
+      "path": "tool/firebase/form_domain_origins.mjs",
+      "command": "node --test tool/firebase/form_domain_origins.test.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Reconciles exact custom form origins across Auth, App Check Enterprise keys and upload CORS while preserving unrelated grants.",
+      "checks": [
+        "node --check tool/firebase/form_domain_origins.mjs",
+        "node --test tool/firebase/form_domain_origins.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/firebase/form_domain_origins.test.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
+    {
+      "id": "firebase:form-domain-operator",
+      "category": "firebase",
+      "path": "tool/firebase/form_domain_operator.mjs",
+      "command": "node tool/firebase/form_domain_operator.mjs",
+      "safety": "remote-write",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "description": "Plans and explicitly applies client form-domain onboarding and rollback with exact project, reservation and manager authority.",
+      "checks": [
+        "node --check tool/firebase/form_domain_operator.mjs",
+        "node --test tool/firebase/form_domain_operator.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/firebase/form_domain_operator.test.mjs",
+        "functions/src/organizers/organizerFormDomainRegistry.ts",
+        "functions/src/organizers/organizerFormDomainCallables.ts",
+        ".github/workflows/_firebase-promote.yml",
+        ".github/workflows/_cat151-receipt-promote.yml"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "alsoCheckIds": [
+        "firebase:form-domain-hosting",
+        "firebase:form-domain-origins"
+      ]
+    },
+    {
       "id": "firebase:affected-function-targets",
       "category": "firebase",
       "path": "tool/firebase/affected_function_targets.mjs",

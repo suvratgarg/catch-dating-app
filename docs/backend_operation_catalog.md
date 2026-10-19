@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.100.0
-updated: 2026-10-16
+version: 1.101.0
+updated: 2026-10-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -206,7 +206,8 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `generateOrganizerMediaThumbnails` / `generateEventMediaThumbnails` | Firestore triggers after canonical media attachment | Backend | V2 sibling `thumbnail.jpg` Storage objects plus organizer/event `UploadedPhoto` thumbnail fields | Generates bounded-concurrency responsive JPEG thumbnails only after staged originals are attached, rechecks the current document before writing metadata, mirrors organizer thumbnails to the released `clubs` projection, and deletes a generated thumbnail when its source is no longer referenced. |
 | `createOrganizer` | Callable | Flutter organizer repository | `organizers/{organizerId}`, owner `organizerTeamMemberships/{organizerId_uid}`, optional host profile seed, legacy shadows | Creates any supported organizer subtype, records type audit fields, starts a draft organizer public route, and accepts an ordered Host gallery without a product item cap; the separate optional logo remains outside the gallery. |
 | `updateOrganizer` / `archiveOrganizer` / `deleteOrganizer` | Callable | Flutter Hosts organizer workspace | `organizers/{organizerId}` plus legacy shadow | Organizer-manager descriptive/media updates; owner-only type changes; safe archive/delete lifecycle. Gallery order owns the cover projection; logo replacement/removal is independent. Removed originals and thumbnails are deleted only after the Firestore transaction commits. |
-| `followOrganizer` / `unfollowOrganizer` / `setOrganizerNotificationPreference` | Callable | Flutter consumer organizer surfaces | `organizerFollows/{organizerId_uid}` and `organizers/{organizerId}.followerCount` plus legacy shadows | Canonical consumer relationship; never stored in entity/user arrays. |
+| `manageWebsiteAccount` | Callable | Website onboarding and event/follow continuation | Private `users/{uid}` identity; reads own follow and public event age policy | Live Auth phone, disabled/deleted-account guards, UID and profile-revision fences. Name and phone only; optional real DOB; no social visibility or marketing opt-in. |
+| `followOrganizer` / `unfollowOrganizer` / `setOrganizerNotificationPreference` | Callable | Website and Flutter consumer organizer surfaces | `organizerFollows/{organizerId_uid}` and `organizers/{organizerId}.followerCount` plus legacy shadows | Canonical consumer relationship; never stored in entity/user arrays. |
 | `addOrganizerManager` / `removeOrganizerManager` / `transferOrganizerOwnership` | Callable | Flutter Hosts team workspace | `organizerTeamMemberships`, organizer ownership/host projections, legacy shadows | Owner-controlled team membership and audited ownership transfer. |
 | `createOrganizerPost` | Callable | Flutter organizer posts repository | `organizers/{organizerId}/posts/{postId}`, `organizerPostDeliveryOperations/{postId}`, organizer Activity, preference-gated FCM, legacy shadows | Manager-authored, moderated, bounded follower update. A required client-generated request id deterministically owns the post and atomically creates a retry operation, so a lost callable response cannot duplicate the post or consume quota twice. Immediate delivery processes one bounded follower page; deterministic de-identified recipient receipts make cursor replay safe. |
 | `dispatchPendingOrganizerFollowerUpdates` | Scheduled every 5 minutes | Backend | `organizerPostDeliveryOperations`, `organizerPostDeliveryRecipients`, organizer Activity, preference-gated FCM | Resumes pending or expired-lease follower-update delivery. Activity creation is deterministic and durable; push remains best-effort and is never repeated when a prior attempt's outcome is unknowable. Deleted accounts, the author, and blocked relationships are excluded. |
@@ -551,6 +552,35 @@ Internal demo tooling marks source documents with `demoOps`, `demoOpsId`,
 projections should copy those fields through
 `functions/src/shared/demoMetadata.ts` so cleanup and single-user reset commands
 can remove derived demo activity precisely.
+
+### Travel-triggered staff activity
+
+`programTravelLegMoments` immediately creates a stable occurrence from the
+CloudEvent source, ID, fact kind, leg and Moment identity. A later Moment edit
+does not create another occurrence for the same event. The committed run freezes
+its original revision and six-hour send window. `programActivityDelivery.ts`
+uses the existing delivery outbox for staff Activity and FCM; at most three
+attempts may recover work proven not to have reached provider I/O, subject to
+current program, Moment, scoped duty, user, preference and endpoint checks.
+Unknown provider outcomes never resend. Local Activity receipts name the local
+document and preserve read state; they do not claim FCM acceptance.
+
+The existing five-minute Moment sweep repairs committed receipts before current
+send-policy checks. An SDK-settled unknown result is distinct from an interrupted
+or still-running invocation. Provisional unknowns and missing receipt projections
+keep the run planned for reconciliation, even after expiry; their next wake moves
+five minutes ahead without renewing sending authority. A crashed worker or failed
+receipt write may therefore need indefinite reconciliation until stronger evidence
+exists. Expiry alone never proves that an SDK invocation has finished.
+
+Legacy status-keyed runs have no authoritative event identity. An incoming event
+at or before the old run's recorded wake time, or a malformed old wake time, is
+conservatively held. Old wake times may have been deferred, so this can withhold
+genuine historical events and is not exact replay proof. Later genuine events
+remain eligible. No historical replay or migration is implied. Trigger platform
+retries preserve the same CloudEvent identity and resume incomplete ingestion;
+they do not renew the send window or authorize resending an unknown outcome.
+Source publication does not establish deployment or provider acceptance.
 
 ## Audience automations
 
