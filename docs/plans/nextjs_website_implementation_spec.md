@@ -35,7 +35,11 @@ retaining them does not decide broader browser/native product scope.
 Inspected base: `954e09ffa6619161e9b1ea6fe86533c880c42460` on fetched
 `origin/main`. All target behavior below is proposed until verified in code.
 No Next.js runtime, infrastructure or production cutover is established by this
-document. The isolated branch is `codex/nextjs-public-website`.
+document. The isolated branch is `codex/nextjs-public-website`. The first source
+module, `website/src/server/publicReadPolicy.ts`, implements publication gates,
+bounded IDs/organizer paths and safe JSON-LD/HTTPS serialization policy. It is
+not yet connected to a runtime data adapter or page; policy tests alone do not
+establish server-rendered access isolation.
 
 Source owners: `website/src/app/routeRegistry.ts`, `website/src/app/App.tsx`,
 `design/website/routes.json`, `design/website/components.json`,
