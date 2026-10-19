@@ -97,6 +97,37 @@ try {
   assert(new URL(page.url()).searchParams.get("q")?.includes("no-matching"));
   await field.fill("Next proof");
   await page.locator('a[href="/organizers/next-proof/"]').first().waitFor({state: "visible"});
+  await page.goto(origin + "/host/");
+  const menu = page.getByRole("button", {name: "Menu", exact: true});
+  for (let step = 0; step < 10 && !await menu.evaluate(node => node === document.activeElement); step++) await page.keyboard.press("Tab");
+  assert(await menu.evaluate(node => node === document.activeElement), "Menu must be reachable by keyboard");
+  await page.keyboard.press("Enter");
+  const dialog = page.getByRole("dialog");
+  const close = dialog.getByRole("button", {name: "Close", exact: true});
+  assert(await close.evaluate(node => node === document.activeElement));
+  await page.keyboard.press("Shift+Tab");
+  assert(await dialog.getByRole("link", {name: "Apply for a pilot", exact: true}).evaluate(node => node === document.activeElement));
+  await page.keyboard.press("Tab");
+  assert(await close.evaluate(node => node === document.activeElement));
+  await page.keyboard.press("Escape");
+  assert(await menu.evaluate(node => node === document.activeElement));
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Tab");
+  assert(await dialog.getByRole("link", {name: "Find events", exact: true}).evaluate(node => node === document.activeElement));
+  await page.keyboard.press("Enter");
+  await page.waitForURL("**/explore/");
+  await page.goBack();
+  assert.equal(new URL(page.url()).pathname, "/host/");
+  await page.setViewportSize({width: 1440, height: 1000});
+  await page.getByRole("link", {name: "How it works", exact: true}).first().click();
+  await page.waitForURL("**/host/#how-it-works");
+  await page.locator("#how-it-works").waitFor();
+  await page.waitForFunction(() => {
+    const bounds = document.getElementById("how-it-works").getBoundingClientRect();
+    return bounds.top >= 0 && bounds.top < innerHeight;
+  });
+  await page.goBack(); await page.waitForURL(url => url.pathname === "/host/" && url.hash === "");
+  await page.goForward(); await page.waitForURL("**/host/#how-it-works");
   await page.goto(origin + "/organizers/next-proof/");
   await db.doc("organizers/next-proof").update({"publicPage.publishStatus": "removed"});
   await check("/organizers/next-proof/", 404);
@@ -110,7 +141,7 @@ try {
   assert(noindex.text.includes('content="noindex, follow"'));
   assert(!(await check("/sitemap.xml", 200)).text.includes("next-proof"));
   assert.deepEqual(errors, []);
-  console.log(JSON.stringify({passed: true, http: results, browser: ["no-JS content", "desktop/mobile", "share", "directory filter", "live withdrawal", "no hydration errors"]}, null, 2));
+  console.log(JSON.stringify({passed: true, http: results, browser: ["no-JS content", "desktop/mobile", "share", "directory filter", "keyboard menu/focus trap", "back/forward/hash navigation", "live withdrawal", "no hydration errors"]}, null, 2));
 } finally {
   await browser?.close();
   await db.doc("organizers/next-proof").set(organizer);
