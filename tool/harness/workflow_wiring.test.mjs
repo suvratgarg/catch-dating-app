@@ -943,7 +943,9 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   const rootScripts = repositorySnapshot.readJson("package.json", {required: true}).scripts;
   assert.equal(rootScripts["web:marketing:build"], "npm --workspace catch-marketing run build");
   const scripts = repositorySnapshot.readJson("website/package.json", {required: true}).scripts;
-  assert.equal(scripts.build, "npm run typecheck && vite build && node scripts/postbuild.mjs");
+  assert.equal(scripts.build, "npm run typecheck && vite build && node scripts/postbuild.mjs && npm run build:next");
+  assert.equal(scripts["build:next"], "node scripts/next/buildPrivateShell.mjs && next build --webpack");
+  assert.ok(scripts.pretypecheck.includes("npm run test:next-policy"));
   assert.match(scripts.pretypecheck, /npm run check:organizer-listings && npm run check:routes && npm run check:components/u);
   assert.equal(scripts["test:visual"], "node ../tool/web/check_storybook_visuals.mjs --surface website --check && node ../tool/web/check_storybook_visuals.mjs --surface webui --check");
   assert.equal(scripts["test:storybook:a11y"], "STORYBOOK_DISABLE_TELEMETRY=1 vitest run --project=storybook");
