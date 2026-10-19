@@ -59,6 +59,35 @@ void main() {
     );
   }
 
+  test(
+    'minimal identity can book unrestricted events without age or photos',
+    () {
+      const user = UserProfile(
+        uid: 'minimal',
+        profileComplete: false,
+        name: 'Ada',
+        phoneNumber: '+919876543210',
+      );
+      expect(
+        EventService.eligibilityFor(buildEvent(), user, now: referenceNow),
+        isA<Eligible>(),
+      );
+      for (final constraints in [
+        const EventConstraints(minAge: 18),
+        const EventConstraints(maxMen: 5),
+      ]) {
+        expect(
+          EventService.eligibilityFor(
+            buildEvent(constraints: constraints),
+            user,
+            now: referenceNow,
+          ),
+          isA<ProfileDetailsRequired>(),
+        );
+      }
+    },
+  );
+
   // ── #13: EventPast ──────────────────────────────────────────────────────────
 
   test(

@@ -33,12 +33,13 @@ export function usePublicCheckoutController(
   inviteToken: string | null,
   allowNewBookings = true,
   initialPaymentId: string | null = null,
+  initialDisplayName = "",
 ) {
   const [phase, setPhase] = useState<Phase>("loading");
   const [user, setUser] = useState<User | null | undefined>(undefined);
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
-  const [name, setName] = useState("");
+  const [name, setName] = useState(initialDisplayName);
   const [nameLocked, setNameLocked] = useState(false);
   const [quote, setQuote] = useState<PublicQuote | null>(null);
   const [payment, setPayment] = useState<PublicPayment | null>(null);
@@ -127,7 +128,7 @@ export function usePublicCheckoutController(
       setAdmission(null);
       setCancellationReview(null);
       setPreviousPayment(null);
-      setName("");
+      setName(initialDisplayName);
       setNameLocked(false);
       setCode("");
       setStatus({ message: "", tone: "" });

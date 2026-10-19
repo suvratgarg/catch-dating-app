@@ -40,11 +40,13 @@ export function PublicPaidEventRegistration({
   inviteToken,
   allowNewBookings = true,
   initialPaymentId = null,
+  initialDisplayName = "",
 }: {
   eventId: string;
   inviteToken: string | null;
   allowNewBookings?: boolean;
   initialPaymentId?: string | null;
+  initialDisplayName?: string;
 }) {
   return (
     <PublicPaidRegistrationView
@@ -53,6 +55,7 @@ export function PublicPaidEventRegistration({
         inviteToken,
         allowNewBookings,
         initialPaymentId,
+        initialDisplayName,
       )}
     />
   );

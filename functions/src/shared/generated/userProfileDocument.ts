@@ -17,11 +17,11 @@ export interface UserProfileDocument {
   /**
    * Serialized Firestore Timestamp fixture shape.
    */
-  dateOfBirth: {
+  dateOfBirth?: {
     _seconds: number;
     _nanoseconds: number;
   };
-  gender: "man" | "woman" | "nonBinary" | "other";
+  gender?: "man" | "woman" | "nonBinary" | "other";
   phoneNumber: string;
   countryCode?: string;
   profileRevision?: number;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -20,7 +22,7 @@ UserProfile _identityIncompleteUser() => UserProfile(
   name: 'New Runner',
   dateOfBirth: DateTime(1995, 6, 15),
   gender: Gender.man,
-  phoneNumber: '+910000000000',
+  phoneNumber: '',
   profileComplete: false,
 );
 
@@ -44,10 +46,219 @@ String? _redirect({
   );
 }
 
+// Public provider transitions produce combined states without internal APIs.
+Future<AsyncValue<UserProfile?>> _profileFailure({
+  bool previousKnown = false,
+  UserProfile? previous,
+  bool retry = false,
+}) async {
+  var pending = Completer<UserProfile?>();
+  final provider = FutureProvider<UserProfile?>((ref) => pending.future);
+  final container = ProviderContainer(retry: (_, _) => null);
+  try {
+    container.listen(provider, (_, _) {});
+    if (previousKnown) {
+      pending.complete(previous);
+      await container.read(provider.future);
+      pending = Completer<UserProfile?>();
+      container.invalidate(provider);
+    }
+    final failed = container.read(provider.future);
+    pending.completeError(StateError('profile unavailable'), StackTrace.empty);
+    await expectLater(failed, throwsStateError);
+    if (retry) {
+      pending = Completer<UserProfile?>();
+      container.invalidate(provider);
+    }
+    final snapshot = container.read(provider);
+    expect(
+      (
+        snapshot.hasValue,
+        snapshot.isLoading,
+        snapshot.hasError,
+        snapshot.value,
+      ),
+      (previousKnown, retry, true, previous),
+    );
+    expect(snapshot.error, isStateError);
+    return snapshot;
+  } finally {
+    container.dispose();
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
+  group('profile-read recovery before protected routes', () {
+    const destination = '/payment-history?source=receipt';
+    final loading = Uri(
+      path: '/loading',
+      queryParameters: {'from': destination},
+    ).toString();
+    final failure = AsyncError<UserProfile?>(
+      StateError('profile unavailable'),
+      StackTrace.empty,
+    );
+
+    test(
+      'initial and cached-null failures retain the intended destination',
+      () async {
+        for (final profile in [
+          failure,
+          await _profileFailure(previousKnown: true),
+          await _profileFailure(retry: true),
+        ]) {
+          for (final location in [
+            destination,
+            Uri(
+              path: '/onboarding',
+              queryParameters: {'from': destination},
+            ).toString(),
+          ]) {
+            expect(
+              _redirect(
+                uidAsync: const AsyncData(_testUid),
+                userProfileAsync: profile,
+                location: location,
+              ),
+              loading,
+            );
+          }
+          expect(
+            _redirect(
+              uidAsync: const AsyncData(_testUid),
+              userProfileAsync: profile,
+              location: loading,
+            ),
+            isNull,
+          );
+        }
+      },
+    );
+
+    test('successful absence still enters onboarding with the same intent', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: const AsyncData(null),
+          location: loading,
+        ),
+        Uri(
+          path: '/onboarding',
+          queryParameters: {'from': destination},
+        ).toString(),
+      );
+    });
+
+    test('cached real profile remains usable after a failed refresh', () async {
+      final profile = await _profileFailure(
+        previousKnown: true,
+        previous: _socialReadyUser(),
+      );
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: profile,
+          location: destination,
+        ),
+        isNull,
+      );
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: profile,
+          location: loading,
+        ),
+        destination,
+      );
+    });
+
+    test('public browsing remains available during profile failure', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: failure,
+          location: Routes.exploreScreen.path,
+        ),
+        isNull,
+      );
+    });
+
+    test('Host routes remain independent of the Consumer profile', () {
+      AppConfig.configureEntrypointRole(AppRole.host);
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: failure,
+          location: Routes.hostTodayScreen.path,
+        ),
+        isNull,
+      );
+    });
+
+    for (final intent in ['complete-profile', 'complete-run-preferences']) {
+      test(
+        '$intent survives error and retry when returning to own account',
+        () async {
+          final onboarding = Uri(
+            path: '/onboarding',
+            queryParameters: {'intent': intent, 'from': '/you'},
+          ).toString();
+          final blocked = _redirect(
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: failure,
+            location: onboarding,
+          )!;
+          final blockedUri = Uri.parse(blocked);
+          expect(blockedUri.path, '/loading');
+          expect(blockedUri.queryParameters, {
+            'intent': intent,
+            'from': '/you',
+          });
+          for (final profile in [failure, await _profileFailure(retry: true)]) {
+            expect(
+              _redirect(
+                uidAsync: const AsyncData(_testUid),
+                userProfileAsync: profile,
+                location: blocked,
+              ),
+              isNull,
+            );
+          }
+          final incomplete = _bookingReadyUser().copyWith(
+            activityPreferences: const ActivityPreferences(),
+          );
+          expect(
+            _redirect(
+              uidAsync: const AsyncData(_testUid),
+              userProfileAsync: AsyncData(incomplete),
+              location: blocked,
+            ),
+            onboarding,
+          );
+          expect(
+            _redirect(
+              uidAsync: const AsyncData(_testUid),
+              userProfileAsync: AsyncData(incomplete),
+              location: onboarding,
+            ),
+            isNull,
+          );
+          expect(
+            _redirect(
+              uidAsync: const AsyncData(_testUid),
+              userProfileAsync: AsyncData(_socialReadyUser()),
+              location: onboarding,
+            ),
+            '/you',
+          );
+        },
+      );
+    }
+  });
 
   group('own account access before profile setup', () {
     for (final path in [

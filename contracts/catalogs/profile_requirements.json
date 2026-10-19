@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "kind": "profileRequirements",
+  "description": "Information requested per capability. Storage defaults are not questions. Phone ownership must be verified by the authentication authority before account writes or privileged actions.",
+  "capabilities": {
+    "account": {
+      "required": [
+        "name",
+        "phoneNumber"
+      ]
+    },
+    "organizerFollow": {
+      "extends": "account",
+      "required": []
+    },
+    "eventBooking": {
+      "extends": "account",
+      "required": []
+    },
+    "socialIdentity": {
+      "extends": "account",
+      "required": [
+        "dateOfBirth",
+        "gender",
+        "interestedInGenders"
+      ]
+    },
+    "socialDiscovery": {
+      "extends": "socialIdentity",
+      "required": [
+        "profilePhotos",
+        "profilePrompts",
+        "profileComplete"
+      ]
+    }
+  },
+  "eventRequirements": {
+    "ageRestricted": [
+      "dateOfBirth"
+    ],
+    "cohortRestricted": [
+      "gender",
+      "interestedInGenders"
+    ]
+  },
+  "optionalAccountFields": [
+    "dateOfBirth"
+  ],
+  "eventAgePolicy": {
+    "unrestrictedMinimum": 0,
+    "openEndedMaximum": 99
+  }
+}

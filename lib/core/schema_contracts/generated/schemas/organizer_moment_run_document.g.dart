@@ -22,6 +22,22 @@ const schemaOrganizerMomentRunDocumentSchema = <String, Object?>{
     'anchorRevision',
     'status',
   ],
+  'if': <String, Object?>{
+    'properties': <String, Object?>{
+      'runId': <String, Object?>{
+        'pattern': '^travel_v1_[a-f0-9]{64}\$',
+      },
+    },
+    'required': <Object?>[
+      'runId',
+    ],
+  },
+  'then': <String, Object?>{
+    'required': <Object?>[
+      'travelOccurrence',
+      'expiresAtMillis',
+    ],
+  },
   'properties': <String, Object?>{
     'runId': <String, Object?>{
       'type': 'string',
@@ -135,6 +151,33 @@ const schemaOrganizerMomentRunDocumentSchema = <String, Object?>{
         'null',
       ],
       'minimum': 0,
+    },
+    'travelOccurrence': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'momentRevision',
+        'occurredAtMillis',
+        'createdAtMillis',
+      ],
+      'properties': <String, Object?>{
+        'momentRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'occurredAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'createdAtMillis': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+      },
+      'description': 'Immutable first-ingestion Moment revision, CloudEvent instant and committed recovery-window origin; never renewed by due-time deferral.',
     },
     'automation': <String, Object?>{
       'type': <Object?>[

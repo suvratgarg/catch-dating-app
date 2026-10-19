@@ -3,6 +3,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_domain_readiness.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/domain/event_profile_requirements.dart';
 import 'package:catch_dating_app/events/domain/event_service.dart';
 import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
@@ -23,6 +24,7 @@ enum ViewerEventAvailabilityStatus {
   inviteRequired,
   membershipRequired,
   runPreferencesRequired,
+  profileRequired,
   ageRestricted,
   past,
   cancelled,
@@ -69,6 +71,7 @@ class ViewerEventAvailability {
       status == ViewerEventAvailabilityStatus.inviteRequired ||
       status == ViewerEventAvailabilityStatus.membershipRequired ||
       status == ViewerEventAvailabilityStatus.runPreferencesRequired ||
+      status == ViewerEventAvailabilityStatus.profileRequired ||
       status == ViewerEventAvailabilityStatus.ageRestricted ||
       status == ViewerEventAvailabilityStatus.past ||
       status == ViewerEventAvailabilityStatus.cancelled;
@@ -152,15 +155,25 @@ ViewerEventAvailability resolveViewerEventAvailability({
     );
   }
 
+  if (!event.hasRequiredProfileDetails(userProfile, referenceNow)) {
+    return base.build(
+      ViewerEventAvailabilityStatus.profileRequired,
+      eligibility: const ProfileDetailsRequired(),
+    );
+  }
   final userAge = userProfile.ageOn(referenceNow);
-  if (userAge < event.constraints.minAge) {
+  if (event.requiresAgeDetails &&
+      userAge != null &&
+      userAge < event.constraints.minAge) {
     return base.build(
       ViewerEventAvailabilityStatus.ageRestricted,
       eligibility: AgeTooYoung(event.constraints.minAge),
       ageLimit: event.constraints.minAge,
     );
   }
-  if (userAge > event.constraints.maxAge) {
+  if (event.requiresAgeDetails &&
+      userAge != null &&
+      userAge > event.constraints.maxAge) {
     return base.build(
       ViewerEventAvailabilityStatus.ageRestricted,
       eligibility: AgeTooOld(event.constraints.maxAge),
@@ -282,6 +295,8 @@ ViewerEventAvailability viewerEventAvailabilityFromState({
             ? ViewerEventAvailabilityStatus.saved
             : ViewerEventAvailabilityStatus.open
       : switch (viewer.restriction!) {
+          EventViewerRestriction.bookingDetailsRequired =>
+            ViewerEventAvailabilityStatus.profileRequired,
           EventViewerRestriction.membershipRequired =>
             ViewerEventAvailabilityStatus.membershipRequired,
           EventViewerRestriction.inviteRequired =>
@@ -325,11 +340,11 @@ ViewerEventAvailability viewerEventAvailabilityFromState({
     ViewerEventAvailabilityStatus.fullForViewer =>
       const GenderCapacityReached(),
     ViewerEventAvailabilityStatus.ageRestricted =>
-      userProfile == null
+      userProfile?.ageOn(now) == null
           ? null
-          : userProfile.ageOn(now) < event.constraints.minAge
+          : userProfile!.ageOn(now)! < event.constraints.minAge
           ? AgeTooYoung(event.constraints.minAge)
-          : userProfile.ageOn(now) > event.constraints.maxAge
+          : userProfile.ageOn(now)! > event.constraints.maxAge
           ? AgeTooOld(event.constraints.maxAge)
           : null,
     ViewerEventAvailabilityStatus.open ||
