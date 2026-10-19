@@ -77,3 +77,20 @@ describe("Host adoption layers", () => {
     expect(within(local).getByRole("link", {name: copy.apply}).getAttribute("href")).toBe("/host/apply/");
   });
 });
+
+
+it("preserves optional participation, guest privacy and existing-tool guidance", () => {
+  render(<HostPage captures={{}} />);
+  expect(screen.getByRole("heading", {name: copy.participation.title})).toBeTruthy();
+  expect(screen.getByText(copy.participation.body)).toBeTruthy();
+  for (const item of copy.participation.items) {
+    expect(screen.getByRole("heading", {name: item.title})).toBeTruthy();
+    expect(screen.getByText(item.body)).toBeTruthy();
+  }
+  expect(screen.getByRole("heading", {name: copy.insights.privacyTitle})).toBeTruthy();
+  expect(screen.getByText(copy.insights.privacyBody)).toBeTruthy();
+  expect(screen.getByText(copy.adoption.toolsBody)).toBeTruthy();
+  const disclosure = screen.getByText(copy.adoption.toolsSummary).closest("details");
+  expect(disclosure).toBeTruthy();
+  expect(disclosure?.querySelectorAll("h4").length).toBeGreaterThan(0);
+});

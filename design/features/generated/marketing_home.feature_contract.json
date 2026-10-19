@@ -2,24 +2,24 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/marketing_home.feature.json",
-  "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:157156bb6592a8645ac78da982ec86ed01e499341d544082eeaf3c15bb4de52c",
-  "resolvedDigest": "sha256:0b74c4f75b144f3eb5cd3e69f78811f1564917e377bf94cbce59fc823686a126",
+  "generatedFor": "2026-10-20",
+  "sourceDigest": "sha256:f0c3315dd6c8a6f5122973f276957f2492d4f422417899a092b0d3a616ff9414",
+  "resolvedDigest": "sha256:6cc6f1d6e4822e12ead6d552a6a82ac7316d864ca53edb8f1c279780759c92ed",
   "feature": {
     "id": "feature.marketing_home",
     "name": "Marketing Home",
     "owner": "marketing_website",
     "status": "pilot",
-    "description": "Preserves visitor discovery, organizer/event handoffs, store availability and member waitlist at /explore/."
+    "description": "Consumer homepage and full event discovery with public city/format filters, catalogue failure and empty states, and explicit Catch Experience participation eligibility."
   },
   "coverage": {
-    "surfaces": 1,
-    "states": 3,
-    "scenarios": 3,
-    "actionCases": 7,
-    "actions": 9,
+    "surfaces": 2,
+    "states": 12,
+    "scenarios": 12,
+    "actionCases": 12,
+    "actions": 4,
     "captures": 0,
-    "previews": 3,
+    "previews": 2,
     "testFiles": 4,
     "evidenceExceptions": 0
   },
@@ -32,300 +32,141 @@
         "id": "visitor_discovery"
       },
       "actionScope": {
-        "included": "Organizer and public-event discovery handoffs, Host acquisition routing, configured or unavailable store CTAs, and member waitlist submission.",
+        "included": "Public discovery filter selection and recovery; source availability, empty results and Catch Experience eligibility remain explicit.",
         "excluded": [
-          "In-page section anchors, consent choices, and footer legal links retain shared site-shell ownership.",
-          "Waitlist field edits and first-focus analytics are form data and telemetry rather than separately cardinalized product actions."
+          "Event/profile/Host link navigation, native disclosure controls, catalogue retry and mobile-menu focus/navigation retain their existing link, presentation and shared-chrome owners."
         ]
       },
       "bindings": {
         "previewSources": [
-          "website/src/stories/HomeSections.stories.tsx",
-          "website/src/stories/MarketingPrimitives.stories.tsx",
-          "website/src/stories/MarketingRoutes.stories.tsx",
-          "website/src/stories/WaitlistForm.stories.tsx"
+          "website/src/stories/MarketingRoutes.stories.tsx"
         ],
         "actionOwners": [
           {
-            "id": "home_sections",
+            "id": "discovery_controller",
             "language": "typescript",
-            "file": "website/src/features/home/sections/HomePageSections.tsx",
-            "symbol": "HomeDiscoverySection"
-          },
-          {
-            "id": "app_download_controller",
-            "language": "typescript",
-            "file": "website/src/features/marketing/useAppDownloadCtas.ts",
-            "symbol": "useAppDownloadCtas"
-          },
-          {
-            "id": "waitlist_controller",
-            "language": "typescript",
-            "file": "website/src/features/waitlist/useWaitlistFormController.ts",
-            "symbol": "useWaitlistFormController"
+            "file": "website/src/features/home/useExploreController.ts",
+            "symbol": "useExploreController"
           }
         ],
         "componentContracts": [
-          "route_visitor_discovery",
-          "home_discovery_section",
-          "home_waitlist_section",
-          "shared_app_download_shell",
-          "waitlist_form_adapter"
+          "route_visitor_discovery"
         ],
         "dataContracts": [
-          "contracts/public/website_host_listing_projection.schema.json",
-          "contracts/http/join_waitlist_request.schema.json",
-          "contracts/http/join_waitlist_response.schema.json"
+          "contracts/public/website_host_listing_projection.schema.json"
         ],
         "testEvidence": {
           "default": [
-            "website/src/features/marketing/tracking.test.ts",
-            "website/src/features/organizers/publicDiscovery.test.ts"
+            "website/src/features/home/useExploreController.test.tsx"
           ],
-          "app-download-pending": [
-            "website/src/features/marketing/useAppDownloadCtas.test.tsx"
+          "empty-city": [
+            "website/src/features/home/useExploreController.test.tsx"
           ],
-          "waitlist-form": [
-            "website/src/features/waitlist/useWaitlistFormController.test.tsx"
+          "no-results": [
+            "website/src/features/home/useExploreController.test.tsx"
+          ],
+          "experience-filter": [
+            "website/src/features/home/useExploreController.test.tsx"
+          ],
+          "catalog-unavailable": [
+            "website/src/features/home/useExploreController.test.tsx"
+          ],
+          "search-and-date": [
+            "website/src/features/home/useExploreController.test.tsx"
+          ],
+          "mobile-menu": [
+            "website/src/shared/site/PublicSiteChrome.test.tsx"
           ]
         }
       },
       "coverage": {
-        "states": 3,
-        "scenarios": 3,
+        "states": 7,
+        "scenarios": 7,
         "actionCases": 7,
-        "actions": 9,
+        "actions": 2,
         "captures": 0,
-        "previews": 3,
-        "testFiles": 4,
+        "previews": 1,
+        "testFiles": 2,
         "evidenceExceptions": 0
       },
       "dimensions": {
-        "presentation": {
-          "default": "default",
+        "content": {
+          "default": "populated",
           "values": [
-            "default",
-            "app_download",
-            "waitlist"
+            "populated",
+            "empty_city",
+            "no_results"
           ]
         },
-        "store": {
-          "default": "mixed",
+        "load": {
+          "default": "ready",
           "values": [
-            "mixed",
-            "configured",
+            "ready",
             "unavailable"
           ]
         },
-        "waitlist": {
-          "default": "idle",
+        "navigation": {
+          "default": "closed",
           "values": [
-            "idle",
-            "pending",
-            "validation_error",
-            "failed",
-            "success"
+            "closed",
+            "mobile_menu"
+          ]
+        },
+        "filters": {
+          "default": "default",
+          "values": [
+            "default",
+            "experience",
+            "search_date"
           ]
         }
       },
       "actions": [
         {
-          "id": "browse_organizers",
-          "owner": "home_sections",
-          "codeValue": "trackCtaClick",
+          "id": "update_discovery_filters",
+          "owner": "discovery_controller",
+          "codeValue": "update",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
-            "placement"
-          ],
-          "outcomes": [
-            {
-              "kind": "route",
-              "authority": {
-                "registry": "marketing_routes",
-                "id": "organizer_search"
-              }
-            }
-          ],
-          "description": "Opens the public organizer directory from Home hero, discovery, empty, or featured-organizer affordances.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "open_host_acquisition",
-          "owner": "home_sections",
-          "codeValue": "trackCtaClick",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "routeInstanceId",
-            "placement"
-          ],
-          "outcomes": [
-            {
-              "kind": "route",
-              "authority": {
-                "registry": "marketing_routes",
-                "id": "host"
-              }
-            }
-          ],
-          "description": "Opens the canonical Host acquisition page and records the CTA placement.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "submit_public_search",
-          "owner": "home_sections",
-          "codeValue": "trackPublicSearchSubmit",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "routeInstanceId",
-            "queryVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "route",
-              "authority": {
-                "registry": "marketing_routes",
-                "id": "organizer_search"
-              }
-            },
-            {
-              "kind": "side_effect",
-              "id": "analytics.public_search_submitted"
-            }
-          ],
-          "description": "Projects the Home search query into the canonical Organizer Search URL and records the handoff.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "select_public_search_suggestion",
-          "owner": "home_sections",
-          "codeValue": "trackPublicSearchSuggestionClick",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "routeInstanceId",
-            "suggestionId"
-          ],
-          "outcomes": [
-            {
-              "kind": "route",
-              "authority": {
-                "registry": "marketing_routes",
-                "id": "organizer_search"
-              }
-            },
-            {
-              "kind": "route",
-              "authority": {
-                "registry": "marketing_routes",
-                "id": "organizer_listing_canonical"
-              }
-            }
-          ],
-          "description": "Opens a format search or a source-backed organizer/event destination from the public search suggestions.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "open_public_event",
-          "owner": "home_sections",
-          "codeValue": "trackPublicEventCardClick",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "routeInstanceId",
-            "eventId"
-          ],
-          "outcomes": [
-            {
-              "kind": "route",
-              "authority": {
-                "registry": "marketing_routes",
-                "id": "organizer_listing_canonical"
-              }
-            }
-          ],
-          "description": "Opens the source-backed organizer listing event deep link from a Home event card.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "open_featured_organizer",
-          "owner": "home_sections",
-          "codeValue": "featuredOrganizerCardItemForListing",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "routeInstanceId",
-            "organizerId"
-          ],
-          "outcomes": [
-            {
-              "kind": "route",
-              "authority": {
-                "registry": "marketing_routes",
-                "id": "organizer_listing_canonical"
-              }
-            }
-          ],
-          "description": "Opens a canonical listing from the ranked public featured-organizer cards.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "open_store_listing",
-          "owner": "app_download_controller",
-          "codeValue": "handleStoreLinkClick",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "routeInstanceId",
-            "placement",
-            "platform"
-          ],
-          "outcomes": [
-            {
-              "kind": "side_effect",
-              "id": "external.store_listing_opened"
-            }
-          ],
-          "description": "Opens a configured app-store destination and records platform and placement analytics.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "acknowledge_store_unavailable",
-          "owner": "app_download_controller",
-          "codeValue": "handlePendingClick",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "routeInstanceId",
-            "placement",
-            "platform"
-          ],
-          "outcomes": [
-            {
-              "kind": "side_effect",
-              "id": "analytics.store_cta_pending"
-            }
-          ],
-          "description": "Records that a platform CTA has no configured store destination without pretending navigation occurred.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "submit_member_waitlist",
-          "owner": "waitlist_controller",
-          "codeValue": "handleSubmit",
-          "cardinality": "singleton",
-          "scopeKeys": [
-            "formInstanceId",
-            "submissionVersion"
+            "selectionVersion"
           ],
           "outcomes": [
             {
               "kind": "surface_state",
               "stateIds": [
-                "waitlist-form"
+                "default",
+                "empty-city",
+                "no-results",
+                "experience-filter",
+                "catalog-unavailable",
+                "search-and-date"
               ]
-            },
-            {
-              "kind": "side_effect",
-              "id": "marketing.member_waitlist_submitted"
             }
           ],
-          "description": "Validates and submits one normalized member waitlist payload, then renders success or actionable failure status.",
+          "description": "Updates bounded city, format, search, date and Catch Experience filters through the URL-aware controller.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "clear_discovery_filters",
+          "owner": "discovery_controller",
+          "codeValue": "clear",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "selectionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default",
+                "empty-city",
+                "catalog-unavailable"
+              ]
+            }
+          ],
+          "description": "Clears active filters while preserving the selected city.",
           "implementationStatus": "implemented"
         }
       ],
@@ -337,81 +178,10 @@
           "kind": "route_state",
           "status": "previewed",
           "dimensions": {
-            "presentation": "default",
-            "store": "mixed",
-            "waitlist": "idle"
-          },
-          "evidence": {
-            "captureIds": [],
-            "previewIds": [
-              "route_visitor_discovery/VisitorDiscovery",
-              "shared_app_download_shell/AppDownloadCtaGroupStory"
-            ],
-            "tests": [
-              "website/src/features/marketing/tracking.test.ts",
-              "website/src/features/organizers/publicDiscovery.test.ts"
-            ]
-          },
-          "actionCases": [
-            {
-              "id": "configured_store",
-              "dimensions": {
-                "presentation": "default",
-                "store": "configured",
-                "waitlist": "idle"
-              },
-              "actions": {
-                "enabled": [
-                  "browse_organizers",
-                  "open_host_acquisition",
-                  "submit_public_search",
-                  "select_public_search_suggestion",
-                  "open_public_event",
-                  "open_featured_organizer",
-                  "open_store_listing",
-                  "submit_member_waitlist"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "acknowledge_store_unavailable"
-                ]
-              }
-            },
-            {
-              "id": "unavailable_store",
-              "dimensions": {
-                "presentation": "default",
-                "store": "unavailable",
-                "waitlist": "idle"
-              },
-              "actions": {
-                "enabled": [
-                  "browse_organizers",
-                  "open_host_acquisition",
-                  "submit_public_search",
-                  "select_public_search_suggestion",
-                  "open_public_event",
-                  "open_featured_organizer",
-                  "acknowledge_store_unavailable",
-                  "submit_member_waitlist"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "open_store_listing"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "app_download_pending",
-          "stateId": "app-download-pending",
-          "kind": "route_state",
-          "status": "manual",
-          "dimensions": {
-            "presentation": "app_download",
-            "store": "unavailable",
-            "waitlist": "idle"
+            "content": "populated",
+            "load": "ready",
+            "navigation": "closed",
+            "filters": "default"
           },
           "evidence": {
             "captureIds": [],
@@ -419,150 +189,264 @@
               "route_visitor_discovery/VisitorDiscovery"
             ],
             "tests": [
-              "website/src/features/marketing/useAppDownloadCtas.test.tsx"
+              "website/src/features/home/useExploreController.test.tsx"
             ]
           },
           "actionCases": [
             {
-              "id": "store_destination_missing",
+              "id": "default",
               "dimensions": {
-                "presentation": "app_download",
-                "store": "unavailable",
-                "waitlist": "idle"
+                "content": "populated",
+                "load": "ready",
+                "navigation": "closed",
+                "filters": "default"
               },
               "actions": {
                 "enabled": [
-                  "browse_organizers",
-                  "open_host_acquisition",
-                  "submit_public_search",
-                  "select_public_search_suggestion",
-                  "open_public_event",
-                  "open_featured_organizer",
-                  "acknowledge_store_unavailable",
-                  "submit_member_waitlist"
+                  "update_discovery_filters",
+                  "clear_discovery_filters"
                 ],
                 "disabled": [],
-                "notAllowed": [
-                  "open_store_listing"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "id": "waitlist_form",
-          "stateId": "waitlist-form",
-          "kind": "route_state",
-          "status": "manual",
-          "dimensions": {
-            "presentation": "waitlist",
-            "store": "mixed",
-            "waitlist": "idle"
-          },
-          "evidence": {
-            "captureIds": [],
-            "previewIds": [
-              "home_waitlist_section/HomeWaitlistSectionStory",
-              "route_visitor_discovery/VisitorDiscovery"
-            ],
-            "tests": [
-              "website/src/features/waitlist/useWaitlistFormController.test.tsx"
-            ]
-          },
-          "actionCases": [
-            {
-              "id": "idle",
-              "dimensions": {
-                "presentation": "waitlist",
-                "store": "mixed",
-                "waitlist": "idle"
-              },
-              "actions": {
-                "enabled": [
-                  "browse_organizers",
-                  "open_host_acquisition",
-                  "submit_public_search",
-                  "select_public_search_suggestion",
-                  "open_public_event",
-                  "open_featured_organizer",
-                  "submit_member_waitlist"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "open_store_listing",
-                  "acknowledge_store_unavailable"
-                ]
-              }
-            },
-            {
-              "id": "pending_frozen_snapshot",
-              "dimensions": {
-                "presentation": "waitlist",
-                "store": "mixed",
-                "waitlist": "pending"
-              },
-              "actions": {
-                "enabled": [
-                  "acknowledge_store_unavailable"
-                ],
-                "disabled": [
-                  "browse_organizers",
-                  "open_host_acquisition",
-                  "submit_public_search",
-                  "select_public_search_suggestion",
-                  "open_public_event",
-                  "open_featured_organizer",
-                  "open_store_listing",
-                  "submit_member_waitlist"
-                ],
                 "notAllowed": []
               }
-            },
+            }
+          ]
+        },
+        {
+          "id": "empty_city",
+          "stateId": "empty-city",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "content": "empty_city",
+            "load": "ready",
+            "navigation": "closed",
+            "filters": "default"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_visitor_discovery/VisitorDiscovery"
+            ],
+            "tests": [
+              "website/src/features/home/useExploreController.test.tsx"
+            ]
+          },
+          "actionCases": [
             {
-              "id": "validation_or_failure",
+              "id": "default",
               "dimensions": {
-                "presentation": "waitlist",
-                "store": "mixed",
-                "waitlist": "failed"
+                "content": "empty_city",
+                "load": "ready",
+                "navigation": "closed",
+                "filters": "default"
               },
               "actions": {
                 "enabled": [
-                  "browse_organizers",
-                  "open_host_acquisition",
-                  "submit_public_search",
-                  "select_public_search_suggestion",
-                  "open_public_event",
-                  "open_featured_organizer",
-                  "submit_member_waitlist"
+                  "update_discovery_filters",
+                  "clear_discovery_filters"
                 ],
                 "disabled": [],
-                "notAllowed": [
-                  "open_store_listing",
-                  "acknowledge_store_unavailable"
-                ]
+                "notAllowed": []
               }
-            },
+            }
+          ]
+        },
+        {
+          "id": "no_results",
+          "stateId": "no-results",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "content": "no_results",
+            "load": "ready",
+            "navigation": "closed",
+            "filters": "default"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_visitor_discovery/VisitorDiscovery"
+            ],
+            "tests": [
+              "website/src/features/home/useExploreController.test.tsx"
+            ]
+          },
+          "actionCases": [
             {
-              "id": "submitted",
+              "id": "default",
               "dimensions": {
-                "presentation": "waitlist",
-                "store": "mixed",
-                "waitlist": "success"
+                "content": "no_results",
+                "load": "ready",
+                "navigation": "closed",
+                "filters": "default"
               },
               "actions": {
                 "enabled": [
-                  "browse_organizers",
-                  "open_host_acquisition",
-                  "submit_member_waitlist"
+                  "update_discovery_filters",
+                  "clear_discovery_filters"
                 ],
                 "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "experience_filter",
+          "stateId": "experience-filter",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "content": "populated",
+            "load": "ready",
+            "navigation": "closed",
+            "filters": "experience"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_visitor_discovery/VisitorDiscovery"
+            ],
+            "tests": [
+              "website/src/features/home/useExploreController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "content": "populated",
+                "load": "ready",
+                "navigation": "closed",
+                "filters": "experience"
+              },
+              "actions": {
+                "enabled": [
+                  "update_discovery_filters",
+                  "clear_discovery_filters"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "catalog_unavailable",
+          "stateId": "catalog-unavailable",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "content": "populated",
+            "load": "unavailable",
+            "navigation": "closed",
+            "filters": "default"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_visitor_discovery/VisitorDiscovery"
+            ],
+            "tests": [
+              "website/src/features/home/useExploreController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "content": "populated",
+                "load": "unavailable",
+                "navigation": "closed",
+                "filters": "default"
+              },
+              "actions": {
+                "enabled": [
+                  "update_discovery_filters",
+                  "clear_discovery_filters"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "search_and_date",
+          "stateId": "search-and-date",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "content": "populated",
+            "load": "ready",
+            "navigation": "closed",
+            "filters": "search_date"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_visitor_discovery/VisitorDiscovery"
+            ],
+            "tests": [
+              "website/src/features/home/useExploreController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "content": "populated",
+                "load": "ready",
+                "navigation": "closed",
+                "filters": "search_date"
+              },
+              "actions": {
+                "enabled": [
+                  "update_discovery_filters",
+                  "clear_discovery_filters"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "mobile_menu",
+          "stateId": "mobile-menu",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "content": "populated",
+            "load": "ready",
+            "navigation": "mobile_menu",
+            "filters": "default"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_visitor_discovery/VisitorDiscovery"
+            ],
+            "tests": [
+              "website/src/shared/site/PublicSiteChrome.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "content": "populated",
+                "load": "ready",
+                "navigation": "mobile_menu",
+                "filters": "default"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
                 "notAllowed": [
-                  "submit_public_search",
-                  "select_public_search_suggestion",
-                  "open_public_event",
-                  "open_featured_organizer",
-                  "open_store_listing",
-                  "acknowledge_store_unavailable"
+                  "update_discovery_filters",
+                  "clear_discovery_filters"
                 ]
               }
             }
@@ -587,77 +471,398 @@
               "exportName": "VisitorDiscovery",
               "states": [
                 "default",
-                "app-download-pending",
-                "waitlist-form"
-              ]
-            }
-          },
-          {
-            "id": "home_discovery_section",
-            "kind": "section",
-            "source": "website/src/features/home/sections/HomePageSections.tsx",
-            "exportName": "HomeDiscoverySection",
-            "storybook": {
-              "status": "ready",
-              "story": "website/src/stories/HomeSections.stories.tsx",
-              "exportName": "HomeDiscoverySectionStory",
-              "states": [
-                "event-grid",
-                "search-suggestions",
-                "empty-state"
-              ]
-            }
-          },
-          {
-            "id": "home_waitlist_section",
-            "kind": "section",
-            "source": "website/src/features/home/sections/HomePageSections.tsx",
-            "exportName": "HomeWaitlistSection",
-            "storybook": {
-              "status": "ready",
-              "story": "website/src/stories/HomeSections.stories.tsx",
-              "exportName": "HomeWaitlistSectionStory",
-              "states": [
-                "waitlist-form"
-              ]
-            }
-          },
-          {
-            "id": "shared_app_download_shell",
-            "kind": "supporting-component",
-            "source": "website/src/shared/ui/primitives/actions.tsx",
-            "exportName": "AppDownloadCtaGroup",
-            "storybook": {
-              "status": "ready",
-              "story": "website/src/stories/MarketingPrimitives.stories.tsx",
-              "exportName": "AppDownloadCtaGroupStory",
-              "states": [
-                "default",
-                "panel",
-                "pending-status"
-              ]
-            }
-          },
-          {
-            "id": "waitlist_form_adapter",
-            "kind": "flow",
-            "source": "website/src/features/waitlist/WaitlistForm.tsx",
-            "exportName": "WaitlistForm",
-            "storybook": {
-              "status": "ready",
-              "story": "website/src/stories/WaitlistForm.stories.tsx",
-              "exportName": "MemberWaitlistForm",
-              "states": [
-                "member",
-                "host"
+                "empty-city",
+                "no-results",
+                "experience-filter",
+                "catalog-unavailable",
+                "search-and-date",
+                "mobile-menu"
               ]
             }
           }
         ],
         "previews": [
-          "home_waitlist_section/HomeWaitlistSectionStory",
-          "route_visitor_discovery/VisitorDiscovery",
-          "shared_app_download_shell/AppDownloadCtaGroupStory"
+          "route_visitor_discovery/VisitorDiscovery"
+        ]
+      }
+    },
+    {
+      "id": "consumer_home",
+      "runtime": "react_marketing",
+      "authority": {
+        "registry": "marketing_routes",
+        "id": "home"
+      },
+      "actionScope": {
+        "included": "Public discovery filter selection and recovery; source availability, empty results and Catch Experience eligibility remain explicit.",
+        "excluded": [
+          "Event/profile/Host link navigation, native disclosure controls, catalogue retry and mobile-menu focus/navigation retain their existing link, presentation and shared-chrome owners."
+        ]
+      },
+      "bindings": {
+        "previewSources": [
+          "website/src/stories/MarketingRoutes.stories.tsx"
+        ],
+        "actionOwners": [
+          {
+            "id": "discovery_controller",
+            "language": "typescript",
+            "file": "website/src/features/home/useConsumerHomeController.ts",
+            "symbol": "useConsumerHomeController"
+          }
+        ],
+        "componentContracts": [
+          "route_home"
+        ],
+        "dataContracts": [
+          "contracts/public/website_host_listing_projection.schema.json"
+        ],
+        "testEvidence": {
+          "default": [
+            "website/src/features/home/HomePage.test.tsx",
+            "website/src/features/home/useConsumerHomeController.test.tsx"
+          ],
+          "empty-city": [
+            "website/src/features/home/HomePage.test.tsx",
+            "website/src/features/home/useConsumerHomeController.test.tsx"
+          ],
+          "catalog-unavailable": [
+            "website/src/features/home/HomePage.test.tsx",
+            "website/src/features/home/useConsumerHomeController.test.tsx"
+          ],
+          "city-and-format": [
+            "website/src/features/home/HomePage.test.tsx",
+            "website/src/features/home/useConsumerHomeController.test.tsx"
+          ],
+          "mobile-menu": [
+            "website/src/shared/site/PublicSiteChrome.test.tsx"
+          ]
+        }
+      },
+      "coverage": {
+        "states": 5,
+        "scenarios": 5,
+        "actionCases": 5,
+        "actions": 2,
+        "captures": 0,
+        "previews": 1,
+        "testFiles": 3,
+        "evidenceExceptions": 0
+      },
+      "dimensions": {
+        "content": {
+          "default": "populated",
+          "values": [
+            "populated",
+            "empty_city",
+            "no_results"
+          ]
+        },
+        "load": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "unavailable"
+          ]
+        },
+        "navigation": {
+          "default": "closed",
+          "values": [
+            "closed",
+            "mobile_menu"
+          ]
+        },
+        "filters": {
+          "default": "default",
+          "values": [
+            "default",
+            "active"
+          ]
+        }
+      },
+      "actions": [
+        {
+          "id": "select_city",
+          "owner": "discovery_controller",
+          "codeValue": "selectCity",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "selectionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default",
+                "empty-city",
+                "catalog-unavailable",
+                "city-and-format"
+              ]
+            }
+          ],
+          "description": "Changes the discovery city and clears the format choice for the new city.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "select_format",
+          "owner": "discovery_controller",
+          "codeValue": "setCategory",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "selectionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "default",
+                "empty-city",
+                "catalog-unavailable",
+                "city-and-format"
+              ]
+            }
+          ],
+          "description": "Filters the event preview and retains the selected format in the Explore destination.",
+          "implementationStatus": "implemented"
+        }
+      ],
+      "evidenceExceptions": [],
+      "scenarios": [
+        {
+          "id": "default",
+          "stateId": "default",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "content": "populated",
+            "load": "ready",
+            "navigation": "closed",
+            "filters": "default"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_home/Home"
+            ],
+            "tests": [
+              "website/src/features/home/HomePage.test.tsx",
+              "website/src/features/home/useConsumerHomeController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "content": "populated",
+                "load": "ready",
+                "navigation": "closed",
+                "filters": "default"
+              },
+              "actions": {
+                "enabled": [
+                  "select_city",
+                  "select_format"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "empty_city",
+          "stateId": "empty-city",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "content": "empty_city",
+            "load": "ready",
+            "navigation": "closed",
+            "filters": "default"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_home/Home"
+            ],
+            "tests": [
+              "website/src/features/home/HomePage.test.tsx",
+              "website/src/features/home/useConsumerHomeController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "content": "empty_city",
+                "load": "ready",
+                "navigation": "closed",
+                "filters": "default"
+              },
+              "actions": {
+                "enabled": [
+                  "select_city",
+                  "select_format"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "catalog_unavailable",
+          "stateId": "catalog-unavailable",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "content": "populated",
+            "load": "unavailable",
+            "navigation": "closed",
+            "filters": "default"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_home/Home"
+            ],
+            "tests": [
+              "website/src/features/home/HomePage.test.tsx",
+              "website/src/features/home/useConsumerHomeController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "content": "populated",
+                "load": "unavailable",
+                "navigation": "closed",
+                "filters": "default"
+              },
+              "actions": {
+                "enabled": [
+                  "select_city",
+                  "select_format"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "city_and_format",
+          "stateId": "city-and-format",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "content": "populated",
+            "load": "ready",
+            "navigation": "closed",
+            "filters": "active"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_home/Home"
+            ],
+            "tests": [
+              "website/src/features/home/HomePage.test.tsx",
+              "website/src/features/home/useConsumerHomeController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "content": "populated",
+                "load": "ready",
+                "navigation": "closed",
+                "filters": "active"
+              },
+              "actions": {
+                "enabled": [
+                  "select_city",
+                  "select_format"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "mobile_menu",
+          "stateId": "mobile-menu",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "content": "populated",
+            "load": "ready",
+            "navigation": "mobile_menu",
+            "filters": "default"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_home/Home"
+            ],
+            "tests": [
+              "website/src/shared/site/PublicSiteChrome.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "content": "populated",
+                "load": "ready",
+                "navigation": "mobile_menu",
+                "filters": "default"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "select_city",
+                  "select_format"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "resolved": {
+        "authority": {
+          "id": "home",
+          "kind": "static",
+          "path": "/"
+        },
+        "components": [
+          {
+            "id": "route_home",
+            "kind": "route",
+            "source": "website/src/features/home/HomePage.tsx",
+            "exportName": "HomePage",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/MarketingRoutes.stories.tsx",
+              "exportName": "Home",
+              "states": [
+                "default",
+                "empty-city",
+                "catalog-unavailable",
+                "city-and-format",
+                "mobile-menu"
+              ]
+            }
+          }
+        ],
+        "previews": [
+          "route_home/Home"
         ]
       }
     }
