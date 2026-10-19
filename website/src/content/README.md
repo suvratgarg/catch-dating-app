@@ -47,6 +47,16 @@ Editing rules:
   roster, module, aggregate-safe, mechanic, claim state, and source ledger.
 - Avoid dating-app clichés such as “meaningful connections”, “find your
   person”, “spark”, and “journey”.
+- Use the product vocabulary consistently. An *organizer* is the entity that
+  runs events; a *club* is one type of organizer. A *host* is the person who
+  owns or represents the organizer (sometimes the organizer is just the host).
+  A *guest* attends an event; a *member* belongs to a club. A *Catch* is the
+  private post-event pick, a *match* is a mutual Catch, and *the window* is the
+  24 hours after an event when Catches can be made.
+- Describe the night, not the system: short declarative sentences with
+  concrete nouns (the door, the table, the guest list). Each section makes one
+  claim, and every claim must be checkable in the product. Host pages speak
+  operator to operator and name the tools hosts juggle today.
 - Open a pull request and rely on the content, route, typecheck, and build gates
   before publishing.
 - Authored data modules do not own JSX, functions, environment reads, or
