@@ -2,7 +2,7 @@
 
 Status: living review · phases A-F implemented 2026-08-28
 Scope: `packages/catch_ui/lib/src/components/catch_field.dart`, `lib/core/widgets/catch_section_layout.dart`, `lib/core/forms/` (new, Phase D), `test/core/`, `widgetbook/`, `docs/design_language.md`, `docs/widget_catalog.md`
-Companions: [`host_club_edit_and_live_guide_spec.md`](host_club_edit_and_live_guide_spec.md) ("edit spec"), [`host_club_insights_spec.md`](host_club_insights_spec.md) ("insights spec") — coordination points in §11, including ONE superseded line in the edit spec (§8.2 here).
+Companions: the host club edit and insights specs ("edit spec", "insights spec"; implemented and retired, see Git history) — coordination points in §11.
 Origin: 2026-07-17 owner + Claude system review. Every number below was
 measured against the working tree on that date; §1 includes the census
 commands so the numbers can be re-run.

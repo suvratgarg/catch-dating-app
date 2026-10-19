@@ -1,7 +1,7 @@
 ---
 doc_id: widget_consolidation_rules
-version: 1.1.0
-updated: 2026-07-12
+version: 1.2.0
+updated: 2026-10-18
 owner: widget_consolidation
 status: active
 ---
@@ -229,3 +229,35 @@ resist codification:
 
 Expected split based on the ledger so far: roughly 60% of remaining
 candidates should triage under K1–K4/R1–R4; the rest escalate.
+
+## Mechanical editing gotchas
+
+These failure modes recurred while executing consolidation orders:
+
+1. **Part files cannot hold imports.** Many feature widget files are
+   `part of` a screen library (for example everything under
+   `lib/event_success/presentation/{host_parts,companion_parts}/`). Add imports
+   to the parent library file instead.
+2. **Delete a Widgetbook use case by annotation extent, never by regex.** A use
+   case is the `@widgetbook.UseCase(...)` annotation plus the top-level function
+   beneath it, ending at the next `}` in column 0. Find the annotation's extent
+   by parenthesis depth (skipping string literals), confirm it contains the
+   expected `type: <X>,`, then delete annotation and function and assert the
+   expected deletion count. A non-greedy multi-line regex can span neighbouring
+   blocks and delete thousands of lines.
+3. After adding, removing or repointing any `@widgetbook.UseCase`, regenerate
+   with `cd widgetbook && flutter pub get && dart run build_runner build`.
+4. Run `dart format` on every touched file; mechanical edits leave bad wrapping.
+5. When deleting a widget class, remove `class X extends … {` through its
+   closing `}` in column 0, then search `lib/` and `widgetbook/lib` (excluding
+   `*.g.dart`) for the name and assert zero references remain.
+6. Registries go stale after any widget add, delete or rename. Refresh them
+   through the canonical orchestrator so classification, fingerprints,
+   similarity, Widgetbook coverage and seeded probes share one path:
+   `dart pub get -C tool/widget_dedupe` then
+   `node tool/design/check_design_parity.mjs --check`.
+7. **Similarity cluster ids are unstable.** The on-demand similarity report
+   renumbers clusters on every run. Ledger entries in `decisions.json` must
+   carry member names; match candidates against decisions by member set, never
+   by cluster id. Record an id remap with a `*-reconciled` entry instead of
+   re-deciding.

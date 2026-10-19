@@ -430,7 +430,7 @@ Goal: align the bottom layer with Claude Design and the app runtime.
 
 Tasks:
 
-- Confirm aliases from `claude_widgetbook_inventory.md`.
+- Confirm aliases in `design/components/catch.components.json`.
 - Expand the formal component registry from 10 primitives toward the accepted
   Claude `core` primitive set.
 - Add Widgetbook contract states for every accepted primitive.
@@ -611,7 +611,7 @@ Each screen pass should produce this record:
 Recommended first slice:
 
 1. Finish foundation specimen pages in Widgetbook.
-2. Confirm the alias table in `claude_widgetbook_inventory.md`.
+2. Confirm the aliases in `design/components/catch.components.json`.
 3. Expand contracts for accepted Claude core components.
 4. Pick one high-value screen with good design references.
 
