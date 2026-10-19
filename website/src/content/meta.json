@@ -2,10 +2,10 @@
   "$schema": "./meta.schema.json",
   "routes": {
     "home": {
-      "title": "Catch Host | Presence, guests and live events",
-      "description": "Find your organiser page, explore guest and live-event workflows, and discuss a supported Catch pilot alongside your current booking tools.",
+      "title": "Catch | Find something worth showing up for",
+      "description": "Discover runs, dinners, games, nights out, and the people who bring them together. Find events and organisers on Catch.",
       "canonicalPath": "/",
-      "twitterDescription": "Organiser discovery, existing claim requests and supported live-event workflows."
+      "twitterDescription": "Find your next plan. Discover events, meet people and explore independent organisers on Catch."
     },
     "host": {
       "title": "Live event tools for hosts | Catch beta",
@@ -43,7 +43,7 @@
     },
     "organizers": {
       "title": "Organizer directory | Catch",
-      "description": "Find singles-event organizers across India \u2014 clubs, venues, and independent hosts \u2014 with verified guest reviews and upcoming events.",
+      "description": "Find singles-event organizers across India — clubs, venues, and independent hosts — with verified guest reviews and upcoming events.",
       "canonicalPath": "/organizers/",
       "twitterDescription": "Search Catch organizer and club profiles.",
       "robots": "noindex, follow"

@@ -1,6 +1,6 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 18,
+  "version": 19,
   "updated": "2026-10-19",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -31,7 +31,7 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Short organiser-first introduction. Explore Catch Host is primary; event discovery and listing claims are separate handoffs.",
+      "notes": "Consumer homepage: city-scoped upcoming events, optional participation explanation, organiser profiles, FAQ and Host handoff. No inventory and catalog failure remain distinct.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -41,16 +41,20 @@
         ],
         "states": [
           "default",
-          "claim-entry",
-          "workflow-entry"
+          "empty-city",
+          "catalog-unavailable",
+          "city-and-format",
+          "mobile-menu"
         ],
         "stateCoverage": {
           "storybook": [
-            "default"
+            "default",
+            "empty-city",
+            "catalog-unavailable"
           ],
           "manual": [
-            "claim-entry",
-            "workflow-entry"
+            "city-and-format",
+            "mobile-menu"
           ]
         }
       }

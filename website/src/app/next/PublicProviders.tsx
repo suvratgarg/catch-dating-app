@@ -6,10 +6,10 @@ import {PendingRequestProvider} from "../../shared/pendingRequest";
 import {publicEventListingsContext} from "../../features/organizers/usePublicEventListingsController";
 import type {PublicCatalog} from "./publicCatalogTypes";
 
-export function PublicProviders({children, catalog, pathname, live = true}: {
-  children: ReactNode; catalog: PublicCatalog; pathname: string; live?: boolean;
+export function PublicProviders({children, catalog, pathname, initialSearch = "", live = true}: {
+  children: ReactNode; catalog: PublicCatalog; pathname: string; initialSearch?: string; live?: boolean;
 }) {
-  const [location, setLocation] = useState({pathname, search: "", hash: ""});
+  const [location, setLocation] = useState({pathname, search: initialSearch, hash: ""});
   const [current, setCurrent] = useState<PublicCatalog | null>(catalog);
   useEffect(() => {
     const changed = () => setLocation({pathname: window.location.pathname,

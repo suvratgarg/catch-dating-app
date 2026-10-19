@@ -25,7 +25,7 @@ describe("public route navigation targets", () => {
     renderPage(<HomePage captures={{}} />);
     const nav = screen.getByRole("navigation", {name: "Primary"});
     expect(within(nav).getAllByRole("link").map((link) => link.getAttribute("href")))
-      .toEqual(["/explore/", "/organizers/", "/host/", "/host/#pricing"]);
+      .toEqual(["/explore/", "/organizers/", "/host/"]);
     expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
   });
 

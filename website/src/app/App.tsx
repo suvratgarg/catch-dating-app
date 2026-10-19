@@ -1,3 +1,4 @@
+import {homeRouteStateForSearch} from "../features/home/homeDiscovery";
 import {retiredMarketingDestination} from "./retiredMarketingRoutes";
 import {salesDemoApiFromCallable} from "../features/salesDemo/salesDemoModel";
 import {invokeSalesDemoCallable} from "../firebase";
@@ -175,6 +176,8 @@ function CanonicalMarketingRouteShell() {
       ? "listing"
       : fallbackPage;
   const captures = useMarketingCaptures();
+  const homeRouteState = homeRouteStateForSearch(location.search);
+  const homeRouteKey = `${homeRouteState.city}:${homeRouteState.category}`;
   const routeKey = page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
       page === "household_rsvp" ? page :
     `${location.pathname}${location.search}${location.hash}`;
@@ -204,10 +207,10 @@ function CanonicalMarketingRouteShell() {
           <Route path={marketingRoutePaths.sales_demo}
             element={<SalesDemoPage api={salesDemoApi} />} />
           <Route path={marketingRoutePaths.visitor_discovery}
-            element={<VisitorDiscoveryPage captures={captures} />} />
+            element={<VisitorDiscoveryPage key={homeRouteKey} captures={captures} routeState={homeRouteState} />} />
           <Route
             path={marketingRoutePaths.home}
-            element={<HomePage captures={captures} />}
+            element={<HomePage key={homeRouteKey} captures={captures} routeState={homeRouteState} />}
           />
           <Route
             path={marketingRoutePaths.host}

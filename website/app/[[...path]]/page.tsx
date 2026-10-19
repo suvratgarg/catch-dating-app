@@ -1,10 +1,11 @@
+import {homeRouteStateForSearch} from "../../src/features/home/homeDiscovery";
 import {notFound} from "next/navigation";
 import {resolvePublicRoute} from "../../src/server/publicRoute";
 import {PublicProviders} from "../../src/app/next/PublicProviders";
 import {PublicPage} from "../../src/app/next/PublicPage";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-type Props = {params: Promise<{path?: string[]}>};
+type Props = {params: Promise<{path?: string[]}>; searchParams: Promise<Record<string, string | string[] | undefined>>};
 async function routeFor({params}: Props) {
   const {path = []} = await params;
   const pathname = path.length ? `/${path.map(encodeURIComponent).join("/")}/` : "/";
@@ -14,7 +15,12 @@ export async function generateMetadata(props: Props) {return (await routeFor(pro
 export default async function Page(props: Props) {
   const route = await routeFor(props);
   if (route.page === "not_found") notFound();
-  return <PublicProviders pathname={route.pathname} catalog={route.catalog} live={route.live}>
+  const search = await props.searchParams;
+  const selected = homeRouteStateForSearch(new URLSearchParams({city: typeof search.city === "string" ? search.city : "", format: typeof search.format === "string" ? search.format : ""}).toString());
+  // Only public allowlisted discovery choices enter the initial client state.
+  const initialSearch = route.page === "home" || route.page === "visitor_discovery"
+    ? `?${new URLSearchParams({city: selected.city, format: selected.category})}` : "";
+  return <PublicProviders pathname={route.pathname} initialSearch={initialSearch} catalog={route.catalog} live={route.live}>
     <PublicPage page={route.page} readAt={route.catalog.readAt} />
   </PublicProviders>;
 }

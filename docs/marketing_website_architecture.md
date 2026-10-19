@@ -102,8 +102,8 @@ group. Transactional/private shells keep their existing composition and authorit
 
 ## Public content ownership
 
-The organiser-first root introduces Catch Host and links to the canonical
-product, discovery and claim journeys. The detailed sitemap, content destinations
+The consumer root previews upcoming events by city, explains optional Catch
+Experiences, introduces organisers and hands business enquiries to Catch Host. The detailed sitemap, content destinations
 and deleted page inventory are maintained once below in
 [Public sitemap and conversion ownership](#public-sitemap-and-conversion-ownership).
 
@@ -1169,9 +1169,23 @@ read or mutation family without changing the surrounding UI contracts.
 
 ## Public sitemap and conversion ownership
 
-The organiser-first `/` is a short introduction, with **Explore Catch Host** as
-its primary CTA and separate event-discovery and listing-claim handoffs.
-`/explore/` owns consumer discovery, app availability and the member waitlist.
+The consumer `/` leads with **Find events**, city and format filtering, an
+upcoming-event preview, optional participation tools, organiser profiles, FAQs
+and a concise Catch Host invitation. `content/consumerHome.ts` owns its copy;
+`useConsumerHomeController` derives cards from the existing public catalogue.
+`/explore/?city=…&format=…#events` retains those choices and shows all matching
+events. It also retains app availability and the member waitlist.
+
+The empty-city state retains the editorial sections and identifies organiser
+suggestions as across Catch. Loading and unavailable catalogue states do not
+claim that a city has no events. Event cards use canonical detail URLs, public
+publication policy and existing future-event eligibility. Illustrative fallback
+photographs are labelled. Catch Experience explains active guest participation;
+event badges and an Experience filter await an explicit eligibility field in
+the public projection and must not be inferred from activity format.
+
+The approved expanded host narrative remains a subsequent content increment;
+this homepage change preserves the existing Host page and commercial terms.
 Canonical organiser paths continue to come from `publicPage.canonicalPath`;
 this consolidation does not rename organiser or event URLs.
 

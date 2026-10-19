@@ -56,3 +56,9 @@ export const publicSiteCopy = {
   localNavLabel: "On this page",
   relatedLinksLabel: "Related links",
 } as const;
+
+export const consumerSiteCopy = {
+  menu: {dialogLabel: "Site menu", openLabel: "Menu", closeLabel: "Close", kicker: "Catch", hint: "Find something worth showing up for.", navLabel: "Mobile"},
+  nav: [{href: "/explore/", label: "Find events"}, {href: "/organizers/", label: "Organisers"}, {href: "/host/", label: "For organisers"}],
+  footer: "Discover events, share interests, and spend time with people.",
+} as const;

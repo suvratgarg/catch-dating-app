@@ -1,9 +1,12 @@
+import {ConsumerHome} from "../../shared/ui/primitives/consumerHome";
 import {organiserHomeCopy} from "@content/marketingOrganization";
-import {renderOrganiserHomeSections} from "./sections/OrganiserHomeSections";
+import {renderConsumerHero, renderConsumerEvents, renderConsumerStory} from "./sections/consumerHomeSections";
+import {useConsumerHomeController} from "./useConsumerHomeController";
+import type {HomeCategory} from "./homeDiscovery";
+type HomeRouteState = {city: string; category: HomeCategory};
 import {websiteCopy} from "@content/generated";
 import {
   HomeCapturesSection,
-  HomeDiscoverySection,
   HomeDownloadSection,
   HomeFeaturedOrganizersSection,
   HomeFormatsSection,
@@ -20,7 +23,8 @@ import {
   WebsitePageMain,
 } from "../../shared/site";
 
-export function VisitorDiscoveryPage({captures}: {captures: Record<string, CaptureRecord>}) {
+export function VisitorDiscoveryPage({captures, routeState}: {captures: Record<string, CaptureRecord>; routeState?: HomeRouteState}) {
+  const home = useConsumerHomeController(routeState?.city, routeState?.category);
   return (
     <>
       <PublicSiteHeader
@@ -38,7 +42,7 @@ export function VisitorDiscoveryPage({captures}: {captures: Record<string, Captu
       />
       <WebsitePageMain id="top">
         <HomeHeroSection captures={captures} />
-        <HomeDiscoverySection showAll />
+        <ConsumerHome >{renderConsumerEvents(home, true)}</ConsumerHome>
         <HomeFormatsSection />
         <HomeFeaturedOrganizersSection />
         <HomeMemberLoopSection />
@@ -62,19 +66,11 @@ export function VisitorDiscoveryPage({captures}: {captures: Record<string, Captu
   );
 }
 
-export function HomePage(_props: {captures: Record<string, CaptureRecord>}) {
-  return (
-    <>
-      <PublicSiteHeader tone="dark" />
-      <WebsitePageMain id="top">{renderOrganiserHomeSections()}</WebsitePageMain>
-      <PublicSiteFooter
-        body={organiserHomeCopy.footer}
-        links={[
-          ...organiserHomeCopy.nav,
-          organiserHomeCopy.explore.directory,
-          organiserHomeCopy.explore.visitors,
-        ]}
-      />
-    </>
-  );
+export function HomePage({routeState}: {captures: Record<string, CaptureRecord>; routeState?: HomeRouteState}) {
+  const home = useConsumerHomeController(routeState?.city, routeState?.category);
+  return <ConsumerHome >
+    <PublicSiteHeader audience="consumer" />
+    <WebsitePageMain id="top">{renderConsumerHero(home)}{renderConsumerEvents(home)}{renderConsumerStory(home)}</WebsitePageMain>
+    <PublicSiteFooter audience="consumer" />
+  </ConsumerHome>;
 }

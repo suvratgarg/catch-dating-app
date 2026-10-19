@@ -220,7 +220,7 @@ export function activityForKind(kind: string): ActivityMeta {
   if (normalized === "pubquiz") return activityMeta.pubQuiz;
   if (normalized === "running") return activityMeta.running;
   if (normalized === "dinner") return activityMeta.dinner;
-  if (normalized === "racket" || normalized === "tennis" || normalized === "padel") {
+  if (normalized === "racket" || normalized === "tennis" || normalized === "padel" || normalized === "pickleball") {
     return activityMeta.racket;
   }
   return activityMeta.open;

@@ -1,4 +1,6 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
+import {consumerHomeStoryListings} from "./fixtures/consumerHome";
+import {publicEventListingsContext} from "../features/organizers/usePublicEventListingsController";
 import {MemoryRouter} from "react-router";
 import {useRevealAnimations} from "../app/usePageLifecycle";
 import {ClaimPage} from "../features/claims/ClaimPage";
@@ -58,13 +60,22 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Home: Story = {
-  name: "/ · Organisers",
+  name: "/ · Discover",
   parameters: {
     a11y: {test: "error"},
-    catchRoute: {id: "home", path: "/", reviewStates: ["default", "claim-entry", "workflow-entry"], stateCoverage: {storybook: ["default"], manual: ["claim-entry", "workflow-entry"]}},
-    catchComponent: {id: "route_home", routeIds: ["home"], states: ["default", "claim-entry", "workflow-entry"]},
+    catchRoute: {id: "home", path: "/", reviewStates: ["default", "empty-city", "catalog-unavailable", "city-and-format", "mobile-menu"], stateCoverage: {storybook: ["default", "empty-city", "catalog-unavailable"], manual: ["city-and-format", "mobile-menu"]}},
+    catchComponent: {id: "route_home", routeIds: ["home"], states: ["default", "empty-city", "catalog-unavailable", "city-and-format", "mobile-menu"]},
   },
-  render: () => <HomePage captures={captures} />,
+  render: () => <publicEventListingsContext.Provider value={{listings: consumerHomeStoryListings, phase: "ready", readAt: Date.parse("2030-01-01")}}><HomePage captures={captures} /></publicEventListingsContext.Provider>,
+};
+
+export const HomeEmptyCity: Story = {
+  name: "/ · Empty city",
+  render: () => <publicEventListingsContext.Provider value={{listings: [], phase: "ready", readAt: 0}}><HomePage captures={captures} routeState={{city: "indore", category: "all"}} /></publicEventListingsContext.Provider>,
+};
+export const HomeUnavailable: Story = {
+  name: "/ · Catalogue unavailable",
+  render: () => <publicEventListingsContext.Provider value={{listings: [], phase: "unavailable"}}><HomePage captures={captures} /></publicEventListingsContext.Provider>,
 };
 
 export const VisitorDiscovery: Story = {

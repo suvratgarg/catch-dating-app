@@ -1,4 +1,5 @@
 "use client";
+import {homeRouteStateForSearch} from "../../features/home/homeDiscovery";
 import {publicJsonLd} from "../../shared/next/publicJsonLd";
 import dynamic from "next/dynamic";
 import {useEffect} from "react";
@@ -28,6 +29,8 @@ export function PublicPage({page, readAt}: {page: PageKey; readAt: number}) {
   const location = useLocation();
   const {listings, readAt: currentReadAt} = usePublicHostListings();
   const captures = useMarketingCaptures();
+  const homeRouteState = homeRouteStateForSearch(location.search);
+  const homeRouteKey = `${homeRouteState.city}:${homeRouteState.category}`;
   useEffect(() => {
     const destination = retiredMarketingDestination(location);
     if (destination) window.location.replace(destination);
@@ -37,8 +40,8 @@ export function PublicPage({page, readAt}: {page: PageKey; readAt: number}) {
   useMarketingAnalytics(page, location.pathname);
   let content;
   let structured: unknown = null;
-  if (page === "home") content = <Home captures={captures} />;
-  else if (page === "visitor_discovery") content = <Explore captures={captures} />;
+  if (page === "home") content = <Home key={homeRouteKey} captures={captures} routeState={homeRouteState} />;
+  else if (page === "visitor_discovery") content = <Explore key={homeRouteKey} captures={captures} routeState={homeRouteState} />;
   else if (page === "host") content = location.pathname.replace(/\/$/, "") === "/host/apply"
     ? <Apply /> : <Host captures={captures} />;
   else if (page === "organizers") content = <Directory />;

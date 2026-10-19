@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 102,
-  "updated": "2026-10-18",
+  "version": 103,
+  "updated": "2026-10-19",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -160,7 +160,8 @@
       "css": [
         "website/src/styles/site-shell.css",
         "website/src/styles/home.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css"
       ],
       "storybook": {
         "status": "ready",
@@ -168,11 +169,13 @@
         "exportName": "Home",
         "states": [
           "default",
-          "claim-entry",
-          "workflow-entry"
+          "empty-city",
+          "catalog-unavailable",
+          "city-and-format",
+          "mobile-menu"
         ]
       },
-      "notes": "Organiser-first public content arrangement; software and account availability remain explicit."
+      "notes": "Consumer discovery homepage with explicit inventory states; authored copy and catalog data remain separate."
     },
     {
       "id": "home_hero_section",
