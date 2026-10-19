@@ -94,8 +94,8 @@ and Widgetbook identities without requiring a separate hand-authored table.
 
 [CatchField doctrine](design_language.md#73-catchfield-doctrine) owns labelled
 field behavior. [App architecture](app_architecture.md) owns layering and
-naming; the [consolidation worklog](design_parity/widget_consolidation/codex_worklog.md)
-owns active keep, replace and delete decisions. Git preserves former inventory
+naming; the [consolidation decisions](design_parity/widget_consolidation/decisions.json)
+own active keep, replace and delete decisions. Git preserves former inventory
 and candidate discussions; this document has no parallel status ledger.
 
 <!-- BEGIN GENERATED WIDGET INVENTORY -->
@@ -1029,7 +1029,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostTodayEventMetadataRow</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_section.dart:127</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayEventMetricTile</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_section.dart:157</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayEventSection</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_section.dart:10</code> | — | — | No class documentation or registry summary. |
-| <code>HostTodayAttentionSection</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:151</code> | — | — | No class documentation or registry summary. |
+| <code>HostTodayAttentionSection</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:166</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayOverview</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>HostWorkPageBody</code> | <code>lib/hosts/work/presentation/host_work_screen.dart:121</code> | — | — | The resolved assignment picker, grouped by organizer. |
 | <code>PhotoGrid</code> | <code>lib/image_uploads/shared/photo_grid.dart:31</code> | — | — | A 3×2 grid of photo slots for displaying and editing a user's profile photos. |

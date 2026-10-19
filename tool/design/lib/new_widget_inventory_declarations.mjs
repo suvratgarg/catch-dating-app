@@ -331,6 +331,7 @@ const controlFlowNames = new Set([
   "catch",
   "for",
   "if",
+  "return",
   "switch",
   "while",
 ]);
