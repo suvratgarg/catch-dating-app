@@ -1,0 +1,80 @@
+import {describe, expect, it, vi} from "vitest";
+import {adminPathForNav, adminSections, resolveAdminRoute, type AdminNavId} from "./adminRoutes";
+
+describe("Admin route contract", () => {
+  it.each(Object.keys(adminSections) as AdminNavId[])("resolves the %s navigation destination", (nav) => {
+    expect(resolveAdminRoute(adminPathForNav(nav)).nav).toBe(nav);
+  });
+
+  it.each([
+    ["/safety/reports%2Freport-1", "safety", "targetPath", "reports/report-1"],
+    ["/access/user-1/", "access", "applicationUid", "user-1"],
+    ["/organizers/afterfly", "organizers", "clubId", "afterfly"],
+    ["/organizers/claims/request-1", "organizers", "claimRequestId", "request-1"],
+    ["/events/event-1", "events", "eventId", "event-1"],
+    ["/events/external/candidate-1", "events", "externalEventId", "candidate-1"],
+    ["/events/readiness/source%2Faction", "events", "readinessActionId", "source/action"],
+    ["/growth/signals/signal-1", "growth", "growthSignalId", "signal-1"],
+    ["/finance/issues/payments%2Fpayment-1", "finance", "financeIssueId", "payments/payment-1"],
+    ["/quality/signals/source-1", "quality", "qualitySignalId", "source-1"],
+    ["/admin-roles/user-1", "admin-roles", "adminRoleTargetUid", "user-1"],
+    ["/sales/hosts/host-1", "sales", "salesOrganizerId", "host-1"],
+    ["/marketing/drafts/draft%20one/copy", "marketing-ops", "draftId", "draft one"],
+  ])("resolves %s", (path, nav, key, value) => {
+    const route = resolveAdminRoute(path);
+    expect(route.nav).toBe(nav);
+    expect(route.params[key]).toBe(value);
+  });
+
+  it.each([
+    ["/organizers/claims", "organizerWorkspace", "claims", "clubId"],
+    ["/events/readiness/", "eventWorkspace", "readiness", "eventId"],
+    ["/events/external", "eventWorkspace", "external", "eventId"],
+  ])("does not mistake the %s workspace for a record", (path, key, value, recordKey) => {
+    const route = resolveAdminRoute(path);
+    expect(route).toHaveProperty(key, value);
+    expect(route.params[recordKey]).toBeUndefined();
+  });
+
+  it("preserves marketing workspace and draft-step defaults", () => {
+    expect(resolveAdminRoute("/marketing").marketingTab).toBe("posts");
+    expect(resolveAdminRoute("/marketing/media").marketingTab).toBe("media");
+    expect(resolveAdminRoute("/marketing/drafts/a/copy")).toMatchObject({
+      marketingTab: "draft", composerStep: "copy", title: "Marketing draft",
+    });
+    expect(resolveAdminRoute("/marketing/drafts/a/unknown")).toMatchObject({
+      marketingTab: "draft", composerStep: "source", params: {draftId: "a"},
+    });
+  });
+
+  it("keeps unknown nested paths in their workspace without borrowing a record", () => {
+    expect(resolveAdminRoute("/events/unknown/extra")).toMatchObject({nav: "events", eventWorkspace: "directory"});
+    expect(resolveAdminRoute("/events/unknown/extra").params.eventId).toBeUndefined();
+    expect(resolveAdminRoute("/not-a-section").nav).toBeNull();
+    expect(resolveAdminRoute("/").nav).toBe("overview");
+  });
+
+  it.each(["a/b", "a%2Fb", "a%25b", "a b", "a?b", "a#b"])("round-trips the opaque ID %s without decoding it twice", (id) => {
+    expect(resolveAdminRoute(`/events/${encodeURIComponent(id)}`).params.eventId).toBe(id);
+  });
+
+  it("accepts malformed percent encoding without crashing the shell", () => {
+    const warning = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    try {
+      expect(resolveAdminRoute("/events/record%invalid").params.eventId).toBe("record%invalid");
+    } finally {
+      warning.mockRestore();
+    }
+  });
+
+  it.each([
+    ["/intake/organizers", "Organizer intake"],
+    ["/intake/events", "Event intake"],
+    ["/intake/operations", "Supply intake operations"],
+    ["/events/readiness", "Event readiness"],
+    ["/events/readiness/action", "Event readiness review"],
+    ["/events/external", "External inventory"],
+  ])("retains the title for %s", (path, title) => {
+    expect(resolveAdminRoute(path).title).toBe(title);
+  });
+});

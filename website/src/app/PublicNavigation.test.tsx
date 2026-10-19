@@ -45,6 +45,15 @@ describe("public route navigation targets", () => {
     }
   });
 
+  it("labels the discovery hero CTA for the events section it opens", () => {
+    const {container} = renderPage(<VisitorDiscoveryPage captures={{}} />);
+    const main = screen.getByRole("main");
+    expect(within(main).getByRole("link", {name: "Find events"})
+      .getAttribute("href")).toBe("#events");
+    expect(container.querySelector("#events")).toBeTruthy();
+    expect(within(main).queryByRole("link", {name: "Browse organizers"})).toBeNull();
+  });
+
   it("sends claim Trust and Member site to the preserved visitor route", () => {
     renderPage(<ClaimPage routeState={emptyClaimRouteState} />);
     const local = screen.getByRole("navigation", {name: "On this page"});

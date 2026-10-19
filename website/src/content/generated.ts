@@ -123,7 +123,7 @@ export const websiteCopy = {
   "homepagesections_0121": "Apply as host",
   "homepagesections_0122": "Be first in your city.",
   "homepagesections_0123": "Browse organizer pages while event projections are added to the public website feed.",
-  "homepagesections_0124": "Browse organizers",
+  "homepagesections_0124": "Find events",
   "homepagesections_0125": "Browse the event, show up, catch privately, and let the shared experience carry the first conversation.",
   "homepagesections_0126": "Catch",
   "homepagesections_0127": "Catch event panel",
