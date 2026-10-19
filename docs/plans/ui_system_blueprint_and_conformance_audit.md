@@ -1727,10 +1727,17 @@ TypeScript fixture for the graph and a known-bad inventory for every rule.
   against `catch.section_stack` and the row contracts, and `StoreButton`.
   Store badges follow Apple's and Google's artwork rules, so `StoreButton`
   cannot be a `CatchButton` recipe.
-- **Needs an owner registry review:** website `StepRail` and admin
-  `AdminIntakeStageRail` are two web ports of Flutter's `CatchFormStepList`
-  (`catch.screen_body.form_step_overview`). That member is T3, so a web need
-  means promoting it to its own T2 contract, never a local port.
+- **Owner decision (2026-10-19): one shared step list.** Website `StepRail`
+  and admin `AdminIntakeStageRail` are two web ports of Flutter's
+  `CatchFormStepList` (`catch.screen_body.form_step_overview`, T3). The owner
+  decided to promote it to its own T2 contract, `catch.form_step_list`, which
+  the app, website and admin all share, and to replace both ports with it in
+  7e. A top-level concept needs its own Widgetbook contract preview, which is
+  Flutter code, so registration is a small follow-up rather than part of this
+  PR. Until it lands, both entries record the decision in their
+  `comparisonReason`. When the contract is registered, the inventory flags the
+  eight shared `*List` and `*Group` exports that match its role noun, and each
+  needs its comparison extended.
 
 Retired: `design/web-ui/shared_primitive_adoption.json`. The inventory now
 covers each of its gates: package exports, exact-name overlaps, and family

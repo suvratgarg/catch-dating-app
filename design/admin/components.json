@@ -1996,7 +1996,7 @@
       "comparedWith": [
         "catch.button"
       ],
-      "comparisonReason": "Numbered step navigation rail that renders one button per stage. It is a port of Flutter's CatchFormStepList (catch.screen_body.form_step_overview, T3), which needs a registry review to promote it to T2."
+      "comparisonReason": "Numbered step navigation rail that renders one button per step. It is a web port of Flutter's CatchFormStepList. The owner decided on 2026-10-19 to promote that list to a T2 contract; the follow-up that registers catch.form_step_list points this entry at it, and Phase 7e replaces both rails."
     },
     {
       "id": "shared_admin_intake_state_grid",
