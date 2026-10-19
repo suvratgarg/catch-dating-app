@@ -18,8 +18,6 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
     "firstName",
     "lastName",
     "displayName",
-    "dateOfBirth",
-    "gender",
     "phoneNumber",
     "profileComplete",
     "email",

@@ -124,9 +124,9 @@ export const ListingHeroRail: Story = {
         canRequestClaim
         claimHref="/claim/?listing=afterfly"
         isAppCreated={false}
-        isSaved={false}
+        isFollowing={false}
         listing={claimableListing}
-        onSaveListing={() => undefined}
+        onFollowListing={() => undefined}
         onShareListing={() => undefined}
         shareStatus=""
       />

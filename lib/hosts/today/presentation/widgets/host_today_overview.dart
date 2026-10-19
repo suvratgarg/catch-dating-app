@@ -67,6 +67,21 @@ class HostTodayOverview extends StatelessWidget {
                   : null,
             ),
           ),
+        if (state.hasPendingSources) ...[
+          gapH12,
+          CatchSection.content(child: const CatchLoadingIndicator()),
+        ],
+        if (state.historyError case final error?) ...[
+          gapH12,
+          CatchSection.content(
+            child: CatchLocalizedErrorState(
+              error,
+              context: AppErrorContext.event,
+              onRetry: onRetry,
+              mode: CatchErrorStateMode.inline,
+            ),
+          ),
+        ],
         if (event != null && attentionVisible) gapH28,
         if (attentionVisible) attention,
         if (event != null || attentionVisible) gapH28,

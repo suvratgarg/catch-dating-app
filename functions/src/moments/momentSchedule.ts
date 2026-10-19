@@ -48,6 +48,7 @@ export function travelLegChangeEvents(
   before: Record<string, unknown> | undefined,
   after: Record<string, unknown> | undefined,
   observedAtMillis: number,
+  identity: {source: string; eventId: string},
 ): TravelLegEvent[] {
   if (!after || typeof after.programId !== "string") return [];
   const programId = after.programId;
@@ -58,7 +59,7 @@ export function travelLegChangeEvents(
     before.readiness : "";
   if (readiness !== previousReadiness) {
     events.push({
-      kind: "travelLegReadinessChanged",
+      ...identity, kind: "travelLegReadinessChanged",
       legId, programId, previousReadiness, readiness, observedAtMillis,
     });
   }
@@ -68,7 +69,7 @@ export function travelLegChangeEvents(
     before.flightStatus : "";
   if (flightStatus !== previousFlightStatus) {
     events.push({
-      kind: "travelLegFlightStatusChanged",
+      ...identity, kind: "travelLegFlightStatusChanged",
       legId, programId, previousFlightStatus, flightStatus,
       observedAtMillis,
     });
@@ -78,26 +79,36 @@ export function travelLegChangeEvents(
 
 /** Feeds triggered moments from programTravelLegs writes. */
 export const programTravelLegMoments = onDocumentWritten(
-  "programTravelLegs/{legId}",
+  {document: "programTravelLegs/{legId}", retry: true},
   async (event) => {
     const before = event.data?.before.data() as
       Record<string, unknown> | undefined;
     const after = event.data?.after.data() as
       Record<string, unknown> | undefined;
     const facts = travelLegChangeEvents(
-      event.params.legId, before, after, Date.now());
+      event.params.legId, before, after, Date.parse(event.time),
+      {source: event.source, eventId: event.id});
     if (facts.length === 0) return;
     const deps = buildMomentRunnerDeps();
-    for (const fact of facts) {
-      try {
-        await ingestTravelLegEvent(deps, fact);
-      } catch (error) {
-        // One leg's failure must not swallow the other fact; the send
-        // records make a retry/replay safe.
-        logger.error("Moment trigger ingestion failed", {
-          error, legId: fact.legId, kind: fact.kind,
-        });
-      }
-    }
+    await ingestTravelFacts(facts, (fact) => ingestTravelLegEvent(deps, fact));
   },
 );
+
+/** Attempt every independent fact, then reject incomplete ingestion. */
+export async function ingestTravelFacts(
+  facts: readonly TravelLegEvent[],
+  ingest: (fact: TravelLegEvent) => Promise<unknown>,
+): Promise<void> {
+  const failures: unknown[] = [];
+  for (const fact of facts) {
+    try {
+      await ingest(fact);
+    } catch (error) {
+      failures.push(error);
+      logger.error("Moment trigger ingestion failed", {kind: fact.kind});
+    }
+  }
+  if (failures.length > 0) {
+    throw new AggregateError(failures, "Travel fact ingestion incomplete");
+  }
+}

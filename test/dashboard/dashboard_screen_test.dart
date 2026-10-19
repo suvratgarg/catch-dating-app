@@ -518,10 +518,7 @@ void main() {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
         uid: user.uid,
-        viewer: user,
         attendedEventsAsync: const AsyncData<List<Event>>([]),
-        recommendedEventsAsync: noRecommendationCandidates,
-        weeklyActivityAsync: emptyWeeklyActivitySnapshot(),
         now: DateTime(2026, 5, 13),
       );
 

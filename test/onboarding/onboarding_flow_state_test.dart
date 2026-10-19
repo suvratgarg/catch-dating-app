@@ -24,21 +24,21 @@ void main() {
       expect(state.topBar, isNull);
     });
 
-    test('derives standard flow progress and back target', () {
+    test('standard account setup has one identity step', () {
       final state = OnboardingFlowState.from(
         l10n: l10n,
-        data: const OnboardingData(step: OnboardingStep.genderInterest),
+        data: const OnboardingData(step: OnboardingStep.nameDob),
         profileCompletionOnly: false,
         runPreferencesOnly: false,
       );
 
       expect(state.entryMode, OnboardingEntryMode.standard);
-      expect(state.previousStep, OnboardingStep.nameDob);
+      expect(state.previousStep, isNull);
       expect(state.showsProgressShell, true);
-      expect(state.topBar?.title, 'How do you identify?');
-      expect(state.topBar?.stepNumber, 2);
-      expect(state.topBar?.stepTotal, 2);
-      expect(state.topBar?.canGoBack, true);
+      expect(state.topBar?.title, "What's your name?");
+      expect(state.topBar?.stepNumber, 1);
+      expect(state.topBar?.stepTotal, 1);
+      expect(state.topBar?.canGoBack, false);
     });
 
     test('locks profile-completion back target to the photos step', () {
@@ -52,8 +52,8 @@ void main() {
       expect(state.entryMode, OnboardingEntryMode.profileCompletion);
       expect(state.previousStep, OnboardingStep.photos);
       expect(state.topBar?.title, 'Add prompts to start catching');
-      expect(state.topBar?.stepNumber, 2);
-      expect(state.topBar?.stepTotal, 2);
+      expect(state.topBar?.stepNumber, 4);
+      expect(state.topBar?.stepTotal, 4);
     });
 
     test('freezes backward navigation while a step mutation is pending', () {

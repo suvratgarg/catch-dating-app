@@ -102,7 +102,8 @@ export async function manageOrganizerFormDomainHandler(
   }
   const probe = await deps.loadProbe(input.hostname);
   const record = await verifyOrganizerFormDomain(db, input.hostname,
-    probe, deps.now(), input.organizerId);
+    probe, deps.now(), input.organizerId, {expected: current, actorUid,
+      assertManager: deps.assertManager});
   return {hostname: record.hostname, status: "verified"};
 }
 

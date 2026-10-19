@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-08-16",
+  "updated": "2026-10-17",
   "description": "Consolidated inventory of remote operational surfaces. This file groups Firebase deploys, environment switching, data repair/backfill, App Check/security console work, CI gates, and App Store/TestFlight/Play release operations without changing the underlying tools.",
   "operations": [
     {
@@ -815,6 +815,40 @@
         "Android Publisher API and the dedicated github-actions-play-publisher OIDC identity are ready with zero project roles; Play upload remains disabled until APP-TARGET-ANDROID-PLAY-001 closes app-record, app-scoped permission, App Signing, tester, and install proof.",
         "App Store Connect displays an updated Apple Developer Program License Agreement notice that the Account Holder should accept before treating host uploads/submissions as release-ready.",
         "App Store review metadata and TestFlight group membership remain console-owned."
+      ]
+    },
+    {
+      "id": "custom-form-domain-onboarding",
+      "category": "environment",
+      "status": "active",
+      "safety": "remote-read-write-apply-guarded",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "purpose": "Reserve, verify, provision and activate an exact client form subdomain, or revoke routing and remove exact origin grants, through a trusted read-only-default operator.",
+      "entrypoints": [
+        {
+          "kind": "tool-id",
+          "ref": "firebase:form-domain-operator"
+        },
+        {
+          "kind": "doc",
+          "ref": "docs/release_operations.md"
+        }
+      ],
+      "requiredChecks": [
+        "node tool/run.mjs check firebase:form-domain-operator",
+        "Build the exact reviewed Functions source before invoking the operator.",
+        "Review the default read-only dry run with exact environment, organizer, form, manager UID and reservation generation before --apply; production also requires --allow-prod.",
+        "Verify actual deployed website, Hosting TLS, DNS, App Check, upload and submission behavior on the client domain before onboarding acceptance."
+      ],
+      "notes": [
+        "No client domain or provider activation is required to publish source.",
+        "ADC authenticates the operator independently of the requesting manager UID; current manager and exact reservation authority are rechecked.",
+        "Serialize operator and console edits to shared Auth and Enterprise configuration; only bucket CORS supports a metageneration precondition.",
+        "Rollback revokes registry routing before removing exact grants; inherited parent domains and wildcard CORS remain explicit residual trust. Hosting deletion and DNS changes are separate operations."
       ]
     }
   ]

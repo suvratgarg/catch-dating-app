@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'ManageWebsiteAccountCallablePayload',
+    source: 'callables/manage_website_account_payload.schema.json',
+    schema: schemaManageWebsiteAccountCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ManageWebsiteAccountCallableResponse',
+    source: 'callable_responses/manage_website_account_response.schema.json',
+    schema: schemaManageWebsiteAccountCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'HostResponseSummaryDocument',
     source: 'firestore/host_response_summaries.schema.json',
     schema: schemaHostResponseSummaryDocumentSchema,
@@ -6204,6 +6214,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'ManageWebsiteAccountCallablePayload': schemaManageWebsiteAccountCallablePayloadSchema,
+  'ManageWebsiteAccountCallableResponse': schemaManageWebsiteAccountCallableResponseSchema,
   'HostResponseSummaryDocument': schemaHostResponseSummaryDocumentSchema,
   'HostGroupDetailDocument': schemaHostGroupDetailDocumentSchema,
   'HostGroupSummaryDocument': schemaHostGroupSummaryDocumentSchema,
@@ -7444,6 +7456,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/manage_website_account_payload.schema.json': schemaManageWebsiteAccountCallablePayloadSchema,
+  'callable_responses/manage_website_account_response.schema.json': schemaManageWebsiteAccountCallableResponseSchema,
   'firestore/host_response_summaries.schema.json': schemaHostResponseSummaryDocumentSchema,
   'firestore/host_group_details.schema.json': schemaHostGroupDetailDocumentSchema,
   'firestore/host_group_summaries.schema.json': schemaHostGroupSummaryDocumentSchema,
