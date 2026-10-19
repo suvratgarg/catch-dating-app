@@ -34532,6 +34532,33 @@ abstract class AppLocalizations {
   /// **'Nothing needs your attention right now.'**
   String get programsAttentionEmpty;
 
+  /// Locked guest desk heading when the actor lacks an active desk duty.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest desk access required'**
+  String get programsGuestDeskAccessTitle;
+
+  /// Guest desk access guidance. Other staff duties do not grant guest desk access.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the organizer to assign you guest relations or program coordinator duty for this program.'**
+  String get programsGuestDeskAccessMessage;
+
+  /// Function invitation badge when the guest is explicitly not invited, independently of RSVP status.
+  ///
+  /// In en, this message translates to:
+  /// **'Not invited'**
+  String get programsGuestNotInvited;
+
+  /// Guest badge combining the organizer-provided function name with its localized invitation or RSVP status.
+  ///
+  /// In en, this message translates to:
+  /// **'{functionName}: {status}'**
+  String programsGuestFunctionStatus({
+    required String functionName,
+    required String status,
+  });
+
   /// Program operations copy: programsWorkShellEmptyTitle.
   ///
   /// In en, this message translates to:

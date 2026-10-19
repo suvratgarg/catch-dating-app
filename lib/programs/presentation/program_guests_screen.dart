@@ -687,7 +687,10 @@ class ProgramGuestsFunctionRow extends StatelessWidget {
                         ? join.rsvpStatus
                         : 'notInvited';
                     return CatchBadge(
-                      label: '${fn.name}: $status',
+                      label: context.l10n.programsGuestFunctionStatus(
+                        functionName: fn.name,
+                        status: _guestStatusLabel(context, status),
+                      ),
                       tone: _guestStatusTone(
                         status,
                         isSelected: fn.functionId == selected?.functionId,
@@ -733,6 +736,16 @@ class ProgramGuestsFunctionRow extends StatelessWidget {
     );
   }
 }
+
+String _guestStatusLabel(BuildContext context, String status) =>
+    switch (status) {
+      'attending' => context.l10n.programsDoorRsvpAttending,
+      'declined' => context.l10n.programsDoorRsvpDeclined,
+      'maybe' => context.l10n.programsDoorRsvpMaybe,
+      'pending' => context.l10n.programsDoorRsvpPending,
+      'notInvited' => context.l10n.programsGuestNotInvited,
+      _ => status,
+    };
 
 CatchBadgeTone _guestStatusTone(String status, {required bool isSelected}) {
   return switch (status) {
