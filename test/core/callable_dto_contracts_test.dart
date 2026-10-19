@@ -324,10 +324,28 @@ void main() {
   });
 
   group('callable response DTO contracts', () {
-    test('response parsers accept on-disk generated-schema fixtures', () {
-      final createClubResponse = _readValidFixtureMap(
-        'create_club_response.json',
+    test('organizer creation response requires the canonical organizer id', () {
+      const response = <String, Object?>{
+        'organizerId': 'organizer-delhi-runners',
+      };
+      _expectValid('CreateOrganizerCallableResponse', response);
+      expect(
+        CreateOrganizerCallableResponse.fromCallableData(response).organizerId,
+        'organizer-delhi-runners',
       );
+      for (final malformed in <Map<String, Object?>>[
+        {},
+        {'organizerId': ''},
+        {'clubId': 'club-delhi-runners'},
+      ]) {
+        expect(
+          () => CreateOrganizerCallableResponse.fromCallableData(malformed),
+          throwsStateError,
+        );
+      }
+    });
+
+    test('response parsers accept on-disk generated-schema fixtures', () {
       final attendanceResponse = _readValidFixtureMap(
         'mark_event_attendance_response.json',
       );
@@ -359,11 +377,6 @@ void main() {
         'user_analytics_response.json',
       );
 
-      _expectValid('CreateClubCallableResponse', createClubResponse);
-      expect(
-        CreateClubCallableResponse.fromCallableData(createClubResponse).clubId,
-        'club-delhi-runners',
-      );
       _expectValid('MarkEventAttendanceCallableResponse', attendanceResponse);
       expect(
         MarkEventAttendanceCallableResponse.fromCallableData(
@@ -471,7 +484,7 @@ void main() {
     test('response parsers throw on malformed input', () {
       // Wrong root shape (non-Map).
       expect(
-        () => CreateClubCallableResponse.fromCallableData('not-a-map'),
+        () => CreateOrganizerCallableResponse.fromCallableData('not-a-map'),
         throwsStateError,
       );
       expect(

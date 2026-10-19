@@ -61,7 +61,7 @@ export interface MobileFormState {
    */
   hostRosterSearchQuery?: string;
   /**
-   * Read-only date text rendered by the onboarding date picker before it is saved as a timestamp.
+   * Optional account date text. Social discovery requires a birthday through the profile requirements catalog.
    */
   onboardingDateOfBirthText?: string;
   /**

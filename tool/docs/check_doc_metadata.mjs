@@ -292,12 +292,24 @@ export function runSelfTest() {
     {id: "decrease", path: "docs/decrease.md", version: "1.9.9", status: "active"},
   ];
   const result = compareDocumentMetadata({baseDocuments: base, currentDocuments: current});
+  const machine = machineReferenceFindings({
+    matches: [
+      {path: "tool/policy/rules.json", line: 3, text: '"docAnchor": "docs/deleted.md#scope"'},
+      {path: "tool/check.mjs", line: 9, text: 'const owner = "docs/decrease.md#old-heading";'},
+    ],
+    retiredPaths: ["docs/deleted.md"],
+    changedPaths: ["docs/decrease.md"],
+    readBase: () => "# Old heading\n",
+    readTarget: () => "# New heading\n",
+  });
   return {
     pass:
       !result.pass &&
       result.findings.some((entry) => entry.kind === "version-decrease") &&
-      result.deletions.some((entry) => entry.id === "deleted"),
-    findings: result.findings,
+      result.deletions.some((entry) => entry.id === "deleted") &&
+      machine.findings.some((entry) => entry.kind === "retired-document-machine-reference") &&
+      machine.findings.some((entry) => entry.kind === "removed-document-anchor"),
+    findings: [...result.findings, ...machine.findings],
   };
 }
 
@@ -506,6 +518,124 @@ export function retiredDocumentReferences({paths, readSource, retiredPaths}) {
   return findings;
 }
 
+/** GitHub-style heading slug; enforcement-integrity docAnchors share this. */
+export function slugifyHeading(heading, {preserveSpaces = false} = {}) {
+  return heading
+    .trim()
+    .toLowerCase()
+    .replace(/`([^`]+)`/gu, "$1")
+    .replace(/[^\p{Letter}\p{Number}\s-]/gu, "")
+    .replace(preserveSpaces ? /\s/gu : /\s+/gu, "-");
+}
+
+/** Fragment ids an ATX heading outside fenced examples can satisfy. */
+export function headingAnchors(source) {
+  const anchors = new Set();
+  let fence = null;
+  for (const line of source.split(/\r?\n/u)) {
+    const marker = /^\s*(`{3,}|~{3,})/u.exec(line)?.[1];
+    if (marker != null) {
+      if (fence == null) fence = marker;
+      else if (marker[0] === fence[0] && marker.length >= fence.length) fence = null;
+      continue;
+    }
+    const heading = fence == null ? /^#{1,6}\s+(.+?)\s*#*\s*$/u.exec(line) : null;
+    if (heading == null) continue;
+    anchors.add(slugifyHeading(heading[1]));
+    // GitHub preserves the two spaces surrounding a removed em dash.
+    anchors.add(slugifyHeading(heading[1], {preserveSpaces: true}));
+  }
+  return anchors;
+}
+
+// A repository-root document path, optionally behind ../ segments, that is
+// not the tail of a longer path such as website/docs/README.md.
+const machineDocumentPattern =
+  /(?<![A-Za-z0-9_./-])(?:\.\.?\/)*((?:[A-Za-z0-9_.-]+\/)*[A-Za-z0-9_.-]+\.md)(?![A-Za-z0-9_-])(?:#([\p{Letter}\p{Number}_-]+))?/gu;
+
+/**
+ * Registries, tools, workflows and code bind documents and headings by literal
+ * path. A change that removes either must update those consumers in the same
+ * change; otherwise the next unrelated pull request inherits the failure.
+ * A bare file name counts when exactly one removed document had it, as in a
+ * code comment that cites `some_spec.md`. Headings that were already
+ * unresolved are advisory, not this change's break.
+ */
+export function machineReferenceFindings({
+  matches,
+  retiredPaths,
+  retiredByName = new Map(),
+  changedPaths,
+  readBase,
+  readTarget,
+}) {
+  const retired = new Set(retiredPaths);
+  const changed = new Set(changedPaths);
+  const anchorsFor = new Map();
+  const anchors = (side, read, documentPath) => {
+    const key = `${side}:${documentPath}`;
+    if (!anchorsFor.has(key)) anchorsFor.set(key, headingAnchors(read(documentPath)));
+    return anchorsFor.get(key);
+  };
+  const findings = [];
+  const advisories = [];
+  for (const {path: file, line, text} of matches) {
+    for (const match of text.matchAll(machineDocumentPattern)) {
+      const [, literal, fragment] = match;
+      const target = retired.has(literal) ? literal : retiredByName.get(literal) ?? literal;
+      const at = `${file}:${line}`;
+      if (retired.has(target)) {
+        findings.push({kind: "retired-document-machine-reference", path: file, line, target,
+          reason: `${at} still references removed document ${target}`});
+      } else if (changed.has(target) && fragment != null &&
+          !anchors("target", readTarget, target).has(fragment)) {
+        const row = {path: file, line, target, fragment};
+        if (anchors("base", readBase, target).has(fragment)) {
+          findings.push({kind: "removed-document-anchor", ...row,
+            reason: `${at} references heading #${fragment}, which this change removed from ${target}`});
+        } else {
+          advisories.push({kind: "unresolved-document-anchor", ...row,
+            reason: `${at} references heading #${fragment}, which ${target} did not contain before this change either`});
+        }
+      }
+    }
+  }
+  return {findings, advisories};
+}
+
+/** Bare names that identify exactly one removed Markdown document. */
+export function uniqueRetiredNames(basePaths, retiredPaths) {
+  const counts = new Map();
+  for (const entry of basePaths) {
+    if (!entry.endsWith(".md")) continue;
+    const name = path.posix.basename(entry);
+    counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+  return new Map(retiredPaths
+    .filter((entry) => counts.get(path.posix.basename(entry)) === 1)
+    .map((entry) => [path.posix.basename(entry), entry]));
+}
+
+/** Exact-string candidates in tracked non-Markdown text; binary files are skipped. */
+function grepMachineText({repo, ref, paths, needles}) {
+  if (needles.length === 0) return [];
+  const args = ["grep", "-n", "-I", "-z", "-F", ...needles.flatMap((needle) => ["-e", needle])];
+  const scope = ["--", ".", ":(exclude)*.md"];
+  const parse = (stdout, prefix = "") => stdout.split("\n").filter(Boolean).map((row) => {
+    const [file, line, text = ""] = row.split("\0");
+    return {path: normalizePath(file.slice(prefix.length)), line: Number(line), text};
+  });
+  if (ref != null) {
+    return parse(runGit(repo, [...args, ref, ...scope], {allowNoMatch: true}), `${ref}:`)
+      .filter((match) => paths.has(match.path));
+  }
+  // A sparse working tree omits most files; search those through the index.
+  const onDisk = parse(runGit(repo, [...args, "--untracked", ...scope], {allowNoMatch: true}));
+  const indexed = parse(runGit(repo, [...args, "--cached", ...scope], {allowNoMatch: true}))
+    .filter((match) => !fs.existsSync(path.join(repo, match.path)));
+  return [...onDisk, ...indexed].filter((match) => paths.has(match.path));
+}
+
 function parseScalar(rawValue) {
   const value = rawValue.trim();
   const doubleQuoted = /^"([^"\\]*(?:\\.[^"\\]*)*)"(?:\s+#.*)?$/u.exec(value);
@@ -564,7 +694,7 @@ function targetSnapshot({repo, ref}) {
   const sourceRevision = ref == null
     ? runGit(repo, ["rev-parse", "HEAD"]).trim()
     : runGit(repo, ["rev-parse", `${ref}^{commit}`]).trim();
-  const readSource = ref == null
+  const read = ref == null
     ? (documentPath) => {
         const workingPath = path.join(repo, documentPath);
         return fs.existsSync(workingPath)
@@ -572,7 +702,14 @@ function targetSnapshot({repo, ref}) {
           : runGit(repo, ["show", `:${documentPath}`]);
       }
     : (documentPath) => runGit(repo, ["show", `${ref}:${documentPath}`]);
+  const sources = new Map();
+  const readSource = (documentPath) => {
+    if (!sources.has(documentPath)) sources.set(documentPath, read(documentPath));
+    return sources.get(documentPath);
+  };
   return {
+    repo,
+    ref,
     paths,
     sourceRevision,
     readSource,
@@ -608,7 +745,7 @@ function normalizePath(value) {
   return value.split(path.sep).join("/").replace(/^\.\//u, "");
 }
 
-function runGit(repo, args) {
+function runGit(repo, args, {allowNoMatch = false} = {}) {
   const result = spawnSync("git", args, {
     cwd: repo,
     env: {
@@ -619,6 +756,8 @@ function runGit(repo, args) {
     encoding: "utf8",
     maxBuffer: 64 * 1024 * 1024,
   });
+  // git grep reports "no match" as status 1 with empty stderr.
+  if (allowNoMatch && result.status === 1 && result.stderr === "") return "";
   if (result.status !== 0) {
     throw new DocumentMetadataError(
       (result.stderr || `git ${args.join(" ")} failed with status ${result.status}`).trim(),
@@ -631,7 +770,10 @@ function printHelp() {
   console.log(`Usage: node tool/docs/check_doc_metadata.mjs [options]
 
 Options:
-  --base <ref>    Reject source-frontmatter identity swaps and version decreases.
+  --base <ref>    Reject source-frontmatter identity swaps and version decreases,
+                  and surviving references to documents or headings removed
+                  since <ref>: Markdown links plus literal paths in registries,
+                  tools, workflows and code.
   --ref <ref>     Inspect an exact Git revision instead of the working tree.
   --retirement    Include advisory lifecycle, missing-path and duplicate-body signals.
   --inventory     Include a disposable Markdown owner/heading/reference inventory.
@@ -671,6 +813,7 @@ function main() {
       })),
     };
     let baseRevision = null;
+    let advisories = [];
     if (args.base != null) {
       const base = targetSnapshot({repo: args.repo, ref: args.base});
       baseRevision = base.sourceRevision;
@@ -683,14 +826,29 @@ function main() {
       });
       const retiredPaths = [...base.paths].filter((entry) => entry.endsWith(".md") && !target.paths.has(entry));
       comparison.findings.push(...retiredDocumentReferences({...target, retiredPaths}));
+      const changedPaths = [...target.paths].filter((entry) => entry.endsWith(".md") &&
+        base.paths.has(entry) && target.readSource(entry) !== base.readSource(entry));
+      const retiredByName = uniqueRetiredNames(base.paths, retiredPaths);
+      const machine = machineReferenceFindings({
+        matches: grepMachineText({...target, needles: [...new Set([
+          ...retiredPaths, ...retiredByName.keys(), ...changedPaths.map((entry) => `${entry}#`)])]}),
+        retiredPaths,
+        retiredByName,
+        changedPaths,
+        readBase: base.readSource,
+        readTarget: target.readSource,
+      });
+      comparison.findings.push(...machine.findings);
+      advisories = machine.advisories;
       comparison.pass = comparison.findings.length === 0;
     }
     const report = {
-      schemaVersion: "1.0.0",
+      schemaVersion: "1.1.0",
       baseRevision,
       targetRevision: target.sourceRevision,
       governedDocuments: currentDocuments.length,
       ...comparison,
+      advisories,
       ...(args.inventory ? {inventory: buildDocumentInventory(target)} : {}),
       ...(args.retirement ? {retirement: buildDocumentRetirementReport(target)} : {}),
     };
@@ -712,6 +870,7 @@ function main() {
       console.log(
         `Document metadata passed: ${currentDocuments.length} source-governed Markdown files.`,
       );
+      for (const advisory of advisories) console.log(`Advisory: ${advisory.reason}`);
       if (args.retirement) {
         console.log(`Retirement review: ${report.retirement.findings.length} advisory signals across ${report.retirement.documents} documents; use --json for evidence.`);
       }

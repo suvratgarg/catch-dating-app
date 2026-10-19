@@ -90,6 +90,10 @@ export function publicAvatarUrl(user: UserProfileDocument): string | null {
 export function publicProfileFromUserProfileDoc(
   user: UserProfileDocument
 ): PublicProfileProjection {
+  if (!user.dateOfBirth || !user.gender) {
+    throw new Error(
+      "Social profile projection requires birth date and gender.");
+  }
   const profilePhotos = normalizeProfilePhotos(user);
   const running = runningPreferencesFromUserProfileDoc(user);
   return {

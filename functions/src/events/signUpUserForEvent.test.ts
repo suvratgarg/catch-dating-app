@@ -690,10 +690,10 @@ test("signUpUserForEvent never books a private event", async () => {
     .get("eventParticipations/event-1_runner-1"), undefined);
 });
 
-test("signUpUserForEvent rejects booking-incomplete profiles", async () => {
+test("signUpUserForEvent rejects missing account identity", async () => {
   const db = firestore({
     "events/event-1": event(),
-    "users/runner-1": user({interestedInGenders: []}),
+    "users/runner-1": user({phoneNumber: ""}),
   });
 
   await assert.rejects(
@@ -950,3 +950,51 @@ test("current persisted approval supplies the transactional review check",
     assert.equal(records["eventParticipations/event-1_runner-1"].status,
       "signedUp");
   });
+
+test("unrestricted signup accepts minimal identity without inventing gender",
+  async () => {
+    const minimal = user({
+      interestedInGenders: [],
+      profilePhotos: [],
+      profileComplete: false,
+    });
+    delete minimal.dateOfBirth;
+    delete minimal.gender;
+    const db = firestore({
+      "events/event-1": event(),
+      "users/runner-1": minimal,
+    });
+    await signUpUserForEvent(db, "event-1", "runner-1");
+    const fake = db as unknown as FakeFirestore;
+    assert.equal(
+      fake.get("eventParticipations/event-1_runner-1")?.status,
+      "signedUp",
+    );
+    assert.deepEqual(fake.get("events/event-1")?.genderCounts, {});
+  });
+
+for (const constraints of [
+  {minAge: 18, maxAge: 99, maxMen: null, maxWomen: null},
+  {minAge: 0, maxAge: 99, maxMen: 10, maxWomen: null},
+]) {
+  test(`restricted signup needs details ${JSON.stringify(constraints)}`,
+    async () => {
+      const minimal = user({interestedInGenders: []});
+      delete minimal.dateOfBirth;
+      delete minimal.gender;
+      const db = firestore({
+        "events/event-1": event({constraints}),
+        "users/runner-1": minimal,
+      });
+      await assert.rejects(
+        signUpUserForEvent(db, "event-1", "runner-1"),
+        /details this event requires/,
+      );
+      assert.equal(
+        (db as unknown as FakeFirestore).get(
+          "eventParticipations/event-1_runner-1",
+        ),
+        undefined,
+      );
+    });
+}

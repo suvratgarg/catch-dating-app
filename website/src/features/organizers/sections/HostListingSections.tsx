@@ -1,3 +1,4 @@
+import {renderAccountForm} from "../../account/accountForm";
 import type {HostListingPageController} from "../useHostListingPageController";
 import type {HostListing} from "../types";
 import type {ListingClaimController} from "../../claims/useListingClaimController";
@@ -38,10 +39,10 @@ export function HostListingSections({
 }) {
   const {
     claimHref,
-    handleSaveListing,
+    handleFollowListing,
     handleShareListing,
     isAppCreated,
-    isSaved,
+    isFollowing,
     shareStatus,
   } = controller;
   const canRequestClaim = organizerPolicyForListing(listing).canRequestClaim;
@@ -97,12 +98,15 @@ export function HostListingSections({
           claimHref={claimHref}
           canRequestClaim={canRequestClaim}
           isAppCreated={isAppCreated}
-          isSaved={isSaved}
+          isFollowing={isFollowing}
+          followPending={controller.followPending || controller.account.loading}
           listing={listing}
-          onSaveListing={handleSaveListing}
+          onFollowListing={handleFollowListing}
           onShareListing={() => void handleShareListing()}
           shareStatus={shareStatus}
         />
+        {controller.followRequested ? renderAccountForm(controller.account) : null}
+        {controller.followError ? <p role="alert">{controller.followError}</p> : null}
         {listing.sources.length ? (
           <ListingSourcesSection listing={listing} />
         ) : null}

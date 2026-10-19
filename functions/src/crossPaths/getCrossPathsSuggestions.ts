@@ -363,7 +363,7 @@ async function loadEventContext(params: {
   }
   const viewerAge = ageAt(viewer.dateOfBirth, nowMillis);
   if (
-    viewerAge < (event.constraints?.minAge ?? 0) ||
+    viewerAge === null || viewerAge < (event.constraints?.minAge ?? 0) ||
     viewerAge > (event.constraints?.maxAge ?? 99)
   ) {
     return null;

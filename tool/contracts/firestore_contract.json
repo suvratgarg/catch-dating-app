@@ -333,6 +333,7 @@
       "write": "owner initial create; profile edits via updateUserProfile; narrow runtime direct updates only",
       "exportedFunctions": [
         "updateUserProfile",
+        "manageWebsiteAccount",
         "requestAccountDeletion",
         "claimParticipantFormProfile"
       ],

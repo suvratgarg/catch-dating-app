@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/data/cursor_page.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
@@ -43,9 +45,7 @@ void main() {
         sessionBoundary: boundary,
       );
 
-      final result = await container.read(
-        hostTodayFeedControllerProvider(request).future,
-      );
+      final result = await _settledFeed(container, request);
 
       expect(result.activeEvents, [active]);
       expect(result.pastEvents, [past]);
@@ -77,19 +77,20 @@ void main() {
     );
     addTearDown(container.dispose);
 
-    final result = await container.read(
-      hostTodayFeedControllerProvider(
-        HostTodayFeedRequest(
-          organizerId: 'organizer-1',
-          accountId: 'host-1',
-          sessionBoundary: boundary,
-        ),
-      ).future,
+    final result = await _settledFeed(
+      container,
+      HostTodayFeedRequest(
+        organizerId: 'organizer-1',
+        accountId: 'host-1',
+        sessionBoundary: boundary,
+      ),
     );
 
     expect(result.activeEvents, [active]);
     expect(result.pastEvents, isEmpty);
     expect(result.attentionIssues, isEmpty);
+    expect(result.historyError, same(repository.pastError));
+    expect(result.historyStackTrace, isNotNull);
   });
 
   test('Today merges server tasks with the local attendance outbox', () async {
@@ -124,14 +125,13 @@ void main() {
     );
     addTearDown(container.dispose);
 
-    final result = await container.read(
-      hostTodayFeedControllerProvider(
-        HostTodayFeedRequest(
-          organizerId: 'organizer-1',
-          accountId: 'host-1',
-          sessionBoundary: boundary,
-        ),
-      ).future,
+    final result = await _settledFeed(
+      container,
+      HostTodayFeedRequest(
+        organizerId: 'organizer-1',
+        accountId: 'host-1',
+        sessionBoundary: boundary,
+      ),
     );
 
     expect(result.attentionItems.map((item) => item.kind), [
@@ -164,14 +164,13 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final result = await container.read(
-        hostTodayFeedControllerProvider(
-          HostTodayFeedRequest(
-            organizerId: 'organizer-1',
-            accountId: 'host-1',
-            sessionBoundary: boundary,
-          ),
-        ).future,
+      final result = await _settledFeed(
+        container,
+        HostTodayFeedRequest(
+          organizerId: 'organizer-1',
+          accountId: 'host-1',
+          sessionBoundary: boundary,
+        ),
       );
 
       expect(result.activeEvents, [active]);
@@ -183,6 +182,24 @@ void main() {
       });
     },
   );
+}
+
+Future<HostTodayFeedData> _settledFeed(
+  ProviderContainer container,
+  HostTodayFeedRequest request,
+) async {
+  final provider = hostTodayFeedControllerProvider(request);
+  final settled = Completer<HostTodayFeedData>();
+  final subscription = container.listen(provider, (_, next) {
+    final data = next.asData?.value;
+    if (data != null && !data.hasPendingSources && !settled.isCompleted) {
+      settled.complete(data);
+    }
+  }, fireImmediately: true);
+  addTearDown(subscription.close);
+  final initial = await container.read(provider.future);
+  expect(initial.activeEvents, isNotEmpty);
+  return settled.future;
 }
 
 ProviderContainer _container({

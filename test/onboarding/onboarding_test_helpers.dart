@@ -123,6 +123,7 @@ class FakeOnboardingUserProfileRepository extends Fake
 
   UserProfile? currentUser;
   UserProfile? lastSavedUser;
+  Map<String, dynamic>? lastPatch;
 
   @override
   Future<UserProfile?> fetchUserProfile({required String? uid}) async =>
@@ -145,6 +146,21 @@ class FakeOnboardingUserProfileRepository extends Fake
     String action = 'update profile',
   }) async {
     final updated = Map<String, dynamic>.from(patch.toFieldsJson());
+    lastPatch = updated;
+    final original = currentUser ?? buildUser(uid: uid);
+    currentUser = original.copyWith(
+      dateOfBirth: updated['dateOfBirth'] == null
+          ? original.dateOfBirth
+          : DateTime.fromMillisecondsSinceEpoch(updated['dateOfBirth'] as int),
+      gender: updated['gender'] == null
+          ? original.gender
+          : Gender.values.byName(updated['gender'] as String),
+      interestedInGenders: updated['interestedInGenders'] == null
+          ? original.interestedInGenders
+          : (updated['interestedInGenders'] as List)
+                .map((v) => Gender.values.byName(v as String))
+                .toList(),
+    );
     if (updated.containsKey('profileComplete')) {
       currentUser = (currentUser ?? buildUser(uid: uid)).copyWith(
         profileComplete: updated['profileComplete'] as bool,
@@ -223,9 +239,8 @@ Future<void> pumpOnboardingPage(
       container: container,
       child: MaterialApp(
         theme: AppTheme.light,
-        builder: (context, child) => CatchNoticeOverlay(
-          child: child ?? const SizedBox.shrink(),
-        ),
+        builder: (context, child) =>
+            CatchNoticeOverlay(child: child ?? const SizedBox.shrink()),
         home: Scaffold(body: child),
       ),
     ),

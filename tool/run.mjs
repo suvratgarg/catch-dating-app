@@ -252,7 +252,20 @@ async function affectedToolChecks(args) {
   }
 
   if (options.commitWindow && options.paths) throw new Error("--commit-window cannot override committed paths.");
-  const changedPaths = options.paths ?? changedPathsSince(options);
+  const committedOnly = options.check && options.generatedInventoriesMaterialized;
+  if (committedOnly) {
+    // Setup was planned before these generated outputs were materialized. Prove
+    // that authored inputs still match the commit before reusing that same diff;
+    // otherwise local output edits can select checks whose setup never ran.
+    try {
+      verifyProducerCommand("tool/ci/generated_inventories.mjs", "--verify-materialized");
+    } catch (error) {
+      console.error(`Cannot reuse CI producer checks: ${error.message}`);
+      process.exitCode = 1;
+      return;
+    }
+  }
+  const changedPaths = options.paths ?? changedPathsSince({...options, committedOnly});
   const plan = planAffectedToolChecks({
     changedPaths,
     manifest,
