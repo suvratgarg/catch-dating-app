@@ -1679,7 +1679,7 @@ component. The gate maps all 698 to exactly one of four outcomes, with
 |---|---|---:|---:|---:|
 | Concept | `react` record | | | 11 |
 | Adapter | `componentId` in the surface registry | 21 | 30 | |
-| T4 owner | measured: the export's own area, or its one consumer area for a shared export (7e moves those) | 156 + 172 to move | 83 + 147 to move | 1 to move |
+| T4 owner | measured: the export's own area, or its one consumer area for a shared export (7e moves those) | 158 + 170 to move | 83 + 147 to move | 1 to move |
 | Deletion | measured: no production consumer (tests and stories do not count) | 53 | 24 | |
 
 Only judgments are recorded. A shared-layer export that matches a T1 or T2
