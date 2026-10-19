@@ -1,0 +1,13 @@
+{
+  "name": "@catch/web-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./firebase": "./firebase.ts",
+    "./query": "./query.ts"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.104.1"
+  }
+}
