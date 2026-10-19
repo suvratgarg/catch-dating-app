@@ -14,12 +14,15 @@ export function usesNextRuntime(version) {
   assert.ok(Array.isArray(version.config?.rewrites), "Live Hosting rewrites missing");
   return version.config.rewrites.some(rule => rule.run?.serviceId === "catch-website-next");
 }
-export async function readLiveHosting() {
-  const token = spawnSync("gcloud", ["auth", "print-access-token"], {encoding: "utf8"});
+export async function readLiveHosting({runCommand = spawnSync, fetchImpl = fetch} = {}) {
+  const token = runCommand("gcloud", ["auth", "print-access-token"], {encoding: "utf8"});
   assert.equal(token.status, 0, "Cannot obtain OIDC-backed Hosting read token");
+  assert.ok(token.stdout.trim(), "Hosting read token is empty");
   async function get(path) {
-    const response = await fetch(`https://firebasehosting.googleapis.com/v1beta1/${path}`, {
-      headers: {Authorization: `Bearer ${token.stdout.trim()}`, "x-goog-user-project": "catch-dating-app-64e51"},
+    const response = await fetchImpl(`https://firebasehosting.googleapis.com/v1beta1/${path}`, {
+      // Hosting authorizes the resource project in the URL. A quota-project
+      // override unnecessarily requires serviceusage.services.use on that project.
+      headers: {Authorization: `Bearer ${token.stdout.trim()}`},
       signal: AbortSignal.timeout(20_000)});
     assert.equal(response.status, 200, `Hosting metadata read failed (${response.status})`); return response.json();
   }
