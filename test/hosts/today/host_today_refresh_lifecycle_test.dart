@@ -279,18 +279,25 @@ void main() {
     fixture.events.holdNextActive = held;
     await fixture.mount(tester, loading: true);
     final originalState = fixture.todayState(tester);
+    void expectBoundedReads(int count) {
+      expect(fixture.events.active, hasLength(count));
+      expect(fixture.events.history, fixture.events.active);
+      expect(fixture.attention.organizers, List.filled(count, 'org-a'));
+      expect(fixture.outbox.accounts, List.filled(count, 'actor-a'));
+    }
+
     try {
+      // Optional reads start while the first active page is still held.
+      expectBoundedReads(1);
       tester.widget<HostTodayBody>(find.byType(HostTodayBody)).onRetry();
       await pumpFeatureUi(tester);
-      expect(fixture.events.active, hasLength(2));
-      expect(fixture.events.history, hasLength(1));
+      expectBoundedReads(2);
       held.complete(const _EventPage(items: [], hasMore: false));
       await pumpFeatureUi(tester);
       fixture.expectRetained(tester, originalState);
       expect(fixture.display(tester).featuredEvent?.id, 'org-a-event');
-      expect(fixture.events.history, hasLength(1));
-      expect(fixture.attention.organizers, ['org-a']);
-      expect(fixture.outbox.accounts, ['actor-a']);
+      // The retired completion cannot add reads or replace the current event.
+      expectBoundedReads(2);
     } finally {
       if (!held.isCompleted) {
         held.complete(const _EventPage(items: [], hasMore: false));

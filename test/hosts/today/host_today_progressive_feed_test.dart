@@ -85,9 +85,9 @@ void main() {
               ).showOrientation,
               isFalse,
             );
-            expect(find.byType(HostTodayQuietState), findsNothing);
+            expect(find.byType(HostTodayEmptyState), findsNothing);
             rig.completeOptional(held);
-            await pumpUntilFound(tester, find.byType(HostTodayQuietState));
+            await pumpUntilFound(tester, find.byType(HostTodayEmptyState));
             expect(isHostTodayQuiet(rig.state(tester)), isTrue);
             rig.expectOneBoundedReadPerSource();
             expect(tester.takeException(), isNull);
@@ -151,7 +151,7 @@ void main() {
       expect(state.hasPastEvents, isTrue);
       expect(state.attentionCountIsComplete, isTrue);
       expect(state.attentionIssues, isEmpty);
-      expect(find.byType(HostTodayQuietState), findsNothing);
+      expect(find.byType(HostTodayEmptyState), findsNothing);
       rig.expectOneBoundedReadPerSource();
       expect(tester.takeException(), isNull);
     } finally {
@@ -262,7 +262,7 @@ void main() {
       expect(rig.state(tester).status, HostTodayStatus.error);
       expect(rig.state(tester).error, same(failure));
       expect(isHostTodayQuiet(rig.state(tester)), isFalse);
-      expect(find.byType(HostTodayQuietState), findsNothing);
+      expect(find.byType(HostTodayEmptyState), findsNothing);
       expect(tester.takeException(), isNull);
     } finally {
       await rig.close(tester);
@@ -469,7 +469,7 @@ void main() {
       expect(pending.primaryAction, isNull);
       expect(pending.showOrientation, isFalse);
       rig.completeOptional(_OptionalSource.history);
-      await pumpUntilFound(tester, find.byType(HostTodayQuietState));
+      await pumpUntilFound(tester, find.byType(HostTodayEmptyState));
       final settled = buildHostTodayPersonalizationState(
         today: rig.state(tester),
         preference: const HostTodayPreference.selected(HostTodayFocus.audience),
@@ -503,7 +503,7 @@ void main() {
       );
       expect(errorSurface.onRetry, isNotNull);
       errorSurface.onRetry!();
-      await pumpUntilFound(tester, find.byType(HostTodayQuietState));
+      await pumpUntilFound(tester, find.byType(HostTodayEmptyState));
       expect(rig.state(tester).historyError, isNull);
       expect(rig.state(tester).hasPastEvents, isTrue);
       for (final source in ['active', 'attention', 'attendance', 'history']) {
