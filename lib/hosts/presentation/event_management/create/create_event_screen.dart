@@ -19,6 +19,7 @@ import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/events.dart'
@@ -161,6 +162,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _priceController = TextEditingController();
   final _customActivityLabelController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _accessibilityController = TextEditingController();
+  final _includedController = TextEditingController();
   final _externalEventUrlController = TextEditingController();
   final _externalEventIdController = TextEditingController();
   ExternalBookingProvider _externalBookingProvider =
@@ -325,6 +328,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _priceController.dispose();
     _customActivityLabelController.dispose();
     _descriptionController.dispose();
+    _accessibilityController.dispose();
+    _includedController.dispose();
     _externalEventUrlController.dispose();
     _externalEventIdController.dispose();
     _minAgeController.dispose();
@@ -460,6 +465,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                         customActivityLabelController:
                             _customActivityLabelController,
                         descriptionController: _descriptionController,
+                        accessibilityController: _accessibilityController,
+                        includedController: _includedController,
                         selectedActivityKind: _selectedActivityKind,
                         onActivityKindChanged: (activityKind) => setState(() {
                           _selectedActivityKind = activityKind;

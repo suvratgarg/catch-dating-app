@@ -995,6 +995,25 @@ export const eventDocumentSchema: Record<string, unknown> = {
                   }
                 }
               }
+            },
+            "publicDetails": {
+              "type": "object",
+              "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+              "additionalProperties": true,
+              "properties": {
+                "requirements": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "accessibility": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "included": {
+                  "type": "string",
+                  "maxLength": 2000
+                }
+              }
             }
           }
         }
@@ -2071,6 +2090,21 @@ export const eventDocumentSchema: Record<string, unknown> = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "catchExperienceActivities": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "introductions",
+          "sharedActivities",
+          "rotations"
+        ]
+      }
     }
   },
   "allOf": [

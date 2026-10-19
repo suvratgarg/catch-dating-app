@@ -17,8 +17,14 @@ export type EventRegistrationState =
 
 export interface EventDetailRecord {
   photoUrl?: HostListingCatchEvent["photoUrl"];
+  catchExperienceActivities?: HostListingCatchEvent["catchExperienceActivities"];
   meetingLocation?: HostListingCatchEvent["meetingLocation"];
   itinerary?: HostListingCatchEvent["itinerary"];
+  included?: string;
+  registrationAccess?: HostListingCatchEvent["registrationAccess"];
+  admissionLabels?: HostListingCatchEvent["admissionLabels"];
+  waitlistAvailable?: boolean;
+  cancellationPolicy?: HostListingCatchEvent["cancellationPolicy"];
   accessibility: string;
   activityKind: string;
   capacityLimit: number | null;
@@ -107,7 +113,7 @@ function catchEventRecord(
   );
   const remainingCapacity = Math.max(0, event.capacityLimit - event.bookedCount);
   const registrationMode = event.registrationMode ?? (event.publicRegistrationEnabled ? "free" : "closed");
-  const registrationState: EventRegistrationState = !isUpcoming || event.registrationMode === "closed" || Date.parse(event.startTime) <= now
+  const registrationState: EventRegistrationState = !isUpcoming || (!event.registrationAccess && event.registrationMode === "closed") || Date.parse(event.startTime) <= now
     ? "closed"
     : event.publicRegistrationEnabled && registrationMode !== "closed"
       ? "webOtp"
@@ -116,8 +122,14 @@ function catchEventRecord(
         : "catchApp";
   return {
     photoUrl: event.photoUrl,
+    catchExperienceActivities: event.catchExperienceActivities,
     meetingLocation: event.meetingLocation,
     itinerary: event.itinerary,
+    included: event.included,
+    registrationAccess: event.registrationAccess,
+    admissionLabels: event.admissionLabels,
+    waitlistAvailable: event.waitlistAvailable,
+    cancellationPolicy: event.cancellationPolicy,
     accessibility: event.accessibility ?? "",
     activityKind: event.activityKind,
     capacityLimit: event.capacityLimit,

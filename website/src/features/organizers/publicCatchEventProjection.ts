@@ -1,3 +1,4 @@
+import {publicExperienceActivities} from "./publicExperience";
 import {matchesJsonSchema} from "../../shared/contracts/jsonSchema";
 import {publicEventDisplaySchemas as displaySchemas} from "../../shared/contracts/generated/publicEventDisplaySchemas";
 import type {HostListing} from "./types";
@@ -82,10 +83,13 @@ export function projectLivePublicCatchEvent(id: string, raw: unknown,
       location, locationDetails: text(venue?.notes || data.locationDetails),
       summary: text(data.description), capacityLimit: data.capacityLimit,
       photoUrl: publicPhotoUrl(data),
+      ...(publicExperienceActivities(data.catchExperienceActivities).length ? {catchExperienceActivities: publicExperienceActivities(data.catchExperienceActivities)} : {}),
       ...(matchesJsonSchema(data.meetingLocation, displaySchemas.meetingLocation)
         ? {meetingLocation: data.meetingLocation as PublicCatchEvent["meetingLocation"]} : {}),
       ...(matchesJsonSchema(data.itinerary, displaySchemas.itinerary)
         ? {itinerary: data.itinerary as PublicCatchEvent["itinerary"]} : {}),
+      ...publicGuestDetails(data, format, admission, constraints),
+      registrationAccess: restricted ? "restricted" : mode === "closed" ? "app" : "open",
       bookedCount: data.bookedCount,
       checkedInCount: count(data.checkedInCount) ? data.checkedInCount : 0,
       waitlistedCount: count(data.waitlistedCount) ? data.waitlistedCount : 0,
@@ -127,4 +131,33 @@ function publicPhotoUrl(data: Record<string, unknown>): string | null {
     try { const url = new URL(candidate); if (url.protocol === "https:" && !url.username && !url.password) return url.href; } catch { /* Omit malformed optional media. */ }
   }
   return null;
+}
+
+/** Only the explicitly public guest-note namespace is read from format extensions. */
+function publicGuestDetails(data: Record<string, unknown>, format: Record<string, unknown> | null,
+  admission: Record<string, unknown> | null, constraints: Record<string, unknown> | null): Partial<PublicCatchEvent> {
+  const notes = record(record(format?.activityDetails)?.publicDetails);
+  const bounded = (value: unknown) => typeof value === "string" && value.trim().length <= 2000 ? value.trim() : "";
+  const min = constraints?.minAge;
+  const max = constraints?.maxAge;
+  const age = count(min) && count(max) && min <= max && max <= 120
+    ? min > 0 && max < 99 ? `Ages ${min}–${max}.` : min > 0 ? `Ages ${min} and over.` : max < 99 ? `Ages ${max} and under.` : "" : "";
+  const requirements = [age, bounded(notes?.requirements)].filter(Boolean).join(" ");
+  const labels: NonNullable<PublicCatchEvent["admissionLabels"]> = [];
+  if (admission?.manualApprovalRequired || admission?.format === "manualApproval") labels.push("approval");
+  if (admission?.inviteRequired || admission?.format === "inviteOnly" || record(admission?.privateAccessPolicy)?.mode === "inviteCode") labels.push("invitation");
+  if (admission?.membershipRequired || admission?.format === "membersOnly") labels.push("membership");
+  if (admission?.balancedRatioPolicy != null || admission?.format === "balancedRatio" || admission?.format === "fixedCohortCaps" || constraints?.maxMen != null || constraints?.maxWomen != null) labels.push("balanced");
+  const waitlist = record(admission?.waitlistPolicy)?.mode;
+  const cancellation = record(record(data.eventPolicy)?.cancellation)?.policyId;
+  return {
+    ...(requirements ? {requirements} : {}),
+    ...(bounded(notes?.accessibility) ? {accessibility: bounded(notes?.accessibility)} : {}),
+    ...(bounded(notes?.included) ? {included: bounded(notes?.included)} : {}),
+    ...(labels.length ? {admissionLabels: labels} : {}),
+    ...(["disabled", "rankedOffer", "broadcastFirstComeFirstServed", "manualReview"].includes(String(waitlist))
+      ? {waitlistAvailable: waitlist !== "disabled"} : {}),
+    ...(["notApplicable", "flexible", "standard", "strict"].includes(String(cancellation))
+      ? {cancellationPolicy: cancellation as PublicCatchEvent["cancellationPolicy"]} : {}),
+  };
 }

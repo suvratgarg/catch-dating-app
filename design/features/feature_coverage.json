@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_coverage.schema.json",
   "version": 1,
-  "updated": "2026-10-07",
+  "updated": "2026-10-20",
   "owner": "product_design_parity",
   "sourceOfTruth": "Exhaustive migration ledger for feature orchestration contracts across registered Flutter screens, marketing routes, and admin route components. A planned entry names its intended shared feature identity; grouped entries are secondary route projections, not independent features.",
   "authorities": [
@@ -326,7 +326,7 @@
       "authorityId": "visitor_discovery",
       "status": "contracted",
       "priority": "P1",
-      "reason": "Preserved consumer discovery, store availability and member waitlist authority at /explore/.",
+      "reason": "Consumer discovery preview and full event catalogue share public inventory and distinct route/filter states, with explicit empty, failure and participation-badge evidence.",
       "featureContract": "feature.marketing_home"
     },
     {
@@ -822,10 +822,10 @@
     {
       "authority": "marketing_routes",
       "authorityId": "home",
-      "status": "grouped",
+      "status": "contracted",
       "priority": "P1",
-      "reason": "Editorial organiser-first acquisition entry using existing directory/claim links, supported Host pilot and clearly labelled concept projections; no new account or transactional authority.",
-      "primaryAuthorityId": "host"
+      "reason": "Consumer discovery preview and full event catalogue share public inventory and distinct route/filter states, with explicit empty, failure and participation-badge evidence.",
+      "featureContract": "feature.marketing_home"
     }
   ]
 }

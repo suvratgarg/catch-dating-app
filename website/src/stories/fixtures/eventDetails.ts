@@ -101,3 +101,42 @@ function requireEvent(
   if (!event) throw new Error(`Missing event story fixture: ${id}`);
   return event;
 }
+
+// Explicit component-review fixtures, never imported by the public catalogue.
+// The upcoming state has no event reviews; a separate completed event exercises reviews.
+export const completeEventDetailFixture: EventDetailRecord = {
+  ...catchEventDetailFixture,
+  requirements: "18+ · Come on your own or with a friend. Let the host know about dietary requirements before booking. A three-course vegetarian dinner and a welcome drink are included; additional drinks are separate.",
+  accessibility: "Illustrative venue information: step-free entrance, lift access and an accessible toilet. Seating is provided throughout. Contact the organiser before booking if you need a quieter seat or other support.",
+  summary: "An evening for people who enjoy good food and meeting someone new. Arrive on your own or bring a friend: your host will welcome you, help everyone settle in and start the conversation. There is no dating requirement, networking pitch or pressure to take part. Dinner, a welcome drink and a hosted evening are included.",
+  catchExperienceActivities: ["introductions", "sharedActivities", "rotations"],
+  locationDetails: "Bandra West · Exact venue address is shared with confirmed guests. Please arrive 10 minutes before the start.",
+  capacityLimit: 24, remainingCapacity: 6,
+  registrationMode: "paid", registrationState: "webOtp", paidBookingAvailable: true,
+  listing: {...catchEventDetailFixture.listing,
+    metrics: {...catchEventDetailFixture.listing.metrics, rating: 4.8, reviewCount: 29, memberCount: 76}},
+  itinerary: [
+    {id: "arrive", kind: "gather", offsetMinutes: 0, durationMinutes: 20, title: "Arrive & say hello", description: "Your host welcomes you. An optional introduction prompt gives you a reason to meet someone new."},
+    {id: "first-course", kind: "activity", offsetMinutes: 20, durationMinutes: 60, title: "First course, first conversations", description: "Settle into a small group over dinner. Light conversation prompts are there if you want them."},
+    {id: "new-seat", kind: "transition", offsetMinutes: 80, durationMinutes: 15, title: "A new seat, a few new faces", description: "An optional seat change introduces you to another part of the table. Your host can adapt the plan."},
+    {id: "dessert", kind: "activity", offsetMinutes: 95, durationMinutes: 65, title: "Dessert & unhurried conversation", description: "Keep talking with the people you have met, or join a new conversation."},
+    {id: "close", kind: "finish", offsetMinutes: 180, title: "Goodnight, for now", description: "An optional feedback prompt helps the host improve the next evening."},
+  ],
+  eventReviews: [],
+};
+export const completePastEventDetailFixture: EventDetailRecord = {
+  ...completeEventDetailFixture,
+  title: "A table for strangers. · Past edition",
+  date: "Saturday, October 10, 2026 · 7:00–10:00 PM",
+  startTime: "2026-10-10T13:30:00.000Z", endTime: "2026-10-10T16:30:00.000Z",
+  isUpcoming: false, registrationState: "closed", registrationMode: "closed",
+  eventReviews: [
+    {id: "preview-review-1", eventId: completeEventDetailFixture.eventId, reviewerName: "Demo guest A", rating: 5,
+      comment: "Illustrative review: coming alone felt easy. The host introduced us and the seat change helped me speak to more people.",
+      createdAt: "2026-10-11T10:00:00.000Z", verificationStatus: "verified", source: "catchEvent", isAnonymous: false,
+      ownerResponse: {hostName: "Demo host", hostAvatarUrl: null, message: "Illustrative host reply: thank you for joining us. We are glad the introductions helped.", updatedAt: "2026-10-12T10:00:00.000Z"}},
+    {id: "preview-review-2", eventId: completeEventDetailFixture.eventId, reviewerName: "Demo guest B", rating: 4,
+      comment: "Illustrative review: good food and a friendly group. I would have liked a little more time before the seat change.",
+      createdAt: "2026-10-12T10:00:00.000Z", verificationStatus: "verified", source: "catchEvent", isAnonymous: false, ownerResponse: null},
+  ],
+};

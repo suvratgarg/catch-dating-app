@@ -20,6 +20,7 @@ import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -219,6 +220,16 @@ void main() {
           findsNothing,
         );
         await _fillBasicsStep(tester);
+        await _enterCreateEventText(
+          tester,
+          CreateEventFormKeys.accessibility,
+          'Step-free entrance',
+        );
+        await _enterCreateEventText(
+          tester,
+          CreateEventFormKeys.included,
+          'Water and a guide',
+        );
         expect(
           find.byWidgetPredicate(
             (widget) =>
@@ -301,6 +312,14 @@ void main() {
         expect(find.textContaining('visible to'), findsNothing);
         expect(fakeEventRepository.createdEvent, isNotNull);
         expect(fakeEventRepository.createdEvent!.clubId, 'club-1');
+        expect(
+          fakeEventRepository.createdEvent!.eventFormat.accessibilityNotes,
+          'Step-free entrance',
+        );
+        expect(
+          fakeEventRepository.createdEvent!.eventFormat.includedNotes,
+          'Water and a guide',
+        );
         expect(fakeEventRepository.createdEvent!.meetingPoint, 'Bandra Fort');
         expect(fakeEventRepository.createdEvent!.startingPointLat, 19.12345);
         expect(fakeEventRepository.createdEvent!.startingPointLng, 72.98765);

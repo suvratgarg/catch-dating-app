@@ -23,12 +23,14 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_scope_notice.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_guest_details_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_itinerary_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/route_event_plan_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
@@ -87,6 +89,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   final _locationDetailsController = TextEditingController();
   final _distanceController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _accessibilityController = TextEditingController();
+  final _includedController = TextEditingController();
   final _capacityController = TextEditingController();
   final _priceController = TextEditingController();
   final _minAgeController = TextEditingController();
@@ -149,6 +153,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       includeUnit: false,
     );
     _descriptionController.text = event.description;
+    _accessibilityController.text = event.eventFormat.accessibilityNotes ?? '';
+    _includedController.text = event.eventFormat.includedNotes ?? '';
     _capacityController.text = event.capacityLimit.toString();
     _priceController.text = CreateEventPolicyState.minorUnitsText(
       event.priceInPaise,
@@ -187,6 +193,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     _locationDetailsController.dispose();
     _distanceController.dispose();
     _descriptionController.dispose();
+    _accessibilityController.dispose();
+    _includedController.dispose();
     _capacityController.dispose();
     _priceController.dispose();
     _minAgeController.dispose();
@@ -568,6 +576,11 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                             textInputAction: TextInputAction.newline,
                           ),
                         ],
+                      ),
+                      EventGuestDetailsSection(
+                        accessibilityController: _accessibilityController,
+                        includedController: _includedController,
+                        enabled: screenState.canEdit,
                       ),
                       if (screenState.policyLocked)
                         HostedEventPolicySection.readOnly(event: widget.event)

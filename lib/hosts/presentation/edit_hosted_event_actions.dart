@@ -189,6 +189,8 @@ extension _EditHostedEventActions on _EditHostedEventScreenState {
       distanceText: _distanceController.text,
       selectedPace: _selectedPace,
       description: _descriptionController.text,
+      accessibility: _accessibilityController.text,
+      included: _includedController.text,
       capacityText: _capacityController.text,
       priceText: _priceController.text,
       admissionPreset: _selectedAdmissionPreset,

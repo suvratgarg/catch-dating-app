@@ -1,3 +1,4 @@
+import {ConsumerEventPage} from "../shared/ui/primitives/consumerEvent";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {EventDetailHeroSection, EventDetailFactsSection} from "../features/events/sections/EventDetailSections";
 import {catchEventDetailFixture} from "./fixtures/eventDetails";
@@ -9,6 +10,8 @@ const controller = {user: null, phone: "", setPhone: noop, code: "", setCode: no
   refresh: async () => ({}), changePhone: noop, changeAccount: async () => undefined,
 } as unknown as Parameters<typeof GuestEventEntryView>[0]["controller"];
 const meta = {title: "Events/Guest entry", component: GuestEventEntryView,
+  decorators: [(Story) => <ConsumerEventPage><Story /></ConsumerEventPage>],
+  parameters: {a11y: {test: "error"}},
   args: {eventId: "preview-event", controller},
 } satisfies Meta<typeof GuestEventEntryView>;
 export default meta;

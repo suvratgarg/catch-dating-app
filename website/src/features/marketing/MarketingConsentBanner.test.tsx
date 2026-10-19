@@ -1,4 +1,6 @@
-import {cleanup, fireEvent, render, screen} from "@testing-library/react";
+import {act, cleanup, fireEvent, render, screen} from "@testing-library/react";
+import {renderToString} from "react-dom/server";
+import {hydrateRoot} from "react-dom/client";
 import {afterEach, beforeEach, expect, test, vi} from "vitest";
 import {getMarketingConsent, marketingConsentChangedEvent} from "../../analytics";
 import {MarketingConsentBanner} from "./MarketingConsentBanner";
@@ -42,4 +44,22 @@ test("legacy accepted choice still presents all choices and sibling-tab revocati
   expect(screen.getByRole("button", {name: "Privacy choices"})).toBeTruthy();
   fireEvent(window, new Event(marketingConsentChangedEvent));
   expect(getMarketingConsent()?.marketing).toBe(false);
+});
+
+test("Next serves initial consent content and hydrates an existing choice without escalating it", async () => {
+  localStorage.setItem("catch_marketing_consent_v2", JSON.stringify({version: 2, choice: "essential",
+    analytics: false, marketing: false, updatedAt: new Date().toISOString()}));
+  const html = renderToString(<MarketingConsentBanner serverRendered />);
+  expect(html).toContain("Essential only");
+  const container = document.createElement("div");
+  container.innerHTML = html; document.body.append(container);
+  const errors: unknown[] = [];
+  let root: ReturnType<typeof hydrateRoot>;
+  await act(async () => {root = hydrateRoot(container, <MarketingConsentBanner serverRendered />,
+    {onRecoverableError: error => errors.push(error)});});
+  expect(container.textContent).toContain("Privacy choices");
+  expect(container.textContent).not.toContain("Allow analytics and marketing");
+  expect(getMarketingConsent()).toMatchObject({analytics: false, marketing: false});
+  expect(errors).toEqual([]);
+  await act(async () => root.unmount()); container.remove();
 });

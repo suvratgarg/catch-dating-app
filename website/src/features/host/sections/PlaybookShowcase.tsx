@@ -16,9 +16,11 @@ import type {HostCaptureMap} from "./CaptureFrames";
 
 export function PlaybookShowcase({captures: _captures}: {captures: HostCaptureMap}) {
   const [stage, setStage] = useState("arrival");
+  const [activeAnchor, setActiveAnchor] = useState("");
 
   useEffect(() => {
     const anchor = window.location.hash.slice(1);
+    setActiveAnchor(anchor);
     if (!anchor.startsWith("playbook-")) return;
     requestAnimationFrame(() => document.getElementById(anchor)?.scrollIntoView({block: "center"}));
   }, []);
@@ -43,7 +45,7 @@ export function PlaybookShowcase({captures: _captures}: {captures: HostCaptureMa
         variant="event-success"
       />
       <PlaybookCatalog
-        activeAnchor={window.location.hash.slice(1)}
+        activeAnchor={activeAnchor}
         aria-label={websiteCopy["playbookshowcase_0325"]}
         items={playbookModules}
         onExpand={(moduleId) => {

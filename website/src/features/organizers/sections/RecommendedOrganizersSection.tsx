@@ -4,19 +4,20 @@ import {
   FeaturedOrganizerCardGrid,
   RecommendedOrganizersSectionShell,
 } from "../../../shared/ui/primitives";
-import {hostListings} from "../data";
+import {usePublicHostListings} from "../usePublicEventListingsController";
 import {featuredOrganizerCardItemForListing} from "../featuredOrganizerCardItem";
 import {isPubliclyReadableListing, isVerifiedListing} from "../selectors";
 import type {HostListing} from "../types";
 
 export function RecommendedOrganizersSection({
   current,
-  listings = hostListings,
+  listings,
 }: {
   current: HostListing;
-  listings?: HostListing[];
+  listings?: readonly HostListing[];
 }) {
-  const recommended = listings
+  const live = usePublicHostListings();
+  const recommended = (listings ?? live.listings)
     .filter((listing) =>
       listing.id !== current.id &&
       isPubliclyReadableListing(listing) &&

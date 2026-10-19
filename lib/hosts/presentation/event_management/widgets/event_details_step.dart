@@ -9,6 +9,7 @@ import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_photo_picker.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_guest_details_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_itinerary_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/route_event_plan_editor.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -32,6 +33,8 @@ class EventDetailsStep extends StatefulWidget {
     required this.distanceController,
     required this.customActivityLabelController,
     required this.descriptionController,
+    required this.accessibilityController,
+    required this.includedController,
     required this.selectedActivityKind,
     required this.onActivityKindChanged,
     required this.selectedInteractionModel,
@@ -60,6 +63,8 @@ class EventDetailsStep extends StatefulWidget {
   final TextEditingController distanceController;
   final TextEditingController customActivityLabelController;
   final TextEditingController descriptionController;
+  final TextEditingController accessibilityController;
+  final TextEditingController includedController;
   final ActivityKind selectedActivityKind;
   final ValueChanged<ActivityKind> onActivityKindChanged;
   final EventInteractionModel selectedInteractionModel;
@@ -356,6 +361,10 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                     ),
                   ],
                 ],
+              ),
+              EventGuestDetailsSection(
+                accessibilityController: widget.accessibilityController,
+                includedController: widget.includedController,
               ),
               if (_showPresentation)
                 CreateEventPhotoPicker(

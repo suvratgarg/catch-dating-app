@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 18,
-  "updated": "2026-10-18",
+  "version": 19,
+  "updated": "2026-10-19",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -14,7 +14,11 @@
     "metadataSchema": "website/src/content/meta.schema.json",
     "staticOutput": "website/scripts/postbuild.mjs",
     "hostingConfig": "firebase.json",
-    "generatedListings": "website/src/generated/hostListings.json"
+    "generatedListings": "website/src/generated/hostListings.json",
+    "nextRuntime": "website/app/[[...path]]/page.tsx",
+    "nextPublicationPolicy": "website/src/server/publicReadPolicy.ts",
+    "nextImplementation": "docs/marketing_website_architecture.md",
+    "nextPreviewHosting": "website/next-hosting.preview.json"
   },
   "routes": [
     {
@@ -27,7 +31,7 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Short organiser-first introduction. Explore Catch Host is primary; event discovery and listing claims are separate handoffs.",
+      "notes": "Consumer homepage: city-scoped upcoming events, optional participation explanation, organiser profiles, FAQ and Host handoff. No inventory and catalog failure remain distinct.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -37,16 +41,20 @@
         ],
         "states": [
           "default",
-          "claim-entry",
-          "workflow-entry"
+          "empty-city",
+          "catalog-unavailable",
+          "city-and-format",
+          "mobile-menu"
         ],
         "stateCoverage": {
           "storybook": [
-            "default"
+            "default",
+            "empty-city",
+            "catalog-unavailable"
           ],
           "manual": [
-            "claim-entry",
-            "workflow-entry"
+            "city-and-format",
+            "mobile-menu"
           ]
         }
       }
@@ -61,7 +69,7 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Preserved consumer discovery and app/waitlist content; real organiser/event destinations also serve host acquisition. No transactional authority changes.",
+      "notes": "Event discovery with city, format, search, date and explicit participation-based Catch Experience filters. Booking and logistics alone never qualify for the badge. Shared consumer navigation; empty and unavailable states retain context.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -71,16 +79,24 @@
         ],
         "states": [
           "default",
-          "app-download-pending",
-          "waitlist-form"
+          "empty-city",
+          "no-results",
+          "experience-filter",
+          "catalog-unavailable",
+          "search-and-date",
+          "mobile-menu"
         ],
         "stateCoverage": {
           "storybook": [
-            "default"
+            "default",
+            "empty-city",
+            "catalog-unavailable"
           ],
           "manual": [
-            "app-download-pending",
-            "waitlist-form"
+            "no-results",
+            "experience-filter",
+            "search-and-date",
+            "mobile-menu"
           ]
         }
       }
@@ -95,7 +111,7 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Canonical Host product, workflows, use cases, existing tools and pricing/access page. Application lives only at /host/apply/. Retired marketing URLs redirect to sections.",
+      "notes": "Host landing page balances business workflows and guest participation, with five interactive before/during/after format examples, audience insights, flexible adoption and selected pilot access. Existing retired-route anchors remain. Application lives at /host/apply/. Restored selectable adoption circles, restrained participation and privacy explanations; global navigation is shared with Home and Explore.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -105,18 +121,36 @@
         ],
         "states": [
           "default",
-          "beta-offer",
+          "run-club",
+          "dinner",
+          "games",
+          "pickleball",
+          "pub-crawl",
+          "pilot-offer",
           "application-link",
-          "capture-placeholders"
+          "existing-tools",
+          "adoption-tools",
+          "adoption-booking",
+          "adoption-network",
+          "participation-privacy"
         ],
         "stateCoverage": {
           "storybook": [
             "default"
           ],
           "manual": [
-            "beta-offer",
+            "run-club",
+            "dinner",
+            "games",
+            "pickleball",
+            "pub-crawl",
+            "pilot-offer",
             "application-link",
-            "capture-placeholders"
+            "existing-tools",
+            "adoption-tools",
+            "adoption-booking",
+            "adoption-network",
+            "participation-privacy"
           ]
         }
       }
@@ -370,7 +404,7 @@
       "staticOutput": "postbuild",
       "indexing": "noindex-follow",
       "sitemap": "excluded",
-      "notes": "Search surface for generated organizer profiles; deliberately noindex until public inventory quality is stronger.",
+      "notes": "Consumer directory for clubs, communities and independent hosts; shares consumer navigation and visual treatment with Home, Host and Explore. Preserves public profile authority, reviews, event evidence, advanced filters and claiming links. Deliberately noindex until inventory quality is stronger.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -381,15 +415,19 @@
         "states": [
           "default",
           "filtered",
-          "empty-results"
+          "empty-results",
+          "catalog-unavailable",
+          "mobile-menu"
         ],
         "stateCoverage": {
           "storybook": [
-            "default"
+            "default",
+            "empty-results",
+            "catalog-unavailable"
           ],
           "manual": [
             "filtered",
-            "empty-results"
+            "mobile-menu"
           ]
         }
       }
@@ -600,7 +638,7 @@
       "staticOutput": "generated-postbuild",
       "indexing": "listing-controlled",
       "sitemap": "listing-controlled",
-      "notes": "Generated canonical organizer profile routes from website/src/generated/hostListings.json. The deployable projection includes only organizers with at least one market whose status is live in the active market pack; waitlist-market records remain available to review tooling and Storybook but cannot enter static output, search, or sitemap. Postbuild emits crawlable semantic profile content, Organization JSON-LD, canonical metadata, and lastVerifiedAt sitemap dates before React starts.",
+      "notes": "Generated canonical organizer profile routes from website/src/generated/hostListings.json. The deployable projection includes only organizers with at least one market whose status is live in the active market pack; waitlist-market records remain available to review tooling and Storybook but cannot enter static output, search, or sitemap. Postbuild emits crawlable semantic profile content, Organization JSON-LD, canonical metadata, and lastVerifiedAt sitemap dates before React starts. Consumer profile presentation shares the homepage navigation and visual system. Community identity and follow/share lead into events, about, reviews, and source/ownership context. Preserve authenticated follows, review provenance and permissions, external booking links, and empty event states. Catch Experience is an explicit event-level participation declaration, never an organiser endorsement.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -668,7 +706,7 @@
       "staticOutput": "generated-postbuild",
       "indexing": "event-controlled",
       "sitemap": "event-controlled",
-      "notes": "Generated Event Detail routes derived from explicitly published organizer and event projections. Catch-native events may use event-scoped phone OTP registration without Consumer onboarding; profile-dependent events hand off to Catch, and external events hand off to the official source. Static output includes semantic Event JSON-LD, organizer provenance, source freshness, aggregate capacity only, and event-scoped reviews whose eventId matches the route.",
+      "notes": "Generated Event Detail routes derived from explicitly published organizer and event projections. Catch-native events may use event-scoped phone OTP registration without Consumer onboarding; profile-dependent events hand off to Catch, and external events hand off to the official source. Static output includes semantic Event JSON-LD, organizer provenance, source freshness, aggregate capacity only, and event-scoped reviews whose eventId matches the route. Consumer event presentation uses the shared homepage navigation and visual system. Explicit public participation declarations alone qualify for the linked Catch Experience badge and included-tools section. Preserve artwork fallback, schedule/timezone, location disclosure, itinerary, requirements, accessibility, event-scoped reviews, external booking attribution and the existing guest entry/payment recovery flow. Live event routes enrich only their selected organiser with bounded published reviews. Completed-event reviews remain event-scoped; upcoming events may show distinctly labelled organiser reviews. Restore public registration context without blocking account-owned recovery, organiser rating/follower evidence, published guest notes, public meeting location and itinerary duration. Optional absence is preserved; review read failures are distinct from empty reviews.",
       "review": {
         "priority": "p0",
         "status": "ready",

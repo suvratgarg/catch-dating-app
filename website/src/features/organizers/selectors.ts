@@ -1,3 +1,4 @@
+import {activeMarket} from "@content/markets";
 import type {HostListing, HostListingCatchEvent, HostListingExternalEvent} from "./types";
 import {organizerPolicyForListing} from "./organizerPolicy";
 
@@ -57,7 +58,7 @@ export function readOrganizerFiltersFromUrl(
   const format = params.get("format");
   const rating = Number(params.get("rating") ?? 0);
   return {
-    query: params.get("q") ?? "",
+    query: (params.get("q") ?? "").slice(0,120),
     statusFilter: isOrganizerStatusFilter(status) ? status : "all",
     formatFilter: filterOptionValue(format, formatOptions),
     cityFilter: filterOptionValue(city, cityOptions),
@@ -69,8 +70,8 @@ export function readOrganizerFiltersFromUrl(
 
 export function organizerDirectorySearchParams(filters: OrganizerDirectoryFilters) {
   const params = new URLSearchParams();
-  const normalizedQuery = filters.query.trim();
-  if (normalizedQuery) params.set("q", normalizedQuery);
+  const query = filters.query.slice(0,120);
+  if (query.trim()) params.set("q", query);
   if (filters.cityFilter !== "all") params.set("city", filters.cityFilter);
   if (filters.formatFilter !== "all") params.set("format", filters.formatFilter);
   if (filters.statusFilter !== "all") params.set("status", filters.statusFilter);
@@ -294,4 +295,13 @@ function confidenceRank(value: string) {
   if (value === "medium") return 2;
   if (value === "low") return 1;
   return 0;
+}
+
+/** Stable city choices include empty markets; available activity labels come from public profiles. */
+export function organizerDirectoryOptions(listings: readonly HostListing[]) {
+  const publicListings = listings.filter(isPubliclyReadableListing);
+  return {
+    cityOptions: [...new Set([...activeMarket.cities.map(city => city.label), ...publicListings.map(listing => listing.city)])].sort(),
+    formatOptions: [...new Set(publicListings.flatMap(listing => listing.formats))].sort(),
+  };
 }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": 19,
-  "updated": "2026-10-16",
+  "version": 20,
+  "updated": "2026-10-19",
   "owner": "web_surface_architecture",
   "statuses": {
     "required": "A behavior test must exist and import the target hook.",
@@ -307,6 +307,16 @@
     {
       "source": "website/src/features/account/useWebsiteAccountController.ts",
       "test": "website/src/features/account/useWebsiteAccountController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/home/useConsumerHomeController.ts",
+      "test": "website/src/features/home/useConsumerHomeController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/home/useExploreController.ts",
+      "test": "website/src/features/home/useExploreController.test.tsx",
       "status": "required"
     }
   ]

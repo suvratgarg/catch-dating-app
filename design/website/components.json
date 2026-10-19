@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 103,
-  "updated": "2026-10-19",
+  "version": 106,
+  "updated": "2026-10-20",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -164,7 +164,8 @@
       "css": [
         "website/src/styles/site-shell.css",
         "website/src/styles/home.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css"
       ],
       "storybook": {
         "status": "ready",
@@ -172,11 +173,13 @@
         "exportName": "Home",
         "states": [
           "default",
-          "claim-entry",
-          "workflow-entry"
+          "empty-city",
+          "catalog-unavailable",
+          "city-and-format",
+          "mobile-menu"
         ]
       },
-      "notes": "Organiser-first public content arrangement; software and account availability remain explicit."
+      "notes": "Consumer discovery homepage with explicit inventory states; authored copy and catalog data remain separate."
     },
     {
       "id": "home_hero_section",
@@ -623,13 +626,7 @@
           "pending-status"
         ]
       },
-      "notes": "Shared website app-download CTA group for configured store CTA rows, launch-pending status, button/link selection, store marks, kicker text, and live status. Route sections pass placement, variant, and optional initial status while marketing/useAppDownloadCtas.ts owns telemetry configuration; the deleted feature AppDownloadCtas component, raw app-download classes, and raw store-button shells are blocked by web:react-component-governance.",
-      "comparedWith": [
-        "catch.journey_steps",
-        "catch.section",
-        "catch.metric_strip"
-      ],
-      "comparisonReason": "App Store and Play Store download links with pending-status copy; a marketing composition."
+      "notes": "Shared website app-download CTA group for configured store CTA rows, launch-pending status, button/link selection, store marks, kicker text, and live status. Route sections pass placement, variant, and optional initial status while marketing/useAppDownloadCtas.ts owns telemetry configuration; the deleted feature AppDownloadCtas component, raw app-download classes, and raw store-button shells are blocked by web:react-component-governance. App Store and Play Store download links with pending-status copy; a marketing composition."
     },
     {
       "id": "shared_featured_organizer_card_shell",
@@ -859,7 +856,8 @@
         "website/src/styles/host-foundation.css",
         "website/src/styles/host.css",
         "website/src/styles/flows.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/host-landing.css"
       ],
       "storybook": {
         "status": "ready",
@@ -867,12 +865,21 @@
         "exportName": "Host",
         "states": [
           "default",
-          "beta-offer",
+          "run-club",
+          "dinner",
+          "games",
+          "pickleball",
+          "pub-crawl",
+          "pilot-offer",
           "application-link",
-          "capture-placeholders"
+          "existing-tools",
+          "adoption-tools",
+          "adoption-booking",
+          "adoption-network",
+          "participation-privacy"
         ]
       },
-      "notes": "Canonical public host beta route for standalone live-event tooling alongside external booking platforms; current tools precede an explicit coming-later boundary."
+      "notes": "Host landing page balances business workflows and guest participation, with five interactive before/during/after format examples, audience insights, flexible adoption and selected pilot access. Existing retired-route anchors remain. Application lives at /host/apply/. Includes selectable adoption circles and participation/privacy guidance."
     },
     {
       "id": "host_hero_section",
@@ -1080,8 +1087,8 @@
       "exportName": "OrganizerSearchPage",
       "css": [
         "website/src/styles/site-shell.css",
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/organiser-directory.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1090,10 +1097,12 @@
         "states": [
           "default",
           "filtered",
-          "empty-results"
+          "empty-results",
+          "catalog-unavailable",
+          "mobile-menu"
         ]
       },
-      "notes": "Reference organizer-directory route story; URL state remains controller-owned through React Router search params."
+      "notes": "Consumer organiser directory with shared chrome, progressive search filters, profile provenance and a separate host/claim invitation."
     },
     {
       "id": "route_organizer_listing",
@@ -1108,7 +1117,9 @@
       "css": [
         "website/src/styles/site-shell.css",
         "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/organiser-profile.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1134,7 +1145,9 @@
       "css": [
         "website/src/styles/site-shell.css",
         "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/consumer-event.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1218,7 +1231,9 @@
       "exportName": "EventDetailHeroSection",
       "css": [
         "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/consumer-event.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1246,7 +1261,9 @@
       "exportName": "EventDetailFactsSection",
       "css": [
         "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/consumer-event.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1270,7 +1287,9 @@
       "exportName": "EventDetailReviewsSection",
       "css": [
         "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/consumer-event.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1294,7 +1313,9 @@
       "exportName": "EventDetailProvenanceSection",
       "css": [
         "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/consumer-event.css"
       ],
       "storybook": {
         "status": "ready",
@@ -2096,10 +2117,6 @@
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/actions2.tsx",
       "exportName": "StoreButton",
-      "comparedWith": [
-        "catch.button"
-      ],
-      "comparisonReason": "App Store or Play Store badge link; the store artwork is governed by Apple and Google badge guidelines, so it is not a CatchButton recipe.",
       "css": [
         "website/src/styles/home.css",
         "website/src/styles/organizers.css"
@@ -3246,7 +3263,11 @@
       "exportName": "ListingHeroSection",
       "css": [
         "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/organiser-profile.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/organiser-profile.css"
       ],
       "storybook": {
         "status": "ready",
@@ -3256,7 +3277,7 @@
           "claimable-unclaimed"
         ]
       },
-      "notes": "Generated organizer hero using the Catch polaroid material, a provenance ledger, and a separate capability-aware action rail; public profile-strength scores and event-ticket chrome are deliberately omitted."
+      "notes": "Community identity, approved imagery or activity fallback, and accessible profile section navigation."
     },
     {
       "id": "listing_hero_rail_section",
@@ -3270,7 +3291,9 @@
       "exportName": "ListingHeroRailSection",
       "css": [
         "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/organiser-profile.css"
       ],
       "storybook": {
         "status": "ready",
@@ -3280,7 +3303,7 @@
           "claim-enabled"
         ]
       },
-      "notes": "Capability-aware organizer identity and action rail. Enabled claims link to the claim route; unavailable claims stay visibly disabled with the canonical capability reason."
+      "notes": "Follow and share lead the visitor actions; ownership requests remain capability gated in a disclosure."
     },
     {
       "id": "listing_facts_section",
@@ -4522,8 +4545,8 @@
       "exportName": "VisitorDiscoveryPage",
       "css": [
         "website/src/styles/site-shell.css",
-        "website/src/styles/home.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/explore.css"
       ],
       "storybook": {
         "status": "ready",
@@ -4531,11 +4554,15 @@
         "exportName": "VisitorDiscovery",
         "states": [
           "default",
-          "app-download-pending",
-          "waitlist-form"
+          "empty-city",
+          "no-results",
+          "experience-filter",
+          "catalog-unavailable",
+          "search-and-date",
+          "mobile-menu"
         ]
       },
-      "notes": "Original consumer discovery, app availability and waitlist sequence retained at /explore/."
+      "notes": "Event discovery and explicit Catch Experience participation distinction; consumer chrome shared with Home and Host."
     },
     {
       "id": "sales_demo_continuation",
@@ -4638,6 +4665,59 @@
         ]
       },
       "notes": "The sole Host pilot intake page, using the existing application controller."
+    },
+    {
+      "id": "listing_profile_information",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/ListingHeroSection.tsx",
+      "exportName": "ListingProfileInformation",
+      "css": [
+        "website/src/styles/organizers.css",
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/organiser-profile.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/organiser-profile.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
+        "exportName": "ProfileInformation",
+        "states": [
+          "unclaimed"
+        ]
+      },
+      "notes": "Disclosure retains source count, freshness, visibility and ownership without leading the guest experience."
+    },
+    {
+      "id": "shared_catch_experience_badge",
+      "kind": "supporting-component",
+      "routeIds": [
+        "visitor_discovery",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy",
+        "event_detail_canonical"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/explore.tsx",
+      "exportName": "ExploreBadge",
+      "componentId": "catch.badge",
+      "css": [
+        "website/src/styles/explore.css"
+      ],
+      "storybook": {
+        "status": "route-only",
+        "states": [
+          "catch-experience",
+          "ordinary-booking-without-badge"
+        ]
+      },
+      "notes": "Passive BadgeControl adapter for events that actively guide guest participation. Covered in Explore and populated event-detail route previews; ordinary booking-only events omit the badge."
     }
   ]
 }

@@ -1,3 +1,5 @@
+import {exploreRouteStateForSearch, exploreDiscoveryHref} from "../features/home/exploreDiscovery";
+import {homeRouteStateForSearch} from "../features/home/homeDiscovery";
 import {retiredMarketingDestination} from "./retiredMarketingRoutes";
 import {salesDemoApiFromCallable} from "../features/salesDemo/salesDemoModel";
 import {invokeSalesDemoCallable} from "../firebase";
@@ -5,7 +7,7 @@ import {captureOfferCredential} from "../features/eventOffers/offerCredential";
 import {Suspense, useMemo, type ComponentType} from "react";
 import {PublicEventListingsProvider} from "./PublicEventListingsProvider";
 import {usePublicHostListings} from "../features/organizers/usePublicEventListingsController";
-import {BrowserRouter, Navigate, Route, Routes, useLocation, useParams} from "react-router";
+import {BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate, useParams} from "react-router";
 import {
   getPageKey,
   pageClassFor,
@@ -175,6 +177,10 @@ function CanonicalMarketingRouteShell() {
       ? "listing"
       : fallbackPage;
   const captures = useMarketingCaptures();
+  const navigate = useNavigate();
+  const exploreRouteState = exploreRouteStateForSearch(location.search);
+  const homeRouteState = homeRouteStateForSearch(location.search);
+  const homeRouteKey = `${homeRouteState.city}:${homeRouteState.category}`;
   const routeKey = page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
       page === "household_rsvp" ? page :
     `${location.pathname}${location.search}${location.hash}`;
@@ -204,10 +210,10 @@ function CanonicalMarketingRouteShell() {
           <Route path={marketingRoutePaths.sales_demo}
             element={<SalesDemoPage api={salesDemoApi} />} />
           <Route path={marketingRoutePaths.visitor_discovery}
-            element={<VisitorDiscoveryPage captures={captures} />} />
+            element={<VisitorDiscoveryPage captures={captures} routeState={exploreRouteState} onFiltersChange={filters => navigate(exploreDiscoveryHref(filters))} />} />
           <Route
             path={marketingRoutePaths.home}
-            element={<HomePage captures={captures} />}
+            element={<HomePage key={homeRouteKey} captures={captures} routeState={homeRouteState} />}
           />
           <Route
             path={marketingRoutePaths.host}

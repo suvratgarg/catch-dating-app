@@ -1,11 +1,12 @@
+import {projectExternalEventDocument, timestampIso, validTimezone, eventDateLabelForTimezone, platformLabel, titleCaseText} from "./next/externalEventProjection.mjs";
+import {listingFromFirestoreOrganizer, listingFromOrganizerDocument, organizerAuthority, enumValue, staticPublicApi, disabledPublicApi, organizerTypeLabel, canonicalOrganizerType, initialsForName, publicReviewsForListing, dateLabel, publicOwnerResponse, publicSourcesForListing, listingCapabilities, claimCapabilityReason, searchText} from "./next/organizerProjection.mjs";
+export {listingFromFirestoreOrganizer} from "./next/organizerProjection.mjs";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import {createRequire} from "node:module";
 import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import {
-  organizerListingReadiness,
-  supplyCapabilitiesForAuthority,
   buildOrganizerListingReadinessReceipt,
 } from "./organizerListingReadiness.mjs";
 import {
@@ -336,7 +337,7 @@ function publicExternalEventProjections(readiness) {
   const actions = externalEventReadinessActions(readiness);
   return actions
     .filter(isPublishableExternalEventAction)
-    .map((action) => publicExternalEventProjectionFromAction(action))
+    .map((action) => projectExternalEventDocument(action.externalEventDocument))
     .filter(Boolean);
 }
 
@@ -368,44 +369,6 @@ function isPublishableExternalEventAction(action) {
     document?.booking?.catchReservationsEnabled === false &&
     document?.booking?.catchWaitlistEnabled === false
   );
-}
-
-function publicExternalEventProjectionFromAction(action) {
-  const event = action.externalEventDocument;
-  const startTime = timestampIso(event.startTime);
-  if (!startTime) return null;
-  const endTime = timestampIso(event.endTime);
-  const primaryLink =
-    event.booking.externalLinks.find((link) => link.primary) ??
-    event.booking.externalLinks[0] ??
-    null;
-  const sourceHref =
-    primaryLink?.url ?? event.externalSource?.eventUrl ?? event.externalSource?.sourceUrl;
-  if (!sourceHref) return null;
-  const sourceLabel = platformLabel(primaryLink?.platform ?? event.externalSource?.platform);
-  return {
-    canonicalHostId: event.canonicalHostId,
-    compatibilityClubId: event.compatibilityClubId,
-    projection: {
-      id: event.eventId,
-      title: event.title,
-      activityKind: event.activity.activityKind,
-      availability: event.discovery.availability,
-      startTime,
-      endTime,
-      timezone: validTimezone(event.timezone) ? event.timezone : "UTC",
-      date: eventDateLabelForTimezone(startTime, endTime, event.timezone),
-      location: event.meetingPoint,
-      locationDetails:
-        event.locationDetails ?? event.meetingLocation?.notes ?? "",
-      summary: event.description,
-      priceLabel: event.price.displayText ?? "External ticketing",
-      sourceLabel,
-      sourceHref,
-      externalLinkCount: event.booking.externalLinks.length,
-      dedupeKey: event.dedupe.normalizedEventKey,
-    },
-  };
 }
 
 function withPublicExternalEvents(listing) {
@@ -495,123 +458,6 @@ function claimTargetAction(readiness, entityId) {
   );
 }
 
-function staticPublicApi(reason) {
-  return disabledPublicApi(reason, "static_fixture");
-}
-
-function disabledPublicApi(reason, claimTargetSyncStatus) {
-  return {
-    state: "disabled",
-    reason,
-    claimTargetSyncStatus,
-  };
-}
-
-function organizerAuthority({
-  ownershipState = "programmatic",
-  claimState = "unclaimed",
-  provenanceOrigin = "import",
-  sourceConfidence = "seedOnly",
-  verificationStatus = "unverified",
-  appVisibility = "hidden",
-  publishStatus = "draft",
-  indexStatus = "noindex",
-} = {}) {
-  return {
-    ownershipState: enumValue(
-      ownershipState,
-      ["programmatic", "userCreated", "claimed", "transferred"],
-      "programmatic"
-    ),
-    claimState: enumValue(
-      claimState,
-      ["unclaimed", "claimPending", "claimed", "verified", "suppressed"],
-      "unclaimed"
-    ),
-    provenanceOrigin: enumValue(
-      provenanceOrigin,
-      ["userCreated", "scraper", "adminSeed", "import"],
-      "import"
-    ),
-    sourceConfidence: enumValue(
-      sourceConfidence,
-      ["seedOnly", "low", "medium", "high", "ownerVerified"],
-      "seedOnly"
-    ),
-    verificationStatus: enumValue(
-      verificationStatus,
-      ["unverified", "sourceBacked", "ownerVerified"],
-      "unverified"
-    ),
-    appVisibility: enumValue(
-      appVisibility,
-      ["discoverable", "hidden"],
-      "hidden"
-    ),
-    publishStatus: enumValue(
-      publishStatus,
-      ["draft", "qa", "published", "suppressed", "removed"],
-      "draft"
-    ),
-    indexStatus: enumValue(
-      indexStatus,
-      ["noindex", "indexReady", "indexed"],
-      "noindex"
-    ),
-  };
-}
-
-function enumValue(value, allowed, fallback) {
-  return allowed.includes(value) ? value : fallback;
-}
-
-function listingCapabilities(
-  authority,
-  backendReadiness,
-  publicReviewTarget = {
-    state: "disabled",
-    reason: "Public reviews are unavailable until canonical target readiness is verified.",
-  }
-) {
-  const claimable = authority.claimState === "unclaimed";
-  const claimBackendEnabled = backendReadiness.state === "enabled";
-  const publicReviewTargetEnabled = publicReviewTarget.state === "enabled";
-  const publicReviewsEligible =
-    authority.publishStatus === "published" &&
-    authority.indexStatus !== "noindex" &&
-    authority.claimState !== "suppressed";
-  const publicReviewsEnabled =
-    publicReviewsEligible && publicReviewTargetEnabled;
-  return {
-    claimRequest: {
-      state: claimable && claimBackendEnabled ? "enabled" : "disabled",
-      reason: !claimable ?
-        claimCapabilityReason(authority.claimState) :
-        backendReadiness.reason,
-    },
-    publicReviews: {
-      targetState: publicReviewTargetEnabled ? "enabled" : "disabled",
-      readState: publicReviewsEnabled ? "enabled" : "disabled",
-      writeState: publicReviewsEnabled ? "enabled" : "disabled",
-      reason: !publicReviewsEligible ?
-        "Public reviews require a published, index-ready organizer page." :
-        !publicReviewTargetEnabled ? publicReviewTarget.reason :
-        "Public reviews are available for this published organizer page.",
-    },
-    supply: supplyCapabilitiesForAuthority(authority),
-  };
-}
-
-function claimCapabilityReason(claimState) {
-  switch (claimState) {
-  case "claimPending": return "A claim request is already under review.";
-  case "claimed": return "This organizer has already been claimed.";
-  case "verified": return "This organizer is owner verified.";
-  case "suppressed": return "This organizer is not accepting claim requests.";
-  default: return "Claiming is not available for this organizer yet.";
-  }
-}
-
 function validateListingProjections(listings) {
   const errors = [];
   for (const listing of listings) {
@@ -637,155 +483,6 @@ function appCreatedDemoListings() {
       return listingFromSalesDemo(config);
     })
     .filter(Boolean);
-}
-
-function canonicalOrganizerType(club) {
-  const value = club?.organizerType;
-  if ([
-    "club",
-    "community",
-    "individual",
-    "eventProducer",
-    "venue",
-    "brand",
-  ].includes(value)) return value;
-  switch (club?.entityKind) {
-  case "creatorCommunity": return "community";
-  case "eventOrganizer": return "eventProducer";
-  case "venue": return "venue";
-  case "brand": return "brand";
-  default: return "club";
-  }
-}
-
-function organizerTypeLabel(type) {
-  switch (type) {
-  case "eventProducer": return "Event producer";
-  case "individual": return "Individual organizer";
-  default: return `${type.charAt(0).toUpperCase()}${type.slice(1)}`;
-  }
-}
-
-function listingFromOrganizerDocument(wrapper) {
-  if (!wrapper || typeof wrapper !== "object") return null;
-  const {path: firestorePath, data: club} = wrapper;
-  if (!club || typeof club !== "object") return null;
-  if (!club.publicPage?.canonicalPath) return null;
-  if (!["qa", "published"].includes(club.publicPage.publishStatus)) return null;
-
-  const id = String(firestorePath ?? "").split("/").pop() || club.publicPage.slug;
-  const city = club.cityName || club.area || club.location || "Unknown";
-  const citySlug = club.publicPage.citySlug || club.location || "unknown";
-  const publicProfile = club.publicProfile ?? {};
-  const claimState = club.claim?.state ?? "unclaimed";
-  const claimHref = claimState === "unclaimed" ?
-    `${club.publicPage.canonicalPath}#claim` :
-    club.publicPage.canonicalPath;
-  const authority = organizerAuthority({
-    ownershipState: club.ownership?.state,
-    claimState,
-    provenanceOrigin: club.provenance?.origin,
-    sourceConfidence: club.provenance?.sourceConfidence,
-    verificationStatus: club.provenance?.verificationStatus,
-    appVisibility: club.appVisibility,
-    publishStatus: club.publicPage.publishStatus,
-    indexStatus: club.publicPage.indexStatus,
-  });
-  const publicApi = staticPublicApi(
-    "This listing remains fail-closed until its Firestore claim target is verified."
-  );
-
-  return {
-    id,
-    listingVariant: "unclaimedScraped",
-    dataOrigin: "organizerIntake",
-    name: club.name,
-    slug: club.publicPage.slug,
-    city,
-    citySlug,
-    region: club.regionName ?? "",
-    country: club.countryName ?? "",
-    path: club.publicPage.canonicalPath,
-    legacyPaths: [],
-    category: club.publicCategoryLabel ??
-      club.displayCategory ??
-      organizerTypeLabel(canonicalOrganizerType(club)),
-    status: claimState,
-    indexing: club.publicPage.robots ?? "noindex, follow",
-    sourceConfidence: club.provenance?.sourceConfidence ?? "low",
-    headline: publicProfile.headline ?? `${club.name} in ${city}`,
-    description: publicProfile.summary ?? club.description,
-    sourceSummary: publicProfile.sourceSummary ?? club.description,
-    logo: {
-      mode: "monogram",
-      text: initialsForName(club.name),
-      status: club.logoPhoto ? "source_provided" : "not_verified",
-    },
-    formats: publicProfile.formats?.length ? publicProfile.formats : club.tags ?? [],
-    facts: publicProfile.facts ?? [],
-    eventEvidence: publicProfile.eventEvidence ?? [],
-    reviews: publicReviewsForListing(wrapper.reviews ?? [], id),
-    fitNotes: publicProfile.fitNotes ?? [],
-    missingEvidence: publicProfile.missingEvidence ?? [],
-    sources: publicSourcesForListing(club.publicSources ?? []),
-    claim: {
-      href: claimHref,
-      label: claimState === "unclaimed" ? "Claim this listing" : "View organizer profile",
-    },
-    publicApi,
-    authority,
-    capabilities: listingCapabilities(authority, publicApi),
-    lastVerifiedAt: dateLabel(club.provenance?.lastVerifiedAt),
-    searchText: searchText([
-      club.name,
-      city,
-      club.area,
-      club.organizerType,
-      club.publicCategoryLabel,
-      club.displayCategory,
-      club.instagramHandle,
-      ...(club.tags ?? []),
-      ...(publicProfile.formats ?? []),
-    ]),
-  };
-}
-
-export function listingFromFirestoreOrganizer({id, path = `organizers/${id}`, data: club}) {
-  const readiness = organizerListingReadiness({id, path, data: club});
-  if (!readiness.documentValid || club.archived || club.status === "archived" ||
-      club.claim?.state === "suppressed") return null;
-  const wrapper = {path, data: club};
-  const listing = listingFromOrganizerDocument(wrapper);
-  if (!listing) return null;
-  const {publicApi, publicReviewTarget} = readiness;
-  const authority = organizerAuthority({
-    ownershipState: club.ownership?.state,
-    claimState: club.claim?.state,
-    provenanceOrigin: club.provenance?.origin,
-    sourceConfidence: club.provenance?.sourceConfidence,
-    verificationStatus: club.provenance?.verificationStatus,
-    appVisibility: club.appVisibility,
-    publishStatus: club.publicPage?.publishStatus,
-    indexStatus: club.publicPage?.indexStatus,
-  });
-  const capabilities = listingCapabilities(authority, publicApi, publicReviewTarget);
-  if (capabilities.supply.reviewPolicy === "after_event_end") {
-    capabilities.publicReviews.writeState = "disabled";
-    if (publicReviewTarget.state === "enabled") {
-      capabilities.publicReviews.reason =
-        "Public reviews can be read here; unclaimed organizer reviews require a finished event.";
-    }
-  }
-  return {
-    ...listing,
-    dataOrigin: club.provenance?.origin === "userCreated" ?
-      "appCreated" :
-      "organizerIntake",
-    legacyPaths: club.publicPage?.legacyPaths ?? [],
-    publicApi,
-    authority,
-    capabilities,
-  };
 }
 
 function listingFromOrganizerIntakeProjection(entry, {liveMarketsOnly = false} = {}) {
@@ -1011,57 +708,6 @@ function listingFromSalesDemo(config) {
   };
 }
 
-function publicReviewsForListing(reviews, organizerId) {
-  if (!Array.isArray(reviews)) return [];
-  return reviews
-    .map((entry) => {
-      const review = entry?.data ?? entry;
-      if (!review || typeof review !== "object") return null;
-      if ((review.organizerId ?? review.clubId) !== organizerId) return null;
-      if (review.moderationStatus && review.moderationStatus !== "published") {
-        return null;
-      }
-      return {
-        id: String(entry?.path ?? review.id ?? "").split("/").pop() || null,
-        eventId: typeof review.eventId === "string" ? review.eventId : null,
-        reviewerName: review.reviewerName ?? "Catch member",
-        rating: review.rating,
-        comment: review.comment ?? "",
-        createdAt: dateLabel(review.createdAt),
-        verificationStatus:
-          review.verificationStatus ?? (review.eventId ? "verified" : "unverified"),
-        source:
-          review.source ?? (review.eventId ? "catchEvent" : "publicListing"),
-        isAnonymous: review.isAnonymous === true,
-        ownerResponse: publicOwnerResponse(review.ownerResponse),
-      };
-    })
-    .filter(Boolean);
-}
-
-function publicOwnerResponse(response) {
-  if (!response || typeof response !== "object") return null;
-  return {
-    hostName: response.hostName ?? "Host",
-    hostAvatarUrl: response.hostAvatarUrl ?? null,
-    message: response.message ?? "",
-    updatedAt: dateLabel(response.updatedAt),
-  };
-}
-
-function publicSourcesForListing(sources) {
-  return sources.map((source) => {
-    const listingSource = {
-      type: source.type,
-      label: source.label,
-      detail: source.detail,
-      confidence: source.confidence,
-    };
-    if (source.href) listingSource.href = source.href;
-    return listingSource;
-  });
-}
-
 function publicSourcesForOrganizerIntake(sources) {
   return sources.map((source) => {
     const label = source.label ?? source.type ?? "Public source";
@@ -1181,65 +827,9 @@ function eventDateLabel(start, end) {
   return `${date}, ${time}-${endTime}`;
 }
 
-function eventDateLabelForTimezone(startIso, endIso, timezone) {
-  const start = new Date(startIso);
-  const end = endIso ? new Date(endIso) : null;
-  const zone = validTimezone(timezone) ? timezone : "UTC";
-  const date = new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    timeZone: zone,
-  }).format(start);
-  const time = new Intl.DateTimeFormat("en", {
-    hour: "numeric",
-    minute: "2-digit",
-    timeZone: zone,
-  }).format(start);
-  if (!end || Number.isNaN(end.getTime())) return `${date}, ${time}`;
-  const endTime = new Intl.DateTimeFormat("en", {
-    hour: "numeric",
-    minute: "2-digit",
-    timeZone: zone,
-  }).format(end);
-  return `${date}, ${time}-${endTime}`;
-}
-
 function priceLabel(priceInPaise) {
   if (!priceInPaise) return "Free";
   return `$${(priceInPaise / 100 / 83).toFixed(0)}`;
-}
-
-function timestampIso(value) {
-  if (!value) return null;
-  if (typeof value === "string" && !Number.isNaN(Date.parse(value))) {
-    return new Date(value).toISOString();
-  }
-  if (typeof value._seconds === "number") {
-    return new Date(value._seconds * 1000).toISOString();
-  }
-  return null;
-}
-
-function validTimezone(value) {
-  if (!value) return false;
-  try {
-    new Intl.DateTimeFormat("en", {timeZone: value}).format(new Date());
-    return true;
-  } catch (_error) {
-    return false;
-  }
-}
-
-function platformLabel(platform) {
-  const labels = {
-    bookMyShow: "BookMyShow",
-    district: "District",
-    luma: "Luma",
-    partiful: "Partiful",
-    sortMyScene: "Sort My Scene",
-  };
-  return labels[platform] ?? titleCaseText(platform ?? "External source");
 }
 
 function uniqueById(items) {
@@ -1266,13 +856,6 @@ function titleCaseList(values) {
   );
 }
 
-function searchText(values) {
-  return values
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
-}
-
 function highestSourceConfidence(sources) {
   if (sources.some((source) => source.confidence === "high")) return "high";
   if (sources.some((source) => source.confidence === "medium")) return "medium";
@@ -1285,38 +868,11 @@ function countryNameForCode(countryCode) {
   return countryCode ?? "";
 }
 
-function titleCaseText(value) {
-  return String(value)
-    .split(/[\s_-]+/)
-    .filter(Boolean)
-    .map((word) => `${word[0]?.toUpperCase() ?? ""}${word.slice(1)}`)
-    .join(" ");
-}
-
-function initialsForName(name) {
-  return String(name)
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("") || "C";
-}
-
 function slugForName(name) {
   return String(name)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
-}
-
-function dateLabel(timestamp) {
-  if (typeof timestamp === "string" && !Number.isNaN(Date.parse(timestamp))) {
-    return new Date(timestamp).toISOString().slice(0, 10);
-  }
-  if (!timestamp || typeof timestamp._seconds !== "number") {
-    return "Unverified";
-  }
-  return new Date(timestamp._seconds * 1000).toISOString().slice(0, 10);
 }
 
 function parseArgs(argv) {

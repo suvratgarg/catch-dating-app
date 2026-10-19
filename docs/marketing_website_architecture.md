@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.13.0
+version: 0.14.0
 updated: 2026-10-19
 owner: marketing_website
 status: active
@@ -13,6 +13,75 @@ React marketing website in `website/`. Use `docs/web_surface_architecture.md`
 for domains, deploy targets, CI/CD, and cross-surface hosting boundaries. Use
 `design/website/routes.json` for the route-first contract and
 `design/website/components.json` for the component-first registry.
+
+## Next.js public rendering migration
+
+`website/app/[[...path]]/page.tsx` is the Next.js App Router entry for the
+public site. `src/app/next` adapts the existing feature pages, Router query/hash
+state, pending-action protection and per-provider TanStack Query client. Reuse
+existing content, primitives and layouts; do not introduce a second design
+system. Authored Host/legal pages render without catalog access. Discovery,
+organizer, claim and event pages receive current server-authorized DTOs.
+The current Firebase Hosting deployment still serves the Vite `dist` output;
+Next.js is a separately packaged migration candidate until cutover approval.
+
+`src/server/publicCatalog.ts` reads only the published organizer, Catch-event
+and external-event collections, bounded to 400 rows each with an eight-second
+read deadline. `publicReadPolicy.ts` rejects synthetic, withdrawn, suppressed,
+archived, malformed and non-live-market organizer records. Admin SDK access is
+not publication authority. `publicOrganizerProjection.ts` reuses the extracted
+CLI projector and validates its closed output contract before serialization;
+contact information, owner identities and arbitrary raw objects do not leave
+this boundary. External events retain outbound-only booking capabilities.
+The Next validator adapter compiles the same generated schemas as repository
+checks, with parity tests, without the CLI dependency-discovery loader.
+
+Public responses are uncached. React cache only deduplicates a render's reads;
+there is no cross-request snapshot or ISR fallback. The request gate checks
+availability, organizer aliases and missing live-route statuses before streaming
+(including RSC, where a late `notFound()` otherwise retains HTTP 200); the render independently
+reauthorizes its data. This currently costs two bounded reads for those pages.
+A failed preflight returns 503; a failure after that preflight can still surface
+as Next's uncached 500. The read-only gRPC fault acceptance test permits the
+three preflight queries, then rejects render queries and verifies that exact
+500/no-store response without stale content. Neither error authorizes stale
+content or a false 404.
+The browser refreshes at 25 seconds/focus and withholds its snapshot at 30
+seconds or on transport failure. Refresh requests time out after eight seconds
+so a later focus can recover without reloading. Live withdrawals remove page content and
+structured data. Booking price/capacity authority stays in existing Functions.
+The standalone lifecycle suite also verifies HTML/RSC/data/sitemap withdrawal
+across two instances copied outside the checkout, query-bound refusal and
+unavailable readers.
+
+Next owns initial canonical/social metadata, escaped Organization/Event JSON-LD,
+robots and a live index-policy-filtered sitemap. Generated organizer snapshots
+are replaced with an empty module in both the Next graph and retained private
+shell; only request-authorized DTOs populate public pages. Reveal styling keeps
+initial HTML visible with JavaScript disabled. The consent banner supplies
+viewer-independent initial HTML; hydration reconciles local consent without
+delaying the first paint or escalating an existing choice. Legacy Host redirects remain
+301 and preserve queries before destination anchors.
+
+Existing `/join`, `/booking`, `/offer`, `/event-update`, `/rehearse`, `/invite`,
+`/rsvp`, `/f` and `/demo` flows retain the existing browser app. A fixed shell is
+built in `.next-legacy` and copied only into the standalone runtime's
+`public/_legacy`, then served by `app/private-shell/route.ts` with
+`no-store`, `noindex,nofollow` and `no-referrer`. Signed path/query/fragment values
+never enter RSC props. Only the allowlisted route-family enum enters the
+internal rewrite, supplying a generic title/description/canonical without any
+private identifier. The request gate parses the actual Host authority; unknown
+hosts receive only this shell and the existing custom-form domain gate. They
+cannot read the public catalog endpoint. The accepted custom-domain controller
+and integration coverage remain in place.
+
+`tool/web/check_website_import_boundaries.mjs` recognizes Next entry and server
+layers, parses imports and re-exports with the TypeScript AST, denies browser
+imports of server modules/privileged packages (including `use client` entries), and keeps
+the public projector's external imports explicitly bounded. Run the normal
+marketing build for both the existing Vite artifact and the Next candidate;
+`test:next-policy` is part of pretypecheck. `test:next-runtime` requires the
+isolated local emulator and packaged server described in `website/README.md`.
 
 ## Canonical public chrome
 
@@ -33,8 +102,8 @@ group. Transactional/private shells keep their existing composition and authorit
 
 ## Public content ownership
 
-The organiser-first root introduces Catch Host and links to the canonical
-product, discovery and claim journeys. The detailed sitemap, content destinations
+The consumer root previews upcoming events by city, explains optional Catch
+Experiences, introduces organisers and hands business enquiries to Catch Host. The detailed sitemap, content destinations
 and deleted page inventory are maintained once below in
 [Public sitemap and conversion ownership](#public-sitemap-and-conversion-ownership).
 
@@ -466,6 +535,23 @@ The website is already split out of the old monolithic shell:
   poster is a synthetic Storybook fixture only. The public display contract
   references canonical event media, meeting-location and itinerary definitions;
   generated browser schemas validate those optional projections. The route
+  loads bounded published reviews for the resolved organiser/event only (50 per
+  query), preserving moderation, anonymity and review capability checks. Failures
+  render an unavailable state, never a zero-review claim. Upcoming events use
+  explicitly labelled organiser feedback; completed events prefer their own
+  reviews. Public rating counts distinguish verified attendance from followers.
+  Age requirements come from canonical constraints; admission, waitlist and
+  cancellation labels come from event policy. Optional host-authored guest notes
+  are read only from `eventFormat.activityDetails.publicDetails` (requirements,
+  accessibility, included; nonblank strings up to 2000 characters each). This
+  existing extension namespace is opt-in public content; other activity details
+  never enter the DTO. Host creation, saved drafts, repeat prefills,
+  published-event editing and private setup expose accessibility and inclusion notes through this namespace.
+  Clearing either note removes it without replacing sibling format settings;
+  absent notes stay absent. Requirements remain available to existing producers.
+  Public location/address and itinerary duration are rendered without inventing missing values. Registration context is separate
+  from the account controller: restricted web registration is not a closed event,
+  and closed events retain booking recovery. The route
   retains authorized `/join/` entry rather than recreating the live runtime;
   shared Catch tokens own its type, color, spacing, radius, and activity accent.
 - `website/src/styles/catch-language.css` is the single design-language layer,
@@ -1102,9 +1188,23 @@ read or mutation family without changing the surrounding UI contracts.
 
 ## Public sitemap and conversion ownership
 
-The organiser-first `/` is a short introduction, with **Explore Catch Host** as
-its primary CTA and separate event-discovery and listing-claim handoffs.
-`/explore/` owns consumer discovery, app availability and the member waitlist.
+The consumer `/` leads with **Find events**, city and format filtering, an
+upcoming-event preview, optional participation tools, organiser profiles, FAQs
+and a concise Catch Host invitation. `content/consumerHome.ts` owns its copy;
+`useConsumerHomeController` derives cards from the existing public catalogue.
+`/explore/?city=…&format=…#events` retains those choices and shows all matching
+events. It also retains app availability and the member waitlist.
+
+The empty-city state retains the editorial sections and identifies organiser
+suggestions as across Catch. Loading and unavailable catalogue states do not
+claim that a city has no events. Event cards use canonical detail URLs, public
+publication policy and existing future-event eligibility. Illustrative fallback
+photographs are labelled. Catch Experience explains active guest participation;
+event badges and an Experience filter await an explicit eligibility field in
+the public projection and must not be inferred from activity format.
+
+The approved expanded host narrative remains a subsequent content increment;
+this homepage change preserves the existing Host page and commercial terms.
 Canonical organiser paths continue to come from `publicPage.canonicalPath`;
 this consolidation does not rename organiser or event URLs.
 
@@ -1183,3 +1283,60 @@ ownership without recreating duplicate marketing destinations.
   manual review notes.
 - Decide whether React Hook Form is worth adding during a specific long-form
   refactor after routing and server-state conventions are in place.
+
+### Host landing content and format explorer
+
+Home, Host and Explore select the same consumer `PublicSiteHeader` and
+`PublicSiteFooter` configuration (Find events, Organisers, For organisers).
+Their typography and responsive chrome are owned by that shared consumer
+wrapper, not the surrounding page. Host-specific section links and the pilot
+action sit in a separately labelled navigation row below the global header.
+The Host adoption section restores three selectable concentric circles:
+Catch tools, Catch booking and Catch network. It uses native buttons with
+pressed state and one announced detail region; selection is independent of
+the five-format explorer. These describe optional adoption layers, not fixed
+commercial tiers. Brief phone interactions, private introduction requests,
+host overrides and aggregate private feedback are explained explicitly.
+The illustrative CRM shows a follow-up opt-in rather than an individual
+private feedback answer.
+
+
+The public `/host/` entry balances event-business workflows with guest participation.
+`src/content/hostLanding.ts` owns its authored copy and five illustrative before/during/after formats;
+`features/host/sections/hostLandingSections.tsx` composes the page and owns the local accessible tab selection.
+Named visual wrappers live in `shared/ui/primitives/hostLanding.tsx`, with styling in `styles/host-landing.css`.
+Examples are fictional and do not execute booking, messaging, grouping, or payment actions.
+Existing tool and persona detail remains behind disclosures; `#features`, `#how-it-works`, `#use-cases`,
+`#existing-tools`, and `#pricing` retain their retired-route destinations. The only acquisition form is
+`/host/apply/`; the selected free live-event pilot is distinct from broader capabilities and future terms.
+
+### Explore discovery
+
+`/explore/` is the consumer event catalogue, sharing consumer navigation with
+Home and Host. City, format, search, upcoming date and Catch Experience choices
+round-trip through bounded, allowlisted URL parameters. Results use public event
+records, are ordered by start time, and distinguish empty cities, filtered-out
+results and unavailable feeds. External booking sources remain labelled.
+
+The optional public event field `catchExperienceActivities` declares
+`introductions`, `sharedActivities` or `rotations` offered through Catch. It is
+not inferred from a format, booking integration, attendance or logistics.
+Malformed or absent declarations omit the badge. Cards and event details show
+the declared activities. Host authoring of this declaration is a separate product
+integration; this website change adds its public contract and rendering only.
+Local emulator and Storybook examples are illustrative, never production supply.
+The former Explore dating landing sequence is replaced; the Home/Host positioning,
+participation/privacy explanations and Host adoption circles remain. Claim trust
+links now lead to Help rather than the retired Explore trust anchor.
+
+### Organiser directory presentation
+
+`/organizers/` uses the same consumer chrome, typography, cream background and
+muted green controls as Home, Host and Explore. The directory leads with clubs,
+communities and independent hosts. Search, city, activity and upcoming-event
+filters stay prominent; ownership, guest rating and sort controls use a secondary
+disclosure. Public profile status, permission-gated reviews and event evidence
+remain available. Catch Experience is described as an event-level participation
+badge rather than an organiser endorsement. Claiming and Host acquisition sit
+below discovery results. Unavailable feeds withhold stale cards; empty markets
+remain selectable. Allowlisted filters survive a Next.js document reload.

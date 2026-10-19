@@ -1,4 +1,6 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
+import {consumerHomeStoryListings} from "./fixtures/consumerHome";
+import {publicEventListingsContext} from "../features/organizers/usePublicEventListingsController";
 import {MemoryRouter} from "react-router";
 import {useRevealAnimations} from "../app/usePageLifecycle";
 import {ClaimPage} from "../features/claims/ClaimPage";
@@ -19,6 +21,8 @@ import {PageShell} from "../shared/site";
 import {captures} from "./fixtures/marketingCaptures";
 import {
   catchEventDetailFixture,
+  completeEventDetailFixture,
+  completePastEventDetailFixture,
   externalEventDetailFixture,
 } from "./fixtures/eventDetails";
 import type {EventDetailRecord} from "../features/events/eventDetailModel";
@@ -40,6 +44,12 @@ import {
 } from "../features/eventRuntime/eventRuntimeMotion";
 
 const generatedOrganizerListing = requireListing("afterfly");
+// Synthetic, Storybook-only review permissions to exercise the populated public state.
+const communityProfileFixture: HostListing = {
+  ...requireListing("club-sales-sunday-table"),
+  capabilities: {...requireListing("club-sales-sunday-table").capabilities,
+    publicReviews: {targetState: "enabled", readState: "enabled", writeState: "disabled", reason: "Review submission is disabled in this illustrative preview."}},
+};
 
 const meta = {
   title: "Marketing Website/Routes",
@@ -58,64 +68,54 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Home: Story = {
-  name: "/ · Organisers",
+  name: "/ · Discover",
   parameters: {
     a11y: {test: "error"},
-    catchRoute: {id: "home", path: "/", reviewStates: ["default", "claim-entry", "workflow-entry"], stateCoverage: {storybook: ["default"], manual: ["claim-entry", "workflow-entry"]}},
-    catchComponent: {id: "route_home", routeIds: ["home"], states: ["default", "claim-entry", "workflow-entry"]},
+    catchRoute: {id: "home", path: "/", reviewStates: ["default", "empty-city", "catalog-unavailable", "city-and-format", "mobile-menu"], stateCoverage: {storybook: ["default", "empty-city", "catalog-unavailable"], manual: ["city-and-format", "mobile-menu"]}},
+    catchComponent: {id: "route_home", routeIds: ["home"], states: ["default", "empty-city", "catalog-unavailable", "city-and-format", "mobile-menu"]},
   },
-  render: () => <HomePage captures={captures} />,
+  render: () => <publicEventListingsContext.Provider value={{listings: consumerHomeStoryListings, phase: "ready", readAt: Date.parse("2030-01-01")}}><HomePage captures={captures} /></publicEventListingsContext.Provider>,
+};
+
+export const HomeEmptyCity: Story = {
+  name: "/ · Empty city",
+  render: () => <publicEventListingsContext.Provider value={{listings: [], phase: "ready", readAt: 0}}><HomePage captures={captures} routeState={{city: "indore", category: "all"}} /></publicEventListingsContext.Provider>,
+};
+export const HomeUnavailable: Story = {
+  name: "/ · Catalogue unavailable",
+  render: () => <publicEventListingsContext.Provider value={{listings: [], phase: "unavailable"}}><HomePage captures={captures} /></publicEventListingsContext.Provider>,
 };
 
 export const VisitorDiscovery: Story = {
   name: "/explore/",
   parameters: {
-    a11y: {test: "todo"},
-    catchRoute: {
-      id: "visitor_discovery",
-      path: "/explore/",
-      reviewStates: ["default", "app-download-pending", "waitlist-form"],
-      stateCoverage: {
-        storybook: ["default"],
-        manual: ["app-download-pending", "waitlist-form"],
-      },
-    },
-    catchComponent: {
-      id: "route_visitor_discovery",
-      routeIds: ["visitor_discovery"],
-      states: ["default", "app-download-pending", "waitlist-form"],
-    },
+    a11y: {test: "error"},
+    catchRoute: {id: "visitor_discovery", path: "/explore/", reviewStates: ["default", "empty-city", "no-results", "experience-filter", "catalog-unavailable", "search-and-date", "mobile-menu"], stateCoverage: {storybook: ["default", "empty-city", "catalog-unavailable"], manual: ["no-results", "experience-filter", "search-and-date", "mobile-menu"]}},
+    catchComponent: {id: "route_visitor_discovery", routeIds: ["visitor_discovery"], states: ["default", "empty-city", "no-results", "experience-filter", "catalog-unavailable", "search-and-date", "mobile-menu"]},
   },
-  render: () => <VisitorDiscoveryPage captures={captures} />,
+  render: () => <publicEventListingsContext.Provider value={{listings: consumerHomeStoryListings, phase: "ready", readAt: Date.parse("2030-01-01")}}><VisitorDiscoveryPage captures={captures} /></publicEventListingsContext.Provider>,
+};
+export const ExploreEmptyCity: Story = {
+  name: "/explore/ · Empty city",
+  render: () => <publicEventListingsContext.Provider value={{listings: [], phase: "ready", readAt: 0}}><VisitorDiscoveryPage captures={captures} /></publicEventListingsContext.Provider>,
+};
+export const ExploreUnavailable: Story = {
+  name: "/explore/ · Catalogue unavailable",
+  render: () => <publicEventListingsContext.Provider value={{listings: [], phase: "unavailable"}}><VisitorDiscoveryPage captures={captures} /></publicEventListingsContext.Provider>,
 };
 
 export const Host: Story = {
   name: "/host/",
   parameters: {
-    a11y: {test: "todo"},
+    a11y: {test: "error"},
     catchRoute: {
-      id: "host",
-      path: "/host/",
-      reviewStates: [
-        "default",
-        "beta-offer",
-        "application-link",
-        "capture-placeholders",
-      ],
-      stateCoverage: {
-        storybook: ["default"],
-        manual: ["beta-offer", "application-link", "capture-placeholders"],
-      },
+      id: "host", path: "/host/",
+      reviewStates: ["default", "run-club", "dinner", "games", "pickleball", "pub-crawl", "pilot-offer", "application-link", "existing-tools", "adoption-tools", "adoption-booking", "adoption-network", "participation-privacy"],
+      stateCoverage: {storybook: ["default"], manual: ["run-club", "dinner", "games", "pickleball", "pub-crawl", "pilot-offer", "application-link", "existing-tools", "adoption-tools", "adoption-booking", "adoption-network", "participation-privacy"]},
     },
     catchComponent: {
-      id: "route_host",
-      routeIds: ["host"],
-      states: [
-        "default",
-        "beta-offer",
-        "application-link",
-        "capture-placeholders",
-      ],
+      id: "route_host", routeIds: ["host"],
+      states: ["default", "run-club", "dinner", "games", "pickleball", "pub-crawl", "pilot-offer", "application-link", "existing-tools", "adoption-tools", "adoption-booking", "adoption-network", "participation-privacy"],
     },
   },
   render: () => <HostPage captures={captures} />,
@@ -388,20 +388,20 @@ export const LegalDocumentShell: Story = {
 export const OrganizerSearch: Story = {
   name: "/organizers/",
   parameters: {
-    a11y: {test: "todo"},
+    a11y: {test: "error"},
     catchRoute: {
       id: "organizer_search",
       path: "/organizers/",
-      reviewStates: ["default", "filtered", "empty-results"],
+      reviewStates: ["default", "filtered", "empty-results", "catalog-unavailable", "mobile-menu"],
       stateCoverage: {
-        storybook: ["default"],
-        manual: ["filtered", "empty-results"],
+        storybook: ["default", "empty-results", "catalog-unavailable"],
+        manual: ["filtered", "mobile-menu"],
       },
     },
     catchComponent: {
       id: "route_organizer_search",
       routeIds: ["organizer_search"],
-      states: ["default", "filtered", "empty-results"],
+      states: ["default", "filtered", "empty-results", "catalog-unavailable", "mobile-menu"],
     },
   },
   render: () => (
@@ -411,9 +411,21 @@ export const OrganizerSearch: Story = {
   ),
 };
 
+export const OrganisersEmpty: Story = {
+  name: "/organizers/ · Empty results",
+  parameters: {a11y: {test: "error"}},
+  render: () => <MemoryRouter initialEntries={["/organizers/?q=not-found"]}><OrganizerSearchPage listings={hostListings} /></MemoryRouter>,
+};
+export const OrganisersUnavailable: Story = {
+  name: "/organizers/ · Catalogue unavailable",
+  parameters: {a11y: {test: "error"}},
+  render: () => <MemoryRouter><publicEventListingsContext.Provider value={{listings:[],phase:"unavailable"}}><OrganizerSearchPage /></publicEventListingsContext.Provider></MemoryRouter>,
+};
+
 export const OrganizerListing: Story = {
   name: "/organizers/:slug/",
   parameters: {
+    a11y: {test: "error"},
     catchRoute: {
       id: "organizer_listing_canonical",
       path: generatedOrganizerListing.path,
@@ -452,6 +464,7 @@ export const OrganizerListing: Story = {
 export const EventDetailCatch: Story = {
   name: "/events/:eventId/ · Catch",
   parameters: {
+    a11y: {test: "error"},
     catchRoute: {
       id: "event_detail_canonical",
       path: catchEventDetailFixture.path,
@@ -493,6 +506,7 @@ export const EventDetailCatch: Story = {
 
 export const EventDetailExternal: Story = {
   name: "/events/:eventId/ · external",
+  parameters: {a11y: {test: "error"}},
   render: () => <EventDetailRouteStory event={externalEventDetailFixture} />,
 };
 
@@ -524,3 +538,40 @@ function LegalStoryPage({pageKey}: {pageKey: "privacy" | "terms" | "help"}) {
     </PageShell>
   );
 }
+
+export const OrganiserProfileCommunity: Story = {
+  name: "/organizers/:slug/ · Events and community reviews",
+  parameters: {a11y: {test: "error"}},
+  render: () => <WebsiteQueryProvider><MemoryRouter><OrganizerListingRouteStory listing={communityProfileFixture} /></MemoryRouter></WebsiteQueryProvider>,
+};
+export const OrganiserProfileEmpty: Story = {
+  name: "/organizers/:slug/ · No events yet",
+  parameters: {a11y: {test: "error"}},
+  render: () => <WebsiteQueryProvider><MemoryRouter><OrganizerListingRouteStory listing={{...consumerHomeStoryListings[0], catchEvents: [], externalEvents: [], eventEvidence: []}} /></MemoryRouter></WebsiteQueryProvider>,
+};
+
+export const EventDetailExperience: Story = {
+  name: "/events/:eventId/ · Catch Experience",
+  parameters: {a11y: {test: "error"}},
+  render: () => <EventDetailRouteStory event={{...catchEventDetailFixture, catchExperienceActivities: ["introductions", "sharedActivities"]}} />,
+};
+export const EventDetailSparse: Story = {
+  name: "/events/:eventId/ · Sparse event",
+  parameters: {a11y: {test: "error"}},
+  render: () => <EventDetailRouteStory event={{...catchEventDetailFixture, photoUrl: null, itinerary: [], summary: "", requirements: "", accessibility: ""}} />,
+};
+
+export const EventDetailComplete: Story = {
+  name: "/events/:eventId/ · Fully populated preview",
+  parameters: {a11y: {test: "error"}, catchComponent: {id: "route_event_detail", routeIds: ["event_detail_canonical"], states: ["catch-native", "desktop-invitation", "mobile-sticky-action"]}},
+  render: () => <><aside aria-label="Preview disclosure" style={{padding: "14px 24px", background: "#e9ece3", color: "#16140f", fontSize: 14}}>
+    <strong>Design preview · fictional event.</strong> Artwork, venue information and organiser figures are examples. This uses the real page component with supplied fixture data; it does not prove the live data connection or complete a booking.
+  </aside><EventDetailRouteStory event={completeEventDetailFixture} /></>,
+};
+export const EventDetailCompletePast: Story = {
+  name: "/events/:eventId/ · Completed event with reviews",
+  parameters: {a11y: {test: "error"}, catchComponent: {id: "route_event_detail", routeIds: ["event_detail_canonical"], states: ["catch-native", "event-reviews"]}},
+  render: () => <><aside aria-label="Preview disclosure" style={{padding: "14px 24px", background: "#e9ece3", color: "#16140f", fontSize: 14}}>
+    <strong>Past-event design preview · all reviews are fictional.</strong> This demonstrates event-scoped reviews and a host reply using supplied fixture data. No reviews of a future event are implied; booking actions are not live acceptance evidence.
+  </aside><EventDetailRouteStory event={completePastEventDetailFixture} /></>,
+};

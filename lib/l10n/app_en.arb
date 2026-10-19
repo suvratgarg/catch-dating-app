@@ -31924,5 +31924,54 @@
   "@hostsCreateEventPolicyStateTitleMembersSkipReview": {"description": "Admission preset title for member review exemption", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create.create_event_policy_state"},
   "hostsCreateEventPolicyStateTitleMembersSkipReview": "Members skip review",
   "@hostsCreateEventPolicyStateDescriptionMembersSkipReview": {"description": "Explains that current approved members skip review but retain other booking requirements", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create.create_event_policy_state"},
-  "hostsCreateEventPolicyStateDescriptionMembersSkipReview": "Approved community members can book directly. Other guests request approval. Capacity, eligibility and payment still apply."
+  "hostsCreateEventPolicyStateDescriptionMembersSkipReview": "Approved community members can book directly. Other guests request approval. Capacity, eligibility and payment still apply.",
+  "hostsEventGuestDetailsTitle": "Guest information",
+  "@hostsEventGuestDetailsTitle": {
+    "description": "Section title for optional public event notes.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_guest_details_section"
+  },
+  "hostsEventGuestDetailsVisibility": "These notes appear on your public event page. Leave blank to hide them.",
+  "@hostsEventGuestDetailsVisibility": {
+    "description": "Explains visibility and optionality of host-authored guest notes.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_guest_details_section"
+  },
+  "hostsEventIncludedTitle": "What''s included",
+  "@hostsEventIncludedTitle": {
+    "description": "Field title for what an event booking includes.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_guest_details_section"
+  },
+  "hostsEventIncludedHint": "For example: equipment, refreshments, entry fees or a guided session.",
+  "@hostsEventIncludedHint": {
+    "description": "Example content for included items without asserting they are provided.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_guest_details_section"
+  },
+  "hostsEventAccessibilityTitle": "Accessibility notes",
+  "@hostsEventAccessibilityTitle": {
+    "description": "Field title for factual venue and activity accessibility information.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_guest_details_section"
+  },
+  "hostsEventAccessibilityHint": "Describe step-free access, seating, accessible toilets or activity demands.",
+  "@hostsEventAccessibilityHint": {
+    "description": "Prompts factual accessibility information, not a guarantee.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_guest_details_section"
+  },
+  "hostsEventGuestDetailsSave": "Save guest information",
+  "@hostsEventGuestDetailsSave": {
+    "description": "Saves both public guest notes on private event setup.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.event_management.widgets.event_guest_details_section"
+  }
 }

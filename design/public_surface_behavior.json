@@ -6208,7 +6208,7 @@
         {
           "id": "review.read",
           "kind": "content",
-          "description": "Render verified event-scoped reviews only when reading is enabled and matching reviews exist."
+          "description": "When review reading is enabled, show completed-event reviews or distinctly labelled organiser feedback on upcoming events. Preserve verification labels and read-failure states."
         }
       ],
       "configurations": [
@@ -6244,7 +6244,7 @@
             },
             "review.read": {
               "disposition": "visibleReadOnly",
-              "variant": "event-scoped"
+              "variant": "organizer-context"
             },
             "event.webGuestJourney": {
               "disposition": "visibleWeb",

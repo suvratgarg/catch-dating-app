@@ -1,3 +1,4 @@
+import {organiserProfileCopy} from "../../../content/organiserProfile";
 import {organizerPresenceCopy} from "@content/organizerPresence";
 import {websiteCopy} from "@content/generated";
 import {organizerListingCopy} from "@content/organizer";
@@ -69,7 +70,7 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
         <SectionHeader
           eyebrow={websiteCopy["listingreviewssection_0437"]}
           id="listing-reviews-title"
-          title={<>{websiteCopy["listingreviewssection_0434"]} {listing.name}.</>}
+          title={organiserProfileCopy.reviewsTitle(listing.name)}
           body={websiteCopy["listingreviewssection_0445"]} />
         <ListingReviewEmptyState reveal>
           <div>
@@ -91,7 +92,7 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
       <SectionHeader
         eyebrow={websiteCopy["listingreviewssection_0437"]}
         id="listing-reviews-title"
-        title={<>{websiteCopy["listingreviewssection_0434"]} {listing.name}.</>}
+        title={organiserProfileCopy.reviewsTitle(listing.name)}
         body={websiteCopy["listingreviewssection_0445"]} />
       <ListingReviewSummary>
         <div>
@@ -132,7 +133,7 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
                 body={websiteCopy["listingreviewssection_0439"]}
                 reviews={publicReviews}
                 emptyTitle={websiteCopy["listingreviewssection_0430"]}
-                emptyBody={websiteCopy["listingreviewssection_0433"]}
+                emptyBody={organiserProfileCopy.publicReviewsEmpty}
               />
             </ListingReviewLanes>
           ) : (
@@ -214,7 +215,7 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
           <ListingReviewEmptyState reveal>
             <div>
               <UiLabel>{organizerListingCopy.reviews.unavailableLabel}</UiLabel>
-              <h3>{organizerListingCopy.reviews.unavailableTitle}</h3>
+              <h3>{organiserProfileCopy.submissionsUnavailable}</h3>
               <p>{publicReviewReason}</p>
             </div>
           </ListingReviewEmptyState>

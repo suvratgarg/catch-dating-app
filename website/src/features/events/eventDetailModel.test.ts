@@ -67,6 +67,13 @@ describe("event detail records", () => {
     });
   });
 
+  it("distinguishes restricted registration from a completed event", () => {
+    const listing = eventReadyListing();
+    listing.catchEvents![0] = {...listing.catchEvents![0], registrationMode: "closed", publicRegistrationEnabled: false, registrationAccess: "restricted"};
+    expect(buildPublicEventDetailRecords([listing], now)[0].registrationState).toBe("catchApp");
+    expect(buildPublicEventDetailRecords([listing], now + 365 * 86400000)[0].registrationState).toBe("closed");
+  });
+
   it("fails closed for unpublished organizers and ambiguous duplicate event ids", () => {
     const published = eventReadyListing();
     const duplicate = {

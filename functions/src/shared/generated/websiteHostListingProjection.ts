@@ -42,7 +42,10 @@ export interface WebsiteHostListingProjection {
     label: string;
     value: string;
   }[];
+  reviewReadState?: "ready" | "unavailable";
   metrics?: {
+    followerCount?: number;
+    verifiedReviewCount?: number;
     memberCount?: number;
     rating?: number;
     reviewCount?: number;
@@ -55,6 +58,17 @@ export interface WebsiteHostListingProjection {
     avatarUrl: string | null;
   };
   catchEvents?: {
+    /**
+     * Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.
+     *
+     * @minItems 1
+     * @maxItems 3
+     */
+    catchExperienceActivities?: (
+      | "introductions"
+      | "sharedActivities"
+      | "rotations"
+    )[];
     id: string;
     role: string;
     title: string;
@@ -101,6 +115,14 @@ export interface WebsiteHostListingProjection {
     }[];
     requirements?: string;
     accessibility?: string;
+    included?: string;
+    registrationAccess?: "open" | "restricted" | "app";
+    /**
+     * @maxItems 4
+     */
+    admissionLabels?: ("approval" | "invitation" | "membership" | "balanced")[];
+    waitlistAvailable?: boolean;
+    cancellationPolicy?: "notApplicable" | "flexible" | "standard" | "strict";
     capacityLimit: number;
     bookedCount: number;
     checkedInCount: number;

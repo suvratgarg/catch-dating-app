@@ -264,7 +264,7 @@ function verifyEventDetail(
   const eventListing = {
     ...listing,
     reviews: [{
-      id: "matrix-event-review", eventId, reviewerName: "Matrix attendee",
+      id: "matrix-event-review", eventId: "previous-event", reviewerName: "Matrix attendee",
       rating: 5, comment: "A welcoming event.", createdAt: "2026-07-20T10:00:00.000Z",
       verificationStatus: "verified", source: "catchEvent", isAnonymous: false,
       ownerResponse: null,
@@ -325,7 +325,7 @@ function verifyEventDetail(
   expect(expectations["organizer.openDetail"].disposition)
     .toBe(readable ? "visibleWeb" : "hidden");
   expect(expectations["review.read"].disposition).toBe(
-    event && policy.canReadPublicReviews && event.eventReviews.length
+    event && policy.canReadPublicReviews && event.listing.reviews.length
       ? "visibleReadOnly" : "hidden"
   );
 
@@ -346,6 +346,6 @@ function verifyEventDetail(
     .toBe(expectations["review.read"].disposition === "visibleReadOnly");
   if (event) {
     expect(renderToStaticMarkup(createElement(EventDetailReviewsSection,
-      {event: {...event, eventReviews: []}}))).toBe("");
+      {event: {...event, eventReviews: [], listing: {...event.listing, reviews: []}}}))).toBe("");
   }
 }

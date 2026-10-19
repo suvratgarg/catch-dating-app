@@ -25,10 +25,9 @@ function finalFreshnessGateScript() {
     "      - name: Refuse to overtake a newer main push immediately before mutation",
   );
   const runStart = promote.indexOf("        run: |\n", marker);
-  const runEnd = promote.indexOf(
-    "\n      - name: Deploy only the verified production Hosting target without rebuilding",
-    runStart,
-  );
+  // Stop at the next workflow step, including steps introduced with an id.
+  // A later named deployment step may have other guarded steps before it.
+  const runEnd = promote.indexOf("\n      - ", runStart);
   assert.ok(marker >= 0 && runStart > marker && runEnd > runStart);
   return promote.slice(runStart + "        run: |\n".length, runEnd)
     .split("\n")

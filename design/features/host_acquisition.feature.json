@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-10-18",
+  "updated": "2026-10-20",
   "id": "feature.host_acquisition",
   "name": "Host Acquisition",
   "owner": "marketing_website",
@@ -16,113 +16,160 @@
         "id": "host"
       },
       "actionScope": {
-        "included": "Canonical product detail, pilot application navigation, setup and live-stage previews, and Playbook disclosures.",
+        "included": "Selecting one of five before/during/after event-format examples, selecting a Catch adoption layer, and opening the Host pilot application.",
         "excluded": [
-          "Site-header anchors, consent choices, static FAQ/trust content, and capture rendering retain shared shell or presentation ownership.",
-          "The static current-versus-coming-later comparison and Host application text/select edits remain presentation or form data governed by their existing owners rather than separate feature actions."
+          "Global and local navigation, native FAQ/existing-tools disclosures and static participation/privacy explanations retain their shared navigation and presentation owners."
         ]
       },
       "bindings": {
         "previewSources": [
-          "website/src/stories/HostSections.stories.tsx",
           "website/src/stories/MarketingRoutes.stories.tsx"
         ],
         "actionOwners": [
           {
-            "id": "host_sections",
+            "id": "format_explorer",
             "language": "typescript",
-            "file": "website/src/features/host/sections/HostPageSections.tsx",
-            "symbol": "HostHeroSection"
+            "file": "website/src/features/host/sections/hostLandingSections.tsx",
+            "symbol": "HostFormatExplorer"
           },
           {
-            "id": "create_walkthrough",
+            "id": "adoption_explorer",
             "language": "typescript",
-            "file": "website/src/features/host/sections/CreateEventWalkthrough.tsx",
-            "symbol": "CreateEventWalkthrough"
+            "file": "website/src/features/host/sections/hostLandingSections.tsx",
+            "symbol": "HostAdoptionExplorer"
           },
           {
-            "id": "playbook",
+            "id": "host_landing",
             "language": "typescript",
-            "file": "website/src/features/host/sections/PlaybookShowcase.tsx",
-            "symbol": "PlaybookShowcase"
-          },
-          {
-            "id": "comparison",
-            "language": "typescript",
-            "file": "website/src/features/host/sections/HostComparisonSection.tsx",
-            "symbol": "HostComparisonSection"
+            "file": "website/src/features/host/sections/hostLandingSections.tsx",
+            "symbol": "renderHostLandingHero"
           }
         ],
         "componentContracts": [
-          "route_host",
-          "host_create_event_walkthrough",
-          "host_playbook_showcase",
-          "host_comparison_section"
+          "route_host"
         ],
-        "dataContracts": [
-          "contracts/http/join_waitlist_request.schema.json",
-          "contracts/http/join_waitlist_response.schema.json"
-        ],
+        "dataContracts": [],
         "testEvidence": {
           "default": [
-            "website/src/app/MarketingSitemap.test.tsx"
+            "website/src/features/host/HostPage.test.tsx"
           ],
-          "beta-offer": [
-            "website/src/app/MarketingSitemap.test.tsx"
+          "run-club": [
+            "website/src/features/host/HostPage.test.tsx"
+          ],
+          "dinner": [
+            "website/src/features/host/HostPage.test.tsx"
+          ],
+          "games": [
+            "website/src/features/host/HostPage.test.tsx"
+          ],
+          "pickleball": [
+            "website/src/features/host/HostPage.test.tsx"
+          ],
+          "pub-crawl": [
+            "website/src/features/host/HostPage.test.tsx"
+          ],
+          "pilot-offer": [
+            "website/src/features/host/HostPage.test.tsx"
           ],
           "application-link": [
-            "website/src/app/MarketingSitemap.test.tsx"
+            "website/src/features/host/HostPage.test.tsx"
           ],
-          "capture-placeholders": [
-            "website/src/app/MarketingSitemap.test.tsx"
+          "existing-tools": [
+            "website/src/features/host/HostPage.test.tsx"
+          ],
+          "adoption-tools": [
+            "website/src/features/host/HostPage.test.tsx"
+          ],
+          "adoption-booking": [
+            "website/src/features/host/HostPage.test.tsx"
+          ],
+          "adoption-network": [
+            "website/src/features/host/HostPage.test.tsx"
+          ],
+          "participation-privacy": [
+            "website/src/features/host/HostPage.test.tsx"
           ]
         }
       },
       "dimensions": {
+        "format": {
+          "default": "run_club",
+          "values": [
+            "run_club",
+            "dinner",
+            "games",
+            "pickleball",
+            "pub_crawl"
+          ]
+        },
+        "adoption": {
+          "default": "tools",
+          "values": [
+            "tools",
+            "booking",
+            "network"
+          ]
+        },
         "presentation": {
           "default": "default",
           "values": [
             "default",
-            "offer",
-            "application",
-            "capture_placeholders"
-          ]
-        },
-        "application_step": {
-          "default": "profile",
-          "values": [
-            "profile",
-            "event",
-            "setup",
-            "success",
-            "review",
-            "submitted"
-          ]
-        },
-        "application_mutation": {
-          "default": "idle",
-          "values": [
-            "idle",
-            "pending",
-            "failed",
-            "success"
-          ]
-        },
-        "preview": {
-          "default": "idle",
-          "values": [
-            "idle",
-            "create_step_selected",
-            "playbook_stage_selected",
-            "module_expanded"
+            "pilot_offer",
+            "application_link",
+            "existing_tools",
+            "participation_privacy"
           ]
         }
       },
       "actions": [
         {
+          "id": "select_event_format",
+          "owner": "format_explorer",
+          "codeValue": "setSelected",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "selectionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "run-club",
+                "dinner",
+                "games",
+                "pickleball",
+                "pub-crawl"
+              ]
+            }
+          ],
+          "description": "Selects the before/during/after copy and mockup together; keyboard selection follows focus."
+        },
+        {
+          "id": "select_adoption_layer",
+          "owner": "adoption_explorer",
+          "codeValue": "setSelected",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "selectionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "adoption-tools",
+                "adoption-booking",
+                "adoption-network"
+              ]
+            }
+          ],
+          "description": "Selects the tools, booking or network circle while preserving the event-format choice."
+        },
+        {
           "id": "open_host_application",
-          "owner": "host_sections",
-          "codeValue": "trackCtaClick",
+          "owner": "host_landing",
+          "codeValue": "ButtonLink",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -135,121 +182,127 @@
                 "registry": "marketing_routes",
                 "id": "host_apply"
               }
-            },
-            {
-              "kind": "side_effect",
-              "id": "analytics.host_application_opened"
             }
           ],
-          "description": "Opens the sole pilot application page and records CTA placement."
-        },
-        {
-          "id": "select_create_walkthrough_step",
-          "owner": "create_walkthrough",
-          "codeValue": "setActiveStep",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "routeInstanceId",
-            "walkthroughStepId"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "default",
-                "capture-placeholders"
-              ]
-            }
-          ],
-          "description": "Selects a bounded companion-event setup step for creation, guest-list import, or QR sharing."
-        },
-        {
-          "id": "select_playbook_stage",
-          "owner": "playbook",
-          "codeValue": "setStage",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "routeInstanceId",
-            "playbookStageId"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "default",
-                "capture-placeholders"
-              ]
-            }
-          ],
-          "description": "Selects the before, arrival, live, or after stage of the standalone live-tool Playbook."
-        },
-        {
-          "id": "expand_playbook_module",
-          "owner": "playbook",
-          "codeValue": "trackMarketingEvent",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "routeInstanceId",
-            "moduleId"
-          ],
-          "outcomes": [
-            {
-              "kind": "side_effect",
-              "id": "analytics.playbook_module_expanded"
-            }
-          ],
-          "description": "Expands one Playbook module and records its module and lifecycle-stage identity."
+          "description": "Opens the sole pilot application route from the landing page."
         }
       ],
       "scenarios": [
         {
           "id": "default",
           "stateId": "default",
-          "dimensions": {},
+          "dimensions": {
+            "presentation": "default"
+          },
           "actionCases": [
             {
-              "id": "interactive_brochure",
+              "id": "default",
               "enabledActions": [
-                "open_host_application",
-                "select_create_walkthrough_step",
-                "select_playbook_stage",
-                "expand_playbook_module"
+                "select_event_format",
+                "select_adoption_layer",
+                "open_host_application"
               ]
             }
           ]
         },
         {
-          "id": "beta_offer",
-          "stateId": "beta-offer",
+          "id": "run_club",
+          "stateId": "run-club",
           "dimensions": {
-            "presentation": "offer"
+            "format": "run_club"
           },
           "actionCases": [
             {
-              "id": "offer_visible",
+              "id": "default",
               "enabledActions": [
-                "open_host_application",
-                "select_create_walkthrough_step",
-                "select_playbook_stage",
-                "expand_playbook_module"
+                "select_event_format",
+                "select_adoption_layer",
+                "open_host_application"
               ]
             }
           ]
         },
         {
-          "id": "capture_placeholders",
-          "stateId": "capture-placeholders",
+          "id": "dinner",
+          "stateId": "dinner",
           "dimensions": {
-            "presentation": "capture_placeholders"
+            "format": "dinner"
           },
           "actionCases": [
             {
-              "id": "fallback_captures",
+              "id": "default",
               "enabledActions": [
-                "open_host_application",
-                "select_create_walkthrough_step",
-                "select_playbook_stage",
-                "expand_playbook_module"
+                "select_event_format",
+                "select_adoption_layer",
+                "open_host_application"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "games",
+          "stateId": "games",
+          "dimensions": {
+            "format": "games"
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "enabledActions": [
+                "select_event_format",
+                "select_adoption_layer",
+                "open_host_application"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pickleball",
+          "stateId": "pickleball",
+          "dimensions": {
+            "format": "pickleball"
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "enabledActions": [
+                "select_event_format",
+                "select_adoption_layer",
+                "open_host_application"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pub_crawl",
+          "stateId": "pub-crawl",
+          "dimensions": {
+            "format": "pub_crawl"
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "enabledActions": [
+                "select_event_format",
+                "select_adoption_layer",
+                "open_host_application"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pilot_offer",
+          "stateId": "pilot-offer",
+          "dimensions": {
+            "presentation": "pilot_offer"
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "enabledActions": [
+                "select_event_format",
+                "select_adoption_layer",
+                "open_host_application"
               ]
             }
           ]
@@ -257,11 +310,100 @@
         {
           "id": "application_link",
           "stateId": "application-link",
-          "dimensions": {},
+          "dimensions": {
+            "presentation": "application_link"
+          },
           "actionCases": [
             {
-              "id": "open_intake",
+              "id": "default",
               "enabledActions": [
+                "select_event_format",
+                "select_adoption_layer",
+                "open_host_application"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "existing_tools",
+          "stateId": "existing-tools",
+          "dimensions": {
+            "presentation": "existing_tools"
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "enabledActions": [
+                "select_event_format",
+                "select_adoption_layer",
+                "open_host_application"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "adoption_tools",
+          "stateId": "adoption-tools",
+          "dimensions": {
+            "adoption": "tools"
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "enabledActions": [
+                "select_event_format",
+                "select_adoption_layer",
+                "open_host_application"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "adoption_booking",
+          "stateId": "adoption-booking",
+          "dimensions": {
+            "adoption": "booking"
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "enabledActions": [
+                "select_event_format",
+                "select_adoption_layer",
+                "open_host_application"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "adoption_network",
+          "stateId": "adoption-network",
+          "dimensions": {
+            "adoption": "network"
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "enabledActions": [
+                "select_event_format",
+                "select_adoption_layer",
+                "open_host_application"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "participation_privacy",
+          "stateId": "participation-privacy",
+          "dimensions": {
+            "presentation": "participation_privacy"
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "enabledActions": [
+                "select_event_format",
+                "select_adoption_layer",
                 "open_host_application"
               ]
             }

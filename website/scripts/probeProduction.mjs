@@ -5,15 +5,15 @@ const defaultBaseUrl = "https://catchdates.com";
 export const productionProbeContracts = [
   {
     path: "/",
-    title: "Catch Host | Presence, guests and live events",
+    title: "Catch | Find something worth showing up for",
     canonicalPath: "/",
-    markers: ["Find your organiser page"],
+    markers: ["Discover runs, dinners, games"],
   },
   {
     path: "/explore/",
-    title: "Catch | The event before the match",
+    title: "Find events, clubs and communities | Catch",
     canonicalPath: "/explore/",
-    markers: ["Mumbai and Indore"],
+    markers: ["Discover upcoming runs, dinners, games and social events"],
   },
   {
     path: "/host/apply/",
@@ -23,7 +23,7 @@ export const productionProbeContracts = [
   },
   {
     path: "/organizers/",
-    title: "Organizer directory | Catch",
+    title: "Organisers, clubs and communities | Catch",
     canonicalPath: "/organizers/",
     markers: [],
   },

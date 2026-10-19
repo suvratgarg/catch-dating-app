@@ -53424,6 +53424,25 @@ export const updatePrivateEventDetailsCallablePayloadSchema = {
                               }
                             }
                           }
+                        },
+                        "publicDetails": {
+                          "type": "object",
+                          "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                          "additionalProperties": true,
+                          "properties": {
+                            "requirements": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "accessibility": {
+                              "type": "string",
+                              "maxLength": 2000
+                            },
+                            "included": {
+                              "type": "string",
+                              "maxLength": 2000
+                            }
+                          }
                         }
                       }
                     }
@@ -183321,6 +183340,25 @@ export const eventDocumentSchema = {
                   }
                 }
               }
+            },
+            "publicDetails": {
+              "type": "object",
+              "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+              "additionalProperties": true,
+              "properties": {
+                "requirements": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "accessibility": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "included": {
+                  "type": "string",
+                  "maxLength": 2000
+                }
+              }
             }
           }
         }
@@ -184397,6 +184435,21 @@ export const eventDocumentSchema = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "catchExperienceActivities": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "introductions",
+          "sharedActivities",
+          "rotations"
+        ]
+      }
     }
   },
   "allOf": [
@@ -216042,6 +216095,25 @@ export const eventRehearsalDocumentSchema = {
                       }
                     }
                   }
+                },
+                "publicDetails": {
+                  "type": "object",
+                  "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                  "additionalProperties": true,
+                  "properties": {
+                    "requirements": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "accessibility": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "included": {
+                      "type": "string",
+                      "maxLength": 2000
+                    }
+                  }
                 }
               }
             }
@@ -247627,6 +247699,25 @@ export const adminUpdateEventDetailsCallablePayloadSchema = {
                       }
                     }
                   }
+                },
+                "publicDetails": {
+                  "type": "object",
+                  "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                  "additionalProperties": true,
+                  "properties": {
+                    "requirements": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "accessibility": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "included": {
+                      "type": "string",
+                      "maxLength": 2000
+                    }
+                  }
                 }
               }
             }
@@ -252792,6 +252883,25 @@ export const privateEventSetupCallableResponseSchema = {
                           }
                         }
                       }
+                    },
+                    "publicDetails": {
+                      "type": "object",
+                      "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                      "additionalProperties": true,
+                      "properties": {
+                        "requirements": {
+                          "type": "string",
+                          "maxLength": 2000
+                        },
+                        "accessibility": {
+                          "type": "string",
+                          "maxLength": 2000
+                        },
+                        "included": {
+                          "type": "string",
+                          "maxLength": 2000
+                        }
+                      }
                     }
                   }
                 }
@@ -254776,6 +254886,25 @@ export const createEventCallablePayloadSchema = {
                   }
                 }
               }
+            },
+            "publicDetails": {
+              "type": "object",
+              "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+              "additionalProperties": true,
+              "properties": {
+                "requirements": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "accessibility": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "included": {
+                  "type": "string",
+                  "maxLength": 2000
+                }
+              }
             }
           }
         }
@@ -255739,6 +255868,25 @@ export const updateEventCallablePayloadSchema = {
                           "maximum": 1440
                         }
                       }
+                    }
+                  }
+                },
+                "publicDetails": {
+                  "type": "object",
+                  "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                  "additionalProperties": true,
+                  "properties": {
+                    "requirements": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "accessibility": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "included": {
+                      "type": "string",
+                      "maxLength": 2000
                     }
                   }
                 }
@@ -264147,6 +264295,25 @@ export const createEventRehearsalCallablePayloadSchema = {
                       }
                     }
                   }
+                },
+                "publicDetails": {
+                  "type": "object",
+                  "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                  "additionalProperties": true,
+                  "properties": {
+                    "requirements": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "accessibility": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "included": {
+                      "type": "string",
+                      "maxLength": 2000
+                    }
+                  }
                 }
               }
             }
@@ -265372,6 +265539,25 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                               "maximum": 1440
                             }
                           }
+                        }
+                      }
+                    },
+                    "publicDetails": {
+                      "type": "object",
+                      "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                      "additionalProperties": true,
+                      "properties": {
+                        "requirements": {
+                          "type": "string",
+                          "maxLength": 2000
+                        },
+                        "accessibility": {
+                          "type": "string",
+                          "maxLength": 2000
+                        },
+                        "included": {
+                          "type": "string",
+                          "maxLength": 2000
                         }
                       }
                     }
@@ -275463,6 +275649,25 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                           }
                         }
                       }
+                    },
+                    "publicDetails": {
+                      "type": "object",
+                      "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                      "additionalProperties": true,
+                      "properties": {
+                        "requirements": {
+                          "type": "string",
+                          "maxLength": 2000
+                        },
+                        "accessibility": {
+                          "type": "string",
+                          "maxLength": 2000
+                        },
+                        "included": {
+                          "type": "string",
+                          "maxLength": 2000
+                        }
+                      }
                     }
                   }
                 }
@@ -278513,6 +278718,25 @@ export const updateEventRehearsalSetupCallablePayloadSchema = {
                           "maximum": 1440
                         }
                       }
+                    }
+                  }
+                },
+                "publicDetails": {
+                  "type": "object",
+                  "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                  "additionalProperties": true,
+                  "properties": {
+                    "requirements": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "accessibility": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "included": {
+                      "type": "string",
+                      "maxLength": 2000
                     }
                   }
                 }
@@ -285092,6 +285316,25 @@ export const eventRehearsalReproductionCallableResponseSchema = {
                           "maximum": 1440
                         }
                       }
+                    }
+                  }
+                },
+                "publicDetails": {
+                  "type": "object",
+                  "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                  "additionalProperties": true,
+                  "properties": {
+                    "requirements": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "accessibility": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "included": {
+                      "type": "string",
+                      "maxLength": 2000
                     }
                   }
                 }
@@ -316887,10 +317130,25 @@ export const websiteHostListingProjectionSchema = {
         }
       }
     },
+    "reviewReadState": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "unavailable"
+      ]
+    },
     "metrics": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "followerCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verifiedReviewCount": {
+          "type": "integer",
+          "minimum": 0
+        },
         "memberCount": {
           "type": "integer",
           "minimum": 0
@@ -316967,6 +317225,21 @@ export const websiteHostListingProjectionSchema = {
           "priceLabel"
         ],
         "properties": {
+          "catchExperienceActivities": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "uniqueItems": true,
+            "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "introductions",
+                "sharedActivities",
+                "rotations"
+              ]
+            }
+          },
           "id": {
             "type": "string",
             "minLength": 1
@@ -317209,6 +317482,44 @@ export const websiteHostListingProjectionSchema = {
           },
           "accessibility": {
             "type": "string"
+          },
+          "included": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "registrationAccess": {
+            "type": "string",
+            "enum": [
+              "open",
+              "restricted",
+              "app"
+            ]
+          },
+          "admissionLabels": {
+            "type": "array",
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "approval",
+                "invitation",
+                "membership",
+                "balanced"
+              ]
+            }
+          },
+          "waitlistAvailable": {
+            "type": "boolean"
+          },
+          "cancellationPolicy": {
+            "type": "string",
+            "enum": [
+              "notApplicable",
+              "flexible",
+              "standard",
+              "strict"
+            ]
           },
           "capacityLimit": {
             "type": "integer",
@@ -318066,6 +318377,14 @@ export const websiteHostListingProjectionSchema = {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "followerCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verifiedReviewCount": {
+          "type": "integer",
+          "minimum": 0
+        },
         "memberCount": {
           "type": "integer",
           "minimum": 0
@@ -318140,6 +318459,21 @@ export const websiteHostListingProjectionSchema = {
         "priceLabel"
       ],
       "properties": {
+        "catchExperienceActivities": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "introductions",
+              "sharedActivities",
+              "rotations"
+            ]
+          }
+        },
         "id": {
           "type": "string",
           "minLength": 1
@@ -318382,6 +318716,44 @@ export const websiteHostListingProjectionSchema = {
         },
         "accessibility": {
           "type": "string"
+        },
+        "included": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "registrationAccess": {
+          "type": "string",
+          "enum": [
+            "open",
+            "restricted",
+            "app"
+          ]
+        },
+        "admissionLabels": {
+          "type": "array",
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "approval",
+              "invitation",
+              "membership",
+              "balanced"
+            ]
+          }
+        },
+        "waitlistAvailable": {
+          "type": "boolean"
+        },
+        "cancellationPolicy": {
+          "type": "string",
+          "enum": [
+            "notApplicable",
+            "flexible",
+            "standard",
+            "strict"
+          ]
         },
         "capacityLimit": {
           "type": "integer",

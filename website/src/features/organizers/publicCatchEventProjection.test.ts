@@ -91,3 +91,40 @@ it("cannot restore moderated artwork through the legacy cover URL", () => {
     ]})?.event.photoUrl).toBeNull();
   }
 });
+it("publishes the badge only for explicit participation declarations", () => {
+  expect(project("event", {...base(), catchExperienceActivities: ["introductions", "rotations"]})?.event.catchExperienceActivities).toEqual(["introductions", "rotations"]);
+  for (const value of [undefined, [], ["checkIn"], ["rotations", "logistics"], ["rotations", "rotations"]]) {
+    expect(project("event", {...base(), catchExperienceActivities:value, eventFormat:{activityKind:"singlesMixer",defaultModuleIds:["firstHello"]}})?.event.catchExperienceActivities).toBeUndefined();
+  }
+});
+
+it("projects only explicitly public guest notes and canonical admission constraints", () => {
+  const event = project("event", {...base(), constraints: {minAge: 21, maxAge: 35},
+    eventFormat: {activityKind: "dinner", activityDetails: {privateNotes: "PRIVATE", publicDetails: {
+      requirements: "Bring ID.", accessibility: "Step-free access.", included: "Dinner.", privateField: "PRIVATE",
+    }}}, eventPolicy: {admission: {format: "manualApproval", manualApprovalRequired: true,
+      privateAccessPolicy: {mode: "none", code: "SECRET"}, waitlistPolicy: {mode: "manualReview"}},
+      pricing: {basePriceInPaise: 0}, cancellation: {policyId: "standard"}},
+  })?.event;
+  expect(event).toMatchObject({requirements: "Ages 21–35. Bring ID.", accessibility: "Step-free access.",
+    included: "Dinner.", admissionLabels: ["approval"], registrationAccess: "restricted", waitlistAvailable: true, cancellationPolicy: "standard"});
+  expect(JSON.stringify(event)).not.toMatch(/PRIVATE|SECRET/);
+  expect(project("event", {...base(), constraints: {minAge: 40, maxAge: 20},
+    eventFormat: {activityKind: "dinner", activityDetails: {publicDetails: {requirements: "x".repeat(2001), accessibility: {secret: true}}}},
+  })?.event.requirements).toBeUndefined();
+});
+
+it("reflects edited and cleared host guest notes without stale fallbacks", () => {
+  for (const publicDetails of [
+    {accessibility: "Step-free entrance", included: "Dinner"},
+    {accessibility: "Lift at the rear", included: "Water"},
+    {},
+  ]) {
+    const record = project("event", {...base(), eventFormat: {
+      activityKind: "dinner", activityDetails: {publicDetails, privateNotes: "Private marker"},
+    }})?.event;
+    expect(record?.accessibility).toBe(publicDetails.accessibility);
+    expect(record?.included).toBe(publicDetails.included);
+    expect(JSON.stringify(record)).not.toContain("Private marker");
+  }
+});

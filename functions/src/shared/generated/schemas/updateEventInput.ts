@@ -570,6 +570,25 @@ export const updateEventCallablePayloadSchema: Record<string, unknown> = {
                       }
                     }
                   }
+                },
+                "publicDetails": {
+                  "type": "object",
+                  "description": "Optional host-authored notes for public event pages. Blank notes are omitted.",
+                  "additionalProperties": true,
+                  "properties": {
+                    "requirements": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "accessibility": {
+                      "type": "string",
+                      "maxLength": 2000
+                    },
+                    "included": {
+                      "type": "string",
+                      "maxLength": 2000
+                    }
+                  }
                 }
               }
             }

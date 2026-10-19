@@ -5,6 +5,7 @@ import {trackOrganizerSearchAppearance} from "./analytics";
 import {usePublicHostListings} from "./usePublicEventListingsController";
 import {
   compareListings,
+  organizerDirectoryOptions,
   defaultOrganizerDirectoryFilters,
   hasAnyEventSignal,
   hasUpcomingCatchEvent,
@@ -36,14 +37,7 @@ export function useOrganizerDirectoryController(
     () => effectiveListings.filter(isPubliclyReadableListing),
     [effectiveListings]
   );
-  const cityOptions = useMemo(
-    () => [...new Set(publicListings.map((listing) => listing.city))].sort(),
-    [publicListings]
-  );
-  const formatOptions = useMemo(
-    () => [...new Set(publicListings.flatMap((listing) => listing.formats))].sort(),
-    [publicListings]
-  );
+  const {cityOptions, formatOptions} = useMemo(() => organizerDirectoryOptions(publicListings), [publicListings]);
   const currentFilters = useMemo(
     () => readOrganizerFiltersFromUrl(cityOptions, formatOptions, searchParams),
     [cityOptions, formatOptions, searchParams]
@@ -191,6 +185,7 @@ export function useOrganizerDirectoryController(
   }
 
   return {
+    phase: sourceListings ? "ready" as const : live.phase,
     appearanceContext,
     cityFilter,
     cityOptions,

@@ -8,6 +8,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
@@ -211,6 +212,8 @@ void main() {
       distanceText: '7.5',
       selectedPace: PaceLevel.fast,
       description: ' Updated route notes ',
+      accessibility: ' Step-free entrance ',
+      included: ' Water and route guidance ',
       capacityText: '30',
       priceText: '250',
       admissionPreset: EventAdmissionPreset.inviteOnly,
@@ -230,6 +233,14 @@ void main() {
     expect(request.inviteCode, 'SOCIAL2026');
     expect(request.nextEvent.startTime, nextStart);
     expect(request.nextEvent.name, 'Monsoon miles');
+    expect(
+      request.nextEvent.eventFormat.accessibilityNotes,
+      'Step-free entrance',
+    );
+    expect(
+      request.nextEvent.eventFormat.includedNotes,
+      'Water and route guidance',
+    );
     expect(request.nextEvent.itinerary, itinerary);
     expect(request.nextEvent.eventFormat.routePlan, routePlan);
     expect(
@@ -575,6 +586,13 @@ void main() {
       'Updated route notes',
     );
 
+    await _enterText(
+      tester,
+      CreateEventFormKeys.accessibility,
+      'Step-free entrance',
+    );
+    await _enterText(tester, CreateEventFormKeys.included, 'Water and a guide');
+
     await tester.tap(find.byKey(EditHostedEventKeys.saveButton));
     await pumpFeatureUi(tester);
 
@@ -585,6 +603,14 @@ void main() {
     expect(repository.updatedEvent!.distanceKm, 7.5);
     expect(repository.updatedEvent!.pace, PaceLevel.fast);
     expect(repository.updatedEvent!.description, 'Updated route notes');
+    expect(
+      repository.updatedEvent!.eventFormat.accessibilityNotes,
+      'Step-free entrance',
+    );
+    expect(
+      repository.updatedEvent!.eventFormat.includedNotes,
+      'Water and a guide',
+    );
     expect(
       repository.updatedEvent!.endTime,
       repository.updatedEvent!.startTime.add(const Duration(minutes: 75)),
@@ -822,12 +848,6 @@ Future<void> _expectVisibleText(WidgetTester tester, String text) async {
 }
 
 Future<void> _scrollToFinder(WidgetTester tester, Finder finder) async {
-  await tester.scrollUntilVisible(
-    finder,
-    240,
-    scrollable: findVerticalScrollable(
-      within: find.byKey(EditHostedEventKeys.scrollView),
-    ),
-  );
+  await Scrollable.ensureVisible(tester.element(finder), alignment: 0.25);
   await tester.pump();
 }

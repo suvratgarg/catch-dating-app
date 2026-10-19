@@ -188,10 +188,25 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
         }
       }
     },
+    "reviewReadState": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "unavailable"
+      ]
+    },
     "metrics": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "followerCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verifiedReviewCount": {
+          "type": "integer",
+          "minimum": 0
+        },
         "memberCount": {
           "type": "integer",
           "minimum": 0
@@ -268,6 +283,21 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
           "priceLabel"
         ],
         "properties": {
+          "catchExperienceActivities": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "uniqueItems": true,
+            "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "introductions",
+                "sharedActivities",
+                "rotations"
+              ]
+            }
+          },
           "id": {
             "type": "string",
             "minLength": 1
@@ -510,6 +540,44 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
           },
           "accessibility": {
             "type": "string"
+          },
+          "included": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "registrationAccess": {
+            "type": "string",
+            "enum": [
+              "open",
+              "restricted",
+              "app"
+            ]
+          },
+          "admissionLabels": {
+            "type": "array",
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "approval",
+                "invitation",
+                "membership",
+                "balanced"
+              ]
+            }
+          },
+          "waitlistAvailable": {
+            "type": "boolean"
+          },
+          "cancellationPolicy": {
+            "type": "string",
+            "enum": [
+              "notApplicable",
+              "flexible",
+              "standard",
+              "strict"
+            ]
           },
           "capacityLimit": {
             "type": "integer",
@@ -1367,6 +1435,14 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "followerCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verifiedReviewCount": {
+          "type": "integer",
+          "minimum": 0
+        },
         "memberCount": {
           "type": "integer",
           "minimum": 0
@@ -1441,6 +1517,21 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
         "priceLabel"
       ],
       "properties": {
+        "catchExperienceActivities": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "introductions",
+              "sharedActivities",
+              "rotations"
+            ]
+          }
+        },
         "id": {
           "type": "string",
           "minLength": 1
@@ -1683,6 +1774,44 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
         },
         "accessibility": {
           "type": "string"
+        },
+        "included": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "registrationAccess": {
+          "type": "string",
+          "enum": [
+            "open",
+            "restricted",
+            "app"
+          ]
+        },
+        "admissionLabels": {
+          "type": "array",
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "approval",
+              "invitation",
+              "membership",
+              "balanced"
+            ]
+          }
+        },
+        "waitlistAvailable": {
+          "type": "boolean"
+        },
+        "cancellationPolicy": {
+          "type": "string",
+          "enum": [
+            "notApplicable",
+            "flexible",
+            "standard",
+            "strict"
+          ]
         },
         "capacityLimit": {
           "type": "integer",

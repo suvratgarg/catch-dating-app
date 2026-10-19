@@ -284,6 +284,15 @@ export interface EventFormatSnapshot {
         retentionMinutes: number;
       };
     };
+    /**
+     * Optional host-authored notes for public event pages. Blank notes are omitted.
+     */
+    publicDetails?: {
+      requirements?: string;
+      accessibility?: string;
+      included?: string;
+      [k: string]: unknown;
+    };
     [k: string]: unknown;
   };
 }
@@ -12698,6 +12707,17 @@ export interface EventDocument {
   publicRegistrationMode?: "closed" | "free" | "paid";
   publicRegistrationRevision?: number;
   firstPublishedAt?: FirebaseFirestore.Timestamp;
+  /**
+   * Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.
+   *
+   * @minItems 1
+   * @maxItems 3
+   */
+  catchExperienceActivities?: (
+    | "introductions"
+    | "sharedActivities"
+    | "rotations"
+  )[];
 }
 
 /**
@@ -16142,6 +16162,15 @@ export interface EventRehearsalDocument {
             staleAfterSeconds: number;
             retentionMinutes: number;
           };
+        };
+        /**
+         * Optional host-authored notes for public event pages. Blank notes are omitted.
+         */
+        publicDetails?: {
+          requirements?: string;
+          accessibility?: string;
+          included?: string;
+          [k: string]: unknown;
         };
         [k: string]: unknown;
       };

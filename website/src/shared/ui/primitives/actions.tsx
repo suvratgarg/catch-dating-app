@@ -54,6 +54,7 @@ export interface EventActionCardModel {
 
 export interface EventActionCardProps extends HTMLAttributes<HTMLElement> {
   event: EventActionCardModel;
+  badge?: ReactNode;
   onActionClick?: (
     action: EventActionCardAction,
     event: MouseEvent<HTMLAnchorElement>
@@ -117,6 +118,7 @@ export function Button({
 export function EventActionCard({
   className,
   event,
+  badge,
   onActionClick,
   reveal = true,
   ...props
@@ -130,6 +132,7 @@ export function EventActionCard({
       style={{"--activity": event.activityToken, ...props.style} as CSSProperties}
     >
       <div className="event-action-card__lead">
+        {badge}
         <UiLabel>{event.eyebrow}</UiLabel>
         <h3>{event.title}</h3>
         <p>{event.body}</p>

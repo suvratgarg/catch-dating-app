@@ -2,9 +2,9 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/explore.feature.json",
-  "generatedFor": "2026-09-14",
-  "sourceDigest": "sha256:9486af42475eb47fdac3b04d8d3184a0fb7c5d18f54deb686130f90447573077",
-  "resolvedDigest": "sha256:f44375da9abefbb100a31b44df85dceb5ad1278195146eaf8fd39fefb888a9f9",
+  "generatedFor": "2026-10-20",
+  "sourceDigest": "sha256:227f9921f4d38f01cdb2fca32644780de58e3a9752b6b17858edc3928209e578",
+  "resolvedDigest": "sha256:dc654e41acb4ec75d217475a0c01d971985ce06a7414a2c90eed986197494524",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -14,13 +14,13 @@
   },
   "coverage": {
     "surfaces": 2,
-    "states": 26,
-    "scenarios": 26,
-    "actionCases": 29,
+    "states": 28,
+    "scenarios": 28,
+    "actionCases": 31,
     "actions": 9,
     "captures": 22,
     "previews": 13,
-    "testFiles": 6,
+    "testFiles": 8,
     "evidenceExceptions": 6
   },
   "surfaces": [
@@ -1903,7 +1903,8 @@
       "actionScope": {
         "included": "URL-owned organizer directory filtering, search submission analytics, and filter reset actions represented by useOrganizerDirectoryController.",
         "excluded": [
-          "Organizer detail navigation, organizer saving, claim navigation, and listing-card analytics retain their route, detail-controller, and component owners."
+          "Organizer detail navigation, organizer saving, claim navigation, and listing-card analytics retain their route, detail-controller, and component owners.",
+          "Catalogue retry and mobile-menu focus, dismissal and navigation retain their shared results-section and public-site chrome owners; these states bind existing evidence without duplicating their actions."
         ]
       },
       "bindings": {
@@ -1936,17 +1937,23 @@
           ],
           "empty-results": [
             "website/src/features/organizers/useOrganizerDirectoryController.test.tsx"
+          ],
+          "catalog-unavailable": [
+            "website/src/features/organizers/OrganizerSearchPage.test.tsx"
+          ],
+          "mobile-menu": [
+            "website/src/shared/site/PublicSiteChrome.test.tsx"
           ]
         }
       },
       "coverage": {
-        "states": 3,
-        "scenarios": 3,
-        "actionCases": 3,
+        "states": 5,
+        "scenarios": 5,
+        "actionCases": 5,
         "actions": 3,
         "captures": 0,
         "previews": 3,
-        "testFiles": 1,
+        "testFiles": 3,
         "evidenceExceptions": 0
       },
       "dimensions": {
@@ -1962,6 +1969,20 @@
           "values": [
             "populated",
             "empty"
+          ]
+        },
+        "load": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "unavailable"
+          ]
+        },
+        "navigation": {
+          "default": "closed",
+          "values": [
+            "closed",
+            "mobile_menu"
           ]
         }
       },
@@ -2040,7 +2061,9 @@
           "status": "previewed",
           "dimensions": {
             "filters": "default",
-            "results": "populated"
+            "results": "populated",
+            "load": "ready",
+            "navigation": "closed"
           },
           "evidence": {
             "captureIds": [],
@@ -2058,7 +2081,9 @@
               "id": "default",
               "dimensions": {
                 "filters": "default",
-                "results": "populated"
+                "results": "populated",
+                "load": "ready",
+                "navigation": "closed"
               },
               "actions": {
                 "enabled": [
@@ -2079,7 +2104,9 @@
           "status": "manual",
           "dimensions": {
             "filters": "active",
-            "results": "populated"
+            "results": "populated",
+            "load": "ready",
+            "navigation": "closed"
           },
           "evidence": {
             "captureIds": [],
@@ -2096,7 +2123,9 @@
               "id": "active_filters",
               "dimensions": {
                 "filters": "active",
-                "results": "populated"
+                "results": "populated",
+                "load": "ready",
+                "navigation": "closed"
               },
               "actions": {
                 "enabled": [
@@ -2114,10 +2143,12 @@
           "id": "empty_results",
           "stateId": "empty-results",
           "kind": "route_state",
-          "status": "manual",
+          "status": "previewed",
           "dimensions": {
             "filters": "active",
-            "results": "empty"
+            "results": "empty",
+            "load": "ready",
+            "navigation": "closed"
           },
           "evidence": {
             "captureIds": [],
@@ -2134,7 +2165,9 @@
               "id": "no_matches",
               "dimensions": {
                 "filters": "active",
-                "results": "empty"
+                "results": "empty",
+                "load": "ready",
+                "navigation": "closed"
               },
               "actions": {
                 "enabled": [
@@ -2144,6 +2177,88 @@
                 ],
                 "disabled": [],
                 "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "catalog_unavailable",
+          "stateId": "catalog-unavailable",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "filters": "default",
+            "results": "populated",
+            "load": "unavailable",
+            "navigation": "closed"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_organizer_search/OrganizerSearch"
+            ],
+            "tests": [
+              "website/src/features/organizers/OrganizerSearchPage.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "filters": "default",
+                "results": "populated",
+                "load": "unavailable",
+                "navigation": "closed"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "update_filters",
+                  "submit_search",
+                  "clear_filters"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "mobile_menu",
+          "stateId": "mobile-menu",
+          "kind": "route_state",
+          "status": "manual",
+          "dimensions": {
+            "filters": "default",
+            "results": "populated",
+            "load": "ready",
+            "navigation": "mobile_menu"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_organizer_search/OrganizerSearch"
+            ],
+            "tests": [
+              "website/src/shared/site/PublicSiteChrome.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "filters": "default",
+                "results": "populated",
+                "load": "ready",
+                "navigation": "mobile_menu"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "update_filters",
+                  "submit_search",
+                  "clear_filters"
+                ]
               }
             }
           ]
@@ -2168,7 +2283,9 @@
               "states": [
                 "default",
                 "filtered",
-                "empty-results"
+                "empty-results",
+                "catalog-unavailable",
+                "mobile-menu"
               ]
             }
           },

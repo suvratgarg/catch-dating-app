@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import ts from "typescript";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -19,11 +20,6 @@ if (args.help) {
   process.exit(0);
 }
 
-if (args.selfTest) {
-  runSelfTest();
-  process.exit(0);
-}
-
 const allowedFeatureImports = new Map([
   ["claims", new Set(["marketing", "organizers"])],
   ["events", new Set(["account", "marketing", "organizers", "reviews", "eventMessaging"])],
@@ -35,6 +31,12 @@ const allowedFeatureImports = new Map([
   ["organizers", new Set(["account", "claims", "events", "marketing", "reviews"])],
   ["reviews", new Set(["organizers"])],
 ]);
+
+if (args.selfTest) {
+  runSelfTest();
+  process.exit(0);
+}
+
 
 function walkSourceFiles(directory) {
   const files = [];
@@ -63,6 +65,8 @@ function isInside(parent, child) {
 
 function layerFor(relativePath) {
   const parts = relativePath.split("/");
+  if (relativePath.startsWith("../app/") || relativePath === "../proxy.ts") return {name: "next-entry"};
+  if (parts[0] === "server") return {name: "server"};
   if (parts[0] === "app") return {name: "app"};
   if (parts[0] === "content") return {name: "content"};
   if (parts[0] === "features") return {name: "feature", feature: parts[1] ?? ""};
@@ -82,21 +86,47 @@ function layerFor(relativePath) {
   return {name: "root"};
 }
 
+function sourceModule(source) {
+  return ts.createSourceFile("boundary.tsx", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+}
+
 function importSpecifiers(source) {
-  const staticImports =
-    /\bimport\s+(?:type\s+)?(?:[\s\S]*?\s+from\s+)?["']([^"']+)["']/g;
-  const dynamicImports = /\bimport\(\s*["']([^"']+)["']\s*\)/g;
   const specifiers = [];
-  for (const match of source.matchAll(staticImports)) {
-    specifiers.push(match[1]);
+  const add = value => {if (value && ts.isStringLiteralLike(value)) specifiers.push(value.text);};
+  function visit(node) {
+    if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) add(node.moduleSpecifier);
+    if (ts.isImportEqualsDeclaration(node) && ts.isExternalModuleReference(node.moduleReference)) add(node.moduleReference.expression);
+    if (ts.isImportTypeNode(node) && ts.isLiteralTypeNode(node.argument)) add(node.argument.literal);
+    if (ts.isCallExpression(node) && (node.expression.kind === ts.SyntaxKind.ImportKeyword ||
+        (ts.isIdentifier(node.expression) && node.expression.text === "require"))) add(node.arguments[0]);
+    ts.forEachChild(node, visit);
   }
-  for (const match of source.matchAll(dynamicImports)) {
-    specifiers.push(match[1]);
-  }
+  visit(sourceModule(source));
   return specifiers;
 }
 
+function isClientModule(source) {
+  for (const statement of sourceModule(source).statements) {
+    if (!ts.isExpressionStatement(statement) || !ts.isStringLiteral(statement.expression)) return false;
+    if (statement.expression.text === "use client") return true;
+  }
+  return false;
+}
+
+function privilegedImport(specifier, sourceRelativePath, sourceLayer, source) {
+  return /^(firebase-admin(?:\/|$)|node:)/.test(specifier) &&
+    (isClientModule(source) || !["server", "next-entry"].includes(sourceLayer.name)) &&
+    !/\.test\./.test(sourceRelativePath);
+}
+
 function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
+  if (layerFor(sourceRelativePath).name === "next-entry" &&
+      isInside(path.join(repoRoot, "website/app"), targetAbsolutePath)) return true;
+  if (["server/publicOrganizerProjection.ts", "server/publicExternalEvent.ts"].includes(sourceRelativePath) && [
+    "website/scripts/next/organizerProjection.mjs",
+    "website/scripts/next/externalEventProjection.mjs",
+    "tool/contracts/generated/schema_contract_validators.mjs",
+  ].some(target => targetAbsolutePath === path.join(repoRoot, target))) return true;
   return (
     sourceRelativePath === "features/organizers/types.ts" ||
     sourceRelativePath === "firebase.ts"
@@ -112,6 +142,16 @@ function allowedCrossFeatureImport(sourceLayer, targetLayer) {
 }
 
 function violationFor(sourceRelativePath, sourceLayer, targetLayer, targetRelativePath) {
+  if (targetLayer.name === "server" && !["server", "next-entry"].includes(sourceLayer.name)) {
+    return "browser layers must not import server modules; shared DTO types belong outside server";
+  }
+  if (sourceLayer.name === "server") {
+    if (["entry", "service", "generated", "story", "root"].includes(targetLayer.name)) {
+      return "server readers must not import browser services, entries or build-time data";
+    }
+    return null;
+  }
+  if (sourceLayer.name === "next-entry") return null;
   if (sourceLayer.name === "story") return null;
 
   if (sourceLayer.name === "content") {
@@ -140,6 +180,9 @@ function violationFor(sourceRelativePath, sourceLayer, targetLayer, targetRelati
   }
 
   if (sourceLayer.name === "feature") {
+    // Explore reuses the canonical public event model so discovery and detail agree.
+    if (sourceRelativePath === "features/home/exploreDiscovery.ts" &&
+        targetRelativePath === "features/events/eventDetailModel.ts") return null;
     if (targetLayer.name === "app" || targetLayer.name === "entry" || targetLayer.name === "root") {
       return "feature modules must not import app-shell, entry, or uncategorized root modules";
     }
@@ -187,7 +230,11 @@ function violationFor(sourceRelativePath, sourceLayer, targetLayer, targetRelati
 }
 
 const violations = [];
-for (const file of walkSourceFiles(websiteSrcRoot)) {
+const nextRoot = path.join(repoRoot, "website/app");
+const proxyPath = path.join(repoRoot, "website/proxy.ts");
+for (const file of [...walkSourceFiles(websiteSrcRoot),
+  ...(fs.existsSync(nextRoot) ? walkSourceFiles(nextRoot) : []),
+  ...(fs.existsSync(proxyPath) ? [proxyPath] : [])]) {
   const sourceRelativePath = relativeToWebsiteSource(file);
   const sourceLayer = layerFor(sourceRelativePath);
   const source = fs.readFileSync(file, "utf8");
@@ -206,6 +253,10 @@ for (const file of walkSourceFiles(websiteSrcRoot)) {
   }
 
   for (const specifier of importSpecifiers(source)) {
+    if (privilegedImport(specifier, sourceRelativePath, sourceLayer, source)) {
+      violations.push({source: sourceRelativePath, specifier,
+        reason: "privileged runtime packages must remain in server modules"});
+    }
     if (specifier.startsWith("@catch/web-ui/")) {
       violations.push({
         source: sourceRelativePath,
@@ -231,7 +282,9 @@ for (const file of walkSourceFiles(websiteSrcRoot)) {
 
     const targetRelativePath = relativeToWebsiteSource(resolveModulePath(targetAbsolutePath));
     const targetLayer = layerFor(targetRelativePath);
-    const reason = violationFor(sourceRelativePath, sourceLayer, targetLayer, targetRelativePath);
+    const clientImportsServer = isClientModule(source) && targetLayer.name === "server";
+    const reason = clientImportsServer ? "client components must not import server modules" :
+      violationFor(sourceRelativePath, sourceLayer, targetLayer, targetRelativePath);
     if (reason !== null) {
       violations.push({source: sourceRelativePath, specifier, reason});
     }
@@ -304,6 +357,40 @@ ownership, and environment-access boundaries.
 }
 
 function runSelfTest() {
+  assert.equal(violationFor("features/home/exploreDiscovery.ts", {name: "feature", feature: "home"}, {name: "feature", feature: "events"}, "features/events/eventDetailModel.ts"), null);
+  assert.match(violationFor("features/home/exploreDiscovery.ts", {name: "feature", feature: "home"}, {name: "feature", feature: "events"}, "features/events/GuestEventEntry.tsx"), /without a scanner allowlist/);
+  const imports = importSpecifiers(`
+    // export * from "ignored-comment";
+    const example = 'import("ignored-string")';
+    import type {PublicDto} from "../server/dto";
+    export {read} from "../server/catalog";
+    export * from "firebase-admin/firestore";
+    export * as admin from "firebase-admin/app";
+    const lazy = import /* comment */ ("node:fs");
+    const required = require("node:crypto");
+    import filesystem = require("node:path");
+    type Reader = import("../server/reader").Reader;
+  `);
+  assert.deepEqual(imports, ["../server/dto", "../server/catalog", "firebase-admin/firestore",
+    "firebase-admin/app", "node:fs", "node:crypto", "node:path", "../server/reader"]);
+  for (const source of ['"use client"; export * from "firebase-admin/app";', '/* boundary */ "use client"\nimport "node:fs";']) {
+    assert.equal(isClientModule(source), true);
+    assert.equal(privilegedImport(importSpecifiers(source)[0], "../app/client.tsx", {name: "next-entry"}, source), true);
+  }
+  assert.equal(isClientModule('// "use client";\nconst text = "use client";'), false);
+
+  assert.deepEqual(layerFor("server/publicCatalog.ts"), {name: "server"});
+  assert.deepEqual(layerFor("../app/page.tsx"), {name: "next-entry"});
+  for (const layer of ["app", "feature", "shared", "content", "service", "story"]) {
+    assert.match(violationFor("test.ts", {name: layer}, {name: "server"}), /must not import server/);
+  }
+  assert.equal(violationFor("../app/page.tsx", {name: "next-entry"}, {name: "server"}), null);
+  assert.equal(violationFor("server/publicCatalog.ts", {name: "server"}, {name: "feature"}), null);
+  assert.match(violationFor("server/publicCatalog.ts", {name: "server"}, {name: "generated"}), /build-time data/);
+  assert.equal(allowedExternalImport("server/publicOrganizerProjection.ts",
+    path.join(repoRoot, "website/scripts/next/organizerProjection.mjs")), true);
+  assert.equal(allowedExternalImport("app/leak.ts",
+    path.join(repoRoot, "website/scripts/next/organizerProjection.mjs")), false);
   assert.deepEqual(layerFor("content/meta.json"), {name: "content"});
   assert.equal(
     violationFor(

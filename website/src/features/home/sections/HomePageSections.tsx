@@ -41,7 +41,7 @@ import {
 } from "@content/marketing";
 import {trackCtaClick} from "../../marketing/tracking";
 import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
-import {hostListings} from "../../organizers/data";
+import {usePublicHostListings} from "../../organizers/usePublicEventListingsController";
 import {featuredOrganizerCardItemForListing} from "../../organizers/featuredOrganizerCardItem";
 import {
   usePublicDiscoveryData,
@@ -204,6 +204,7 @@ export function HomeFormatsSection() {
 export function HomeFeaturedOrganizersSection({copy}: {
   copy?: {eyebrow: string; title: string; body: string; ctaBody: string};
 } = {}) {
+  const {listings: hostListings} = usePublicHostListings();
   const featured = hostListings
     .filter(isPubliclyReadableListing)
     .slice()

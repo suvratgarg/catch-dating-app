@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-09-14",
+  "updated": "2026-10-20",
   "id": "feature.explore",
   "name": "Explore",
   "owner": "explore",
@@ -643,7 +643,8 @@
       "actionScope": {
         "included": "URL-owned organizer directory filtering, search submission analytics, and filter reset actions represented by useOrganizerDirectoryController.",
         "excluded": [
-          "Organizer detail navigation, organizer saving, claim navigation, and listing-card analytics retain their route, detail-controller, and component owners."
+          "Organizer detail navigation, organizer saving, claim navigation, and listing-card analytics retain their route, detail-controller, and component owners.",
+          "Catalogue retry and mobile-menu focus, dismissal and navigation retain their shared results-section and public-site chrome owners; these states bind existing evidence without duplicating their actions."
         ]
       },
       "bindings": {
@@ -676,6 +677,12 @@
           ],
           "empty-results": [
             "website/src/features/organizers/useOrganizerDirectoryController.test.tsx"
+          ],
+          "catalog-unavailable": [
+            "website/src/features/organizers/OrganizerSearchPage.test.tsx"
+          ],
+          "mobile-menu": [
+            "website/src/shared/site/PublicSiteChrome.test.tsx"
           ]
         }
       },
@@ -692,6 +699,20 @@
           "values": [
             "populated",
             "empty"
+          ]
+        },
+        "load": {
+          "default": "ready",
+          "values": [
+            "ready",
+            "unavailable"
+          ]
+        },
+        "navigation": {
+          "default": "closed",
+          "values": [
+            "closed",
+            "mobile_menu"
           ]
         }
       },
@@ -806,6 +827,30 @@
                 "submit_search",
                 "clear_filters"
               ]
+            }
+          ]
+        },
+        {
+          "id": "catalog_unavailable",
+          "stateId": "catalog-unavailable",
+          "dimensions": {
+            "load": "unavailable"
+          },
+          "actionCases": [
+            {
+              "id": "default"
+            }
+          ]
+        },
+        {
+          "id": "mobile_menu",
+          "stateId": "mobile-menu",
+          "dimensions": {
+            "navigation": "mobile_menu"
+          },
+          "actionCases": [
+            {
+              "id": "default"
             }
           ]
         }

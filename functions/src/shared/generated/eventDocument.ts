@@ -202,6 +202,15 @@ export type EventDocument = {
           retentionMinutes: number;
         };
       };
+      /**
+       * Optional host-authored notes for public event pages. Blank notes are omitted.
+       */
+      publicDetails?: {
+        requirements?: string;
+        accessibility?: string;
+        included?: string;
+        [k: string]: unknown;
+      };
       [k: string]: unknown;
     };
   };
@@ -450,4 +459,15 @@ export type EventDocument = {
     _seconds: number;
     _nanoseconds: number;
   };
+  /**
+   * Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.
+   *
+   * @minItems 1
+   * @maxItems 3
+   */
+  catchExperienceActivities?: (
+    | "introductions"
+    | "sharedActivities"
+    | "rotations"
+  )[];
 };

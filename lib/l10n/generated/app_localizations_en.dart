@@ -25215,4 +25215,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsCreateEventPolicyStateDescriptionMembersSkipReview =>
       'Approved community members can book directly. Other guests request approval. Capacity, eligibility and payment still apply.';
+
+  @override
+  String get hostsEventGuestDetailsTitle => 'Guest information';
+
+  @override
+  String get hostsEventGuestDetailsVisibility =>
+      'These notes appear on your public event page. Leave blank to hide them.';
+
+  @override
+  String get hostsEventIncludedTitle => 'What\'s included';
+
+  @override
+  String get hostsEventIncludedHint =>
+      'For example: equipment, refreshments, entry fees or a guided session.';
+
+  @override
+  String get hostsEventAccessibilityTitle => 'Accessibility notes';
+
+  @override
+  String get hostsEventAccessibilityHint =>
+      'Describe step-free access, seating, accessible toilets or activity demands.';
+
+  @override
+  String get hostsEventGuestDetailsSave => 'Save guest information';
 }

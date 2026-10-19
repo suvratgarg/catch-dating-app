@@ -4,6 +4,7 @@ import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:collection/collection.dart';
 
@@ -64,6 +65,8 @@ class CreateEventPrefill {
           currencyCode: event.currency,
         ),
         description: event.description,
+        accessibility: event.eventFormat.accessibilityNotes,
+        included: event.eventFormat.includedNotes,
         activityKind: event.activityKind.name,
         customActivityLabel: event.eventFormat.customActivityLabel,
         interactionModel: event.eventFormat.interactionModel.name,

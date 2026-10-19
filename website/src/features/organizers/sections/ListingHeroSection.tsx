@@ -1,3 +1,5 @@
+import {organiserProfileCopy} from "../../../content/organiserProfile";
+import {ProfileContext, ProfileNavigation} from "../../../shared/ui/primitives/organiserProfile";
 import {accountCopy} from "../../../content/account";
 import {organizerPresenceCopy} from "@content/organizerPresence";
 import {
@@ -18,6 +20,8 @@ import {
   ListingRailActions,
   ListingRailIdentity,
   ListingStatusLedger,
+  PlainLink,
+  ListingSection,
 } from "../../../shared/ui/primitives";
 import {trackOrganizerAnalytics} from "../analytics";
 import {trackCtaClick} from "../../marketing/tracking";
@@ -36,30 +40,13 @@ export function ListingHeroSection({listing}: {listing: HostListing}) {
         title={listing.name}
         titleId="listing-profile-title"
       />
-      <ListingStatusLedger
-        items={[
-          {
-            label: organizerListingCopy.detail.sourceCountLabel,
-            value: `${listing.sources.length} ${listing.sources.length === 1 ? "source" : "sources"}`,
-          },
-          {
-            label: organizerListingCopy.detail.claimStateLabel,
-            value: claimStateLabel(policy.claimState),
-          },
-          {
-            label: organizerListingCopy.detail.surfaceLabel,
-            value: listing.authority?.appVisibility === "hidden" ? "Web only" : "In Catch",
-          },
-          {
-            label: organizerListingCopy.detail.freshnessLabel,
-            value: reviewedLabel(listing.lastVerifiedAt),
-          },
-          {
-            label: organizerListingCopy.detail.ownershipLabel,
-            value: ownershipLabel(policy),
-          },
-        ]}
-      />
+      <p>{listing.headline}</p>
+      <ProfileNavigation aria-label={organiserProfileCopy.nav.label}>
+        <PlainLink href="#events">{organiserProfileCopy.nav.events}</PlainLink>
+        <PlainLink href="#about">{organiserProfileCopy.nav.about}</PlainLink>
+        {policy.isPubliclyReadable ? <PlainLink href="#reviews">{organiserProfileCopy.nav.reviews}</PlainLink> : null}
+        <PlainLink href="#profile-information">{organiserProfileCopy.nav.information}</PlainLink>
+      </ProfileNavigation>
     </section>
   );
 }
@@ -67,7 +54,6 @@ export function ListingHeroSection({listing}: {listing: HostListing}) {
 export function ListingHeroRailSection({
   canRequestClaim,
   claimHref,
-  isAppCreated,
   isFollowing,
   followPending,
   listing,
@@ -87,11 +73,7 @@ export function ListingHeroRailSection({
 }) {
   const policy = organizerPolicyForListing(listing);
   const resolvedCanRequestClaim = canRequestClaim ?? policy.canRequestClaim;
-  const primaryDescription = resolvedCanRequestClaim
-    ? organizerPresenceCopy.claimDescription
-    : isAppCreated
-      ? "Open the organizer's published Catch events."
-      : policy.claimRequestReason;
+  const primaryDescription = organiserProfileCopy.followBody;
 
   return (
     <>
@@ -103,46 +85,27 @@ export function ListingHeroRailSection({
         status={<StatusBadge listing={listing} />}
       />
       <ListingRailActions description={primaryDescription} shareStatus={shareStatus}>
-        {resolvedCanRequestClaim ? (
-          <ButtonLink
-            href={claimHref}
-            onClick={() => {
-              trackCtaClick("listing_claim", claimHref);
-              trackOrganizerAnalytics(listing, "claimClick", "organizer_rail");
-            }}
-          >
-            {listing.claim.label}
-          </ButtonLink>
-        ) : isAppCreated ? (
-          <ButtonLink
-            href={claimHref}
-            onClick={() => trackCtaClick("listing_events", claimHref)}
-          >
-            {listing.claim.label}
-          </ButtonLink>
-        ) : (
-          <Button disabled type="button">
-            {listing.claim.label}
-          </Button>
-        )}
+        <Button type="button" aria-pressed={isFollowing} disabled={followPending} onClick={onFollowListing}>
+          {isFollowing ? accountCopy.following : accountCopy.follow}
+        </Button>
+        <Button variant="ghost" type="button" onClick={onShareListing}>
+          {organizerListingCopy.detail.shareAction}
+        </Button>
         {listing.sources.length ? (
           <ButtonLink variant="ghost" href="#sources">
             {organizerListingCopy.detail.viewSourcesAction}
           </ButtonLink>
         ) : null}
-        <Button variant="ghost" type="button" onClick={onShareListing}>
-          {organizerListingCopy.detail.shareAction}
-        </Button>
-        <Button
-          variant="ghost"
-          type="button"
-          aria-pressed={isFollowing}
-          disabled={followPending}
-          onClick={onFollowListing}
-        >
-          {isFollowing ? accountCopy.following : accountCopy.follow}
-        </Button>
+
       </ListingRailActions>
+      {resolvedCanRequestClaim ? <ProfileContext>
+        <summary>{organiserProfileCopy.ownerQuestion}</summary>
+        <p>{organizerPresenceCopy.claimDescription}</p>
+        <ButtonLink variant="ghost" href={claimHref} onClick={() => {
+          trackCtaClick("listing_claim", claimHref);
+          trackOrganizerAnalytics(listing, "claimClick", "organizer_rail");
+        }}>{organiserProfileCopy.claim}</ButtonLink>
+      </ProfileContext> : null}
     </>
   );
 }
@@ -178,4 +141,39 @@ function ownershipLabel(policy: ReturnType<typeof organizerPolicyForListing>) {
   if (policy.verificationStatus === "ownerVerified") return "Ownership verified";
   if (policy.claimState === "claimPending") return "Ownership in review";
   return "Ownership not verified";
+}
+
+export function ListingProfileInformation({listing}: {listing: HostListing}) {
+  const policy = organizerPolicyForListing(listing);
+  return <ListingSection id="profile-information" aria-label={organiserProfileCopy.nav.information}>
+    <ProfileContext>
+      <summary>{organiserProfileCopy.information}</summary>
+      <p>{organiserProfileCopy.verification}</p>
+      {!policy.canRequestClaim && policy.claimRequestReason ? <p>{policy.claimRequestReason}</p> : null}
+      <ListingStatusLedger
+        items={[
+          {
+            label: organizerListingCopy.detail.sourceCountLabel,
+            value: `${listing.sources.length} ${listing.sources.length === 1 ? "source" : "sources"}`,
+          },
+          {
+            label: organizerListingCopy.detail.claimStateLabel,
+            value: claimStateLabel(policy.claimState),
+          },
+          {
+            label: organizerListingCopy.detail.surfaceLabel,
+            value: listing.authority?.appVisibility === "hidden" ? "Web only" : "In Catch",
+          },
+          {
+            label: organizerListingCopy.detail.freshnessLabel,
+            value: reviewedLabel(listing.lastVerifiedAt),
+          },
+          {
+            label: organizerListingCopy.detail.ownershipLabel,
+            value: ownershipLabel(policy),
+          },
+        ]}
+      />
+    </ProfileContext>
+  </ListingSection>;
 }

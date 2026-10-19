@@ -11,10 +11,10 @@ import {CheckboxField} from "./forms";
 import {classNames} from "./foundation";
 import {UiLabel} from "./layout";
 
-export function EventDetailHeroLayout({activityToken, children, eyebrow, facts, media, host, title}: {
+export function EventDetailHeroLayout({activityToken, children, eyebrow, facts, media, host, title, badge}: {
   activityToken: string; children: ReactNode; eyebrow: ReactNode;
   facts: Array<{label: ReactNode; value: ReactNode}>; media: ReactNode;
-  host: ReactNode; title: ReactNode;
+  host: ReactNode; title: ReactNode; badge?: ReactNode;
 }) {
   return <section className="event-detail-hero" aria-labelledby="event-detail-title"
     style={{"--activity": activityToken} as CSSProperties}>
@@ -22,6 +22,7 @@ export function EventDetailHeroLayout({activityToken, children, eyebrow, facts, 
       {media}
       <div className="event-detail-ticket__body">
         <UiLabel>{eyebrow}</UiLabel>
+        {badge}
         <h1 id="event-detail-title">{title}</h1>
         <div className="event-detail-host-byline">{host}</div>
         <EventDetailHeroFacts items={facts} />
@@ -45,10 +46,10 @@ export function EventDetailBodyLayout({children, host}: {children: ReactNode; ho
 }
 
 export function EventDetailItinerary({items}: {items: Array<{
-  id: string; time: string; title: string; description?: ReactNode; location?: ReactNode;
+  id: string; time: string; title: string; duration?: string; description?: ReactNode; location?: ReactNode;
 }>}) {
   return <ol className="event-detail-itinerary">{items.map((item) => <li key={item.id}>
-    <span>{item.time}</span><div><h3>{item.title}</h3>
+    <span>{item.time}{item.duration ? <small>{item.duration}</small> : null}</span><div><h3>{item.title}</h3>
       {item.description ? <p>{item.description}</p> : null}
       {item.location ? <p>{item.location}</p> : null}</div>
   </li>)}</ol>;

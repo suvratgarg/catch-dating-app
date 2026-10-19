@@ -22,6 +22,8 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
         capacity: _trimmedTextOrNull(_capacityController),
         price: _trimmedTextOrNull(_priceController),
         description: _trimmedTextOrNull(_descriptionController),
+        accessibility: _trimmedTextOrNull(_accessibilityController),
+        included: _trimmedTextOrNull(_includedController),
         externalBookingMode: _externalBookingMode,
         externalBookingProvider: _externalBookingMode
             ? _externalBookingProvider.name
@@ -125,6 +127,8 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
     );
 
     // Event details
+    _accessibilityController.text = draft.accessibility ?? '';
+    _includedController.text = draft.included ?? '';
     if (restore.nameText != null) {
       _nameController.text = restore.nameText!;
     }
@@ -285,6 +289,9 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
       return EventFormatSnapshot.fromActivityKind(
         _selectedActivityKind,
         activityDetails: routeDetails,
+      ).withPublicDetails(
+        accessibility: _accessibilityController.text,
+        included: _includedController.text,
       );
     }
     return EventFormatSnapshot.custom(
@@ -295,6 +302,9 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
             context.l10n.hostsCreateEventScreenVisiblecopyCreateEvent,
         ...routeDetails,
       },
+    ).withPublicDetails(
+      accessibility: _accessibilityController.text,
+      included: _includedController.text,
     );
   }
 

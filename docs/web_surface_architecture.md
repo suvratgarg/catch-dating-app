@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.28.0
-updated: 2026-10-19
+version: 0.32.0
+updated: 2026-10-20
 owner: web_platform
 status: active
 ---
@@ -30,6 +30,123 @@ supports policy-specific identity verification, revisioned autosave, review,
 submission receipts, and withdrawal, and remains usable in a bounded iframe
 presentation. It never reads Forms collections directly and does not bootstrap
 the Consumer Flutter application.
+
+## Next.js candidate and cutover boundary
+
+The public website has a Next.js 16 App Router candidate alongside the current
+Vite/Firebase Hosting deployment. `npm run build --workspace catch-marketing`
+validates/builds both; deployment still consumes `website/dist`. This does not
+switch main traffic or change the consumer Flutter/admin applications.
+
+The candidate uses Node 24 and standalone output, including traced monorepo
+packages plus public/static assets. `website/Dockerfile` and its adjacent
+Dockerfile-specific ignore file define a non-root container with a minimal
+source context. Public Firebase/App Check/store configuration is supplied at
+build time through explicit arguments. Runtime ADC must be a dedicated
+Firestore-read-only identity; never include a service-account key or private
+environment file in an image. `CATCH_PUBLIC_FIRESTORE_PROJECT` selects the
+runtime project. The default `CATCH_WEBSITE_STAGE=preview` denies indexing;
+production indexing requires an explicit stage switch, the production project,
+and no emulator configuration. In addition, the build must have passed the
+existing marketing environment contract, including App Check and explicit
+prelaunch/live store state. That eligibility is compiled into the artifact; a
+runtime environment override cannot promote an unconfigured preview. Local acceptance is restricted to `demo-catch-nextjs` on the
+loopback Firestore emulator. Docker execution itself requires separate evidence;
+a passing local standalone build is not a container/deployment proof.
+
+The proposed adapter is Firebase Hosting to Cloud Run.
+`website/next-hosting.preview.json` proposes service `catch-website-next-preview`
+in `asia-south1`, keeps the existing direct Function rewrites and redirects,
+and is for a reviewed Hosting preview channel only. It is not wired into the
+production deploy workflow and has not been deployed. Its service name is a
+proposal, not evidence that the service or identity exists. Preserve
+existing app-association files, Auth helpers, redirects, and the two direct
+HTTP Function rewrites before any Next catch-all. The standalone HTTP gateway
+is useful for isolated previews; production should retain direct Function
+routing so existing ingress/IP enforcement is not collapsed onto one runtime.
+Unknown-host handling must be verified through the actual Hosting/Cloud Run
+request chain. Do not infer original-host forwarding from Next's normalized URL.
+An explicitly configured preview hostname only enables the public server surface;
+private/custom-form acceptance still needs a recognized Hosting preview origin.
+
+Before any traffic switch, obtain review of the concrete hosting configuration,
+project/region/service identity, cost/scaling limits and rollback target. Prove
+least-privilege reads, real Host forwarding, App Check/Auth consent, callable
+forms/claim flows, Razorpay return behavior, native app links, cache withdrawal
+and failure statuses on that exact deployed preview. No new paid service,
+provider activation, DNS change, merge or production cutover is implied by the
+source migration. Preserve the guarded worktree and draft PR until accepted
+closeout. Source, CI, preview, provider acceptance and production are distinct
+states.
+
+### Accepted-source container preview
+
+`Next Website Preview` is a main-only manual workflow for the Cloud Run candidate.
+It refuses source that is no longer current main or has not completed successful
+same-source CI, Marketing validation and canonical captures. Its uncredentialed
+build job imports only those verified captures, supplies the production public
+browser configuration, builds the non-root image and exercises the actual
+container without database credentials. A SHA-256-bound archive preserves that
+image and the exact preview Hosting bytes; the separate deploy job verifies paths,
+source/run/attempt identity, configuration and Docker image identity before OIDC.
+
+The preview uses the existing `github-actions-web-reader` identity only after
+checking that its sole project role is `roles/datastore.viewer` and that it has
+no user-managed keys. It deploys `catch-website-next-preview` in `asia-south1`,
+with one CPU, 512 MiB, concurrency 40, a 30-second timeout and zero-to-one
+instances. The `catch-website` Artifact Registry repository holds the tested
+image, deployed by digest. Only the `next-candidate` Firebase Hosting preview
+channel is published, expiring after three days. Production traffic and the
+current static release remain unchanged. Preview runtime/service/image/channel
+identities are retained as workflow artifacts for browser and host-forwarding
+acceptance. A successful preview deployment is not production cutover or proof
+of authenticated/payment flows; the existing cutover gates above still apply.
+
+### Bounded organiser-review index release
+
+The public organiser review query needs the additive `reviews` collection index
+`organizerId ASC / createdAt DESC`. `Website Review Index` releases only that
+checked-in definition from current main after successful CI. It preserves the
+existing `prod` human-review environment and both `backend-delivery` and
+`firebase-prod` locks. A post-approval source check runs before OIDC, and another
+check immediately precedes creation. It creates only when missing, waits for
+`READY`, rejects failed or ambiguous index metadata and preserves unselected
+index identities/definitions in before/after evidence. It does not deploy
+Functions/rules, change data/IAM, advance a backend cursor or enable the general
+Delivery workflow. A partial/unknown creation result stops; a new dispatch must
+reinspect current metadata. Next production promotion reads this exact index and
+refuses to proceed until it is ready.
+
+### Exact-container production promotion
+
+After deployed preview and browser acceptance, dispatch `Next Website Promotion`
+with that successful preview run id. The preview source must still be current
+main with successful CI. The workflow verifies GitHub artifact provenance and
+ZIP digest, bounded archive contents, source/run/attempt identity and the loaded
+Docker image before OIDC. It then verifies the registry image configuration
+against the tested image and checks that the preview still serves that digest
+with the read-only identity. No image is rebuilt during promotion.
+
+The production service is `catch-website-next` in `asia-south1`, with the same
+read-only identity, one CPU, 512 MiB, concurrency 40, a 30-second timeout and
+zero-to-three instances. The workflow records the current live Hosting version
+as its rollback target. It retains the existing API rewrites, redirects, static
+assets and association files while changing the catch-all to the production
+service with `pinTag: true`. An expiring `next-release` channel exercises the
+production configuration before the exact tested Hosting version is cloned to
+live. The request proxy denies indexing on preview/default/custom hosts even
+when they use the production image. `X-Catch-Release` identifies the serving
+source for automated and manual acceptance.
+
+The Next promotion and legacy Hosting promoter share `web-hosting-marketing`.
+The legacy promoter reads the live Hosting configuration under that lock and
+skips static mutation once `catch-website-next` owns it. Future Next releases
+use the preview/promotion pair; a later automatic Vite build cannot overwrite
+Next. A failed metadata read fails closed. No automatic rollback, retry,
+provider activation, database mutation or IAM role grant is added. A failure
+preserves source/image/service/Hosting identities and the prior version for
+operator-reviewed recovery. Production and browser/provider acceptance remain
+unproven until those steps actually run and are inspected.
 
 ## Form embeds and proposed custom-host activation
 

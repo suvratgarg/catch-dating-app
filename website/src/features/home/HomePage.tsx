@@ -1,18 +1,12 @@
-import {organiserHomeCopy} from "@content/marketingOrganization";
-import {renderOrganiserHomeSections} from "./sections/OrganiserHomeSections";
-import {websiteCopy} from "@content/generated";
-import {
-  HomeCapturesSection,
-  HomeDiscoverySection,
-  HomeDownloadSection,
-  HomeFeaturedOrganizersSection,
-  HomeFormatsSection,
-  HomeHeroSection,
-  HomeHostProofSection,
-  HomeMemberLoopSection,
-  HomeTrustSection,
-  HomeWaitlistSection,
-} from "./sections/HomePageSections";
+import {ConsumerHome} from "../../shared/ui/primitives/consumerHome";
+import {renderConsumerHero, renderConsumerEvents, renderConsumerStory} from "./sections/consumerHomeSections";
+import {useConsumerHomeController} from "./useConsumerHomeController";
+import type {HomeCategory} from "./homeDiscovery";
+type HomeRouteState = {city: string; category: HomeCategory};
+import {ExplorePageLayout} from "../../shared/ui/primitives/explore";
+import {renderExploreDiscovery} from "./sections/exploreSections";
+import {useExploreController} from "./useExploreController";
+import type {ExploreFilters} from "./exploreDiscovery";
 import type {CaptureRecord} from "../../shared/ui/primitives";
 import {
   PublicSiteFooter,
@@ -20,61 +14,20 @@ import {
   WebsitePageMain,
 } from "../../shared/site";
 
-export function VisitorDiscoveryPage({captures}: {captures: Record<string, CaptureRecord>}) {
-  return (
-    <>
-      <PublicSiteHeader
-        tone="dark"
-        localNav={[
-          {href: "#events", label: websiteCopy["homepage_0110"]},
-          {href: "#formats", label: websiteCopy["homepage_0112"]},
-          {href: "#members", label: websiteCopy["homepage_0115"]},
-          {href: "#hosts", label: websiteCopy["homepage_0113"]},
-          {href: "#trust", label: websiteCopy["homepage_0117"]},
-          {href: "/organizers/", label: websiteCopy["homepage_0116"]},
-          {href: "/host/", label: websiteCopy["homepage_0111"]},
-        ]}
-        localActions={[{href: "#events", label: organiserHomeCopy.actions.attend.label}]}
-      />
-      <WebsitePageMain id="top">
-        <HomeHeroSection captures={captures} />
-        <HomeDiscoverySection showAll />
-        <HomeFormatsSection />
-        <HomeFeaturedOrganizersSection />
-        <HomeMemberLoopSection />
-        <HomeHostProofSection captures={captures} />
-        <HomeCapturesSection captures={captures} />
-        <HomeDownloadSection />
-        <HomeTrustSection />
-        <HomeWaitlistSection />
-      </WebsitePageMain>
-      <PublicSiteFooter
-        body={websiteCopy["homepage_0108"]}
-        links={[
-          {href: "/host/", label: websiteCopy["homepage_0111"]},
-          {href: "#formats", label: websiteCopy["homepage_0112"]},
-          {href: "#download-app", label: websiteCopy["homepage_0109"]},
-          {href: "#trust", label: websiteCopy["homepage_0117"]},
-          {href: "#waitlist", label: websiteCopy["homepage_0118"]},
-        ]}
-      />
-    </>
-  );
+export function VisitorDiscoveryPage({routeState, onFiltersChange}: {captures: Record<string, CaptureRecord>; routeState?: ExploreFilters; onFiltersChange?: (filters: ExploreFilters) => void}) {
+  const explore = useExploreController(routeState, onFiltersChange);
+  return <ExplorePageLayout>
+    <PublicSiteHeader audience="consumer" />
+    <WebsitePageMain id="top">{renderExploreDiscovery(explore)}</WebsitePageMain>
+    <PublicSiteFooter audience="consumer" />
+  </ExplorePageLayout>;
 }
 
-export function HomePage(_props: {captures: Record<string, CaptureRecord>}) {
-  return (
-    <>
-      <PublicSiteHeader tone="dark" />
-      <WebsitePageMain id="top">{renderOrganiserHomeSections()}</WebsitePageMain>
-      <PublicSiteFooter
-        body={organiserHomeCopy.footer}
-        links={[
-          ...organiserHomeCopy.nav,
-          organiserHomeCopy.explore.directory,
-          organiserHomeCopy.explore.visitors,
-        ]}
-      />
-    </>
-  );
+export function HomePage({routeState}: {captures: Record<string, CaptureRecord>; routeState?: HomeRouteState}) {
+  const home = useConsumerHomeController(routeState?.city, routeState?.category);
+  return <ConsumerHome >
+    <PublicSiteHeader audience="consumer" />
+    <WebsitePageMain id="top">{renderConsumerHero(home)}{renderConsumerEvents(home)}{renderConsumerStory(home)}</WebsitePageMain>
+    <PublicSiteFooter audience="consumer" />
+  </ConsumerHome>;
 }

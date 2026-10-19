@@ -2,16 +2,16 @@
   "$schema": "./meta.schema.json",
   "routes": {
     "home": {
-      "title": "Catch Host | Presence, guests and live events",
-      "description": "Find your organiser page, explore guest and live-event workflows, and discuss a supported Catch pilot alongside your current booking tools.",
+      "title": "Catch | Find something worth showing up for",
+      "description": "Discover runs, dinners, games, nights out, and the people who bring them together. Find events and organisers on Catch.",
       "canonicalPath": "/",
-      "twitterDescription": "Organiser discovery, existing claim requests and supported live-event workflows."
+      "twitterDescription": "Find your next plan. Discover events, meet people and explore independent organisers on Catch."
     },
     "host": {
-      "title": "Live event tools for hosts | Catch beta",
-      "description": "Keep your current booking platform. Import the guest list, share an event QR, verify attendance, and run optional live facilitation in the browser with no guest app download.",
+      "title": "Catch Host | Run great events. Build a business around them.",
+      "description": "Bring event bookings, guest relationships, and the experience itself together. Explore Catch for independent hosts, clubs, communities, and event teams. Apply for a selected pilot.",
       "canonicalPath": "/host/",
-      "twitterDescription": "Import a guest list and add no-download check-in, live facilitation, host controls, and an event recap."
+      "twitterDescription": "Simpler hosting. More opportunities to participate. Explore Catch Host for your next event."
     },
     "event_runtime": {
       "title": "Event mode | Catch",
@@ -42,10 +42,10 @@
       "robots": "noindex, follow"
     },
     "organizers": {
-      "title": "Organizer directory | Catch",
-      "description": "Find singles-event organizers across India \u2014 clubs, venues, and independent hosts \u2014 with verified guest reviews and upcoming events.",
+      "title": "Organisers, clubs and communities | Catch",
+      "description": "Discover clubs, communities and independent event hosts. Browse activities, upcoming events and public reviews, and find a community to keep coming back to.",
       "canonicalPath": "/organizers/",
-      "twitterDescription": "Search Catch organizer and club profiles.",
+      "twitterDescription": "Meet the clubs, communities and hosts bringing people together on Catch.",
       "robots": "noindex, follow"
     },
     "claim": {
@@ -123,10 +123,10 @@
       "robots": "noindex, follow"
     },
     "visitor_discovery": {
-      "title": "Catch | The event before the match",
-      "description": "Catch turns curated singles events in Mumbai and Indore into real dating context. Choose a hosted event, show up, catch privately, and match with people you actually met.",
+      "title": "Find events, clubs and communities | Catch",
+      "description": "Discover upcoming runs, dinners, games and social events. Explore your city and find Catch Experiences with a little extra help joining in.",
       "canonicalPath": "/explore/",
-      "twitterDescription": "Curated singles events in Mumbai and Indore become real dating context."
+      "twitterDescription": "Find your next plan: runs, dinners, games and social events on Catch."
     }
   },
   "listing": {

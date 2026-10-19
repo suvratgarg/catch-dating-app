@@ -26,7 +26,7 @@ function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
         localNav={[
           {href: "/organizers/", label: websiteCopy["claimpage_0025"]},
           {href: "/host/", label: websiteCopy["claimpage_0027"]},
-          {href: "/explore/#trust", label: websiteCopy["claimpage_0031"]},
+          {href: "/help/", label: websiteCopy["claimpage_0031"]},
         ]}
         localActions={[{href: "/host/apply/", label: websiteCopy["claimpage_0030"]}]}
       />

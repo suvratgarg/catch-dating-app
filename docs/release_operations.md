@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.8.0
-updated: 2026-10-17
+version: 2.11.0
+updated: 2026-10-20
 owner: recursive_audit_loop
 status: active
 ---
@@ -688,8 +688,19 @@ node tool/git/branch_hygiene.mjs --base origin/main --local --json
 Firebase deploy and data-validation workflows use GitHub OIDC rather than
 long-lived service-account JSON secrets. Use GitHub Environments named `dev`,
 `staging`, `prod-hosting`, `prod-mobile`, `backend-review`, `prod-backend`, and `prod`. `prod-hosting` is
-approval-free and limited to the automatic marketing and admin Firebase
-Hosting workflows. `prod-mobile` is approval-free and `main`-only; it contains
+approval-free and limited to the automatic web Hosting workflows and the
+main-only `Next Website Preview` and `Next Website Promotion` workflows. The preview requires current
+main's successful CI and exact-source captures, builds without cloud credentials,
+and verifies the tested container archive before OIDC deployment to the fixed
+preview service/channel. Its scale-to-zero runtime has a one-instance cap and
+uses only the existing Firestore read-only web identity; it cannot publish the
+live Hosting channel. The separate promotion workflow accepts only a successful,
+browser-accepted preview of current main, verifies the tested image and Hosting
+bytes before OIDC, preserves the prior live version, tests an expiring production
+channel and clones that exact Hosting version to live. It shares the marketing
+Hosting lock; the legacy promoter checks actual live runtime ownership and
+skips static mutation after Next takes over. See `docs/web_surface_architecture.md`
+for the preview, production limits, rollback and acceptance contracts. `prod-mobile` is approval-free and `main`-only; it contains
 only mobile signing, Maps, App Store Connect, and Play-publisher credentials.
 The producer has a matching fail-closed ref guard. Store mutation is isolated in
 the exact promoter, whose four role/platform targets each have their own bounded
@@ -3395,3 +3406,20 @@ The branch refresh after PR626 preserves this historical profile without widenin
 its source or predecessor authority. The newer backend changes on main are
 rejected by its source-compatibility check; a separately reviewed runtime-owner
 disposition is required before this historical package could be used.
+
+## Website organiser-review index release
+
+`Website Review Index` is a bounded, main-only manual release of one additive
+production Firestore index: `reviews`, collection scope, `organizerId ASC` then
+`createdAt DESC`. It requires the exact checked-in definition and successful
+current-main CI, with a fresh source check after protected `prod` approval and
+again immediately before creation. The existing human review and OIDC identity
+remain required. It holds `backend-delivery` and `firebase-prod`; it never enables
+the paused ordinary Delivery queue, advances a cursor or deploys Functions/rules.
+
+The helper lists actual index metadata, creates only the missing exact index,
+waits for `READY` and verifies the other index identities/definitions remain.
+Failed/ambiguous indexes and failed/unknown creation outcomes stop without an
+automatic retry or deletion. Source authority, creation outcome and before/after
+metadata are retained as artifacts. Next website promotion separately requires
+this index to be ready. This scope does not establish a full backend baseline.

@@ -1,3 +1,4 @@
+import {organiserProfileCopy} from "../../../content/organiserProfile";
 import {
   organizerAboutForSlug,
   organizerListingCopy,
@@ -10,17 +11,15 @@ import {
   ListingSourceLedger,
   UiLabel,
 } from "../../../shared/ui/primitives";
-import {organizerPolicyForListing} from "../organizerPolicy";
 import {publicFactsForListing} from "../selectors";
 import type {HostListing} from "../types";
 
 export function ListingFactsSection({listing}: {listing: HostListing}) {
-  const policy = organizerPolicyForListing(listing);
 
   return (
     <ListingSection id="about" aria-labelledby="listing-facts-title">
       <ListingSectionIntro
-        eyebrow={policy.badge.label}
+        eyebrow={organiserProfileCopy.community}
         titleId="listing-facts-title"
         title={organizerListingCopy.detail.aboutTitle(listing.name)}
         body={organizerAboutForSlug(listing.slug, listing.description)}
@@ -28,7 +27,7 @@ export function ListingFactsSection({listing}: {listing: HostListing}) {
       <ListingFactGrid items={publicFactsForListing(listing)} />
       <UiLabel>{organizerListingCopy.detail.formatsLabel}</UiLabel>
       <ListingFormatRow items={listing.formats} />
-      {listing.sourceSummary ? <p>{listing.sourceSummary}</p> : null}
+      {listing.sourceSummary && listing.sourceSummary !== listing.description ? <p>{listing.sourceSummary}</p> : null}
       {listing.sources.length ? (
         <>
           <UiLabel>{organizerListingCopy.detail.sourcesEyebrow}</UiLabel>

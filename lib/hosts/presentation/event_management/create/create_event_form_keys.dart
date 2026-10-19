@@ -12,6 +12,8 @@ abstract final class CreateEventFormKeys {
   );
   static const capacity = ValueKey('create-event-capacity-field');
   static const price = ValueKey('create-event-price-field');
+  static const accessibility = ValueKey('create-event-accessibility-field');
+  static const included = ValueKey('create-event-included-field');
   static const description = ValueKey('create-event-description-field');
   static const routePlanEnabled = ValueKey('create-event-route-plan-enabled');
   static const routePlanSummary = ValueKey('create-event-route-plan-summary');

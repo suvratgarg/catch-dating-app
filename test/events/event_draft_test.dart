@@ -15,6 +15,8 @@ void main() {
           capacity: '20',
           price: '100',
           description: 'Easy morning event',
+          accessibility: 'Step-free entrance',
+          included: 'Water and a guide',
           externalBookingMode: true,
           externalBookingProvider: 'eventbrite',
           externalEventUrl: 'https://eventbrite.com/e/123',
