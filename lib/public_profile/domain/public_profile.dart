@@ -53,28 +53,35 @@ abstract class PublicProfile with _$PublicProfile {
 PublicProfile publicProfileFromUserProfile(
   UserProfile user, {
   required DateTime today,
-}) => PublicProfile(
-  uid: user.uid,
-  name: user.publicDisplayName,
-  age: user.ageOn(today),
-  gender: user.gender,
-  profilePrompts: user.profilePrompts,
-  profilePhotos: user.effectiveProfilePhotos,
-  city: user.city,
-  height: user.height,
-  occupation: user.occupation,
-  company: user.company,
-  education: user.education,
-  religion: user.religion,
-  languages: user.languages,
-  relationshipGoal: user.relationshipGoal,
-  drinking: user.drinking,
-  smoking: user.smoking,
-  workout: user.workout,
-  diet: user.diet,
-  children: user.children,
-  activityPreferences: user.activityPreferences,
-);
+}) {
+  final age = user.ageOn(today);
+  final gender = user.gender;
+  if (age == null || gender == null) {
+    throw StateError('Social profile identity is incomplete.');
+  }
+  return PublicProfile(
+    uid: user.uid,
+    name: user.publicDisplayName,
+    age: age,
+    gender: gender,
+    profilePrompts: user.profilePrompts,
+    profilePhotos: user.effectiveProfilePhotos,
+    city: user.city,
+    height: user.height,
+    occupation: user.occupation,
+    company: user.company,
+    education: user.education,
+    religion: user.religion,
+    languages: user.languages,
+    relationshipGoal: user.relationshipGoal,
+    drinking: user.drinking,
+    smoking: user.smoking,
+    workout: user.workout,
+    diet: user.diet,
+    children: user.children,
+    activityPreferences: user.activityPreferences,
+  );
+}
 
 Map<String, dynamic> _migratePublicProfileJson(Map<String, dynamic> json) {
   final migrated = Map<String, dynamic>.from(json);

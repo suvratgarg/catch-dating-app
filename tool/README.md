@@ -183,11 +183,17 @@ skipped, failed or cancelled preflight. Full tests and analysis remain required.
 ## Documentation Checks And Retrieval
 
 `docs:metadata` validates source-owned Markdown metadata. Its `--base` comparison
-also rejects surviving Markdown references to deleted or renamed documents;
+also rejects surviving references to deleted or renamed documents: Markdown
+links and code spans, plus literal repository paths in any tracked
+non-Markdown text such as `tool/policy/rules.json`, `tool/tools_manifest.json`,
+workflows, scripts and generated packs. For each document the change edits, it
+also rejects `path.md#heading` references whose heading the change removed;
+anchors that were already unresolved before the change are printed as
+advisories. A sparse CI checkout reads omitted consumers through the Git index.
 `--inventory [--query <text>] --json` prints owners, headings, word counts, and
-literal document references without writing a catalog. Fenced examples, code
-consumers, external links, and dynamic references are outside the retirement
-link check.
+literal document references without writing a catalog. Fenced Markdown
+examples, external links, and dynamic or constructed paths remain outside the
+reference check.
 
 The existing Host responsibility generator provides `--explain audience` for
 question-oriented answers and `--affected audience --base <ref> --json` for

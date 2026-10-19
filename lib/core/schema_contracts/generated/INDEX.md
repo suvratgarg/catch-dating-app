@@ -12,6 +12,8 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| ManageWebsiteAccountCallablePayload | `callables/manage_website_account_payload.schema.json` | `functions/src/shared/generated/manageWebsiteAccountCallablePayload.ts` |
+| ManageWebsiteAccountCallableResponse | `callable_responses/manage_website_account_response.schema.json` | `functions/src/shared/generated/manageWebsiteAccountCallableResponse.ts` |
 | HostResponseSummaryDocument | `firestore/host_response_summaries.schema.json` | `functions/src/shared/generated/hostResponseSummaryDocument.ts` |
 | HostGroupDetailDocument | `firestore/host_group_details.schema.json` | `functions/src/shared/generated/hostGroupDetailDocument.ts` |
 | HostGroupSummaryDocument | `firestore/host_group_summaries.schema.json` | `functions/src/shared/generated/hostGroupSummaryDocument.ts` |
@@ -1254,6 +1256,8 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaManageWebsiteAccountCallablePayloadSchema` | ManageWebsiteAccountCallablePayload | `callables/manage_website_account_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_website_account_callable_payload.g.dart` |
+| `schemaManageWebsiteAccountCallableResponseSchema` | ManageWebsiteAccountCallableResponse | `callable_responses/manage_website_account_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_website_account_callable_response.g.dart` |
 | `schemaHostResponseSummaryDocumentSchema` | HostResponseSummaryDocument | `firestore/host_response_summaries.schema.json` | `lib/core/schema_contracts/generated/schemas/host_response_summary_document.g.dart` |
 | `schemaHostGroupDetailDocumentSchema` | HostGroupDetailDocument | `firestore/host_group_details.schema.json` | `lib/core/schema_contracts/generated/schemas/host_group_detail_document.g.dart` |
 | `schemaHostGroupSummaryDocumentSchema` | HostGroupSummaryDocument | `firestore/host_group_summaries.schema.json` | `lib/core/schema_contracts/generated/schemas/host_group_summary_document.g.dart` |
@@ -2935,6 +2939,7 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| ManageWebsiteAccountCallablePayload | not an object schema |
 | RegisterSalesPartnerCallablePayload | cannot map field "termsVersion" (no type) |
 | DecideSalesPartnerAssignmentCallablePayload | cannot map field "decision" (no type) |
 | ManageProgramLodgingCallablePayload | not an object schema |

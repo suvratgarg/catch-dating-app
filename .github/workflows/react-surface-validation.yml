@@ -195,6 +195,27 @@ jobs:
       - name: Install Storybook accessibility browser
         run: npx playwright install chromium
 
+      - name: Exercise isolated custom-domain browser scenarios
+        if: ${{ inputs.surface == 'marketing' }}
+        timeout-minutes: 5
+        env:
+          RSVP_SOURCE_REPO: ${{ github.workspace }}
+          RSVP_SOURCE_SHA: ${{ github.sha }}
+          RSVP_CAPTURE_OUTPUT: ${{ runner.temp }}/form-domain-browser-${{ github.run_id }}-${{ github.run_attempt }}
+          RSVP_CAPTURE_SCENARIOS: domain-submit-desktop,domain-held-mobile,domain-unknown-mobile,domain-revoked-mobile,domain-mismatch-mobile,domain-transport-mobile
+        run: |
+          test "$(git rev-parse HEAD)" = "$RSVP_SOURCE_SHA"
+          npm --workspace catch-marketing run capture:rsvp
+
+      - name: Retain custom-domain synthetic browser evidence
+        if: ${{ inputs.surface == 'marketing' && success() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: form-domain-browser-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/form-domain-browser-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Build marketing Storybook
         if: ${{ inputs.surface == 'marketing' }}
         run: npm --workspace catch-marketing run build:storybook

@@ -1,3 +1,4 @@
+import {assertPublicEventAge} from "../../profiles/eventProfileRequirements";
 import {Timestamp} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventAttendeeDocument} from
@@ -112,6 +113,7 @@ export async function finalizePublicPayment(input: {
         tx,
         eventId,
       });
+      await assertPublicEventAge({db, tx, uid, event, nowMillis});
       assertPublicRegistrationPolicy(event, organizer, "paid", nowMillis,
         await publicGuestMembership({db, tx, event, uid, nowMillis}));
       if (

@@ -1,8 +1,10 @@
 import {strict as assert} from "node:assert";
 import {describe, it} from "node:test";
 import type {firestore} from "firebase-admin";
+import type {requireOrganizerManager as managerCheck} from
+  "../shared/organizerManagerAuthority";
 import {
-  activateOrganizerFormDomain, markOrganizerFormCertificateReady,
+  activateOrganizerFormDomain,
   reserveOrganizerFormDomain, resolveOrganizerFormDomain,
   revokeOrganizerFormDomain, verifyOrganizerFormDomain,
 } from "./organizerFormDomainRegistry";
@@ -20,6 +22,7 @@ function fakeDb() {
       get: (field: string) => value?.[field]};
   };
   const db = {
+    projectId: "test-project",
     collection: (name: string) => ({doc: (id: string) => ref(`${name}/${id}`)}),
     runTransaction: async <T>(operation: (tx: {
       get: (document: {path: string}) => Promise<ReturnType<typeof snap>>;
@@ -43,7 +46,16 @@ function fakeDb() {
 const manager = async () => undefined;
 const input = {hostname: "apply.client.example", organizerId: "organizer-a",
   formId: "form-a", actorUid: "manager-a"};
-const hostingTarget = "custom.catchdates.com";
+const hostingTarget = "forms-site.web.app";
+const certificate = {projectId: "test-project", siteId: "forms-site",
+  hostname: input.hostname, observedAtMillis: now,
+  expiresAtMillis: now + 86_400_000};
+async function activate(db: firestore.Firestore,
+  expected: import("./organizerFormDomains").OrganizerFormDomain,
+  probe: import("./organizerFormDomains").DomainProbe) {
+  return activateOrganizerFormDomain(db, {expected, probe, certificate,
+    actorUid: input.actorUid, trustedProjectId: "test-project"}, now, manager);
+}
 
 describe("organizer form domain registry", () => {
   it("reclaims only expired pending leases with a new generation", async () => {
@@ -72,8 +84,9 @@ describe("organizer form domain registry", () => {
         cnameTarget: hostingTarget, checkedAtMillis:
           now + 48 * 60 * 60 * 1000},
       now + 48 * 60 * 60 * 1000, input.organizerId));
-    await assert.rejects(markOrganizerFormCertificateReady(db,
-      input.hostname, first.generation));
+    await assert.rejects(activate(db, first, {hostname: input.hostname,
+      txtValues: [first.ownershipChallenge], cnameTarget: hostingTarget,
+      checkedAtMillis: now}));
   });
 
   it("reserves one host, checks evidence, and revokes routing", async () => {
@@ -105,11 +118,10 @@ describe("organizer form domain registry", () => {
       probe, now, "organizer-b"));
     const verified = await verifyOrganizerFormDomain(
       db, input.hostname, probe, now);
-    await assert.rejects(activateOrganizerFormDomain(
-      db, input.hostname, probe, now));
-    await markOrganizerFormCertificateReady(
-      db, input.hostname, verified.generation);
-    await activateOrganizerFormDomain(db, input.hostname, probe, now);
+    await assert.rejects(activateOrganizerFormDomain(db, {expected: verified,
+      probe, certificate: null, actorUid: input.actorUid,
+      trustedProjectId: "test-project"}, now, manager));
+    await activate(db, verified, probe);
     assert.deepEqual(await resolveOrganizerFormDomain(
       db, input.hostname, loadProbe, now), {
       organizerId: "organizer-a", publicFormId: "public-a",
@@ -151,11 +163,68 @@ describe("organizer form domain registry", () => {
     assert.notEqual(replacement.ownershipChallenge, pending.ownershipChallenge);
     assert.equal(await resolveOrganizerFormDomain(
       db, input.hostname, probe, now), null);
-    await assert.rejects(markOrganizerFormCertificateReady(db,
-      input.hostname, pending.generation));
+    await assert.rejects(activate(db, pending, probe));
     await assert.rejects(verifyOrganizerFormDomain(db, input.hostname,
       probe, now));
   });
+
+  for (const change of ["revoked", "generation", "challenge", "form-owner",
+    "unpublished", "public-id", "project", "site", "host", "stale",
+    "future", "expired", "manager", "clock-after-reads"] as const) {
+    it(`refuses atomic activation after ${change} changes`, async () => {
+      const {db, rows} = fakeDb();
+      const pending = await reserveOrganizerFormDomain(db, input, now,
+        hostingTarget, manager);
+      const probe = {hostname: input.hostname,
+        txtValues: [pending.ownershipChallenge], cnameTarget: hostingTarget,
+        checkedAtMillis: now};
+      const expected = await verifyOrganizerFormDomain(db, input.hostname,
+        probe, now);
+      const path = `organizerFormDomains/${input.hostname}`;
+      if (change === "revoked") {
+        rows.set(path, {...expected, status: "revoked"});
+      }
+      if (change === "generation") {
+        rows.set(path, {...expected, generation: expected.generation + 1});
+      }
+      if (change === "challenge") {
+        rows.set(path, {...expected,
+          ownershipChallenge: "catch-verification=" + "b".repeat(32)});
+      }
+      if (change === "form-owner") {
+        rows.set("organizerForms/form-a", {
+          organizerId: "other", status: "published", publicFormId: "public-a",
+        });
+      }
+      if (change === "unpublished" || change === "public-id") {
+        rows.set("organizerForms/form-a", {organizerId: input.organizerId,
+          status: change === "unpublished" ? "draft" : "published",
+          publicFormId: change === "public-id" ? "other" : "public-a"});
+      }
+      const observed = {...certificate};
+      if (change === "project") observed.projectId = "other-project";
+      if (change === "site") observed.siteId = "other-site";
+      if (change === "host") observed.hostname = "other.client.example";
+      if (change === "stale") observed.observedAtMillis = now - 300_001;
+      if (change === "future") observed.observedAtMillis = now + 1;
+      if (change === "expired") observed.expiresAtMillis = now;
+      let checked = false;
+      const authority = async (args: Parameters<typeof managerCheck>[0]) => {
+        assert.ok(args.transaction);
+        checked = true;
+        if (change === "manager") throw new Error("Manager revoked");
+      };
+      const before = rows.get(path);
+      await assert.rejects(activateOrganizerFormDomain(db, {expected, probe,
+        certificate: observed, actorUid: input.actorUid,
+        trustedProjectId: "test-project"}, () => {
+        assert.equal(checked, true);
+        return change === "clock-after-reads" ? now + 300_001 : now;
+      }, authority));
+      assert.deepEqual(rows.get(path), before);
+      assert.notEqual(rows.get(path)?.certificateStatus, "ready");
+    });
+  }
 
   for (const change of ["unchanged", "revoked", "deleted", "certificate",
     "generation", "reassigned", "wrong-form", "unpublished", "form-owner",
@@ -168,9 +237,7 @@ describe("organizer form domain registry", () => {
         txtValues: [pending.ownershipChallenge], cnameTarget: hostingTarget,
         checkedAtMillis: now};
       await verifyOrganizerFormDomain(db, input.hostname, proof, now);
-      await markOrganizerFormCertificateReady(db, input.hostname,
-        pending.generation);
-      await activateOrganizerFormDomain(db, input.hostname, proof, now);
+      await activate(db, pending, proof);
       let started!: () => void;
       let release!: () => void;
       const probeStarted = new Promise<void>((resolve) => {
@@ -210,9 +277,7 @@ describe("organizer form domain registry", () => {
         // lookup must still not cross its reservation generation boundary.
         proof = {...proof, txtValues: [next.ownershipChallenge]};
         await verifyOrganizerFormDomain(db, input.hostname, proof, now);
-        await markOrganizerFormCertificateReady(db, input.hostname,
-          next.generation);
-        await activateOrganizerFormDomain(db, input.hostname, proof, now);
+        await activate(db, next, proof);
       }
       if (change === "deleted") rows.delete(domainPath);
       if (change === "certificate") {

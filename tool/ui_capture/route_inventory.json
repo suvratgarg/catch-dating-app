@@ -4,7 +4,7 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "6813808e4bc1fe0052258ed6395b1f5776d0ad69c9293cb63cc2b148fb98f662",
+    "routeContractSha256": "de888a3ab26623446b23982ebbfaf59afcbceba16b13e62f84fdb8b5d6fdb068",
     "goRouteCount": 127,
     "shellBranchCount": 9,
     "enumRouteCount": 112,
@@ -32,7 +32,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.loadingScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>const _RouteLoadingScreen()",
+      "presentationExpression": "(context,state)=>_RouteLoadingScreen(isHostApp:isHostApp)",
       "presentationTarget": "_RouteLoadingScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -77,7 +77,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.onboardingScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>OnboardingScreen(profileCompletionOnly:state.uri.queryParameters[_onboardingIntentQueryParam]==_completeProfileIntent,runPreferencesOnly:state.uri.queryParameters[_onboardingIntentQueryParam]==_completeRunPreferencesIntent)",
+      "presentationExpression": "(context,state)=>OnboardingScreen(eventRequirements:state.uri.queryParameters[_onboardingIntentQueryParam]==_completeProfileIntent?_eventRequirementsFromUri(state.uri):null,profileCompletionOnly:state.uri.queryParameters[_onboardingIntentQueryParam]==_completeProfileIntent,runPreferencesOnly:state.uri.queryParameters[_onboardingIntentQueryParam]==_completeRunPreferencesIntent)",
       "presentationTarget": "OnboardingScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true

@@ -1,14 +1,17 @@
+import {accountCopy} from "../../content/account";
 import {observeOrganizerProviders} from "./observeOrganizerProviders";
 import {websiteCopy} from "@content/generated";
 import {organizerPresenceCopy} from "@content/organizerPresence";
 import {websiteTemplates} from "@content/templates";
-import {useCallback, useEffect, useMemo, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import type {SiteNavItem} from "../../shared/site";
 import {observeOrganizerPageView, trackOrganizerAnalytics} from "./analytics";
 import {absoluteListingUrl} from "./publicDiscovery";
 import {claimHrefForListing} from "./routing";
-import {readSavedOrganizer, writeSavedOrganizer} from "./savedOrganizerStorage";
+import {useMutation} from "@tanstack/react-query";
+import {setWebsiteOrganizerFollow} from "../../firebase";
+import {useWebsiteAccountController} from "../account/useWebsiteAccountController";
 import {organizerPolicyForListing} from "./organizerPolicy";
 import type {HostListing} from "./types";
 
@@ -23,10 +26,24 @@ export function useHostListingPageController(listing: HostListing) {
   );
   const eventsHref = hasEventSupply ? "#events" : listing.eventEvidence?.length ? "#event-evidence" : null;
   const [shareStatus, setShareStatus] = useState("");
-  const [isSaved, setIsSaved] = useState(() => readSavedOrganizer(listing.id));
+  const account = useWebsiteAccountController({organizerId: listing.id});
+  const [followRequested, setFollowRequested] = useState(false);
+  const [followError, setFollowError] = useState("");
+  const followBusy = useRef(false);
+  const current = useRef({uid: account.uid, id: listing.id});
+  current.current = {uid: account.uid, id: listing.id};
+  const followMutation = useMutation({retry: false, gcTime: 0,
+    mutationFn: (following: boolean) => setWebsiteOrganizerFollow(listing.id, following, account.uid!)});
+  const isFollowing = account.account?.following === true;
+  const previousUid = useRef(account.uid);
+  useEffect(() => {
+    if (previousUid.current && previousUid.current !== account.uid) setFollowRequested(false);
+    previousUid.current = account.uid;
+    setFollowError("");
+  }, [account.uid]);
 
   useEffect(() => {
-    setIsSaved(readSavedOrganizer(listing.id));
+    setFollowRequested(false); setFollowError("");
     setShareStatus("");
   }, [listing.id]);
 
@@ -48,14 +65,28 @@ export function useHostListingPageController(listing: HostListing) {
     ...(policy.canRequestClaim ? [{href: claimHref, label: websiteCopy["usehostlistingpagecontroller_0492"]}] : []),
   ], [claimHref, isAppCreated, listing.sources.length, policy.canRequestClaim]);
 
-  const handleSaveListing = useCallback(() => {
-    const nextSaved = !isSaved;
-    setIsSaved(nextSaved);
-    writeSavedOrganizer(listing.id, nextSaved);
-    if (nextSaved) {
-      trackOrganizerAnalytics(listing, "organizerSave", "listing_hero");
-    }
-  }, [isSaved, listing]);
+  async function changeFollow(following: boolean) {
+    if (followBusy.current) return;
+    const identity = current.current;
+    followBusy.current = true;
+    setFollowRequested(false); setFollowError("");
+    try {
+      await followMutation.mutateAsync(following);
+      if (current.current.uid !== identity.uid || current.current.id !== identity.id) return;
+      await account.refresh();
+    } catch {
+      if (current.current.uid === identity.uid && current.current.id === identity.id) {
+        setFollowError(accountCopy.followFailed);
+      }
+    } finally {followBusy.current = false;}
+  }
+  useEffect(() => {
+    if (followRequested && account.ready) void changeFollow(true);
+  }, [followRequested, account.ready]);
+  function handleFollowListing() {
+    if (account.ready) void changeFollow(!isFollowing);
+    else setFollowRequested(true);
+  }
 
   const handleShareListing = useCallback(async () => {
     const shareUrl = absoluteListingUrl(listing);
@@ -102,14 +133,15 @@ export function useHostListingPageController(listing: HostListing) {
   return {
     claimHref,
     footerLinks,
-    handleSaveListing,
+    handleFollowListing,
+    account, followRequested, followError, followPending: followMutation.isPending,
     handleShareListing,
     hasEventSupply,
     headerCtaLabel: policy.canRequestClaim ?
       "Claim listing" :
       isAppCreated ? listing.claim.label : "Search organizers",
     isAppCreated,
-    isSaved,
+    isFollowing,
     nav,
     shareStatus,
   };

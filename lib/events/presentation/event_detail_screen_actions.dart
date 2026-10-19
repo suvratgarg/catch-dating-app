@@ -156,10 +156,15 @@ void _openEventProfileCompletion(
   BuildContext context, {
   required String clubId,
   required String eventId,
+  Event? event,
 }) {
   unawaited(
     context.push(
       profileCompletionLocation(
+        eventRequirements: [
+          if (event?.requiresAgeDetails == true) 'ageRestricted',
+          if (event?.requiresCohortDetails == true) 'cohortRestricted',
+        ],
         from: AppDeepLinks.inAppEventPath(clubId: clubId, eventId: eventId),
       ),
     ),

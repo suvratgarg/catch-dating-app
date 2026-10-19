@@ -10,7 +10,7 @@ import {HostListingSections} from "./HostListingSections";
 import {PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {ListingFactsSection} from "./ListingFactsSection";
 
-vi.mock("../../../firebaseConfig", () => ({publicReviewsFirebaseConfigured: false}));
+vi.mock("../../../firebaseConfig", () => ({publicReviewsFirebaseConfigured: false, claimFirebaseConfigured: false}));
 vi.mock("../../../analytics", () => ({trackMarketingEvent: vi.fn()}));
 vi.mock("../analytics", () => ({trackOrganizerAnalytics: vi.fn(), observeOrganizerPageView: vi.fn(() => () => undefined)}));
 vi.mock("../observeOrganizerProviders", () => ({observeOrganizerProviders: vi.fn(() => () => undefined)}));
