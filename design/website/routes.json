@@ -404,7 +404,7 @@
       "staticOutput": "postbuild",
       "indexing": "noindex-follow",
       "sitemap": "excluded",
-      "notes": "Search surface for generated organizer profiles; deliberately noindex until public inventory quality is stronger.",
+      "notes": "Consumer directory for clubs, communities and independent hosts; shares consumer navigation and visual treatment with Home, Host and Explore. Preserves public profile authority, reviews, event evidence, advanced filters and claiming links. Deliberately noindex until inventory quality is stronger.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -415,15 +415,19 @@
         "states": [
           "default",
           "filtered",
-          "empty-results"
+          "empty-results",
+          "catalog-unavailable",
+          "mobile-menu"
         ],
         "stateCoverage": {
           "storybook": [
-            "default"
+            "default",
+            "empty-results",
+            "catalog-unavailable"
           ],
           "manual": [
             "filtered",
-            "empty-results"
+            "mobile-menu"
           ]
         }
       }

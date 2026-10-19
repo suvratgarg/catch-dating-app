@@ -1309,3 +1309,15 @@ Local emulator and Storybook examples are illustrative, never production supply.
 The former Explore dating landing sequence is replaced; the Home/Host positioning,
 participation/privacy explanations and Host adoption circles remain. Claim trust
 links now lead to Help rather than the retired Explore trust anchor.
+
+### Organiser directory presentation
+
+`/organizers/` uses the same consumer chrome, typography, cream background and
+muted green controls as Home, Host and Explore. The directory leads with clubs,
+communities and independent hosts. Search, city, activity and upcoming-event
+filters stay prominent; ownership, guest rating and sort controls use a secondary
+disclosure. Public profile status, permission-gated reviews and event evidence
+remain available. Catch Experience is described as an event-level participation
+badge rather than an organiser endorsement. Claiming and Host acquisition sit
+below discovery results. Unavailable feeds withhold stale cards; empty markets
+remain selectable. Allowlisted filters survive a Next.js document reload.

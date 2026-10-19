@@ -380,20 +380,20 @@ export const LegalDocumentShell: Story = {
 export const OrganizerSearch: Story = {
   name: "/organizers/",
   parameters: {
-    a11y: {test: "todo"},
+    a11y: {test: "error"},
     catchRoute: {
       id: "organizer_search",
       path: "/organizers/",
-      reviewStates: ["default", "filtered", "empty-results"],
+      reviewStates: ["default", "filtered", "empty-results", "catalog-unavailable", "mobile-menu"],
       stateCoverage: {
-        storybook: ["default"],
-        manual: ["filtered", "empty-results"],
+        storybook: ["default", "empty-results", "catalog-unavailable"],
+        manual: ["filtered", "mobile-menu"],
       },
     },
     catchComponent: {
       id: "route_organizer_search",
       routeIds: ["organizer_search"],
-      states: ["default", "filtered", "empty-results"],
+      states: ["default", "filtered", "empty-results", "catalog-unavailable", "mobile-menu"],
     },
   },
   render: () => (
@@ -401,6 +401,17 @@ export const OrganizerSearch: Story = {
       <OrganizerSearchPage listings={hostListings} />
     </MemoryRouter>
   ),
+};
+
+export const OrganisersEmpty: Story = {
+  name: "/organizers/ · Empty results",
+  parameters: {a11y: {test: "error"}},
+  render: () => <MemoryRouter initialEntries={["/organizers/?q=not-found"]}><OrganizerSearchPage listings={hostListings} /></MemoryRouter>,
+};
+export const OrganisersUnavailable: Story = {
+  name: "/organizers/ · Catalogue unavailable",
+  parameters: {a11y: {test: "error"}},
+  render: () => <MemoryRouter><publicEventListingsContext.Provider value={{listings:[],phase:"unavailable"}}><OrganizerSearchPage /></publicEventListingsContext.Provider></MemoryRouter>,
 };
 
 export const OrganizerListing: Story = {

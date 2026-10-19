@@ -1,175 +1,45 @@
+import {organiserDirectoryCopy as copy} from "@content/organiserDirectory";
+import {interpolateContent as fill} from "@content/interpolate";
 import {websiteCopy} from "@content/generated";
 import {websiteTemplates} from "@content/templates";
-import {SectionHeader} from "../../../shared/site";
 import {useEffect} from "react";
-import {
-  BadgeRow,
-  Button,
-  DirectoryClaimPressureCopy,
-  DirectoryClaimPressureCta,
-  DirectoryClaimPressureList,
-  DirectoryClaimPressureStats,
-  EmptyState,
-  FilterRail,
-  ListingFormatRow,
-  OrganizerEventHighlights,
-  OrganizerResultSummary,
-  OrganizerResultCardBody,
-  OrganizerResultCardFooter,
-  OrganizerResultCardShell,
-  OrganizerResultCardTopline,
-  OrganizerSearchSection,
-  OrganizerSearchStats,
-  PlainLink,
-  SearchFormShell,
-  SelectField,
-  TextActionButton,
-  TextField,
-  ToggleChipButton,
-  UiLabel,
-} from "../../../shared/ui/primitives";
+import {ArrowRight, MapPin, Search, Users} from "lucide-react";
+import {BadgeRow, Button, DirectoryClaimPressureCopy, DirectoryClaimPressureCta, DirectoryClaimPressureList, DirectoryClaimPressureStats, ListingFormatRow, OrganizerEventHighlights, OrganizerResultCardBody, OrganizerResultCardFooter, OrganizerResultCardShell, OrganizerResultCardTopline, OrganizerSearchSection, PlainLink, SearchFormShell, SelectField, TextActionButton, TextField, ToggleChipButton, UiLabel} from "../../../shared/ui/primitives";
+import {ConsumerEmpty} from "../../../shared/ui/primitives/consumerHome";
+import {DirectoryIntro, DirectoryFilters, DirectoryMoreFilters, DirectoryResults, DirectoryResultsGrid, DirectoryResultsHeading, DirectoryTrust} from "../../../shared/ui/primitives/organiserDirectory";
 import {trackOrganizerSearchAppearance} from "../analytics";
 import {ActivityMark, StatusBadge} from "../OrganizerIdentity";
 import {activityForListing, eventHighlightsForListing} from "../publicDiscovery";
 import {organizerPolicyForListing} from "../organizerPolicy";
 import {claimHrefForListing} from "../routing";
-import {
-  nextFutureCatchEvent,
-  type OrganizerSort,
-  type OrganizerStatusFilter,
-} from "../selectors";
+import {nextFutureCatchEvent, type OrganizerSort, type OrganizerStatusFilter} from "../selectors";
 import type {HostListing} from "../types";
 import type {OrganizerDirectoryController} from "../useOrganizerDirectoryController";
 
-export function OrganizerSearchHeroSection({
-  controller,
-}: {
-  controller: OrganizerDirectoryController;
-}) {
-  const {
-    cityFilter,
-    cityOptions,
-    clearFilters,
-    formatFilter,
-    formatOptions,
-    handleSearch,
-    minRating,
-    normalizedQuery,
-    query,
-    results,
-    setCityFilter,
-    setFormatFilter,
-    setMinRating,
-    setQuery,
-    setSort,
-    setStatusFilter,
-    setUpcomingOnly,
-    sort,
-    statusFilter,
-    summary,
-    upcomingOnly,
-  } = controller;
-
-  return (
-    <OrganizerSearchSection variant="hero" aria-labelledby="organizer-search-title">
-      <SectionHeader
-        eyebrow={websiteCopy["organizersearchsections_0469"]}
-        headingLevel="h1"
-        id="organizer-search-title"
-        title={websiteCopy["organizersearchsections_0462"]}
-        body={websiteCopy["organizersearchsections_0478"]}
-        wide />
-      <OrganizerSearchStats
-        reveal
-        items={[
-          {label: websiteCopy["organizersearchsections_0470"], value: summary.profileCount},
-          {label: websiteCopy["organizersearchsections_0487"], value: summary.verifiedCount},
-          {label: websiteCopy["organizersearchsections_0458"], value: summary.unclaimedCount},
-          {label: websiteCopy["organizersearchsections_0461"], value: summary.eventBackedCount},
-        ]}
-      />
-      <SearchFormShell variant="organizer" onSubmit={handleSearch} reveal>
-        <TextField
-          id="organizer-search-query"
-          label={websiteCopy["organizersearchsections_0477"]}
-          name="q"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder={websiteCopy["organizersearchsections_0484"]}
-        />
-        <Button type="submit">{websiteCopy["organizersearchsections_0476"]}</Button>
-      </SearchFormShell>
-      <FilterRail reveal>
-        <SelectField
-          id="organizer-status-filter"
-          label={websiteCopy["organizersearchsections_0482"]}
-          name="status"
-          value={statusFilter}
-          onChange={(event) => setStatusFilter(event.target.value as OrganizerStatusFilter)}
-        >
-          <option value="all">{websiteCopy["organizersearchsections_0454"]}</option>
-          <option value="verified">{websiteCopy["organizersearchsections_0488"]}</option>
-          <option value="claimed">{websiteCopy["organizersearchsections_0459"]}</option>
-          <option value="unclaimed">{websiteCopy["organizersearchsections_0485"]}</option>
+export function OrganizerSearchHeroSection({controller: c}: {controller: OrganizerDirectoryController}) {
+  const filtered = c.query || c.cityFilter !== "all" || c.formatFilter !== "all" || c.upcomingOnly || c.statusFilter !== "all" || c.minRating || c.sort !== "relevance";
+  return <DirectoryIntro aria-labelledby="organizer-search-title">
+    <h1 id="organizer-search-title">{copy.title}</h1><p>{copy.body}</p>
+    <SearchFormShell variant="organizer" role="search" onSubmit={c.handleSearch}>
+      <TextField id="organizer-search-query" label={copy.search} name="q" value={c.query} maxLength={120} onChange={event => c.setQuery(event.target.value)} placeholder={copy.placeholder} />
+      <Button type="submit"><Search size={18} aria-hidden="true" />{copy.searchAction}</Button>
+    </SearchFormShell>
+    <DirectoryFilters>
+      <SelectField id="organizer-city-filter" label={copy.city} value={c.cityFilter} onChange={event => c.setCityFilter(event.target.value)}><option value="all">{copy.allCities}</option>{c.cityOptions.map(city => <option key={city}>{city}</option>)}</SelectField>
+      <SelectField id="organizer-format-filter" label={copy.format} value={c.formatFilter} onChange={event => c.setFormatFilter(event.target.value)}><option value="all">{copy.allFormats}</option>{c.formatOptions.map(format => <option key={format}>{format}</option>)}</SelectField>
+      <ToggleChipButton selected={c.upcomingOnly} onClick={() => c.setUpcomingOnly(value => !value)}>{copy.upcoming}</ToggleChipButton>
+      {filtered ? <TextActionButton onClick={c.clearFilters}>{copy.clear}</TextActionButton> : null}
+    </DirectoryFilters>
+    <DirectoryMoreFilters open={c.statusFilter !== "all" || c.minRating > 0 || c.sort !== "relevance" || undefined}>
+      <summary>{copy.more}</summary><DirectoryFilters>
+        <SelectField id="organizer-status-filter" label={copy.status} value={c.statusFilter} onChange={event => c.setStatusFilter(event.target.value as OrganizerStatusFilter)}>
+          <option value="all">{copy.allStatuses}</option><option value="verified">{copy.verified}</option><option value="claimed">{copy.claimed}</option><option value="unclaimed">{copy.unclaimed}</option>
         </SelectField>
-        <SelectField
-          id="organizer-city-filter"
-          label={websiteCopy["organizersearchsections_0455"]}
-          name="city"
-          value={cityFilter}
-          onChange={(event) => setCityFilter(event.target.value)}
-        >
-          <option value="all">{websiteCopy["organizersearchsections_0451"]}</option>
-          {cityOptions.map((city) => <option key={city}>{city}</option>)}
-        </SelectField>
-        <SelectField
-          id="organizer-format-filter"
-          label={websiteCopy["organizersearchsections_0463"]}
-          name="format"
-          value={formatFilter}
-          onChange={(event) => setFormatFilter(event.target.value)}
-        >
-          <option value="all">{websiteCopy["organizersearchsections_0452"]}</option>
-          {formatOptions.map((format) => <option key={format}>{format}</option>)}
-        </SelectField>
-        <SelectField
-          id="organizer-rating-filter"
-          label={websiteCopy["organizersearchsections_0473"]}
-          name="rating"
-          value={minRating}
-          onChange={(event) => setMinRating(Number(event.target.value))}
-        >
-          <option value={0}>{websiteCopy["organizersearchsections_0453"]}</option>
-          <option value={4}>4.0+</option>
-          <option value={4.5}>4.5+</option>
-        </SelectField>
-        <ToggleChipButton
-          selected={upcomingOnly}
-          onClick={() => setUpcomingOnly((current) => !current)}
-        >{websiteCopy["organizersearchsections_0464"]}</ToggleChipButton>
-        <SelectField
-          id="organizer-sort"
-          label={websiteCopy["organizersearchsections_0480"]}
-          name="sort"
-          value={sort}
-          onChange={(event) => setSort(event.target.value as OrganizerSort)}
-        >
-          <option value="relevance">{websiteCopy["organizersearchsections_0474"]}</option>
-          <option value="reviews">{websiteCopy["organizersearchsections_0465"]}</option>
-          <option value="rating">{websiteCopy["organizersearchsections_0473"]}</option>
-          <option value="upcoming">{websiteCopy["organizersearchsections_0486"]}</option>
-          <option value="confidence">{websiteCopy["organizersearchsections_0481"]}</option>
-        </SelectField>
-      </FilterRail>
-      <OrganizerResultSummary>
-        <p>
-          {results.length} {results.length === 1 ? "profile" : "profiles"}
-          {normalizedQuery ? ` for "${query.trim()}"` : ""}
-        </p>
-        <TextActionButton onClick={clearFilters}>{websiteCopy["organizersearchsections_0460"]}</TextActionButton>
-      </OrganizerResultSummary>
-    </OrganizerSearchSection>
-  );
+        <SelectField id="organizer-rating-filter" label={copy.rating} value={c.minRating} onChange={event => c.setMinRating(Number(event.target.value))}><option value={0}>{copy.allRatings}</option><option value={4}>4.0+</option><option value={4.5}>4.5+</option></SelectField>
+        <SelectField id="organizer-sort" label={copy.sort} value={c.sort} onChange={event => c.setSort(event.target.value as OrganizerSort)}><option value="relevance">{copy.recommended}</option><option value="reviews">{copy.reviews}</option><option value="rating">{copy.highestRating}</option><option value="upcoming">{copy.upcomingSort}</option><option value="confidence">{copy.confidence}</option></SelectField>
+      </DirectoryFilters>
+    </DirectoryMoreFilters>
+  </DirectoryIntro>;
 }
 
 export function DirectoryClaimPressureStrip({
@@ -214,96 +84,36 @@ export function DirectoryClaimPressureStrip({
   );
 }
 
-export function OrganizerResultsSection({
-  appearanceContext,
-  clearFilters,
-  queryTerms,
-  results,
-}: {
-  appearanceContext: string;
-  clearFilters: () => void;
-  queryTerms: string[];
-  results: HostListing[];
+export function OrganizerResultsSection({appearanceContext, clearFilters, queryTerms, results, phase = "ready"}: {
+  appearanceContext: string; clearFilters: () => void; queryTerms: string[]; results: HostListing[]; phase?: "ready" | "loading" | "unavailable";
 }) {
-  return (
-    <OrganizerSearchSection variant="results" aria-label={websiteCopy["organizersearchsections_0468"]}>
-      {results.length ? (
-        results.map((listing) => (
-          <OrganizerResultCard
-            appearanceContext={appearanceContext}
-            listing={listing}
-            key={listing.id}
-            queryTerms={queryTerms}
-          />
-        ))
-      ) : (
-        <EmptyState variant="organizer-results" reveal>
-          <h2>{websiteCopy["organizersearchsections_0466"]}</h2>
-          <p>{websiteCopy["organizersearchsections_0483"]}</p>
-          <Button variant="ghost" type="button" onClick={clearFilters}>{websiteCopy["organizersearchsections_0475"]}</Button>
-        </EmptyState>
-      )}
-    </OrganizerSearchSection>
-  );
+  return <DirectoryResults aria-labelledby="directory-results-title">
+    <DirectoryResultsHeading><h2 id="directory-results-title">{copy.results}</h2><p role="status" aria-live="polite">{phase === "ready" ? results.length === 1 ? copy.one : fill(copy.count,{count:results.length}) : phase === "loading" ? copy.loading : copy.unavailable}</p></DirectoryResultsHeading>
+    {phase !== "ready" ? <ConsumerEmpty><Users size={32} aria-hidden="true" /><h3>{phase === "loading" ? copy.loading : copy.unavailable}</h3>{phase === "unavailable" ? <><p>{copy.unavailableBody}</p><Button onClick={() => window.location.reload()}>{copy.retry}</Button></> : null}</ConsumerEmpty> : results.length ? <DirectoryResultsGrid>{results.map(listing => <OrganizerResultCard appearanceContext={appearanceContext} listing={listing} key={listing.id} queryTerms={queryTerms} />)}</DirectoryResultsGrid> : <ConsumerEmpty><Users size={32} aria-hidden="true" /><h3>{copy.empty}</h3><p>{copy.emptyBody}</p><Button onClick={clearFilters}>{copy.reset}</Button></ConsumerEmpty>}
+    <DirectoryTrust><p>{copy.trust}</p><p>{copy.experience}</p><PlainLink href="/explore/">{copy.events}<ArrowRight size={16} aria-hidden="true" /></PlainLink></DirectoryTrust>
+  </DirectoryResults>;
 }
 
-function OrganizerResultCard({
-  appearanceContext,
-  listing,
-  queryTerms,
-}: {
-  appearanceContext: string;
-  listing: HostListing;
-  queryTerms: string[];
-}) {
+function OrganizerResultCard({appearanceContext,listing,queryTerms}: {appearanceContext:string;listing:HostListing;queryTerms:string[]}) {
   const policy = organizerPolicyForListing(listing);
-  const isAppCreated = policy.isCatchCreated;
   const rating = policy.canReadPublicReviews ? listing.metrics?.rating : undefined;
   const reviewCount = policy.canReadPublicReviews ? listing.metrics?.reviewCount : undefined;
   const activity = activityForListing(listing);
-  const eventHighlights = eventHighlightsForListing(listing, queryTerms);
+  const eventHighlights = eventHighlightsForListing(listing,queryTerms);
   const nextEvent = nextFutureCatchEvent(listing);
-
-  useEffect(() => {
-    trackOrganizerSearchAppearance(listing, appearanceContext);
-  }, [appearanceContext, listing]);
-
-  return (
-    <OrganizerResultCardShell activityToken={activity.token}>
-      <PlainLink href={listing.path}>
-        <ActivityMark listing={listing} size="lg" />
-        <OrganizerResultCardBody>
-          <OrganizerResultCardTopline>
-            <StatusBadge listing={listing} compact />
-            <span>{listing.city}</span>
-            <span>{activity.label}</span>
-          </OrganizerResultCardTopline>
-          <h2>{listing.name}</h2>
-          <p>{listing.description}</p>
-          <BadgeRow
-            items={[
-              {label: listing.category},
-              ...(rating ? [{label: websiteTemplates.ratingLabel(rating)}] : []),
-              ...(reviewCount ? [{label: websiteTemplates.reviewCountLabel(reviewCount)}] : []),
-              {
-                label: nextEvent ?
-                  nextEvent.title :
-                  isAppCreated ? "No future event" : "Cadence unverified",
-              },
-            ]}
-          />
-          {eventHighlights.length ? (
-            <OrganizerEventHighlights
-              ariaLabel={`${listing.name} event evidence`}
-              items={eventHighlights}
-            />
-          ) : null}
-          <ListingFormatRow items={listing.formats.slice(0, 4)} />
-          <OrganizerResultCardFooter>
-            <span>{policy.badge.label}</span>
-          </OrganizerResultCardFooter>
-        </OrganizerResultCardBody>
-      </PlainLink>
-    </OrganizerResultCardShell>
-  );
+  useEffect(() => {trackOrganizerSearchAppearance(listing,appearanceContext);},[appearanceContext,listing]);
+  return <OrganizerResultCardShell activityToken={activity.token}>
+    <PlainLink href={listing.path}>
+      <ActivityMark listing={listing} size="lg" />
+      <OrganizerResultCardBody>
+        <OrganizerResultCardTopline><span><MapPin size={14} aria-hidden="true" />{listing.city}</span><StatusBadge listing={listing} compact /></OrganizerResultCardTopline>
+        <h3>{listing.name}</h3><p>{listing.description}</p>
+        <ListingFormatRow items={listing.formats.slice(0,4)} />
+        {rating && reviewCount ? <BadgeRow items={[{label:websiteTemplates.ratingLabel(rating)},{label:websiteTemplates.reviewCountLabel(reviewCount)}]} /> : null}
+        <p>{nextEvent ? <><strong>{copy.next}</strong><br />{nextEvent.title}</> : copy.noEvents}</p>
+        {!nextEvent && eventHighlights.length ? <OrganizerEventHighlights ariaLabel={`${listing.name} event evidence`} items={eventHighlights.slice(0,2)} /> : null}
+        <OrganizerResultCardFooter><span>{copy.profile}</span><ArrowRight size={18} aria-hidden="true" /></OrganizerResultCardFooter>
+      </OrganizerResultCardBody>
+    </PlainLink>
+  </OrganizerResultCardShell>;
 }

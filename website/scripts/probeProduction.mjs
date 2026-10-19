@@ -23,7 +23,7 @@ export const productionProbeContracts = [
   },
   {
     path: "/organizers/",
-    title: "Organizer directory | Catch",
+    title: "Organisers, clubs and communities | Catch",
     canonicalPath: "/organizers/",
     markers: [],
   },

@@ -1,3 +1,4 @@
+import {organizerDirectoryOptions, organizerDirectorySearchParams, readOrganizerFiltersFromUrl} from "../../src/features/organizers/selectors";
 import {exploreRouteStateForSearch, exploreDiscoveryHref} from "../../src/features/home/exploreDiscovery";
 import {homeRouteStateForSearch} from "../../src/features/home/homeDiscovery";
 import {notFound} from "next/navigation";
@@ -20,8 +21,11 @@ export default async function Page(props: Props) {
   const selected = homeRouteStateForSearch(new URLSearchParams({city: typeof search.city === "string" ? search.city : "", format: typeof search.format === "string" ? search.format : ""}).toString());
   // Only public allowlisted discovery choices enter the initial client state.
   const publicSearch = new URLSearchParams(Object.fromEntries(["city", "format", "q", "when", "experience"].map(key => [key, typeof search[key] === "string" ? search[key] : ""])));
+  const directoryOptions = organizerDirectoryOptions(route.catalog.listings);
+  const directorySearch = new URLSearchParams(Object.fromEntries(["q", "city", "format", "status", "rating", "upcoming", "sort"].map(key => [key, typeof search[key] === "string" ? search[key] : ""])));
   const initialSearch = route.page === "visitor_discovery"
     ? exploreDiscoveryHref(exploreRouteStateForSearch(publicSearch.toString())).replace("/explore/", "")
+    : route.page === "organizers" ? `?${organizerDirectorySearchParams(readOrganizerFiltersFromUrl(directoryOptions.cityOptions, directoryOptions.formatOptions, directorySearch))}`
     : route.page === "home" ? `?${new URLSearchParams({city: selected.city, format: selected.category})}` : "";
   return <PublicProviders pathname={route.pathname} initialSearch={initialSearch} catalog={route.catalog} live={route.live}>
     <PublicPage page={route.page} readAt={route.catalog.readAt} />

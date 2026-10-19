@@ -1076,8 +1076,8 @@
       "exportName": "OrganizerSearchPage",
       "css": [
         "website/src/styles/site-shell.css",
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/organiser-directory.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1086,10 +1086,12 @@
         "states": [
           "default",
           "filtered",
-          "empty-results"
+          "empty-results",
+          "catalog-unavailable",
+          "mobile-menu"
         ]
       },
-      "notes": "Reference organizer-directory route story; URL state remains controller-owned through React Router search params."
+      "notes": "Consumer organiser directory with shared chrome, progressive search filters, profile provenance and a separate host/claim invitation."
     },
     {
       "id": "route_organizer_listing",
