@@ -30,10 +30,12 @@ export default {
         resource.request = path.join(root, "src/features/organizers/emptyData.ts");
       }
     }));
-    config.plugins.push(new webpack.DefinePlugin(Object.fromEntries([
-      ...browserKeys.map(key => [`import.meta.env.${key}`, JSON.stringify(process.env[key] ?? "")]),
-      ["import.meta.env.DEV", "false"], ["import.meta.env.MODE", JSON.stringify("production")],
-    ])));
+    // Shared browser configuration may receive import.meta.env as one object.
+    // Construct that object only from public keys; never serialize process.env.
+    const browserEnvironment = Object.fromEntries(browserKeys.map(key => [key, process.env[key] ?? ""]));
+    config.plugins.push(new webpack.DefinePlugin({
+      "import.meta.env": JSON.stringify({...browserEnvironment, DEV: false, MODE: "production"}),
+    }));
     return config;
   },
 };
