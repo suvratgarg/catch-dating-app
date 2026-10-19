@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_tracker
-version: 0.2.2
-updated: 2026-10-17
+version: 0.3.0
+updated: 2026-10-18
 owner: product_design_parity
 status: active
 ---
@@ -17,9 +17,7 @@ checks in one durable matrix.
 
 | File | Purpose |
 |---|---|
-| `host_visual_quality_rollout.md` | Authored execution tracker for the Host phone/tablet/desktop visual-quality rollout. Defines bounded slices, acceptance, exclusions, authority order, and the commit-after-item rule without storing run evidence. |
 | `host_shell_route_ui_audit.md` | Extensible route-by-checklist audit matrix for the Host shell destinations, with source-backed findings and reproducible compact, medium, expanded, and 200% text-scale captures. Add a destination by appending one column. |
-| `claude_widgetbook_inventory.md` | Persistent inventory comparison between the Claude Design export, local Widgetbook, local component contracts, and foundation token/style sources. |
 | `comprehensive_todo.md` | Canonical execution checklist for remaining design-parity work across sources of truth, state contracts, Widgetbook, captures, pixel comparison, composition, tokens, features, drift prevention, and pass cadence. |
 | `composition_migration_spec.md` | Layered implementation spec for migrating screens into controller-owned state composition, registered sections, registered components, and platform-neutral design tokens/contracts. |
 | `../../design/features/event_detail.feature.json` | Current Event Detail surface, state, action, outcome, and evidence orchestration. |
@@ -192,6 +190,26 @@ The local Widgetbook workspace lives in `widgetbook/`. Primitive previews should
 map to `design/components/catch.components.json` contract states, and screen
 previews should use the same fixture fakes as UI captures where possible. Run
 `cd widgetbook && dart run build_runner build` after adding annotated use cases.
+
+Widgetbook exercises real screens and shells with fixture state, never
+parallel Widgetbook-only assemblies or fixture-aware branches inside
+production widgets (owner-approved 2026-07-05). Parallel shells are how dead
+production code survives and drifts.
+
+### Composition review verdicts
+
+When reviewing a screen's composition, map route → screen states →
+composition tree down to the core primitives and give every named layer one
+verdict:
+
+| Verdict | Meaning | Action |
+|---|---|---|
+| OWNS | Real content or logic lives here | Keep |
+| ADAPTS | Provider wiring or state dispatch (the controller pattern) | Keep |
+| CONFIGURES | Passes meaningful, non-default configuration downward | Keep |
+| PASS-THROUGH | Re-exposes a primitive and adds nothing, including subclass-as-configuration | Delete and inline at call sites |
+| DISTORTS | Overrides or duplicates the primitive's contract (padding, titles, chrome) | Fix at the seam or in the primitive |
+| NEUTRALIZES | The primitive's defaults fight its context, so every call site zeroes them | Fix the primitive's contract |
 
 Widget discovery is global across shared `lib/**`, Consumer
 `apps/consumer/lib/**`, and Host `apps/host/lib/**` production roots. The

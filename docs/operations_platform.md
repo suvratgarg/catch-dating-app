@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.33.1
-updated: 2026-10-08
+version: 1.34.0
+updated: 2026-10-18
 owner: operations_platform
 status: active
 ---
@@ -1183,6 +1183,10 @@ publication modes cannot:
 - a durable decision bridge from Event/Organizer Intake into a new operations
   run, without relying on manually regenerated compatibility artifacts;
 - launch-market density/freshness targets and quality guardrails;
+  proposed per-kind freshness defaults, pending owner confirmation in
+  CAT-170: city discovery sweep 30 days, candidate verification 90 days,
+  known-organizer event refresh 24 hours, and event detail refresh 6 hours
+  before publication;
 - public event directory/detail projection and organizer outreach ownership.
 
 ## Verification
