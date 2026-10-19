@@ -11,9 +11,9 @@ export const productionProbeContracts = [
   },
   {
     path: "/explore/",
-    title: "Catch | The event before the match",
+    title: "Find events, clubs and communities | Catch",
     canonicalPath: "/explore/",
-    markers: ["Mumbai and Indore"],
+    markers: ["Discover upcoming runs, dinners, games and social events"],
   },
   {
     path: "/host/apply/",

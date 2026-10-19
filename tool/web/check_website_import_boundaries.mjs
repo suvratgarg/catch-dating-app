@@ -20,11 +20,6 @@ if (args.help) {
   process.exit(0);
 }
 
-if (args.selfTest) {
-  runSelfTest();
-  process.exit(0);
-}
-
 const allowedFeatureImports = new Map([
   ["claims", new Set(["marketing", "organizers"])],
   ["events", new Set(["account", "marketing", "organizers", "reviews", "eventMessaging"])],
@@ -36,6 +31,12 @@ const allowedFeatureImports = new Map([
   ["organizers", new Set(["account", "claims", "events", "marketing", "reviews"])],
   ["reviews", new Set(["organizers"])],
 ]);
+
+if (args.selfTest) {
+  runSelfTest();
+  process.exit(0);
+}
+
 
 function walkSourceFiles(directory) {
   const files = [];
@@ -179,6 +180,9 @@ function violationFor(sourceRelativePath, sourceLayer, targetLayer, targetRelati
   }
 
   if (sourceLayer.name === "feature") {
+    // Explore reuses the canonical public event model so discovery and detail agree.
+    if (sourceRelativePath === "features/home/exploreDiscovery.ts" &&
+        targetRelativePath === "features/events/eventDetailModel.ts") return null;
     if (targetLayer.name === "app" || targetLayer.name === "entry" || targetLayer.name === "root") {
       return "feature modules must not import app-shell, entry, or uncategorized root modules";
     }
@@ -353,6 +357,8 @@ ownership, and environment-access boundaries.
 }
 
 function runSelfTest() {
+  assert.equal(violationFor("features/home/exploreDiscovery.ts", {name: "feature", feature: "home"}, {name: "feature", feature: "events"}, "features/events/eventDetailModel.ts"), null);
+  assert.match(violationFor("features/home/exploreDiscovery.ts", {name: "feature", feature: "home"}, {name: "feature", feature: "events"}, "features/events/GuestEventEntry.tsx"), /without a scanner allowlist/);
   const imports = importSpecifiers(`
     // export * from "ignored-comment";
     const example = 'import("ignored-string")';

@@ -91,3 +91,9 @@ it("cannot restore moderated artwork through the legacy cover URL", () => {
     ]})?.event.photoUrl).toBeNull();
   }
 });
+it("publishes the badge only for explicit participation declarations", () => {
+  expect(project("event", {...base(), catchExperienceActivities: ["introductions", "rotations"]})?.event.catchExperienceActivities).toEqual(["introductions", "rotations"]);
+  for (const value of [undefined, [], ["checkIn"], ["rotations", "logistics"], ["rotations", "rotations"]]) {
+    expect(project("event", {...base(), catchExperienceActivities:value, eventFormat:{activityKind:"singlesMixer",defaultModuleIds:["firstHello"]}})?.event.catchExperienceActivities).toBeUndefined();
+  }
+});

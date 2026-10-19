@@ -17,6 +17,7 @@ export type EventRegistrationState =
 
 export interface EventDetailRecord {
   photoUrl?: HostListingCatchEvent["photoUrl"];
+  catchExperienceActivities?: HostListingCatchEvent["catchExperienceActivities"];
   meetingLocation?: HostListingCatchEvent["meetingLocation"];
   itinerary?: HostListingCatchEvent["itinerary"];
   accessibility: string;
@@ -116,6 +117,7 @@ function catchEventRecord(
         : "catchApp";
   return {
     photoUrl: event.photoUrl,
+    catchExperienceActivities: event.catchExperienceActivities,
     meetingLocation: event.meetingLocation,
     itinerary: event.itinerary,
     accessibility: event.accessibility ?? "",

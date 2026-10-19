@@ -3936,8 +3936,8 @@
       "exportName": "VisitorDiscoveryPage",
       "css": [
         "website/src/styles/site-shell.css",
-        "website/src/styles/home.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/explore.css"
       ],
       "storybook": {
         "status": "ready",
@@ -3945,11 +3945,15 @@
         "exportName": "VisitorDiscovery",
         "states": [
           "default",
-          "app-download-pending",
-          "waitlist-form"
+          "empty-city",
+          "no-results",
+          "experience-filter",
+          "catalog-unavailable",
+          "search-and-date",
+          "mobile-menu"
         ]
       },
-      "notes": "Original consumer discovery, app availability and waitlist sequence retained at /explore/."
+      "notes": "Event discovery and explicit Catch Experience participation distinction; consumer chrome shared with Home and Host."
     },
     {
       "id": "sales_demo_continuation",

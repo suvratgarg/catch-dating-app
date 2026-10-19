@@ -87,7 +87,7 @@ function Questions() {
  const [open, setOpen] = useState<number | null>(0);
  return <ConsumerFaqSection aria-labelledby="home-faq-title"><h2 id="home-faq-title">{copy.faq.title}</h2>
   {copy.faq.items.map((item, index) => <ConsumerFaqItem key={item.question}><h3><PlainButton id={`faq-question-${index}`} aria-expanded={open === index} aria-controls={`faq-answer-${index}`} onClick={() => setOpen(open === index ? null : index)}>{item.question}{open === index ? <Minus size={18} aria-hidden="true" /> : <Plus size={18} aria-hidden="true" />}</PlainButton></h3>
-   <div id={`faq-answer-${index}`} aria-labelledby={`faq-question-${index}`} hidden={open !== index}><p>{item.answer}</p>{index === 3 ? <PlainLink href="/help/">{copy.actions.help}</PlainLink> : null}</div>
+   <div id={`faq-answer-${index}`} aria-labelledby={`faq-question-${index}`} hidden={open !== index}><p>{item.answer}</p>{index === copy.faq.items.length - 1 ? <PlainLink href="/help/">{copy.actions.help}</PlainLink> : null}</div>
   </ConsumerFaqItem>)}
  </ConsumerFaqSection>;
 }

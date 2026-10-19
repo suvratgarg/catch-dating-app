@@ -2074,6 +2074,21 @@ const schemaEventDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'catchExperienceActivities': <String, Object?>{
+      'type': 'array',
+      'minItems': 1,
+      'maxItems': 3,
+      'uniqueItems': true,
+      'description': 'Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.',
+      'items': <String, Object?>{
+        'type': 'string',
+        'enum': <Object?>[
+          'introductions',
+          'sharedActivities',
+          'rotations',
+        ],
+      },
+    },
   },
   'allOf': <Object?>[
     <String, Object?>{

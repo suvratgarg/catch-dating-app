@@ -47885,6 +47885,23 @@ abstract final class CatchContractConstraints {
     maximum: 1000,
   );
 
+  static const eventDocumentCatchExperienceActivities = CatchContractFieldConstraints(
+    path: 'eventDocument.catchExperienceActivities',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['introductions', 'sharedActivities', 'rotations'],
+    minItems: 1,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventDocumentCatchExperienceActivitiesItems = CatchContractFieldConstraints(
+    path: 'eventDocument.catchExperienceActivities.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['introductions', 'sharedActivities', 'rotations'],
+  );
+
   static const eventDocumentCheckedInCount = CatchContractFieldConstraints(
     path: 'eventDocument.checkedInCount',
     required: true,
@@ -167900,6 +167917,23 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const websiteHostListingProjectionCatchEventsItemsCatchExperienceActivities = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.catchExperienceActivities',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['introductions', 'sharedActivities', 'rotations'],
+    minItems: 1,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const websiteHostListingProjectionCatchEventsItemsCatchExperienceActivitiesItems = CatchContractFieldConstraints(
+    path: 'websiteHostListingProjection.catchEvents.items.catchExperienceActivities.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['introductions', 'sharedActivities', 'rotations'],
+  );
+
   static const websiteHostListingProjectionCatchEventsItemsCheckedInCount = CatchContractFieldConstraints(
     path: 'websiteHostListingProjection.catchEvents.items.checkedInCount',
     required: true,
@@ -175899,6 +175933,8 @@ abstract final class CatchContractConstraints {
     'eventDocument.cancelledAt._nanoseconds': eventDocumentCancelledAtNanoseconds,
     'eventDocument.cancelledAt._seconds': eventDocumentCancelledAtSeconds,
     'eventDocument.capacityLimit': eventDocumentCapacityLimit,
+    'eventDocument.catchExperienceActivities': eventDocumentCatchExperienceActivities,
+    'eventDocument.catchExperienceActivities.items': eventDocumentCatchExperienceActivitiesItems,
     'eventDocument.checkedInCount': eventDocumentCheckedInCount,
     'eventDocument.clubId': eventDocumentClubId,
     'eventDocument.cohortCounts': eventDocumentCohortCounts,
@@ -192332,6 +192368,8 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.catchEvents.items.amountPaise': websiteHostListingProjectionCatchEventsItemsAmountPaise,
     'websiteHostListingProjection.catchEvents.items.bookedCount': websiteHostListingProjectionCatchEventsItemsBookedCount,
     'websiteHostListingProjection.catchEvents.items.capacityLimit': websiteHostListingProjectionCatchEventsItemsCapacityLimit,
+    'websiteHostListingProjection.catchEvents.items.catchExperienceActivities': websiteHostListingProjectionCatchEventsItemsCatchExperienceActivities,
+    'websiteHostListingProjection.catchEvents.items.catchExperienceActivities.items': websiteHostListingProjectionCatchEventsItemsCatchExperienceActivitiesItems,
     'websiteHostListingProjection.catchEvents.items.checkedInCount': websiteHostListingProjectionCatchEventsItemsCheckedInCount,
     'websiteHostListingProjection.catchEvents.items.currency': websiteHostListingProjectionCatchEventsItemsCurrency,
     'websiteHostListingProjection.catchEvents.items.date': websiteHostListingProjectionCatchEventsItemsDate,

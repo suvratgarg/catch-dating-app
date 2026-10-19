@@ -1,10 +1,11 @@
 "use client";
+import {exploreRouteStateForSearch, exploreDiscoveryHref} from "../../features/home/exploreDiscovery";
 import {homeRouteStateForSearch} from "../../features/home/homeDiscovery";
 import {publicJsonLd} from "../../shared/next/publicJsonLd";
 import dynamic from "next/dynamic";
 import {useEffect} from "react";
 import {retiredMarketingDestination} from "../retiredMarketingRoutes";
-import {useLocation} from "react-router";
+import {useLocation, useNavigate} from "react-router";
 import {PageShell} from "../../shared/site";
 import {pageClassFor, type PageKey} from "../pageMeta";
 import {useHashScroll, useMarketingAnalytics, useMarketingCaptures} from "../usePageLifecycle";
@@ -29,6 +30,8 @@ export function PublicPage({page, readAt}: {page: PageKey; readAt: number}) {
   const location = useLocation();
   const {listings, readAt: currentReadAt} = usePublicHostListings();
   const captures = useMarketingCaptures();
+  const navigate = useNavigate();
+  const exploreRouteState = exploreRouteStateForSearch(location.search);
   const homeRouteState = homeRouteStateForSearch(location.search);
   const homeRouteKey = `${homeRouteState.city}:${homeRouteState.category}`;
   useEffect(() => {
@@ -41,7 +44,7 @@ export function PublicPage({page, readAt}: {page: PageKey; readAt: number}) {
   let content;
   let structured: unknown = null;
   if (page === "home") content = <Home key={homeRouteKey} captures={captures} routeState={homeRouteState} />;
-  else if (page === "visitor_discovery") content = <Explore key={homeRouteKey} captures={captures} routeState={homeRouteState} />;
+  else if (page === "visitor_discovery") content = <Explore captures={captures} routeState={exploreRouteState} onFiltersChange={filters => navigate(exploreDiscoveryHref(filters))} />;
   else if (page === "host") content = location.pathname.replace(/\/$/, "") === "/host/apply"
     ? <Apply /> : <Host captures={captures} />;
   else if (page === "organizers") content = <Directory />;

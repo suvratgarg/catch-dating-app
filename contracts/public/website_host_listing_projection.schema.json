@@ -220,6 +220,7 @@
         "priceLabel"
       ],
       "properties": {
+        "catchExperienceActivities": {"type": "array", "minItems": 1, "maxItems": 3, "uniqueItems": true, "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.", "items": {"type": "string", "enum": ["introductions", "sharedActivities", "rotations"]}},
         "id": {"$ref": "#/definitions/nonEmptyString"},
         "role": {"$ref": "#/definitions/nonEmptyString"},
         "title": {"$ref": "#/definitions/nonEmptyString"},

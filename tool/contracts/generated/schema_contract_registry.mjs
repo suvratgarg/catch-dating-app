@@ -184397,6 +184397,21 @@ export const eventDocumentSchema = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "catchExperienceActivities": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "introductions",
+          "sharedActivities",
+          "rotations"
+        ]
+      }
     }
   },
   "allOf": [
@@ -316967,6 +316982,21 @@ export const websiteHostListingProjectionSchema = {
           "priceLabel"
         ],
         "properties": {
+          "catchExperienceActivities": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "uniqueItems": true,
+            "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "introductions",
+                "sharedActivities",
+                "rotations"
+              ]
+            }
+          },
           "id": {
             "type": "string",
             "minLength": 1
@@ -318140,6 +318170,21 @@ export const websiteHostListingProjectionSchema = {
         "priceLabel"
       ],
       "properties": {
+        "catchExperienceActivities": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "introductions",
+              "sharedActivities",
+              "rotations"
+            ]
+          }
+        },
         "id": {
           "type": "string",
           "minLength": 1

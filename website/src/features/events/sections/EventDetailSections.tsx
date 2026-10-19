@@ -1,3 +1,6 @@
+import {exploreCopy} from "../../../content/explore";
+import {publicExperienceActivities} from "../../organizers/publicExperience";
+import {ExploreBadge} from "../../../shared/ui/primitives/explore";
 import type {ReactNode} from "react";
 import {trackOrganizerProviderOutboundClick} from "../../organizers/observeOrganizerProviders";
 import {trackOrganizerAnalytics} from "../../organizers/analytics";
@@ -46,6 +49,7 @@ export function EventDetailFactsSection({event}: {event: EventDetailRecord}) {
     {label: copy.details.accessibility, value: event.accessibility.trim()},
   ].filter((item) => item.value);
   const itinerary = event.itinerary ?? [];
+  const experience = publicExperienceActivities(event.catchExperienceActivities);
   return <EventDetailSection aria-label={copy.details.eyebrow}>
     <EventDetailBodyLayout host={<EventDetailOrganizerPanel
       activity={<ActivityMark listing={event.listing} size="lg" />}
@@ -54,6 +58,7 @@ export function EventDetailFactsSection({event}: {event: EventDetailRecord}) {
       metrics={[]} name={event.listing.name}
       primaryAction={<ButtonLink href={event.listing.path} variant="ghost">{copy.nav.organizerAction}</ButtonLink>} />}>
       {event.summary.trim() ? <><h2>{copy.invitation.about}</h2><p>{event.summary}</p></> : null}
+      {experience.length ? <><ExploreBadge>{exploreCopy.experienceLabel}</ExploreBadge><h2>{exploreCopy.experienceDetail}</h2><ul>{experience.map(item => <li key={item}>{exploreCopy.activities[item]}</li>)}</ul><p>{exploreCopy.experienceChoice}</p></> : null}
       {itinerary.length ? <><h2>{copy.invitation.itinerary}</h2><EventDetailItinerary items={itinerary.map((item) => ({
         id: item.id, title: item.title, description: item.description,
         time: itineraryTime(event, item.offsetMinutes),

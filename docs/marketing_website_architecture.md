@@ -1290,3 +1290,22 @@ Examples are fictional and do not execute booking, messaging, grouping, or payme
 Existing tool and persona detail remains behind disclosures; `#features`, `#how-it-works`, `#use-cases`,
 `#existing-tools`, and `#pricing` retain their retired-route destinations. The only acquisition form is
 `/host/apply/`; the selected free live-event pilot is distinct from broader capabilities and future terms.
+
+### Explore discovery
+
+`/explore/` is the consumer event catalogue, sharing consumer navigation with
+Home and Host. City, format, search, upcoming date and Catch Experience choices
+round-trip through bounded, allowlisted URL parameters. Results use public event
+records, are ordered by start time, and distinguish empty cities, filtered-out
+results and unavailable feeds. External booking sources remain labelled.
+
+The optional public event field `catchExperienceActivities` declares
+`introductions`, `sharedActivities` or `rotations` offered through Catch. It is
+not inferred from a format, booking integration, attendance or logistics.
+Malformed or absent declarations omit the badge. Cards and event details show
+the declared activities. Host authoring of this declaration is a separate product
+integration; this website change adds its public contract and rendering only.
+Local emulator and Storybook examples are illustrative, never production supply.
+The former Explore dating landing sequence is replaced; the Home/Host positioning,
+participation/privacy explanations and Host adoption circles remain. Claim trust
+links now lead to Help rather than the retired Explore trust anchor.

@@ -1,3 +1,4 @@
+import {publicExperienceActivities} from "./publicExperience";
 import {matchesJsonSchema} from "../../shared/contracts/jsonSchema";
 import {publicEventDisplaySchemas as displaySchemas} from "../../shared/contracts/generated/publicEventDisplaySchemas";
 import type {HostListing} from "./types";
@@ -82,6 +83,7 @@ export function projectLivePublicCatchEvent(id: string, raw: unknown,
       location, locationDetails: text(venue?.notes || data.locationDetails),
       summary: text(data.description), capacityLimit: data.capacityLimit,
       photoUrl: publicPhotoUrl(data),
+      ...(publicExperienceActivities(data.catchExperienceActivities).length ? {catchExperienceActivities: publicExperienceActivities(data.catchExperienceActivities)} : {}),
       ...(matchesJsonSchema(data.meetingLocation, displaySchemas.meetingLocation)
         ? {meetingLocation: data.meetingLocation as PublicCatchEvent["meetingLocation"]} : {}),
       ...(matchesJsonSchema(data.itinerary, displaySchemas.itinerary)

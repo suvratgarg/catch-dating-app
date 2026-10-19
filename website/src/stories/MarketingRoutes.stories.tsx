@@ -81,23 +81,19 @@ export const HomeUnavailable: Story = {
 export const VisitorDiscovery: Story = {
   name: "/explore/",
   parameters: {
-    a11y: {test: "todo"},
-    catchRoute: {
-      id: "visitor_discovery",
-      path: "/explore/",
-      reviewStates: ["default", "app-download-pending", "waitlist-form"],
-      stateCoverage: {
-        storybook: ["default"],
-        manual: ["app-download-pending", "waitlist-form"],
-      },
-    },
-    catchComponent: {
-      id: "route_visitor_discovery",
-      routeIds: ["visitor_discovery"],
-      states: ["default", "app-download-pending", "waitlist-form"],
-    },
+    a11y: {test: "error"},
+    catchRoute: {id: "visitor_discovery", path: "/explore/", reviewStates: ["default", "empty-city", "no-results", "experience-filter", "catalog-unavailable", "search-and-date", "mobile-menu"], stateCoverage: {storybook: ["default", "empty-city", "catalog-unavailable"], manual: ["no-results", "experience-filter", "search-and-date", "mobile-menu"]}},
+    catchComponent: {id: "route_visitor_discovery", routeIds: ["visitor_discovery"], states: ["default", "empty-city", "no-results", "experience-filter", "catalog-unavailable", "search-and-date", "mobile-menu"]},
   },
-  render: () => <VisitorDiscoveryPage captures={captures} />,
+  render: () => <publicEventListingsContext.Provider value={{listings: consumerHomeStoryListings, phase: "ready", readAt: Date.parse("2030-01-01")}}><VisitorDiscoveryPage captures={captures} /></publicEventListingsContext.Provider>,
+};
+export const ExploreEmptyCity: Story = {
+  name: "/explore/ · Empty city",
+  render: () => <publicEventListingsContext.Provider value={{listings: [], phase: "ready", readAt: 0}}><VisitorDiscoveryPage captures={captures} /></publicEventListingsContext.Provider>,
+};
+export const ExploreUnavailable: Story = {
+  name: "/explore/ · Catalogue unavailable",
+  render: () => <publicEventListingsContext.Provider value={{listings: [], phase: "unavailable"}}><VisitorDiscoveryPage captures={captures} /></publicEventListingsContext.Provider>,
 };
 
 export const Host: Story = {

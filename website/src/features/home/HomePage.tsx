@@ -3,17 +3,10 @@ import {renderConsumerHero, renderConsumerEvents, renderConsumerStory} from "./s
 import {useConsumerHomeController} from "./useConsumerHomeController";
 import type {HomeCategory} from "./homeDiscovery";
 type HomeRouteState = {city: string; category: HomeCategory};
-import {
-  HomeCapturesSection,
-  HomeDownloadSection,
-  HomeFeaturedOrganizersSection,
-  HomeFormatsSection,
-  HomeHeroSection,
-  HomeHostProofSection,
-  HomeMemberLoopSection,
-  HomeTrustSection,
-  HomeWaitlistSection,
-} from "./sections/HomePageSections";
+import {ExplorePageLayout} from "../../shared/ui/primitives/explore";
+import {renderExploreDiscovery} from "./sections/exploreSections";
+import {useExploreController} from "./useExploreController";
+import type {ExploreFilters} from "./exploreDiscovery";
 import type {CaptureRecord} from "../../shared/ui/primitives";
 import {
   PublicSiteFooter,
@@ -21,26 +14,13 @@ import {
   WebsitePageMain,
 } from "../../shared/site";
 
-export function VisitorDiscoveryPage({captures, routeState}: {captures: Record<string, CaptureRecord>; routeState?: HomeRouteState}) {
-  const home = useConsumerHomeController(routeState?.city, routeState?.category);
-  return (
-    <>
-      <PublicSiteHeader audience="consumer" />
-      <WebsitePageMain id="top">
-        <HomeHeroSection captures={captures} />
-        <ConsumerHome >{renderConsumerEvents(home, true)}</ConsumerHome>
-        <HomeFormatsSection />
-        <HomeFeaturedOrganizersSection />
-        <HomeMemberLoopSection />
-        <HomeHostProofSection captures={captures} />
-        <HomeCapturesSection captures={captures} />
-        <HomeDownloadSection />
-        <HomeTrustSection />
-        <HomeWaitlistSection />
-      </WebsitePageMain>
-      <PublicSiteFooter audience="consumer" />
-    </>
-  );
+export function VisitorDiscoveryPage({routeState, onFiltersChange}: {captures: Record<string, CaptureRecord>; routeState?: ExploreFilters; onFiltersChange?: (filters: ExploreFilters) => void}) {
+  const explore = useExploreController(routeState, onFiltersChange);
+  return <ExplorePageLayout>
+    <PublicSiteHeader audience="consumer" />
+    <WebsitePageMain id="top">{renderExploreDiscovery(explore)}</WebsitePageMain>
+    <PublicSiteFooter audience="consumer" />
+  </ExplorePageLayout>;
 }
 
 export function HomePage({routeState}: {captures: Record<string, CaptureRecord>; routeState?: HomeRouteState}) {

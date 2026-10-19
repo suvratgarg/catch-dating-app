@@ -29,27 +29,20 @@ describe("public route navigation targets", () => {
     expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
   });
 
-  it("preserves the discovery menu labels, local anchors and visitor waitlist", () => {
-    const {container} = renderPage(<VisitorDiscoveryPage captures={{}} />);
-    const local = screen.getByRole("navigation", {name: "On this page"});
-    expect(within(local).getAllByRole("link").map((link) => link.textContent)).toEqual([
-      websiteCopy.homepage_0110, websiteCopy.homepage_0112, websiteCopy.homepage_0115,
-      websiteCopy.homepage_0113, websiteCopy.homepage_0117, websiteCopy.homepage_0116,
-      websiteCopy.homepage_0111, "Find events",
-    ]);
-    const links = [...within(local).getAllByRole("link"),
-      ...within(screen.getByRole("navigation", {name: "Related links"})).getAllByRole("link")];
-    for (const link of links) {
-      const href = link.getAttribute("href")!;
-      if (href.startsWith("#")) expect(container.querySelector(href)).toBeTruthy();
-    }
+  it("uses the same primary navigation for event discovery", () => {
+    renderPage(<VisitorDiscoveryPage captures={{}} />);
+    const nav = screen.getByRole("navigation", {name: "Primary"});
+    expect(within(nav).getAllByRole("link").map(link => link.getAttribute("href"))).toEqual(["/explore/", "/organizers/", "/host/"]);
+    expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
+    expect(screen.getByRole("heading", {name: "Find your next plan."})).toBeTruthy();
+    expect(screen.getByRole("search")).toBeTruthy();
   });
 
-  it("sends claim Trust and Member site to the preserved visitor route", () => {
+  it("sends claim Trust to help and Member site to discovery", () => {
     renderPage(<ClaimPage routeState={emptyClaimRouteState} />);
     const local = screen.getByRole("navigation", {name: "On this page"});
     expect(within(local).getByRole("link", {name: websiteCopy.claimpage_0031})
-      .getAttribute("href")).toBe("/explore/#trust");
+      .getAttribute("href")).toBe("/help/");
     const footer = screen.getByRole("navigation", {name: "Related links"});
     expect(within(footer).getByRole("link", {name: websiteCopy.claimpage_0028})
       .getAttribute("href")).toBe("/explore/");
