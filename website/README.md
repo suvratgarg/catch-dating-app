@@ -66,6 +66,15 @@ live provider acceptance remain explicit release gates in
 `docs/web_surface_architecture.md`. Do not deploy or switch traffic as part of a
 local build.
 
+After this source is accepted on current main and its full CI run passes,
+dispatch `.github/workflows/website-next-preview.yml` to build/test the actual
+container and publish an isolated three-day Hosting preview. It requires the
+existing `prod-hosting` OIDC/public-config variables and read-only web identity.
+The workflow refuses non-main, stale or unvalidated source, verifies the exact
+tested artifact before authentication and never deploys the live Hosting channel.
+Use its serving-identity artifact to perform the remaining cloud/browser gates
+in `docs/web_surface_architecture.md` before implementing the production switch.
+
 ## CI/CD
 
 `.github/workflows/marketing-website.yml` validates marketing-site changes on

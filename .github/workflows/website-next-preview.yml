@@ -1,0 +1,199 @@
+name: Next Website Preview
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: website-next-preview
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  build:
+    name: Build and test exact Next container
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: prod-hosting
+    outputs:
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+      release_sha256: ${{ steps.package.outputs.release_sha256 }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - id: source
+        name: Require current-main CI and exact-source captures
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node website/scripts/next/previewRelease.mjs authorize
+      - name: Import only the verified canonical captures
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CAPTURE_BINDING: ${{ steps.source.outputs.capture_binding }}
+        run: node tool/marketing/import_hosted_captures.mjs --import
+      - name: Build with public configuration and no cloud credentials
+        env:
+          VITE_GTM_ID: ${{ vars.VITE_GTM_ID || 'GTM-K7KLNQXP' }}
+          VITE_STORE_LINKS_MODE: ${{ vars.VITE_STORE_LINKS_MODE || 'prelaunch' }}
+          VITE_APP_STORE_URL: ${{ vars.VITE_APP_STORE_URL }}
+          VITE_PLAY_STORE_URL: ${{ vars.VITE_PLAY_STORE_URL }}
+          VITE_WEBSITE_APPCHECK_SITE_KEY: ${{ vars.VITE_WEBSITE_APPCHECK_SITE_KEY }}
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
+        run: |
+          set -euo pipefail
+          node tool/env/check_web_hosting_env.mjs marketing --expected-project-id catch-dating-app-64e51
+          args=()
+          for key in VITE_GTM_ID VITE_STORE_LINKS_MODE VITE_APP_STORE_URL VITE_PLAY_STORE_URL \
+            VITE_WEBSITE_APPCHECK_SITE_KEY VITE_FIREBASE_API_KEY VITE_FIREBASE_AUTH_DOMAIN \
+            VITE_FIREBASE_PROJECT_ID VITE_FIREBASE_STORAGE_BUCKET VITE_FIREBASE_MESSAGING_SENDER_ID \
+            VITE_FIREBASE_APP_ID VITE_FIREBASE_MEASUREMENT_ID; do
+            args+=(--build-arg "$key")
+          done
+          docker build --file website/Dockerfile --tag catch-website-preview:build \
+            --label "org.opencontainers.image.revision=$GITHUB_SHA" "${args[@]}" .
+      - name: Exercise the actual container without runtime credentials
+        run: |
+          set -euo pipefail
+          docker run --detach --name next-smoke -p 127.0.0.1:3130:8080 \
+            --env CATCH_WEBSITE_STAGE=production \
+            --env CATCH_PUBLIC_FIRESTORE_PROJECT=catch-dating-app-64e51 catch-website-preview:build
+          trap 'docker logs next-smoke; docker rm -f next-smoke' EXIT
+          node website/scripts/next/containerSmoke.mjs http://127.0.0.1:3130
+      - id: package
+        name: Preserve the tested image and Hosting bytes
+        run: |
+          set -euo pipefail
+          mkdir -p build/next-preview
+          docker save --output build/next-preview/image.tar catch-website-preview:build
+          node website/scripts/next/previewRelease.mjs prepare
+      - id: upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: next-preview-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/next-preview/release.tgz
+          if-no-files-found: error
+          retention-days: 30
+
+  preview:
+    name: Deploy isolated Next preview
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment: prod-hosting
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - uses: actions/download-artifact@v7
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact_id }}
+          path: build/next-preview
+          merge-multiple: true
+      - name: Verify exact bytes and image before obtaining credentials
+        env:
+          RELEASE_SHA256: ${{ needs.build.outputs.release_sha256 }}
+        run: node website/scripts/next/previewRelease.mjs unpack
+      - name: Install the pinned Hosting client before authentication
+        env:
+          FIREBASE_TOOLS_VERSION: ${{ steps.toolchain.outputs.firebase-tools-version }}
+        run: npm install --global "firebase-tools@$FIREBASE_TOOLS_VERSION"
+      - uses: google-github-actions/setup-gcloud@v3
+      - name: Recheck current accepted source immediately before authentication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node website/scripts/next/previewRelease.mjs authorize
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+      - name: Verify the existing read-only runtime identity
+        run: |
+          set -euo pipefail
+          gcloud projects get-iam-policy catch-dating-app-64e51 --format=json > /tmp/runtime-policy.json
+          node --input-type=module -e 'import fs from "node:fs"; import {assertRuntimePolicy} from "./website/scripts/next/previewRelease.mjs"; assertRuntimePolicy(JSON.parse(fs.readFileSync("/tmp/runtime-policy.json")));'
+          gcloud iam service-accounts keys list \
+            --iam-account github-actions-web-reader@catch-dating-app-64e51.iam.gserviceaccount.com \
+            --project catch-dating-app-64e51 --managed-by=user --format=json > /tmp/runtime-keys.json
+          jq -e 'length == 0' /tmp/runtime-keys.json
+      - name: Push the tested image and deploy a bounded preview runtime
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          project=catch-dating-app-64e51
+          region=asia-south1
+          repositories="$(gcloud artifacts repositories list --project "$project" --location "$region" --format=json)"
+          count="$(jq --arg name "projects/$project/locations/$region/repositories/catch-website" \
+            '[.[] | select(.name == $name)] | length' <<< "$repositories")"
+          [[ "$count" =~ ^[01]$ ]]
+          if [[ "$count" == 0 ]]; then
+            gcloud artifacts repositories create catch-website --project "$project" --location "$region" \
+              --repository-format=docker --description='Verified Catch website runtime images'
+          fi
+          gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
+          image="asia-south1-docker.pkg.dev/$project/catch-website/next:$GITHUB_SHA-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          docker tag catch-website-preview:build "$image"
+          docker push "$image"
+          pinned="$(docker image inspect "$image" --format '{{json .RepoDigests}}' | \
+            jq -er --arg repository "${image%:*}" \
+            'map(select(startswith($repository + "@sha256:"))) | unique | if length == 1 then .[0] else error("Ambiguous pushed image") end')"
+          digest="${pinned##*@}"
+          [[ "$digest" =~ ^sha256:[a-f0-9]{64}$ ]]
+          test "$(gcloud artifacts docker images describe "$pinned" --project "$project" --format='value(image_summary.digest)')" = "$digest"
+          node website/scripts/next/previewRelease.mjs authorize
+          gcloud run deploy catch-website-next-preview --project "$project" --region "$region" \
+            --image "$pinned" --service-account github-actions-web-reader@catch-dating-app-64e51.iam.gserviceaccount.com \
+            --allow-unauthenticated --ingress all --cpu 1 --memory 512Mi --concurrency 40 \
+            --min-instances 0 --max-instances 1 --timeout 30 --port 8080 \
+            --set-env-vars "CATCH_WEBSITE_STAGE=preview,CATCH_PUBLIC_FIRESTORE_PROJECT=$project,CATCH_RELEASE_SHA=$GITHUB_SHA" \
+            --labels "catch-surface=website-preview,source-sha=$GITHUB_SHA" --quiet
+          gcloud run services describe catch-website-next-preview --project "$project" --region "$region" \
+            --format=json > build/next-preview/service.json
+          printf '%s\n' "$pinned" > build/next-preview/image-digest.txt
+      - name: Publish only the expiring Hosting preview channel
+        working-directory: build/next-preview/verified
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node "$GITHUB_WORKSPACE/website/scripts/next/previewRelease.mjs" authorize
+          firebase hosting:channel:deploy next-candidate --expires 3d --project catch-dating-app-64e51 \
+            --only marketing --config firebase.json --non-interactive --json > ../hosting-preview.json
+      - name: Retain runtime and preview identities for acceptance
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: next-preview-serving-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            build/next-preview/service.json
+            build/next-preview/image-digest.txt
+            build/next-preview/hosting-preview.json
+          if-no-files-found: warn
+          retention-days: 30

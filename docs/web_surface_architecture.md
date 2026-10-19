@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.29.0
-updated: 2026-10-19
+version: 0.30.0
+updated: 2026-10-20
 owner: web_platform
 status: active
 ---
@@ -78,6 +78,29 @@ provider activation, DNS change, merge or production cutover is implied by the
 source migration. Preserve the guarded worktree and draft PR until accepted
 closeout. Source, CI, preview, provider acceptance and production are distinct
 states.
+
+### Accepted-source container preview
+
+`Next Website Preview` is a main-only manual workflow for the Cloud Run candidate.
+It refuses source that is no longer current main or has not completed successful
+same-source CI, Marketing validation and canonical captures. Its uncredentialed
+build job imports only those verified captures, supplies the production public
+browser configuration, builds the non-root image and exercises the actual
+container without database credentials. A SHA-256-bound archive preserves that
+image and the exact preview Hosting bytes; the separate deploy job verifies paths,
+source/run/attempt identity, configuration and Docker image identity before OIDC.
+
+The preview uses the existing `github-actions-web-reader` identity only after
+checking that its sole project role is `roles/datastore.viewer` and that it has
+no user-managed keys. It deploys `catch-website-next-preview` in `asia-south1`,
+with one CPU, 512 MiB, concurrency 40, a 30-second timeout and zero-to-one
+instances. The `catch-website` Artifact Registry repository holds the tested
+image, deployed by digest. Only the `next-candidate` Firebase Hosting preview
+channel is published, expiring after three days. Production traffic and the
+current static release remain unchanged. Preview runtime/service/image/channel
+identities are retained as workflow artifacts for browser and host-forwarding
+acceptance. A successful preview deployment is not production cutover or proof
+of authenticated/payment flows; the existing cutover gates above still apply.
 
 ## Form embeds and proposed custom-host activation
 
