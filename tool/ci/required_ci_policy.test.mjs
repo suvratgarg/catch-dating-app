@@ -11,7 +11,7 @@ const root = fileURLToPath(new URL("../../", import.meta.url));
 const ci = fs.readFileSync(path.join(root, ".github/workflows/ci.yml"), "utf8");
 const required = ci.slice(ci.indexOf("\n  required:\n"));
 assert.ok(required.startsWith("\n  required:\n"), "missing Required CI job");
-const steps = extractSteps(required);
+const steps = extractSteps(`jobs:\n${required}`);
 function command(name) {
   const step = steps.find((entry) => entry.name === name);
   assert.ok(step?.run, `missing Required CI command ${name}`);
