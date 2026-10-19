@@ -8,6 +8,10 @@
 !website/**
 !packages/
 !packages/**
+!assets/
+!assets/motion/
+!assets/motion/event_success/
+!assets/motion/event_success/**
 !functions/
 !functions/package.json
 !functions/src/
