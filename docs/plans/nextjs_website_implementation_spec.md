@@ -34,12 +34,17 @@ retaining them does not decide broader browser/native product scope.
 
 Inspected base: `954e09ffa6619161e9b1ea6fe86533c880c42460` on fetched
 `origin/main`. All target behavior below is proposed until verified in code.
-No Next.js runtime, infrastructure or production cutover is established by this
-document. The isolated branch is `codex/nextjs-public-website`. The first source
-module, `website/src/server/publicReadPolicy.ts`, implements publication gates,
-bounded IDs/organizer paths and safe JSON-LD/HTTPS serialization policy. It is
-not yet connected to a runtime data adapter or page; policy tests alone do not
-establish server-rendered access isolation.
+The isolated branch is `codex/nextjs-public-website`. The first implementation
+milestone adds Next.js App Router, a server-only bounded Firestore reader,
+closed public DTO validation, initial public HTML/metadata, per-provider query
+caches, and a fixed client-only shell for existing sensitive routes. Production
+build and emulator-backed organizer HTML/desktop/mobile hydration checks pass.
+The scoped ownership transfer was explicitly approved; prior branches and
+worktrees were preserved. The existing Vite production build remains unchanged.
+
+This is still active implementation: complete route/status/cache and custom-host
+acceptance, external event projection, metadata/sitemap, preview packaging and
+focused CI remain outstanding. No deployment or production cutover has occurred.
 
 Source owners: `website/src/app/routeRegistry.ts`, `website/src/app/App.tsx`,
 `design/website/routes.json`, `design/website/components.json`,

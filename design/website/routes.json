@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
   "version": 18,
-  "updated": "2026-10-18",
+  "updated": "2026-10-19",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -14,7 +14,10 @@
     "metadataSchema": "website/src/content/meta.schema.json",
     "staticOutput": "website/scripts/postbuild.mjs",
     "hostingConfig": "firebase.json",
-    "generatedListings": "website/src/generated/hostListings.json"
+    "generatedListings": "website/src/generated/hostListings.json",
+    "nextRuntime": "website/app/[[...path]]/page.tsx",
+    "nextPublicationPolicy": "website/src/server/publicReadPolicy.ts",
+    "nextImplementation": "docs/plans/nextjs_website_implementation_spec.md"
   },
   "routes": [
     {

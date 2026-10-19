@@ -1,7 +1,7 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import type {ReactNode} from "react";
+import {useState, type ReactNode} from "react";
 
-const websiteQueryClient = new QueryClient({
+function createWebsiteQueryClient() { return new QueryClient({
   defaultOptions: {
     mutations: {
       retry: 0,
@@ -14,8 +14,10 @@ const websiteQueryClient = new QueryClient({
     },
   },
 });
+}
 
 export function WebsiteQueryProvider({children}: {children: ReactNode}) {
+  const [websiteQueryClient] = useState(createWebsiteQueryClient);
   return (
     <QueryClientProvider client={websiteQueryClient}>
       {children}

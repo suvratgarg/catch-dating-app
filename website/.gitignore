@@ -3,3 +3,6 @@ storybook-static/
 *.tsbuildinfo
 vite.config.d.ts
 vite.config.js
+.next/
+.next-legacy/
+public/_legacy/

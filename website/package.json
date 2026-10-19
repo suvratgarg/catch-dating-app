@@ -38,15 +38,23 @@
     "test:unit:coverage": "vitest run --project=unit --coverage",
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false && tsc -p tsconfig.node.json --noEmit --pretty false",
     "capture:rsvp": "node scripts/rsvpPublicFormSyntheticCapture.mjs",
-    "check:rsvp-capture": "node --test scripts/rsvpPublicFormSyntheticCapture.test.mjs"
+    "check:rsvp-capture": "node --test scripts/rsvpPublicFormSyntheticCapture.test.mjs",
+    "dev:next": "next dev --webpack --hostname 127.0.0.1",
+    "build:next": "node scripts/next/buildPrivateShell.mjs && next build --webpack",
+    "start:next": "next start --hostname 127.0.0.1",
+    "typecheck:next": "tsc -p tsconfig.next.json --noEmit --pretty false",
+    "test:next-policy": "node --experimental-strip-types --test scripts/next/*.test.mjs"
   },
   "dependencies": {
     "@catch/web-ui": "0.1.0",
     "@tanstack/react-query": "^5.104.1",
     "firebase": "^12.19.0",
+    "firebase-admin": "13.10.0",
+    "next": "16.4.2",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "react-router": "^8.4.0"
+    "react-router": "^8.4.0",
+    "server-only": "0.0.1"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^10.6.1",
