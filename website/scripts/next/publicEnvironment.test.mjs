@@ -8,5 +8,8 @@ test("previews deny indexing and production cannot use fixture/dev readers", () 
   assert.throws(() => validatePublicRuntimeEnvironment({CATCH_WEBSITE_STAGE: "production"}));
   assert.throws(() => validatePublicRuntimeEnvironment({CATCH_WEBSITE_STAGE: "production", CATCH_PUBLIC_FIRESTORE_PROJECT: "catchdates-dev"}));
   assert.throws(() => validatePublicRuntimeEnvironment({CATCH_WEBSITE_STAGE: "production", CATCH_PUBLIC_FIRESTORE_PROJECT: "catch-dating-app-64e51", FIRESTORE_EMULATOR_HOST: "127.0.0.1:8765"}));
-  validatePublicRuntimeEnvironment({CATCH_WEBSITE_STAGE: "production", CATCH_PUBLIC_FIRESTORE_PROJECT: "catch-dating-app-64e51"});
+  const production = {CATCH_WEBSITE_STAGE: "production", CATCH_PUBLIC_FIRESTORE_PROJECT: "catch-dating-app-64e51"};
+  assert.throws(() => validatePublicRuntimeEnvironment(production, false), /INVALID_PRODUCTION/);
+  validatePublicRuntimeEnvironment(production, true);
+  assert.throws(() => validatePublicRuntimeEnvironment({...production, FIRESTORE_EMULATOR_HOST: "127.0.0.1:8765"}, true));
 });

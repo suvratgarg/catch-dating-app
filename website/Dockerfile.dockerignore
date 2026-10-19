@@ -19,6 +19,8 @@
 !functions/src/shared/generated/
 !functions/src/shared/generated/**
 !tool/
+!tool/env/
+!tool/env/check_web_hosting_env.mjs
 !tool/contracts/
 !tool/contracts/generated/
 !tool/contracts/generated/**

@@ -560,7 +560,7 @@ h3 {
 }
 
 .public-event-card__meta span {
-  color: var(--activity);
+  color: var(--activity-deep);
   font-family: var(--catch-font-mono), ui-monospace, monospace;
   font-size: 11px;
   font-weight: 600;

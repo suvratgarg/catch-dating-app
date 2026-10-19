@@ -15,6 +15,9 @@ only the candidate, use `npm run build:next --workspace catch-marketing`.
 `npm run start:next --workspace catch-marketing` copies public/static assets into
 the standalone tree (including the private shell from `.next-legacy`) and starts it on `127.0.0.1:3107` (override `PORT` as needed).
 Set the explicit public build variables and runtime project in `env.example`.
+Production eligibility is compiled from the existing marketing environment gate
+(Firebase project/config, App Check and explicit store-link state). A runtime
+stage change cannot promote an unconfigured preview; it returns uncached 503.
 Runtime credentials are ADC with read-only Firestore authority; they are never
 browser variables. The current deploy workflow still publishes Vite `dist`. Generated private-shell
 assets never enter the checked-in public source directory or the Vite artifact.
@@ -28,6 +31,18 @@ For isolated runtime acceptance, start the Firestore emulator on loopback port
 ```sh
 FIRESTORE_EMULATOR_HOST=127.0.0.1:8765 npm run test:next-runtime --workspace catch-marketing
 ```
+
+For two independent standalone instances copied outside the checkout, run
+`test:next-lifecycle` with the same emulator variable. Build this fixture candidate without production browser inputs; ports 3118–3121 must be
+free. It checks HTML/RSC/data/sitemap publication changes, private-field exclusion,
+malformed/synthetic records, 401-row refusal, unavailable readers, private assets
+browser expiry/focus recovery and refusal to promote an unconfigured build. It restores the organizer fixture and removes its own bound
+fixtures on completion. Do not run emulator-mutating acceptance suites concurrently.
+
+`audit:next-browser` checks actual rendered pages with axe and records cold-load
+LCP/CLS/JavaScript bytes at mobile/desktop sizes under documented CPU/network
+throttling. Its JSON report defaults to `/tmp/catch704-browser-audit.json`; these
+are laboratory observations, not field INP or deployed acceptance.
 
 The test writer is hard-bound to that emulator/project. It covers public initial
 HTML, metadata, 301/404 behavior, private-shell credential exclusion, custom-host

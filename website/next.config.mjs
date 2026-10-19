@@ -1,5 +1,6 @@
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {spawnSync} from "node:child_process";
 const root = path.dirname(fileURLToPath(import.meta.url));
 const browserKeys = [
   "VITE_FIREBASE_API_KEY", "VITE_FIREBASE_AUTH_DOMAIN", "VITE_FIREBASE_PROJECT_ID",
@@ -8,6 +9,11 @@ const browserKeys = [
   "VITE_APP_STORE_URL", "VITE_PLAY_STORE_URL", "VITE_CONSUMER_APP_URL",
 ];
 export default {
+  // Bind production eligibility to the browser configuration of this build.
+  // A runtime stage switch cannot turn an unconfigured preview into production.
+  env: {CATCH_NEXT_PRODUCTION_BUILD_READY: String(spawnSync(process.execPath,
+    [path.join(root, "../tool/env/check_web_hosting_env.mjs"), "marketing", "--expected-project-id", "catch-dating-app-64e51"],
+    {env: process.env, stdio: "ignore"}).status === 0)},
   output: "standalone",
   outputFileTracingRoot: path.resolve(root, ".."),
   poweredByHeader: false,

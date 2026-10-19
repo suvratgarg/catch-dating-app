@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.28.0
+version: 0.29.0
 updated: 2026-10-19
 owner: web_platform
 status: active
@@ -47,7 +47,10 @@ Firestore-read-only identity; never include a service-account key or private
 environment file in an image. `CATCH_PUBLIC_FIRESTORE_PROJECT` selects the
 runtime project. The default `CATCH_WEBSITE_STAGE=preview` denies indexing;
 production indexing requires an explicit stage switch, the production project,
-and no emulator configuration. Local acceptance is restricted to `demo-catch-nextjs` on the
+and no emulator configuration. In addition, the build must have passed the
+existing marketing environment contract, including App Check and explicit
+prelaunch/live store state. That eligibility is compiled into the artifact; a
+runtime environment override cannot promote an unconfigured preview. Local acceptance is restricted to `demo-catch-nextjs` on the
 loopback Firestore emulator. Docker execution itself requires separate evidence;
 a passing local standalone build is not a container/deployment proof.
 

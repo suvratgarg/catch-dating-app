@@ -1168,6 +1168,10 @@
   color: var(--catch-color-dark-ink);
 }
 
+.listing-profile-rail__actions .button:not(.button--ghost):not(:disabled) {
+  background: var(--activity-deep, var(--website-text));
+}
+
 .listing-profile-rail__actions .button:disabled {
   cursor: not-allowed;
   opacity: 0.52;

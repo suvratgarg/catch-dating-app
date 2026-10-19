@@ -1,7 +1,7 @@
 "use client";
 import {publicJsonLd} from "../../shared/next/publicJsonLd";
 import dynamic from "next/dynamic";
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {retiredMarketingDestination} from "../retiredMarketingRoutes";
 import {useLocation} from "react-router";
 import {PageShell} from "../../shared/site";
@@ -28,8 +28,6 @@ export function PublicPage({page, readAt}: {page: PageKey; readAt: number}) {
   const location = useLocation();
   const {listings, readAt: currentReadAt} = usePublicHostListings();
   const captures = useMarketingCaptures();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
   useEffect(() => {
     const destination = retiredMarketingDestination(location);
     if (destination) window.location.replace(destination);
@@ -65,5 +63,5 @@ export function PublicPage({page, readAt}: {page: PageKey; readAt: number}) {
   } else if (page === "privacy" || page === "terms" || page === "help") {
     content = <Legal page={publishedLegalContent.pages[page]} effectiveDate={publishedLegalContent.effectiveDate} />;
   } else content = <Missing />;
-  return <PageShell pageClassName={pageClassFor(page)}>{structured !== null && <script type="application/ld+json" dangerouslySetInnerHTML={{__html: publicJsonLd(structured)}} />}{content}{mounted && <MarketingConsentBanner />}</PageShell>;
+  return <PageShell pageClassName={pageClassFor(page)}>{structured !== null && <script type="application/ld+json" dangerouslySetInnerHTML={{__html: publicJsonLd(structured)}} />}{content}<MarketingConsentBanner serverRendered /></PageShell>;
 }

@@ -9,11 +9,14 @@ import {
 } from "../../analytics";
 import {Button, MarketingConsentBannerShell} from "../../shared/ui/primitives";
 
-export function MarketingConsentBanner() {
-  const [consent, setConsent] = useState(() => getMarketingConsent());
+export function MarketingConsentBanner({serverRendered = false}: {serverRendered?: boolean} = {}) {
+  // Public SSR stays viewer-independent. Match that first client render, then
+  // reconcile browser storage without delaying the initial consent content.
+  const [consent, setConsent] = useState(() => serverRendered ? null : getMarketingConsent());
 
   useEffect(() => {
     const changed = () => setConsent(getMarketingConsent());
+    changed();
     window.addEventListener(marketingConsentChangedEvent, changed);
     return () => window.removeEventListener(marketingConsentChangedEvent, changed);
   }, []);

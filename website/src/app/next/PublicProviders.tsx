@@ -36,13 +36,17 @@ export function PublicProviders({children, catalog, pathname, live = true}: {
       if (Date.now() >= expiresAt) setCurrent(null);
       if (pending || document.hidden) return;
       pending = true;
+      const request = new AbortController();
+      const abort = () => request.abort();
+      controller.signal.addEventListener("abort", abort, {once: true});
+      const deadline = window.setTimeout(abort, 8_000);
       try {
-        const response = await fetch("/api/public-catalog", {cache: "no-store", credentials: "omit", signal: controller.signal});
+        const response = await fetch("/api/public-catalog", {cache: "no-store", credentials: "omit", signal: request.signal});
         if (!response.ok) throw new Error("Catalog unavailable");
         const value: PublicCatalog = await response.json();
         if (active && Array.isArray(value.listings) && Number.isFinite(value.readAt)) accept(value);
       } catch { if (active) setCurrent(null); }
-      finally { pending = false; }
+      finally { clearTimeout(deadline); controller.signal.removeEventListener("abort", abort); pending = false; }
     }
     setCurrent(catalog);
     const timer = window.setInterval(() => {void refresh();}, 25_000);

@@ -48,6 +48,9 @@ try {
   await check("/events/next-native-event/", 200, "Next proof event");
   await check(`/events/${external.eventId}/`, 200, "Takeoff: Run + Rave");
   await check("/missing-route-proof/", 404);
+  const missingRsc = await fetch(origin + "/missing-route-proof/?_rsc", {headers: {RSC: "1"}});
+  assert.equal(missingRsc.status, 404);
+  await check("/privacy/unknown-child/", 404);
   await check("/events/not-published/", 404);
   const alias = await check("/organizers/old-next-proof/?utm_source=proof", 301);
   assert.equal(alias.response.headers.get("location"), "/organizers/next-proof/?utm_source=proof");
@@ -57,8 +60,12 @@ try {
     const {response, text} = await check(`/${family}/private-proof-token/?grant=private-proof-grant`, 200);
     assert(!text.includes("private-proof-token") && !text.includes("private-proof-grant") && !text.includes("self.__next_f"));
     assert.match(response.headers.get("x-robots-tag"), /noindex/);
+    assert(text.includes(`rel="canonical" href="https://catchdates.com/${family}/"`), `Missing generic ${family} canonical`);
   }
   await check("/offer/?grant=private-proof-grant", 200);
+  for (const asset of ["/form-embed-resize.js", "/organizer-tracking-runtime.js"]) {
+    assert.equal((await fetch(origin + asset)).status, 200, asset);
+  }
   const association = await check("/.well-known/apple-app-site-association", 200);
   assert.match(association.response.headers.get("content-type"), /application\/json/);
   const custom = await customHostRequest("/organizers/next-proof/");

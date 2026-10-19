@@ -38,19 +38,26 @@ checks, with parity tests, without the CLI dependency-discovery loader.
 
 Public responses are uncached. React cache only deduplicates a render's reads;
 there is no cross-request snapshot or ISR fallback. The request gate checks
-availability and organizer aliases before rendering; the render independently
+availability, organizer aliases and missing live-route statuses before streaming
+(including RSC, where a late `notFound()` otherwise retains HTTP 200); the render independently
 reauthorizes its data. This currently costs two bounded reads for those pages.
 A failed preflight returns 503; a failure after that preflight can still surface
 as Next's uncached 500. Neither error authorizes stale content or a false 404.
 The browser refreshes at 25 seconds/focus and withholds its snapshot at 30
-seconds or on transport failure. Live withdrawals remove page content and
+seconds or on transport failure. Refresh requests time out after eight seconds
+so a later focus can recover without reloading. Live withdrawals remove page content and
 structured data. Booking price/capacity authority stays in existing Functions.
+The standalone lifecycle suite also verifies HTML/RSC/data/sitemap withdrawal
+across two instances copied outside the checkout, query-bound refusal and
+unavailable readers.
 
 Next owns initial canonical/social metadata, escaped Organization/Event JSON-LD,
 robots and a live index-policy-filtered sitemap. Generated organizer snapshots
 are replaced with an empty module in both the Next graph and retained private
 shell; only request-authorized DTOs populate public pages. Reveal styling keeps
-initial HTML visible with JavaScript disabled. Legacy Host redirects remain
+initial HTML visible with JavaScript disabled. The consent banner supplies
+viewer-independent initial HTML; hydration reconciles local consent without
+delaying the first paint or escalating an existing choice. Legacy Host redirects remain
 301 and preserve queries before destination anchors.
 
 Existing `/join`, `/booking`, `/offer`, `/event-update`, `/rehearse`, `/invite`,
@@ -58,7 +65,9 @@ Existing `/join`, `/booking`, `/offer`, `/event-update`, `/rehearse`, `/invite`,
 built in `.next-legacy` and copied only into the standalone runtime's
 `public/_legacy`, then served by `app/private-shell/route.ts` with
 `no-store`, `noindex,nofollow` and `no-referrer`. Signed path/query/fragment values
-never enter RSC props. The request gate parses the actual Host authority; unknown
+never enter RSC props. Only the allowlisted route-family enum enters the
+internal rewrite, supplying a generic title/description/canonical without any
+private identifier. The request gate parses the actual Host authority; unknown
 hosts receive only this shell and the existing custom-form domain gate. They
 cannot read the public catalog endpoint. The accepted custom-domain controller
 and integration coverage remain in place.

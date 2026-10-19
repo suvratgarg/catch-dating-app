@@ -80,7 +80,7 @@ export function HostHeroSection({captures: _captures}: {captures: HostCaptureMap
 
 export function HostWorkflowSection() {
   return (
-    <MarketingSection variant="story" id="how-it-works" aria-labelledby="workflow-title">
+    <MarketingSection variant="story" id="how-it-works" aria-label={hostPageCopy.nav.workflow}>
       <ContentGrid variant="marketing-split">
         <SectionHeader
           id="workflow-title"
