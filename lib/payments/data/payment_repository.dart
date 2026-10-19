@@ -200,6 +200,8 @@ class PaymentRepository {
         'theme': {'color': '#16140F'},
       });
     } catch (error, stackTrace) {
+      // Forward the normalized failure and stack to the caller's attempt result.
+      // Rethrowing here would escape the unawaited checkout task.
       _failAttempt(
         attempt,
         _normalizePaymentError(
@@ -338,6 +340,8 @@ class PaymentRepository {
         ),
       );
     } catch (error, stackTrace) {
+      // The caller awaits the attempt result, not this SDK callback.
+      // _failAttempt forwards the normalized error and stack to that result.
       _failAttempt(
         attempt,
         _normalizePaymentError(
