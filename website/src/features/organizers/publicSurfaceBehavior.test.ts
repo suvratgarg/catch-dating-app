@@ -215,7 +215,7 @@ function verifyListing(
   expect(expectations["event.externalAction"].disposition)
     .toBe(externalSupply ? "visibleExternal" : "hidden");
   expect(expectations["organizer.save"].disposition)
-    .toBe(readable ? "visibleLocal" : "hidden");
+    .toBe(readable ? "visibleWeb" : "hidden");
   expect(expectations["organizer.share"].disposition)
     .toBe(readable ? "visibleWeb" : "hidden");
 }

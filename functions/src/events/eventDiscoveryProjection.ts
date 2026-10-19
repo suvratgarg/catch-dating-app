@@ -42,7 +42,9 @@ type EventDiscoveryProjectionSource =
   Omit<EventDocument, EventDiscoveryField> &
   Partial<Pick<EventDocument, EventDiscoveryField>>;
 
-const discoveryCohortIds = Object.values(cohortIds) as EventCohortId[];
+type DiscoveryCohortId = Exclude<EventCohortId, "unspecified">;
+const discoveryCohortIds = Object.values(cohortIds).filter(
+  (id): id is DiscoveryCohortId => id !== "unspecified");
 
 /**
  * Builds the callable-owned fields that let Explore query events directly.
@@ -221,19 +223,19 @@ function requiredDiscoveryCoordinate(
  * Computes coarse cohort buckets for Firestore event discovery indexes.
  * @param {{policy: EventPolicyBundleDocument, roster: EventRosterSnapshot,
  * gated: boolean, isCancelled: boolean}} params Projection inputs.
- * @return {{open: EventCohortId[], waitlist: EventCohortId[]}} Cohort buckets.
+ * @return {object} Open and waitlist cohort buckets.
  */
 function discoveryCohortProjection(params: {
   policy: EventPolicyBundleDocument;
   roster: EventRosterSnapshot;
   gated: boolean;
   isCancelled: boolean;
-}): {open: EventCohortId[]; waitlist: EventCohortId[]} {
+}): {open: DiscoveryCohortId[]; waitlist: DiscoveryCohortId[]} {
   if (params.isCancelled || params.gated) {
     return {open: [], waitlist: []};
   }
-  const open: EventCohortId[] = [];
-  const waitlist: EventCohortId[] = [];
+  const open: DiscoveryCohortId[] = [];
+  const waitlist: DiscoveryCohortId[] = [];
   for (const cohortId of discoveryCohortIds) {
     const availability = cohortDiscoveryAvailability({
       policy: params.policy,

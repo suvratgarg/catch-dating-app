@@ -309,6 +309,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   removeClubHost: {maxRequests: 20, windowMs: 60 * 1000},
   archiveClub: {maxRequests: 10, windowMs: 60 * 1000},
   deleteClub: {maxRequests: 10, windowMs: 60 * 1000},
+  manageWebsiteAccount: {maxRequests: 30, windowMs: 60 * 1000},
   followOrganizer: {maxRequests: 30, windowMs: 60 * 1000},
   unfollowOrganizer: {maxRequests: 30, windowMs: 60 * 1000},
   setOrganizerNotificationPreference: {

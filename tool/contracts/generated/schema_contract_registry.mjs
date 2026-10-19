@@ -1,6 +1,181 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+export const manageWebsiteAccountCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_website_account_payload.schema.json",
+  "title": "ManageWebsiteAccountCallablePayload",
+  "description": "Read or complete the authenticated account with minimal identity. Phone ownership comes from Firebase Auth, never payload data.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action"
+      ],
+      "properties": {
+        "action": {
+          "const": "read"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "displayName",
+        "expectedProfileRevision",
+        "expectedUid"
+      ],
+      "properties": {
+        "action": {
+          "const": "complete"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": ".*\\S.*"
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date",
+          "description": "Optional real birth date. Omission preserves existing data; no placeholder is synthesized."
+        },
+        "expectedProfileRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "expectedUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        }
+      }
+    }
+  ]
+};
+
+export const manageWebsiteAccountCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_website_account_response.schema.json",
+  "title": "ManageWebsiteAccountCallableResponse",
+  "description": "Private account identity and optional own organizer-follow state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "uid",
+    "accountReady",
+    "displayName",
+    "phoneNumber",
+    "dateOfBirth",
+    "profileRevision",
+    "following",
+    "eventAge"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "accountReady": {
+      "type": "boolean"
+    },
+    "displayName": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "phoneNumber": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 32
+    },
+    "dateOfBirth": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "profileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "following": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "Null unless an organizer was requested. Reflects only the authenticated UID relationship."
+    },
+    "eventAge": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "minimum",
+            "maximum",
+            "eligible",
+            "needsDateOfBirth"
+          ],
+          "properties": {
+            "minimum": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 120
+            },
+            "maximum": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 120
+            },
+            "eligible": {
+              "type": "boolean"
+            },
+            "needsDateOfBirth": {
+              "type": "boolean"
+            }
+          }
+        }
+      ]
+    }
+  }
+};
+
 export const hostResponseSummaryDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/host_response_summaries.schema.json",
@@ -136936,10 +137111,9 @@ export const mobileFormStateSchema = {
     },
     "onboardingDateOfBirthText": {
       "type": "string",
-      "minLength": 11,
       "maxLength": 11,
-      "pattern": "^\\d{2} [A-Z][a-z]{2} \\d{4}$",
-      "description": "Read-only date text rendered by the onboarding date picker before it is saved as a timestamp."
+      "pattern": "^(?:\\d{2} [A-Z][a-z]{2} \\d{4})?$",
+      "description": "Optional account date text. Social discovery requires a birthday through the profile requirements catalog."
     },
     "suvbotTesterPhoneNumber": {
       "type": "string",
@@ -144656,8 +144830,6 @@ export const userProfileDocumentSchema = {
     "firstName",
     "lastName",
     "displayName",
-    "dateOfBirth",
-    "gender",
     "phoneNumber",
     "profileComplete",
     "email",
@@ -192367,7 +192539,7 @@ export const programDeliveryMessageDocumentSchema = {
         },
         "body": {
           "type": "string",
-          "minLength": 1,
+          "minLength": 0,
           "maxLength": 8000
         },
         "instructionRevision": {
@@ -192407,6 +192579,150 @@ export const programDeliveryMessageDocumentSchema = {
             }
           },
           "description": "Approved WhatsApp template content for organizerProgramWhatsapp routes. Frozen at intent time; sender credentials never appear here."
+        },
+        "activity": {
+          "description": "Frozen staff activity and push semantics; claim revalidates the original Moment revision and current recipient authority.",
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "appRole",
+                "audienceDuty",
+                "scopeIds",
+                "actionKind",
+                "notificationType",
+                "preferenceKey"
+              ],
+              "properties": {
+                "appRole": {
+                  "type": "string",
+                  "const": "host"
+                },
+                "audienceDuty": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "scopeIds": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "maxItems": 200
+                },
+                "actionKind": {
+                  "type": "string",
+                  "const": "push"
+                },
+                "notificationType": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "preferenceKey": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "appRole",
+                "audienceDuty",
+                "scopeIds",
+                "actionKind",
+                "actionDuty",
+                "severity"
+              ],
+              "properties": {
+                "appRole": {
+                  "type": "string",
+                  "const": "host"
+                },
+                "audienceDuty": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "scopeIds": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "maxItems": 200
+                },
+                "actionKind": {
+                  "type": "string",
+                  "const": "staffAttention"
+                },
+                "actionDuty": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "info",
+                    "warning",
+                    "urgent"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "if": {
+        "required": [
+          "activity"
+        ]
+      },
+      "then": {
+        "required": [
+          "activity"
+        ],
+        "properties": {
+          "permittedRoutes": {
+            "minItems": 1,
+            "maxItems": 1,
+            "items": {
+              "const": "catchProgramActivity"
+            }
+          },
+          "recipient": {
+            "properties": {
+              "kind": {
+                "const": "staff"
+              }
+            }
+          }
+        },
+        "not": {
+          "required": [
+            "whatsapp"
+          ]
+        }
+      },
+      "else": {
+        "properties": {
+          "body": {
+            "minLength": 1
+          }
         }
       },
       "x-catch-ownership": "server-only"
@@ -192536,7 +192852,8 @@ export const programDeliveryMessageDocumentSchema = {
                     "enum": [
                       "timeout",
                       "connectionLost",
-                      "workerInterrupted"
+                      "workerInterrupted",
+                      "sdkOutcomeUnknown"
                     ]
                   },
                   "reconcileAfter": {
@@ -192865,6 +193182,31 @@ export const programDeliveryMessageDocumentSchema = {
                     "enum": [
                       "catch"
                     ]
+                  },
+                  "pushSuppressionReason": {
+                    "type": "string",
+                    "enum": [
+                      "noEndpoint",
+                      "preferenceOff"
+                    ],
+                    "description": "Frozen at reservation and claim for local activity only; never FCM submission evidence."
+                  }
+                },
+                "if": {
+                  "properties": {
+                    "provider": {
+                      "const": "fcm"
+                    }
+                  },
+                  "required": [
+                    "provider"
+                  ]
+                },
+                "then": {
+                  "not": {
+                    "required": [
+                      "pushSuppressionReason"
+                    ]
                   }
                 }
               }
@@ -192899,6 +193241,37 @@ export const programDeliveryMessageDocumentSchema = {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 9007199254740991
+              }
+            }
+          }
+        },
+        "if": {
+          "properties": {
+            "state": {
+              "properties": {
+                "reason": {
+                  "const": "sdkOutcomeUnknown"
+                }
+              },
+              "required": [
+                "reason"
+              ]
+            }
+          },
+          "required": [
+            "state"
+          ]
+        },
+        "then": {
+          "properties": {
+            "binding": {
+              "properties": {
+                "routeId": {
+                  "const": "catchProgramActivity"
+                },
+                "provider": {
+                  "const": "fcm"
+                }
               }
             }
           }
@@ -193233,7 +193606,7 @@ export const programDeliveryMessageIntentSchema = {
     },
     "body": {
       "type": "string",
-      "minLength": 1,
+      "minLength": 0,
       "maxLength": 8000
     },
     "instructionRevision": {
@@ -193273,6 +193646,150 @@ export const programDeliveryMessageIntentSchema = {
         }
       },
       "description": "Approved WhatsApp template content for organizerProgramWhatsapp routes. Frozen at intent time; sender credentials never appear here."
+    },
+    "activity": {
+      "description": "Frozen staff activity and push semantics; claim revalidates the original Moment revision and current recipient authority.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "appRole",
+            "audienceDuty",
+            "scopeIds",
+            "actionKind",
+            "notificationType",
+            "preferenceKey"
+          ],
+          "properties": {
+            "appRole": {
+              "type": "string",
+              "const": "host"
+            },
+            "audienceDuty": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "scopeIds": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "maxItems": 200
+            },
+            "actionKind": {
+              "type": "string",
+              "const": "push"
+            },
+            "notificationType": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "preferenceKey": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "appRole",
+            "audienceDuty",
+            "scopeIds",
+            "actionKind",
+            "actionDuty",
+            "severity"
+          ],
+          "properties": {
+            "appRole": {
+              "type": "string",
+              "const": "host"
+            },
+            "audienceDuty": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "scopeIds": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "maxItems": 200
+            },
+            "actionKind": {
+              "type": "string",
+              "const": "staffAttention"
+            },
+            "actionDuty": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "severity": {
+              "type": "string",
+              "enum": [
+                "info",
+                "warning",
+                "urgent"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "if": {
+    "required": [
+      "activity"
+    ]
+  },
+  "then": {
+    "required": [
+      "activity"
+    ],
+    "properties": {
+      "permittedRoutes": {
+        "minItems": 1,
+        "maxItems": 1,
+        "items": {
+          "const": "catchProgramActivity"
+        }
+      },
+      "recipient": {
+        "properties": {
+          "kind": {
+            "const": "staff"
+          }
+        }
+      }
+    },
+    "not": {
+      "required": [
+        "whatsapp"
+      ]
+    }
+  },
+  "else": {
+    "properties": {
+      "body": {
+        "minLength": 1
+      }
     }
   },
   "title": "ProgramDeliveryMessageIntent"
@@ -193390,7 +193907,8 @@ export const programDeliveryAttemptSchema = {
               "enum": [
                 "timeout",
                 "connectionLost",
-                "workerInterrupted"
+                "workerInterrupted",
+                "sdkOutcomeUnknown"
               ]
             },
             "reconcileAfter": {
@@ -193719,6 +194237,31 @@ export const programDeliveryAttemptSchema = {
               "enum": [
                 "catch"
               ]
+            },
+            "pushSuppressionReason": {
+              "type": "string",
+              "enum": [
+                "noEndpoint",
+                "preferenceOff"
+              ],
+              "description": "Frozen at reservation and claim for local activity only; never FCM submission evidence."
+            }
+          },
+          "if": {
+            "properties": {
+              "provider": {
+                "const": "fcm"
+              }
+            },
+            "required": [
+              "provider"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "pushSuppressionReason"
+              ]
             }
           }
         }
@@ -193753,6 +194296,37 @@ export const programDeliveryAttemptSchema = {
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        }
+      }
+    }
+  },
+  "if": {
+    "properties": {
+      "state": {
+        "properties": {
+          "reason": {
+            "const": "sdkOutcomeUnknown"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      }
+    },
+    "required": [
+      "state"
+    ]
+  },
+  "then": {
+    "properties": {
+      "binding": {
+        "properties": {
+          "routeId": {
+            "const": "catchProgramActivity"
+          },
+          "provider": {
+            "const": "fcm"
+          }
         }
       }
     }
@@ -197623,6 +198197,22 @@ export const organizerMomentRunDocumentSchema = {
     "anchorRevision",
     "status"
   ],
+  "if": {
+    "properties": {
+      "runId": {
+        "pattern": "^travel_v1_[a-f0-9]{64}$"
+      }
+    },
+    "required": [
+      "runId"
+    ]
+  },
+  "then": {
+    "required": [
+      "travelOccurrence",
+      "expiresAtMillis"
+    ]
+  },
   "properties": {
     "runId": {
       "type": "string",
@@ -197736,6 +198326,33 @@ export const organizerMomentRunDocumentSchema = {
         "null"
       ],
       "minimum": 0
+    },
+    "travelOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "momentRevision",
+        "occurredAtMillis",
+        "createdAtMillis"
+      ],
+      "properties": {
+        "momentRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "occurredAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "createdAtMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "description": "Immutable first-ingestion Moment revision, CloudEvent instant and committed recovery-window origin; never renewed by due-time deferral."
     },
     "automation": {
       "type": [
@@ -197980,9 +198597,10 @@ export const organizerMomentSendDocumentSchema = {
         "read",
         "failed",
         "revoked",
+        "notDispatched",
         null
       ],
-      "description": "Latest confirmed provider state projected from the delivery evidence. 'sent' decisions with an unknown outcome stay honest — never implies confirmed delivery."
+      "description": "Outbox evidence projected for this recipient. Unknown never implies confirmed delivery. notDispatched is a proven-unsent retry projection; the original run window and authority still apply."
     }
   }
 };
@@ -243253,6 +243871,11 @@ export const organizerFollowCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
     }
   }
 };

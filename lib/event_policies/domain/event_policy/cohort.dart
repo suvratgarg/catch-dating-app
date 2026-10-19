@@ -6,6 +6,7 @@ part of '../event_policy.dart';
 class EventCohortIds {
   const EventCohortIds._();
 
+  static const unspecified = 'unspecified';
   static const menInterestedInWomen = 'menInterestedInWomen';
   static const womenInterestedInMen = 'womenInterestedInMen';
   static const queerOrOpen = 'queerOrOpen';
@@ -15,6 +16,10 @@ class EventCohortIds {
 class EventCohort {
   const EventCohort({required this.id, required this.label});
 
+  static const unspecified = EventCohort(
+    id: EventCohortIds.unspecified,
+    label: '',
+  );
   static const menInterestedInWomen = EventCohort(
     id: EventCohortIds.menInterestedInWomen,
     label: 'Men interested in women',
@@ -62,7 +67,7 @@ class EventAttendeeProfile {
       );
 
   final String uid;
-  final Gender gender;
+  final Gender? gender;
   final Set<Gender> interestedInGenders;
 }
 
@@ -70,6 +75,9 @@ class EventCohortResolver {
   const EventCohortResolver();
 
   EventCohort resolve(EventAttendeeProfile attendee) {
+    if (attendee.gender == null || attendee.interestedInGenders.isEmpty) {
+      return EventCohort.unspecified;
+    }
     return switch (attendee.gender) {
       Gender.man when _isOnlyInterestedIn(attendee, Gender.woman) =>
         EventCohort.menInterestedInWomen,

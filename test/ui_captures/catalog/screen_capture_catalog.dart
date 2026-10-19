@@ -464,12 +464,12 @@ final _eventDetailPublicProfileRepository = FakePublicProfileRepository()
     buildPublicProfile(
       uid: _eventDetailUser.uid,
       name: _eventDetailUser.name,
-      gender: _eventDetailUser.gender,
+      gender: _eventDetailUser.gender!,
     ),
     buildPublicProfile(
       uid: _eventDetailHostUser.uid,
       name: _eventDetailHostUser.name,
-      gender: _eventDetailHostUser.gender,
+      gender: _eventDetailHostUser.gender!,
     ),
     for (var index = 2; index <= 13; index += 1)
       buildPublicProfile(uid: 'runner-$index', name: 'Runner $index'),

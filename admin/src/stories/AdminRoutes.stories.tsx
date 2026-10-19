@@ -173,6 +173,7 @@ const eventController: EventPublishingController = {
     formFromEventProfile(sampleEventDetails["mumbai-padel-mixer-1"]) :
     null,
   isDetailLoading: false,
+  isExternalDetailError: false,
   isExternalListLoading: false,
   isListLoading: false,
   isSaving: false,
