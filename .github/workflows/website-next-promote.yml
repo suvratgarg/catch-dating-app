@@ -76,6 +76,9 @@ jobs:
             --format=json > build/next-promote/preview-service.json
           PINNED_IMAGE="$pinned" node --input-type=module -e 'import fs from "node:fs"; import {assertPreviewRuntime} from "./website/scripts/next/promoteRelease.mjs"; assertPreviewRuntime(JSON.parse(fs.readFileSync("build/next-promote/preview-service.json")), process.env.GITHUB_SHA, process.env.PINNED_IMAGE);'
           printf '%s\n' "$pinned" > build/next-promote/image-digest.txt
+      - name: Require the protected organiser-review index to be ready
+        run: |
+          node --input-type=module -e 'import {gcloudIndexList} from "./tool/firebase/wait_firestore_indexes_ready.mjs"; import {assertReviewIndexReady} from "./website/scripts/next/reviewIndexRelease.mjs"; assertReviewIndexReady(gcloudIndexList({projectId: "catch-dating-app-64e51"}));'
       - name: Preserve the current Hosting rollback version
         run: node website/scripts/next/hostingState.mjs snapshot
       - name: Deploy the same image as a bounded production runtime

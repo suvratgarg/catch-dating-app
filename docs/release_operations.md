@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.10.0
+version: 2.11.0
 updated: 2026-10-20
 owner: recursive_audit_loop
 status: active
@@ -3406,3 +3406,20 @@ The branch refresh after PR626 preserves this historical profile without widenin
 its source or predecessor authority. The newer backend changes on main are
 rejected by its source-compatibility check; a separately reviewed runtime-owner
 disposition is required before this historical package could be used.
+
+## Website organiser-review index release
+
+`Website Review Index` is a bounded, main-only manual release of one additive
+production Firestore index: `reviews`, collection scope, `organizerId ASC` then
+`createdAt DESC`. It requires the exact checked-in definition and successful
+current-main CI, with a fresh source check after protected `prod` approval and
+again immediately before creation. The existing human review and OIDC identity
+remain required. It holds `backend-delivery` and `firebase-prod`; it never enables
+the paused ordinary Delivery queue, advances a cursor or deploys Functions/rules.
+
+The helper lists actual index metadata, creates only the missing exact index,
+waits for `READY` and verifies the other index identities/definitions remain.
+Failed/ambiguous indexes and failed/unknown creation outcomes stop without an
+automatic retry or deletion. Source authority, creation outcome and before/after
+metadata are retained as artifacts. Next website promotion separately requires
+this index to be ready. This scope does not establish a full backend baseline.
