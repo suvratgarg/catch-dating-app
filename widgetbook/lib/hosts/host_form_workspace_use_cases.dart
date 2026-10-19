@@ -4,13 +4,15 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_metrics.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_body.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_metric_row.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_overview_section_list.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_header.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -80,16 +82,87 @@ Widget hostFormWorkspaceOverviewPreview(BuildContext context) => ProviderScope(
 
 @widgetbook.UseCase(
   name: 'Unboxed form metrics',
-  type: HostFormMetrics,
+  type: HostFormMetricRow,
   path: '[P1 product surfaces]/Host operations/Forms',
 )
 Widget hostFormMetricsPreview(BuildContext context) => const SizedBox(
   width: WidgetbookPreviewLayout.wideContractWidth,
-  child: HostFormMetrics(
+  child: HostFormMetricRow(
     items: [
       (value: '84', label: 'Responses'),
       (value: '5', label: 'Questions'),
     ],
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Respondent preview',
+  type: HostFormBody,
+  path: '[P1 product surfaces]/Host operations/Forms',
+)
+Widget hostFormBodyPreview(BuildContext context) => SizedBox(
+  width: WidgetbookPreviewLayout.wideContractWidth,
+  height: WidgetbookPreviewLayout.hostEditorViewportHeight,
+  child: Scaffold(
+    body: SingleChildScrollView(
+      padding: CatchInsets.pageBody,
+      child: HostFormBody(definition: hostFormPreviewState.editor.definition),
+    ),
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Question kinds',
+  type: HostFormQuestionField,
+  path: '[P1 product surfaces]/Host operations/Forms',
+)
+Widget hostFormQuestionFieldPreview(BuildContext context) => SizedBox(
+  width: WidgetbookPreviewLayout.wideContractWidth,
+  height: WidgetbookPreviewLayout.hostEditorViewportHeight,
+  child: Scaffold(
+    body: SingleChildScrollView(
+      padding: CatchInsets.pageBody,
+      child: CatchSection.fieldRows(
+        first: true,
+        children: [
+          for (final section in hostFormPreviewState.editor.definition.sections)
+            for (final question in section.questions)
+              HostFormQuestionField(
+                question: question,
+                answer: null,
+                onChanged: (_) {},
+              ),
+        ],
+      ),
+    ),
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Form responses',
+  type: HostFormResponsesSection,
+  path: '[P1 product surfaces]/Host operations/Forms',
+)
+Widget hostFormResponsesSectionPreview(BuildContext context) => ProviderScope(
+  overrides: [
+    hostFormResponsesControllerProvider.overrideWith2(
+      (_) => _PreviewResponses(),
+    ),
+  ],
+  child: const SizedBox(
+    width: WidgetbookPreviewLayout.wideContractWidth,
+    height: WidgetbookPreviewLayout.hostEditorViewportHeight,
+    child: Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          HostFormResponsesSection(
+            organizerId: 'org_1',
+            formId: 'form_1',
+            formTitle: 'Saturday Social application',
+          ),
+        ],
+      ),
+    ),
   ),
 );
 

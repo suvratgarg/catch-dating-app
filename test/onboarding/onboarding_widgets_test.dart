@@ -18,19 +18,19 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.d
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page_state.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page_state.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page_state.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/photos_page_state.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page_state.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page_state.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_gender_interest_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_gender_interest_step_state.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_instagram_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_instagram_step_state.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_name_dob_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_name_dob_step_state.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_photos_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_photos_step_state.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_profile_prompts_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_profile_prompts_step_state.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step_state.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
@@ -73,7 +73,7 @@ void main() {
         await pumpOnboardingUi(tester);
 
         expect(find.text('How do you identify?'), findsOneWidget);
-        expect(find.text('STEP 2 OF 2'), findsOneWidget);
+        expect(find.text('STEP 1 OF 1'), findsOneWidget);
         await tester.tap(find.byTooltip('Back'));
         await pumpOnboardingUi(tester);
 
@@ -82,12 +82,12 @@ void main() {
           OnboardingStep.nameDob,
         );
         expect(find.text("What's your name?"), findsOneWidget);
-        expect(find.text('STEP 1 OF 2'), findsOneWidget);
+        expect(find.text('STEP 1 OF 1'), findsOneWidget);
       },
     );
   });
 
-  group('NameDobPage', () {
+  group('OnboardingNameDobBody', () {
     test('state derives draft display, date policy, and submit intent', () {
       final state = OnboardingNameDobState.fromDraft(
         l10n: _l10n,
@@ -132,17 +132,14 @@ void main() {
       expect(missingDate.shouldAutofocus, isFalse);
       expect(missingDate.dateText, isEmpty);
       expect(missingDate.ageSuffix, isNull);
-      expect(
-        missingDate.validateDateOfBirth(),
-        'Please select your date of birth',
-      );
+      expect(missingDate.validateDateOfBirth(), isNull);
       expect(
         missingDate.submitIntent(
           firstName: 'Asha',
           lastName: 'Runner',
           phoneNumber: '9876543210',
         ),
-        isNull,
+        isNotNull,
       );
     });
 
@@ -208,18 +205,18 @@ void main() {
       await pumpOnboardingPage(
         tester,
         container: container,
-        child: const NameDobPage(),
+        child: const OnboardingNameDobBody(),
       );
 
       await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
       await pumpOnboardingUi(tester);
 
       expect(find.text('First name is required'), findsOneWidget);
-      expect(find.text('Last name is required'), findsOneWidget);
-      expect(find.text('Please select your date of birth'), findsOneWidget);
+      expect(find.text('Last name is required'), findsNothing);
+      expect(find.text('Please select your date of birth'), findsNothing);
     });
 
-    testWidgets('completed profile fields advance to the next step', (
+    testWidgets('social birthday advances to matching preferences', (
       tester,
     ) async {
       final container = createOnboardingTestContainer();
@@ -237,13 +234,13 @@ void main() {
       await pumpOnboardingPage(
         tester,
         container: container,
-        child: const NameDobPage(),
+        child: const OnboardingNameDobBody(profileCompletionOnly: true),
       );
 
-      expect(find.text('Asha'), findsOneWidget);
-      expect(find.text('Runner'), findsOneWidget);
+      expect(find.text('Asha'), findsNothing);
+      expect(find.text('Runner'), findsNothing);
       expect(find.text('15 Apr 1997'), findsOneWidget);
-      expect(find.text('9876543210'), findsOneWidget);
+      expect(find.text('9876543210'), findsNothing);
 
       await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
       await pumpOnboardingUi(tester);
@@ -270,7 +267,7 @@ void main() {
       await pumpOnboardingPage(
         tester,
         container: container,
-        child: const NameDobPage(),
+        child: const OnboardingNameDobBody(),
       );
 
       expect(
@@ -287,7 +284,7 @@ void main() {
     });
   });
 
-  group('GenderInterestPage', () {
+  group('OnboardingGenderInterestBody', () {
     test('state validates selections and creates submit intent', () {
       final empty = OnboardingGenderInterestState.fromDraft(
         gender: null,
@@ -436,7 +433,7 @@ void main() {
       await pumpOnboardingPage(
         tester,
         container: container,
-        child: const GenderInterestPage(),
+        child: const OnboardingGenderInterestBody(),
       );
 
       await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
@@ -461,7 +458,7 @@ void main() {
       await pumpOnboardingPage(
         tester,
         container: container,
-        child: const GenderInterestPage(),
+        child: const OnboardingGenderInterestBody(),
       );
 
       expect(
@@ -489,7 +486,7 @@ void main() {
     });
   });
 
-  group('InstagramPage', () {
+  group('OnboardingInstagramBody', () {
     test('state trims continue handles and clears skipped handles', () {
       final state = OnboardingInstagramState.fromDraft(
         handle: ' sundayseaface ',
@@ -553,7 +550,7 @@ void main() {
       await pumpOnboardingPage(
         tester,
         container: container,
-        child: const InstagramPage(),
+        child: const OnboardingInstagramBody(),
       );
 
       await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
@@ -579,7 +576,7 @@ void main() {
       await pumpOnboardingPage(
         tester,
         container: container,
-        child: const InstagramPage(),
+        child: const OnboardingInstagramBody(),
       );
 
       await tester.tap(find.widgetWithText(CatchButton, 'Skip for now'));
@@ -591,7 +588,7 @@ void main() {
     });
   });
 
-  group('PhotosPage', () {
+  group('OnboardingPhotosBody', () {
     test('state derives continue gating and photo slot intents', () {
       final onePhoto = buildUser(
         photoUrls: const ['assets/test/onboarding-photo-1.jpg'],
@@ -721,7 +718,7 @@ void main() {
         await pumpOnboardingPage(
           tester,
           container: container,
-          child: const PhotosPage(),
+          child: const OnboardingPhotosBody(),
         );
 
         expect(find.text('Add 2 more photos to continue.'), findsOneWidget);
@@ -754,7 +751,7 @@ void main() {
       await pumpOnboardingPage(
         tester,
         container: container,
-        child: const PhotosPage(profileCompletionOnly: true),
+        child: const OnboardingPhotosBody(profileCompletionOnly: true),
       );
 
       expect(
@@ -803,7 +800,7 @@ void main() {
 
   _registerProfilePromptsPageTests();
 
-  group('RunningPrefsPage', () {
+  group('OnboardingRunningPrefsBody', () {
     test('state derives labels and submit payload', () {
       final state = OnboardingRunningPrefsState.fromDraft(
         paceRange: const RangeValues(300, 420),
@@ -1001,7 +998,7 @@ void main() {
       await pumpOnboardingPage(
         tester,
         container: container,
-        child: const RunningPrefsPage(runPreferencesOnly: true),
+        child: const OnboardingRunningPrefsBody(runPreferencesOnly: true),
       );
 
       expect(find.text('Why do you run?'), findsOneWidget);
@@ -1030,7 +1027,7 @@ void main() {
       await pumpOnboardingPage(
         tester,
         container: container,
-        child: const RunningPrefsPage(),
+        child: const OnboardingRunningPrefsBody(),
       );
 
       expect(find.text('FAVOURITE EVENT TIMES'), findsOneWidget);
@@ -1137,7 +1134,7 @@ class _OnboardingUploadFailureSeederState
   }
 
   @override
-  Widget build(BuildContext context) => const PhotosPage();
+  Widget build(BuildContext context) => const OnboardingPhotosBody();
 }
 
 class _FailingOnboardingImageUploadRepository extends Fake

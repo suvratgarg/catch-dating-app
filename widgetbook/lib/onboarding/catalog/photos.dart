@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_photos_step.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -16,19 +16,19 @@ final _profileReadyPhotos = ProfileSurfaceFixtures.viewer.copyWith(
 
 @widgetbook.UseCase(
   name: 'Photo grid states',
-  type: PhotosPage,
+  type: OnboardingPhotosBody,
   path: '[P1 product surfaces]/Onboarding/Pages',
 )
 Widget photosPageStates(BuildContext context) {
   return WidgetbookWrapCatalogFrame(
-    title: 'PhotosPage',
+    title: 'OnboardingPhotosBody',
     children: [
       WidgetbookPhoneStateCard(
         label: 'no photos disabled',
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             profile: widgetbookOnboardingProfileNoPhotos,
-            child: PhotosPage(),
+            child: OnboardingPhotosBody(),
           ),
         ),
       ),
@@ -37,7 +37,7 @@ Widget photosPageStates(BuildContext context) {
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             profile: widgetbookOnboardingProfileOnePhoto,
-            child: PhotosPage(),
+            child: OnboardingPhotosBody(),
           ),
         ),
       ),
@@ -46,7 +46,7 @@ Widget photosPageStates(BuildContext context) {
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             profile: _profileReadyPhotos,
-            child: PhotosPage(),
+            child: OnboardingPhotosBody(),
           ),
         ),
       ),
@@ -55,7 +55,7 @@ Widget photosPageStates(BuildContext context) {
         child: WidgetbookMaterialPhoneFrame(
           child: WidgetbookOnboardingScope(
             profile: _profileReadyPhotos,
-            child: PhotosPage(profileCompletionOnly: true),
+            child: OnboardingPhotosBody(profileCompletionOnly: true),
           ),
         ),
       ),
@@ -65,7 +65,7 @@ Widget photosPageStates(BuildContext context) {
           child: WidgetbookOnboardingScope(
             profile: widgetbookOnboardingProfileOnePhoto,
             uploadState: widgetbookOnboardingSecondPhotoUploadingState,
-            child: PhotosPage(profileCompletionOnly: true),
+            child: OnboardingPhotosBody(profileCompletionOnly: true),
           ),
         ),
       ),
@@ -76,7 +76,7 @@ Widget photosPageStates(BuildContext context) {
             textScale: 2,
             child: WidgetbookOnboardingScope(
               profile: widgetbookOnboardingProfileOnePhoto,
-              child: PhotosPage(profileCompletionOnly: true),
+              child: OnboardingPhotosBody(profileCompletionOnly: true),
             ),
           ),
         ),

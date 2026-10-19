@@ -3,10 +3,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
-import 'package:catch_dating_app/explore/data/explore_recommendations_repository.dart';
-import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
-import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
-import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
@@ -66,8 +62,6 @@ class DashboardFullViewModel {
     required this.pendingReviewEvent,
     this.clubPostNotifications = const <ActivityNotification>[],
     required this.attendedEventsSection,
-    this._weeklyActivitySection,
-    this._recommendationsSection,
   });
 
   final List<Event> upcomingEvents;
@@ -77,22 +71,6 @@ class DashboardFullViewModel {
   final Event? pendingReviewEvent;
   final List<ActivityNotification> clubPostNotifications;
   final DashboardSectionModel<List<Event>> attendedEventsSection;
-  final DashboardSectionModel<WeeklyActivitySnapshot>? _weeklyActivitySection;
-  final DashboardSectionModel<List<ExploreEventRecommendation>>?
-  _recommendationsSection;
-
-  @Deprecated('Home no longer renders weekly activity.')
-  DashboardSectionModel<WeeklyActivitySnapshot> get weeklyActivitySection =>
-      _weeklyActivitySection ??
-      DashboardSectionModel<WeeklyActivitySnapshot>.data(
-        WeeklyActivitySnapshot.unsupported(referenceDate: DateTime.now()),
-      );
-
-  @Deprecated('Explore owns recommendations.')
-  DashboardSectionModel<List<ExploreEventRecommendation>>
-  get recommendationsSection =>
-      _recommendationsSection ??
-      const DashboardSectionModel<List<ExploreEventRecommendation>>.data([]);
 }
 
 enum DashboardHomeScreenStatus { loading, error, empty, full }
@@ -290,11 +268,7 @@ bool _isSameLocalDay(DateTime a, DateTime b) {
 DashboardFullViewModel buildDashboardFullViewModel({
   required List<Event> signedUpEvents,
   String? uid,
-  UserProfile? viewer,
   required AsyncValue<List<Event>> attendedEventsAsync,
-  @Deprecated('Explore owns recommendations; retained for compatibility.')
-  AsyncValue<List<ExploreEventRecommendationCandidate>>? recommendedEventsAsync,
-  AsyncValue<WeeklyActivitySnapshot>? weeklyActivityAsync,
   AsyncValue<List<Review>> reviewsByUserAsync = const AsyncData<List<Review>>(
     [],
   ),
@@ -303,9 +277,6 @@ DashboardFullViewModel buildDashboardFullViewModel({
   DateTime? now,
 }) {
   final effectiveNow = now ?? DateTime.now();
-  final attendedEventsState = catchAsyncStateFromAsyncValue(
-    attendedEventsAsync,
-  );
   final reviewsByUserState = catchAsyncStateFromAsyncValue(reviewsByUserAsync);
 
   final upcomingEvents =
@@ -326,36 +297,6 @@ DashboardFullViewModel buildDashboardFullViewModel({
     ),
     data: DashboardSectionModel<List<Event>>.data,
   );
-  final weeklyActivitySection = _buildWeeklyActivitySection(
-    attendedEventsAsync: attendedEventsAsync,
-    weeklyActivityAsync: weeklyActivityAsync,
-    referenceDate: effectiveNow,
-  );
-  final signedUpEventIds = signedUpEvents.map((event) => event.id).toSet();
-  final recommendationsSection =
-      recommendedEventsAsync?.when(
-        loading: () =>
-            const DashboardSectionModel<
-              List<ExploreEventRecommendation>
-            >.loading('Loading recommended events...'),
-        error: (error, stackTrace) =>
-            DashboardSectionModel<List<ExploreEventRecommendation>>.error(
-              'Unable to load recommended events.',
-              error: error,
-            ),
-        data: (candidates) =>
-            DashboardSectionModel<List<ExploreEventRecommendation>>.data(
-              rankExploreEventRecommendations(
-                candidates: candidates,
-                signedUpEventIds: signedUpEventIds,
-                attendedEvents: attendedEventsState.value ?? const <Event>[],
-                signedUpEvents: signedUpEvents,
-                viewer: viewer,
-                now: effectiveNow,
-              ),
-            ),
-      ) ??
-      const DashboardSectionModel<List<ExploreEventRecommendation>>.data([]);
   final activeSwipeEvent = attendedEventsSection.data == null
       ? null
       : latestEventWithOpenSwipeWindow(
@@ -391,162 +332,7 @@ DashboardFullViewModel buildDashboardFullViewModel({
     pendingReviewEvent: pendingReviewEvent,
     clubPostNotifications: clubPostNotifications,
     attendedEventsSection: attendedEventsSection,
-    weeklyActivitySection: weeklyActivitySection,
-    recommendationsSection: recommendationsSection,
   );
-}
-
-DashboardSectionModel<WeeklyActivitySnapshot> _buildWeeklyActivitySection({
-  required AsyncValue<List<Event>> attendedEventsAsync,
-  required AsyncValue<WeeklyActivitySnapshot>? weeklyActivityAsync,
-  required DateTime referenceDate,
-}) {
-  final attendedEventsState = catchAsyncStateFromAsyncValue(
-    attendedEventsAsync,
-  );
-  final weeklyActivityState = weeklyActivityAsync == null
-      ? null
-      : catchAsyncStateFromAsyncValue(weeklyActivityAsync);
-  if (attendedEventsState.isLoading) {
-    return const DashboardSectionModel<WeeklyActivitySnapshot>.loading(
-      'Loading your recent events...',
-    );
-  }
-  if (weeklyActivityState?.isLoading ?? false) {
-    return const DashboardSectionModel<WeeklyActivitySnapshot>.loading(
-      'Loading your weekly activity...',
-    );
-  }
-
-  final attendedEvents = attendedEventsState.value;
-  final platformSnapshot = weeklyActivityState?.value;
-  if (attendedEventsState.hasError &&
-      platformSnapshot?.hasPlatformConnection != true) {
-    return DashboardSectionModel<WeeklyActivitySnapshot>.error(
-      'Unable to load your recent events.',
-      error: attendedEventsState.error,
-    );
-  }
-
-  if (attendedEvents != null || platformSnapshot != null) {
-    return DashboardSectionModel<WeeklyActivitySnapshot>.data(
-      buildDashboardWeeklyActivitySnapshot(
-        attendedEvents: attendedEvents ?? const <Event>[],
-        platformSnapshot:
-            platformSnapshot ??
-            WeeklyActivitySnapshot.unsupported(referenceDate: referenceDate),
-        referenceDate: referenceDate,
-      ),
-    );
-  }
-
-  return DashboardSectionModel<WeeklyActivitySnapshot>.data(
-    WeeklyActivitySnapshot.unsupported(referenceDate: referenceDate),
-  );
-}
-
-WeeklyActivitySnapshot buildDashboardWeeklyActivitySnapshot({
-  required List<Event> attendedEvents,
-  required WeeklyActivitySnapshot platformSnapshot,
-  required DateTime referenceDate,
-}) {
-  final catchActivities = attendedEvents
-      .map(_activityFromCatchEvent)
-      .toList(growable: false);
-
-  if (!platformSnapshot.hasPlatformConnection) {
-    final catchSummary = WeeklyActivitySummary.fromActivities(
-      catchActivities,
-      referenceDate: referenceDate,
-      refreshedAt: platformSnapshot.summary.refreshedAt,
-    );
-    if (!catchSummary.hasEvents) {
-      return platformSnapshot.copyWith(
-        summary: catchSummary,
-        activities: const [],
-        source: WeeklyActivitySource.none,
-      );
-    }
-    return platformSnapshot.copyWith(
-      summary: catchSummary,
-      activities: catchActivities,
-      source: WeeklyActivitySource.catchFallback,
-      messageKind: WeeklyActivityMessageKind.catchOnly,
-    );
-  }
-
-  final platformActivities = platformSnapshot.activities;
-  final catchOnlyActivities = catchActivities
-      .where(
-        (activity) => !_overlapsPlatformActivity(activity, platformActivities),
-      )
-      .toList(growable: false);
-  final mergedActivities = [...platformActivities, ...catchOnlyActivities];
-  final summary = WeeklyActivitySummary.fromActivities(
-    mergedActivities,
-    referenceDate: referenceDate,
-    refreshedAt: platformSnapshot.summary.refreshedAt,
-  );
-
-  final source = _weeklyActivitySource(
-    platformActivities: platformActivities,
-    catchActivities: catchOnlyActivities,
-    summary: summary,
-  );
-
-  return platformSnapshot.copyWith(
-    summary: summary,
-    activities: mergedActivities,
-    source: source,
-    clearMessage: source != WeeklyActivitySource.catchFallback,
-    messageKind: source == WeeklyActivitySource.catchFallback
-        ? WeeklyActivityMessageKind.catchOnly
-        : null,
-  );
-}
-
-PhysicalActivity _activityFromCatchEvent(Event event) {
-  final activityKind = event.eventFormat.healthActivityKind;
-  return PhysicalActivity(
-    stableId: 'catch:${event.id}',
-    provider: PhysicalActivityProvider.catchAttendance,
-    type: activityKind,
-    startTime: event.startTime,
-    endTime: event.endTime,
-    distanceMeters: activityKind.isDistanceBased
-        ? event.distanceKm * 1000
-        : null,
-    sourceName: 'Catch',
-    matchedCatchEventId: event.id,
-  );
-}
-
-bool _overlapsPlatformActivity(
-  PhysicalActivity catchActivity,
-  List<PhysicalActivity> platformActivities,
-) {
-  final matchWindowStart = catchActivity.startTime.subtract(
-    const Duration(minutes: 30),
-  );
-  final matchWindowEnd = catchActivity.endTime.add(const Duration(minutes: 30));
-  return platformActivities.any(
-    (activity) => activity.overlaps(matchWindowStart, matchWindowEnd),
-  );
-}
-
-WeeklyActivitySource _weeklyActivitySource({
-  required List<PhysicalActivity> platformActivities,
-  required List<PhysicalActivity> catchActivities,
-  required WeeklyActivitySummary summary,
-}) {
-  if (!summary.hasEvents) return WeeklyActivitySource.none;
-  if (platformActivities.isNotEmpty && catchActivities.isNotEmpty) {
-    return WeeklyActivitySource.mixed;
-  }
-  if (platformActivities.isNotEmpty) {
-    return WeeklyActivitySource.healthPlatform;
-  }
-  return WeeklyActivitySource.catchFallback;
 }
 
 Event? _latestUnreviewedAttendedEvent(
@@ -559,30 +345,6 @@ Event? _latestUnreviewedAttendedEvent(
           .toList()
         ..sort((a, b) => b.endTime.compareTo(a.endTime));
   return unreviewedEvents.firstOrNull;
-}
-
-@Deprecated('Use ExploreEventRecommendation from explore recommendations.')
-typedef DashboardEventRecommendation = ExploreEventRecommendation;
-
-@Deprecated('Use rankExploreEventRecommendations from explore recommendations.')
-List<DashboardEventRecommendation> rankDashboardEventRecommendations({
-  required List<ExploreEventRecommendationCandidate> candidates,
-  required Set<String> signedUpEventIds,
-  required List<Event> attendedEvents,
-  required List<Event> signedUpEvents,
-  required DateTime now,
-  UserProfile? viewer,
-  int limit = 10,
-}) {
-  return rankExploreEventRecommendations(
-    candidates: candidates,
-    signedUpEventIds: signedUpEventIds,
-    attendedEvents: attendedEvents,
-    signedUpEvents: signedUpEvents,
-    now: now,
-    viewer: viewer,
-    limit: limit,
-  );
 }
 
 /// Combines signed-up and attended events into the live-layer home model.
@@ -603,7 +365,6 @@ DashboardFullViewModel dashboardFullViewModel(
   return buildDashboardFullViewModel(
     signedUpEvents: signedUpEvents,
     uid: uid,
-    viewer: user,
     attendedEventsAsync: ref.watch(watchAttendedEventsProvider(uid)),
     reviewsByUserAsync: ref.watch(watchReviewsByUserProvider(uid)),
     clubPostNotifications: clubPostNotifications,

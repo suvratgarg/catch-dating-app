@@ -3,7 +3,7 @@ import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_design_primitives.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -16,7 +16,7 @@ import 'fixtures.dart';
 
 @widgetbook.UseCase(
   name: 'Photo strip tile states',
-  type: EventDetailPhotoStripTile,
+  type: EventDetailPhotoTile,
   path: '[Event Detail]/Design Primitives',
 )
 Widget eventDetailPhotoStripTileStates(BuildContext context) {
@@ -30,14 +30,14 @@ Widget eventDetailPhotoStripTileStates(BuildContext context) {
   );
 
   return WidgetbookScrollCatalogFrame(
-    title: 'EventDetailPhotoStripTile',
+    title: 'EventDetailPhotoTile',
     catalogId: 'event_detail.design.photo_strip_tile',
     children: [
       WidgetbookPageStateCard(
         label: 'uploaded photo',
         child: SizedBox(
           width: WidgetbookPreviewLayout.eventCompactAvatarWidth,
-          child: EventDetailPhotoStripTile(
+          child: EventDetailPhotoTile(
             index: 0,
             photo: photo,
             backgroundColor: activity.soft,
@@ -50,7 +50,7 @@ Widget eventDetailPhotoStripTileStates(BuildContext context) {
         label: 'placeholder',
         child: SizedBox(
           width: WidgetbookPreviewLayout.eventCompactAvatarWidth,
-          child: EventDetailPhotoStripTile(
+          child: EventDetailPhotoTile(
             index: 1,
             photo: null,
             backgroundColor: activity.soft,
@@ -65,12 +65,12 @@ Widget eventDetailPhotoStripTileStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Ticket stub cell states',
-  type: TicketStubCell,
+  type: TicketStubTile,
   path: '[Event Detail]/Design Primitives',
 )
 Widget eventDetailTicketStubCellStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'TicketStubCell',
+    title: 'TicketStubTile',
     catalogId: 'event_detail.design.ticket_stub_cell',
     children: [
       WidgetbookPageStateCard(
@@ -80,8 +80,8 @@ Widget eventDetailTicketStubCellStates(BuildContext context) {
           child: Row(
             children: [
               Expanded(
-                child: TicketStubCell(
-                  cell: TicketStubCellData(
+                child: TicketStubTile(
+                  cell: TicketStubTileData(
                     label: 'When',
                     value: 'Wed, Jun 24',
                     detail: '6:30 AM-8:15 AM',
@@ -91,8 +91,8 @@ Widget eventDetailTicketStubCellStates(BuildContext context) {
                 ),
               ),
               Expanded(
-                child: TicketStubCell(
-                  cell: TicketStubCellData(
+                child: TicketStubTile(
+                  cell: TicketStubTileData(
                     label: 'Where',
                     value: 'Carter Road Jetty',
                     detail: 'Bandra West',

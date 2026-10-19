@@ -3,7 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
-import {newWidgetPolicyIssues} from "./component_concepts.mjs";
+import {componentAliasIndex, newWidgetPolicyIssues, normalizeSymbol} from "./component_concepts.mjs";
+import {roleNounRedirectAdvice} from "./lib/component_naming.mjs";
 import {isOwnedCompositionRenderer} from "./lib/owned_composition_renderers.mjs";
 import {
   buildLineStarts,
@@ -60,6 +61,11 @@ const currentSnapshot = scanSnapshot({
 });
 const widgetbookNames = readWidgetbookNames();
 const componentIdentities = readComponentIdentities();
+const registryDocument = JSON.parse(
+  fs.readFileSync(fromRepo("design/components/catch.components.json"), "utf8"),
+);
+const aliasIndex = componentAliasIndex(registryDocument.components ?? []);
+const roleNounRedirects = registryDocument.roleNounRedirects ?? {};
 
 const newWidgetClassCandidates = currentSnapshot.widgetClasses.filter(
   (entry) => !baseSnapshot.widgetClassKeys.has(widgetClassKey(entry)),
@@ -109,7 +115,7 @@ const report = {
     widgetbook: "widgetbook/lib/main.directories.g.dart",
     registry: "design/components/catch.components.json",
     policy:
-      "New or moved public widget classes need Widgetbook coverage and feature UI requires canonical role names/file suffixes; shared widgets also require a canonical Catch* name and exact source identity in the component registry. New or moved private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public covered widgets. The catalog inventory is generated separately.",
+      "New or moved public widget classes need Widgetbook coverage and feature UI requires canonical role names/file suffixes; design-system homes also require a canonical Catch* name, lib/core/widgets and design-system widgets require exact source identity in the component registry, and no new widget may reuse a registered component's name or alias. New or moved private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public covered widgets. The catalog inventory is generated separately.",
   },
   summary,
   movedWidgets,
@@ -201,9 +207,11 @@ function dartLibraryFor(file, source) {
 function classifyWidget(entry) {
   const widgetbookCovered = widgetbookNames.has(entry.name);
   const componentContracted = componentIdentities.has(`${entry.file}::${entry.name}`);
+  const registeredOwner = aliasIndex.get(normalizeSymbol(entry.name)) ?? null;
   const issues = newWidgetPolicyIssues(entry, {
     widgetbookCovered,
     componentContracted,
+    registeredOwner,
   });
 
   return {
@@ -212,7 +220,8 @@ function classifyWidget(entry) {
     componentContracted,
     status: issues.length === 0 ? "covered" : "unresolved",
     issues,
-    recommendedAction: recommendationForWidget(entry, issues),
+    registeredOwner,
+    recommendedAction: recommendationForWidget({...entry, registeredOwner}, issues),
   };
 }
 
@@ -227,6 +236,13 @@ function classifyWidgetHelper(entry) {
 }
 
 function recommendationForWidget(entry, issues) {
+  if (issues.includes("duplicate-of-registered-component")) {
+    return `Use ${entry.registeredOwner.symbol} (${entry.registeredOwner.id}) instead; add a recipe or slot to it if it lacks something. A new name is not a new responsibility.`;
+  }
+  if (issues.includes("noncanonical-feature-widget-name")) {
+    const advice = roleNounRedirectAdvice(entry.name, roleNounRedirects);
+    return `Name the widget <Feature><RoleNoun> with a role noun from docs/app_architecture.md${advice ? ` (${advice})` : ""}.`;
+  }
   if (issues.includes("private-widget-class")) {
     return "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook coverage and a shared-component registry identity where required.";
   }

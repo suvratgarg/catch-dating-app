@@ -35,19 +35,19 @@ Widget exploreSkeletonListStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Loading sliver states',
-  type: ExploreEventsLoadingSliver,
+  type: ExploreEventsSkeleton,
   path: '[Explore]/Sections',
 )
 Widget exploreEventsLoadingSliverStates(BuildContext context) {
   return const WidgetbookScrollCatalogFrame(
-    title: 'ExploreEventsLoadingSliver',
+    title: 'ExploreEventsSkeleton',
     catalogId: 'section.explore.feed.loading',
     children: [
       WidgetbookPageStateCard(
         label: 'bounded skeleton',
         child: WidgetbookExploreSliverFrame(
           height: WidgetbookPreviewLayout.tallNarrowPanelHeight,
-          child: CustomScrollView(slivers: [ExploreEventsLoadingSliver()]),
+          child: CustomScrollView(slivers: [ExploreEventsSkeleton()]),
         ),
       ),
     ],

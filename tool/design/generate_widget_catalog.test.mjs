@@ -8,6 +8,9 @@ import {
   catalogEnd,
   catalogStart,
   classPurpose,
+  namingFindings,
+  namingRatchetProblems,
+  prunedNamingBaseline,
   renderCatalogInventory,
   replaceCatalogInventory,
   runCatalog,
@@ -146,4 +149,41 @@ test("known-bad hand edits and source changes fail the real catalog drift check"
   write("lib/example/feature_row.dart", source.replace("One feature row.", "The changed contract."));
   assert.throws(() => runCatalog({repoRoot}), /stale or hand-edited/u);
   assert.equal(runCatalog({repoRoot, mode: "json"}).rows[0].purpose, "The changed contract.");
+});
+
+test("the naming ratchet rejects new debt with a redirect and fixed debt still listed", () => {
+  const widget = (name, file) => ({name, file, line: 1, classKind: "widget", visibility: "public", source: ""});
+  const findings = namingFindings({
+    declarations: [
+      widget("ProfilePanel", "lib/profile/presentation/profile_panel.dart"),
+      widget("ProfileSection", "lib/profile/presentation/profile_section.dart"),
+    ],
+    symbolDeclarations: [{file: "lib/locations/shared/map.dart", kind: "class", name: "CatchMapMarker", line: 1}],
+  });
+  assert.deepEqual(findings.map((entry) => entry.name), ["CatchMapMarker", "ProfilePanel"]);
+  const redirects = {Panel: ["Section", "Surface"]};
+  assert.deepEqual(namingRatchetProblems({findings, baseline: {allowedFindings: [findings[0]]}, redirects}), [
+    "lib/profile/presentation/profile_panel.dart: ProfilePanel [noncanonical-feature-widget-file, " +
+      "noncanonical-feature-widget-name] is new naming debt; Panel is spelled Section or Surface here",
+  ]);
+  const stale = {allowedFindings: [...findings,
+    {file: "lib/old/old_thing.dart", name: "OldThing", issues: ["noncanonical-feature-widget-name"]}]};
+  assert.match(namingRatchetProblems({findings, baseline: stale})[0], /OldThing .* is fixed; run node/u);
+  assert.deepEqual(prunedNamingBaseline({findings, baseline: stale}).allowedFindings, findings);
+  assert.deepEqual(namingRatchetProblems({findings, baseline: prunedNamingBaseline({findings, baseline: stale})}), []);
+  // Moving a file carries its debt; write mode records the new path.
+  const moved = {allowedFindings: [{...findings[1], file: "lib/profile/old/profile_panel.dart"}, findings[0]]};
+  assert.deepEqual(namingRatchetProblems({findings, baseline: moved}), []);
+  assert.equal(prunedNamingBaseline({findings, baseline: moved}).allowedFindings[0].file,
+    "lib/profile/presentation/profile_panel.dart");
+});
+
+test("rendered rows index registry aliases so a search for any likely name finds the widget", () => {
+  const rows = buildCatalogRows({
+    declarations: [declaration()],
+    components: [{id: "catch.menu", level: "L3", roleNoun: "Menu", summary: "Menu.", aliases: ["DropdownMenu", "PopupMenu"],
+      dart: {symbol: "CatchMenu", file}, governance: {conceptId: "catch.menu"}}],
+  });
+  assert.deepEqual(rows[0].aliases, ["DropdownMenu", "PopupMenu"]);
+  assert.match(renderCatalogInventory(rows), /Also called: <code>DropdownMenu<\/code>, <code>PopupMenu<\/code>\./u);
 });

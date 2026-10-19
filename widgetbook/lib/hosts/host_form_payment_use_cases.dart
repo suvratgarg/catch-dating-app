@@ -138,7 +138,10 @@ Widget hostFormPaymentsPreview(BuildContext context) => WidgetbookFixtureScope(
     body: const CatchRouteBody.fullBleed(
       child: CustomScrollView(
         slivers: [
-          HostFormPaymentsSectionList(organizerId: 'org_demo', formId: 'form_demo'),
+          HostFormPaymentsSectionList(
+            organizerId: 'org_demo',
+            formId: 'form_demo',
+          ),
         ],
       ),
     ),

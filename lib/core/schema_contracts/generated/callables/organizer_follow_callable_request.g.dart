@@ -9,11 +9,14 @@
 final class OrganizerFollowCallableRequest {
   const OrganizerFollowCallableRequest({
     required this.organizerId,
+    this.expectedUid,
   });
 
   final String organizerId;
+  final String? expectedUid;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
+    'expectedUid': ?expectedUid,
   };
 }

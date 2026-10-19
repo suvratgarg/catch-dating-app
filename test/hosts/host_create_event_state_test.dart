@@ -316,9 +316,9 @@ void main() {
 
     expect(review.canSubmit, isTrue);
     expect(review.items.map((item) => item.status), [
-      CatchFormStepRowListStatus.complete,
-      CatchFormStepRowListStatus.complete,
-      CatchFormStepRowListStatus.complete,
+      CatchFormStepListStatus.complete,
+      CatchFormStepListStatus.complete,
+      CatchFormStepListStatus.complete,
     ]);
 
     final missingName = CreateEventWizardReviewState.resolve(
@@ -357,7 +357,7 @@ void main() {
     expect(missingName.canSubmit, isFalse);
     expect(
       missingName.items.first.status,
-      CatchFormStepRowListStatus.needsInformation,
+      CatchFormStepListStatus.needsInformation,
     );
 
     final incomplete = CreateEventWizardReviewState.resolve(
@@ -745,7 +745,7 @@ void main() {
     const minimum = CreateEventScheduleState(
       selectedDate: null,
       selectedStartTime: null,
-      durationMinutes: CatchBusinessRules.eventMinDurationMinutes,
+      durationMinutes: BusinessRules.eventMinDurationMinutes,
     );
     const middle = CreateEventScheduleState(
       selectedDate: null,
@@ -754,7 +754,7 @@ void main() {
     const maximum = CreateEventScheduleState(
       selectedDate: null,
       selectedStartTime: null,
-      durationMinutes: CatchBusinessRules.eventMaxDurationMinutes,
+      durationMinutes: BusinessRules.eventMaxDurationMinutes,
     );
 
     expect(minimum.canDecreaseDuration, isFalse);
@@ -763,13 +763,13 @@ void main() {
     expect(middle.canIncreaseDuration, isTrue);
     expect(
       middle.decreaseDuration().durationMinutes,
-      CatchBusinessRules.eventDefaultDurationMinutes -
-          CatchBusinessRules.eventDurationStepMinutes,
+      BusinessRules.eventDefaultDurationMinutes -
+          BusinessRules.eventDurationStepMinutes,
     );
     expect(
       middle.increaseDuration().durationMinutes,
-      CatchBusinessRules.eventDefaultDurationMinutes +
-          CatchBusinessRules.eventDurationStepMinutes,
+      BusinessRules.eventDefaultDurationMinutes +
+          BusinessRules.eventDurationStepMinutes,
     );
     expect(maximum.canIncreaseDuration, isFalse);
     expect(maximum.increaseDuration(), same(maximum));

@@ -196,7 +196,7 @@ class CompanionPaperTicket extends StatelessWidget {
           padding: EdgeInsets.zero,
           radius: CatchRadius.md,
           backgroundColor: t.surface,
-          borderColor: t.line,
+          borderRole: CatchBorderRole.separator,
           boxShadow: CatchElevation.card,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.md),
@@ -449,13 +449,13 @@ class CompanionExpectationSection extends StatelessWidget {
     return CatchSurface(
       radius: CatchRadius.md,
       backgroundColor: t.surface,
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       padding: CatchInsets.content,
       boxShadow: CatchElevation.card,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          StageSectionLabel(
+          StageSectionHeader(
             icon: CatchIcons.eventAvailableRounded,
             label: context
                 .l10n
@@ -509,7 +509,6 @@ class CompanionPrivacySection extends StatelessWidget {
     return CatchSurface(
       radius: CatchRadius.sm,
       backgroundColor: t.primarySoft,
-      borderWidth: 0,
       padding: CatchInsets.contentDense,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

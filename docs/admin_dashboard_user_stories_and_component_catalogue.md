@@ -1,7 +1,7 @@
 ---
 doc_id: admin_dashboard_user_stories_and_component_catalogue
 version: 0.2.27
-updated: 2026-07-24
+updated: 2026-10-17
 owner: admin_console
 status: active
 ---
@@ -285,12 +285,12 @@ Current adherence:
 - Good: `SafetyTriageScreen` now delegates rendering to a prop-driven
   `SafetyTriageWorkspace`, giving Storybook deterministic route/workspace
   coverage for queue detail, assignment, and status-only decision states.
-- Good: queue cards and composition bars use complete aggregate count metrics,
-  while derived priority and age charts are explicitly labelled as the capped
-  returned preview rather than the full backlog or an SLA breach.
-- Good: chart labels and values remain readable without color, zero values are
-  represented honestly, and machine queue codes are adapted into human-facing
-  operational labels.
+- Good: metric cards use authoritative aggregate open counts and separately
+  disclose returned preview row counts. Filtering and search apply only to the
+  loaded preview; an empty preview does not imply an empty backlog.
+- Good: metric labels and values remain readable without color, zero values are
+  represented honestly, and machine queue codes use human-facing operational
+  labels. The screen does not implement priority or age-distribution charts.
 - Partial: `adminDecideSafetyTriageItem` supports reviewed/dismissed
   status-only decisions with explicit row selection and required notes.
 - Weak: escalation, restrictions, account/content changes, and richer

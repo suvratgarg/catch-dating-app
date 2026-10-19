@@ -13,7 +13,7 @@ import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_inline_edit_patch_factory.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_height.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_height_editor.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart'
     show AutofillHints, IconData, TextCapitalization, TextInputType, ValueKey;
@@ -288,23 +288,26 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
       validator: validateRequiredDisplayName,
       toFieldValue: (value) => value.trim(),
     ),
-    CatchFormReadRow<UpdateUserProfilePatch>(
-      id: 'dateOfBirth',
-      icon: CatchIcons.cakeOutlined,
-      label: l10n.userProfileSelfProfileEditTabStateLabelDateOfBirth,
-      body: l10n.userProfileSelfProfileEditTabStateBodyPadleftPadleft2YearAgeon(
-        padLeft: user.dateOfBirth.day.toString().padLeft(2, '0'),
-        padLeft2: user.dateOfBirth.month.toString().padLeft(2, '0'),
-        year: user.dateOfBirth.year,
-        ageOn: user.ageOn(today),
+    if (user.dateOfBirth case final birthday?)
+      CatchFormReadRow<UpdateUserProfilePatch>(
+        id: 'dateOfBirth',
+        icon: CatchIcons.cakeOutlined,
+        label: l10n.userProfileSelfProfileEditTabStateLabelDateOfBirth,
+        body: l10n
+            .userProfileSelfProfileEditTabStateBodyPadleftPadleft2YearAgeon(
+              padLeft: birthday.day.toString().padLeft(2, '0'),
+              padLeft2: birthday.month.toString().padLeft(2, '0'),
+              year: birthday.year,
+              ageOn: user.ageOn(today)!,
+            ),
       ),
-    ),
-    CatchFormReadRow<UpdateUserProfilePatch>(
-      id: 'gender',
-      icon: CatchIcons.wcOutlined,
-      label: l10n.userProfileSelfProfileEditTabStateLabelGender,
-      body: user.gender.label,
-    ),
+    if (user.gender case final gender?)
+      CatchFormReadRow<UpdateUserProfilePatch>(
+        id: 'gender',
+        icon: CatchIcons.wcOutlined,
+        label: l10n.userProfileSelfProfileEditTabStateLabelGender,
+        body: gender.label,
+      ),
     // Phone is the OTP identity credential; editing requires Auth
     // re-verification before Firestore can safely change.
     CatchFormReadRow<UpdateUserProfilePatch>(

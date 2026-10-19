@@ -21,6 +21,7 @@ import 'package:catch_dating_app/event_success/event_success.dart'
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/domain/event_profile_requirements.dart';
 import 'package:catch_dating_app/events/presentation/attendee_event_share_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_controller.dart';
@@ -29,7 +30,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_information_st
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_loading_skeleton.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
@@ -448,6 +449,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                 ),
                 onCompleteProfile: () => _openEventProfileCompletion(
                   context,
+                  event: vm.event,
                   clubId: widget.clubId,
                   eventId: vm.event.id,
                 ),
@@ -657,17 +659,21 @@ class _EventDetailBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!isAuthenticated) {
-      return GuestBookCta(onPressed: onGuestBook, darkSurface: darkSurface);
+      return GuestBookDock(onPressed: onGuestBook, darkSurface: darkSurface);
     }
 
-    if (!eventDetailHasBookingReadyProfile(userProfile, now: now)) {
+    if (!eventDetailHasBookingReadyProfile(
+      userProfile,
+      now: now,
+      event: event,
+    )) {
       return EventBookingDock(
         label: completeProfileLabel,
         onPressed: onCompleteProfile,
       );
     }
 
-    return EventDetailCta(
+    return EventDetailDock(
       event: event,
       userProfile: userProfile!,
       clubId: clubId,

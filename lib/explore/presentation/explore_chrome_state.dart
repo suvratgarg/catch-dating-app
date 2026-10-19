@@ -35,22 +35,22 @@ class ExploreMapLauncherState {
   final String semanticLabel;
 }
 
-class ExploreCityTriggerState {
-  const ExploreCityTriggerState({
+class ExploreCityButtonState {
+  const ExploreCityButtonState({
     required this.tooltipLabel,
     required this.semanticLabel,
     required this.scopeLabel,
     required this.icon,
   });
 
-  factory ExploreCityTriggerState.from({
+  factory ExploreCityButtonState.from({
     required CityData city,
     required bool focused,
     required AppLocalizations l10n,
   }) {
     final chooseLabel = l10n
         .exploreExploreScreenStateVisiblecopyChooseCityLabel(label: city.label);
-    return ExploreCityTriggerState(
+    return ExploreCityButtonState(
       tooltipLabel: chooseLabel,
       semanticLabel: chooseLabel,
       scopeLabel: l10n

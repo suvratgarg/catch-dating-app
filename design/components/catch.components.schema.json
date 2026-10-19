@@ -3,7 +3,7 @@
   "$id": "https://catch.local/design/components/catch.components.schema.json",
   "title": "Catch Component Contract Registry",
   "type": "object",
-  "required": ["version", "updated", "sourceOfTruth", "interactionContracts", "components"],
+  "required": ["version", "updated", "sourceOfTruth", "interactionContracts", "roleNounRedirects", "components"],
   "additionalProperties": false,
   "properties": {
     "$schema": {
@@ -103,6 +103,18 @@
         }
       }
     },
+    "roleNounRedirects": {
+      "type": "object",
+      "description": "Nouns agents commonly write that are synonyms of existing role nouns. Naming checks name these targets instead of only rejecting the noun (docs/app_architecture.md Naming Grammar).",
+      "minProperties": 1,
+      "propertyNames": {"pattern": "^[A-Z][A-Za-z0-9]*$"},
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {"$ref": "#/$defs/roleNoun"}
+      }
+    },
     "components": {
       "type": "array",
       "items": {
@@ -112,18 +124,26 @@
     }
   },
   "$defs": {
+    "componentAliases": {
+      "type": "array",
+      "description": "Other names an agent unaware of this component would plausibly write. The catalog indexes them and the new-widget gate rejects a new widget whose name matches one.",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^(?:[A-Z][a-z0-9]*)+$"}
+    },
     "componentLevel": {
       "enum": ["L0", "L1", "L2", "L3", "L4", "L4a", "L5", "L6"]
     },
     "roleNoun": {
       "enum": [
         "Button", "IconAction", "Field", "FieldLanes", "Section", "SectionList",
-        "Tile", "Row", "RowList", "Chip", "Badge", "Banner", "Sheet", "Dialog",
+        "Tile", "Row", "Chip", "Badge", "Banner", "Sheet", "Dialog",
         "Notice", "EmptyState", "ErrorState", "Skeleton", "Indicator", "TopBar",
         "Header", "HeaderTitle", "Scaffold", "PageBody", "ScrollView", "TabBar",
         "TabScaffold", "Poster", "Polaroid", "Ticket", "Gap", "Inset", "Divider",
         "Avatar", "Photo", "Cover", "Stepper", "StepFlow", "Accordion", "Drawer",
-        "Overlay", "Viewport", "Layout", "Action", "Menu", "Surface", "Input", "Text", "Image", "Scope", "AsyncBoundary"
+        "Overlay", "Viewport", "Layout", "Action", "Menu", "Surface", "Input", "Text", "Image", "Scope", "AsyncBoundary",
+        "Table", "Card", "Body", "List", "Step", "Editor", "Rail", "Picker", "Grid", "Preview", "Dock", "Map", "Pin", "Thumbnail", "Bubble", "Form", "Listener", "Transition"
       ]
     },
     "widgetNaming": {
@@ -172,9 +192,9 @@
         "name",
         "status",
         "kind",
+        "tier",
         "summary",
         "dart",
-        "surfaces",
         "design",
         "contract",
         "governance",
@@ -196,9 +216,14 @@
         "kind": {
           "enum": ["primitive", "composite", "pattern", "screen-contract"]
         },
+        "tier": {
+          "enum": ["T1", "T2", "T3", "T4"],
+          "description": "Cross-framework parity tier (see design/components/README.md). T1 universal: Flutter and @catch/web-ui now. T2 product: React built in @catch/web-ui on first web need. T3 native-only: Flutter only. T4 surface-specific: one surface owns it."
+        },
         "level": {"$ref": "#/$defs/componentLevel"},
         "roleNoun": {"$ref": "#/$defs/roleNoun"},
         "naming": {"$ref": "#/$defs/widgetNaming"},
+        "aliases": {"$ref": "#/$defs/componentAliases"},
         "summary": {
           "type": "string",
           "minLength": 1
@@ -226,29 +251,7 @@
             }
           }
         },
-        "surfaces": {
-          "type": "object",
-          "additionalProperties": false,
-          "minProperties": 1,
-          "properties": {
-            "flutter": {
-              "type": "string",
-              "minLength": 1
-            },
-            "website": {
-              "type": "string",
-              "minLength": 1
-            },
-            "admin": {
-              "type": "string",
-              "minLength": 1
-            },
-            "webui": {
-              "type": "string",
-              "minLength": 1
-            }
-          }
-        },
+        "react": {"$ref": "#/$defs/reactImplementation"},
         "design": {
           "type": "object",
           "required": ["figma", "codeConnect", "claude"],
@@ -673,6 +676,38 @@
         "reason": {"type": "string", "minLength": 12}
       }
     },
+    "reactImplementation": {
+      "type": "object",
+      "description": "The @catch/web-ui implementation of this contract. Surface adapters are recorded in the admin and website registries by componentId.",
+      "required": ["symbol", "file", "api"],
+      "additionalProperties": false,
+      "properties": {
+        "symbol": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$"},
+        "file": {"type": "string", "pattern": "^packages/web-ui/src/.+\\.tsx$"},
+        "api": {
+          "enum": ["headless-control", "styled"],
+          "description": "headless-control: native semantics only, styled by surface adapters (pre-D10). styled: the D10 Catch* component, whose symbol equals dart.symbol (D9)."
+        },
+        "additionalSymbols": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "storybook": {
+          "type": "object",
+          "required": ["status", "story", "exportName", "states"],
+          "additionalProperties": false,
+          "properties": {
+            "status": {"enum": ["ready", "planned"]},
+            "story": {"type": "string", "pattern": "^packages/web-ui/src/.+\\.stories\\.tsx$"},
+            "exportName": {"type": "string"},
+            "states": {"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true}
+          }
+        },
+        "notes": {"type": "string"}
+      }
+    },
     "prop": {
       "type": "object",
       "required": ["name", "type", "required"],
@@ -704,6 +739,10 @@
         },
         "dartType": {
           "type": "string"
+        },
+        "tsType": {
+          "type": ["string", "null"],
+          "description": "TypeScript type of the prop in the React implementation (blueprint D9). Required on T1 and T2 contracts at L2-L4 and absent elsewhere; null marks a Flutter framework mechanism with no React prop."
         },
         "values": {
           "type": "array",
@@ -748,6 +787,7 @@
         "level": {"$ref": "#/$defs/componentLevel"},
         "roleNoun": {"$ref": "#/$defs/roleNoun"},
         "naming": {"$ref": "#/$defs/widgetNaming"},
+        "aliases": {"$ref": "#/$defs/componentAliases"},
         "id": {
           "type": "string",
           "pattern": "^catch\\.[a-z0-9_.-]+$"

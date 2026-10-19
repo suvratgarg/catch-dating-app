@@ -1,3 +1,5 @@
+import {isBookingReadyUserProfile} from "../shared/profileReadiness";
+import {eventAgeEligibility} from "../profiles/eventProfileRequirements";
 import {hasEventCommunityMembership} from
   "../memberships/communityMembershipAuthority";
 import {onCall, HttpsError, CallableRequest} from "firebase-functions/v2/https";
@@ -298,8 +300,10 @@ export async function cancelEventSignUpHandler(
       currentSignedUpCount - (retainedGuestSeat ? 0 : 1));
     let nextWaitlistedCount = currentWaitlistedCount;
     const newGenderCounts = {...event.genderCounts};
-    newGenderCounts[cancellerGender] =
+    if (cancellerGender) {
+      newGenderCounts[cancellerGender] =
         Math.max(0, (newGenderCounts[cancellerGender] ?? 1) - 1);
+    }
     let newCohortCounts = decrementCount(
       event.cohortCounts ?? {},
       cancellerCohort
@@ -319,7 +323,7 @@ export async function cancelEventSignUpHandler(
     let promotedUid: string | null = null;
     let promotedScheduleClaim: {apply: () => void} | null = null;
 
-    // Promote the first waitlist user who passes gender-cap and block checks.
+    // Revalidate current profile and policy before promoting a waitlist user.
     const activePeerIds = participantUids(activeParticipations, userId);
     for (const waitlistedParticipation of !retainedGuestSeat &&
       isEventPubliclyAccessible(event) ?
@@ -341,6 +345,9 @@ export async function cancelEventSignUpHandler(
       const waitlistUser = requireDoc<UserProfileDocument>(
         waitlistUserSnap, "UserProfileDocument (waitlist)"
       );
+      if (!isBookingReadyUserProfile(waitlistUser, event) ||
+          eventAgeEligibility(event, waitlistUser,
+            new Date(deps.nowMillis()))?.eligible === false) continue;
       const wGender = waitlistUser.gender;
       const wCohort = waitlistedParticipation.data.cohortAtSignup ??
           cohortIdForUser(waitlistUser);
@@ -392,7 +399,9 @@ export async function cancelEventSignUpHandler(
           admin.firestore.Timestamp.fromMillis(deps.nowMillis());
       nextBookedCount += 1;
       nextWaitlistedCount = Math.max(0, nextWaitlistedCount - 1);
-      newGenderCounts[wGender] = (newGenderCounts[wGender] ?? 0) + 1;
+      if (wGender) {
+        newGenderCounts[wGender] = (newGenderCounts[wGender] ?? 0) + 1;
+      }
       newCohortCounts = incrementCount(newCohortCounts, wCohort);
       newWaitlistedCohortCounts = decrementCount(
         newWaitlistedCohortCounts,

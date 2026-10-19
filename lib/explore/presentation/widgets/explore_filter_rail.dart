@@ -106,8 +106,8 @@ class ExploreFilterRail extends StatelessWidget
 }
 
 /// Removable Explore filters that scroll beneath the pinned time-scope rail.
-class ExploreAppliedFilterChips extends StatelessWidget {
-  const ExploreAppliedFilterChips({
+class ExploreAppliedFilterRail extends StatelessWidget {
+  const ExploreAppliedFilterRail({
     super.key,
     required this.filters,
     required this.showJoinedOnly,

@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/core/formatters/catch_distance_formatter.dart';
+import 'package:catch_dating_app/core/formatters/distance_formatter.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
@@ -166,7 +166,7 @@ String _rowSupportingLabel(ExploreEventItem item, AppLocalizations l10n) {
   return [
     if (event.eventFormat.isDistanceBased) event.activitySummaryLabel,
     event.locationName,
-    CatchDistanceFormatter.away(l10n, item.distanceFromUserKm),
+    DistanceFormatter.away(l10n, item.distanceFromUserKm),
   ].whereType<String>().where((label) => label.trim().isNotEmpty).join(' · ');
 }
 
@@ -223,7 +223,7 @@ String _externalEventSupportingLabel(
   return _joinExploreLabels([
     event.activityKind.label,
     event.meetingPoint,
-    CatchDistanceFormatter.away(l10n, item.distanceFromUserKm),
+    DistanceFormatter.away(l10n, item.distanceFromUserKm),
   ]);
 }
 
@@ -260,6 +260,7 @@ String? _availabilityLabel(
       l10n.exploreExploreScreenStateAvailabilityInviteRequired,
     ViewerEventAvailabilityStatus.membershipRequired =>
       l10n.exploreExploreScreenStateAvailabilityMembersOnly,
+    ViewerEventAvailabilityStatus.profileRequired ||
     ViewerEventAvailabilityStatus.runPreferencesRequired =>
       l10n.exploreExploreScreenStateAvailabilitySetPreferences,
     ViewerEventAvailabilityStatus.ageRestricted => _ageRestrictedLabel(

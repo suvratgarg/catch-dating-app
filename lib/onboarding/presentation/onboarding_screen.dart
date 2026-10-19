@@ -5,14 +5,15 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_flow_state.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
-import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_gender_interest_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_instagram_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_name_dob_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_photos_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_profile_prompts_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_running_prefs_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,10 +22,12 @@ class OnboardingScreen extends ConsumerStatefulWidget {
     super.key,
     this.profileCompletionOnly = false,
     this.runPreferencesOnly = false,
+    this.eventRequirements,
   });
 
   final bool profileCompletionOnly;
   final bool runPreferencesOnly;
+  final List<String>? eventRequirements;
 
   @override
   ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -44,6 +47,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             .initStep(
               profileCompletionOnly: widget.profileCompletionOnly,
               runPreferencesOnly: widget.runPreferencesOnly,
+              eventRequirements: widget.eventRequirements,
             ),
       );
     });
@@ -53,7 +57,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   void didUpdateWidget(covariant OnboardingScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.profileCompletionOnly == widget.profileCompletionOnly &&
-        oldWidget.runPreferencesOnly == widget.runPreferencesOnly) {
+        oldWidget.runPreferencesOnly == widget.runPreferencesOnly &&
+        listEquals(oldWidget.eventRequirements, widget.eventRequirements)) {
       return;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -66,6 +71,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             .initStep(
               profileCompletionOnly: widget.profileCompletionOnly,
               runPreferencesOnly: widget.runPreferencesOnly,
+              eventRequirements: widget.eventRequirements,
             ),
       );
     });
@@ -79,13 +85,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       data: data,
       profileCompletionOnly: widget.profileCompletionOnly,
       runPreferencesOnly: widget.runPreferencesOnly,
+      eventRequirements: widget.eventRequirements,
     );
     final currentStep = KeyedSubtree(
       key: ValueKey(flowState.step),
-      child: OnboardingStepContent(
+      child: OnboardingStepBody(
         step: flowState.step,
         profileCompletionOnly: widget.profileCompletionOnly,
         runPreferencesOnly: widget.runPreferencesOnly,
+        eventRequirements: widget.eventRequirements,
       ),
     );
 
@@ -129,32 +137,39 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 }
 
-class OnboardingStepContent extends StatelessWidget {
-  const OnboardingStepContent({
+class OnboardingStepBody extends StatelessWidget {
+  const OnboardingStepBody({
     super.key,
     required this.step,
     required this.profileCompletionOnly,
     required this.runPreferencesOnly,
+    this.eventRequirements,
   });
 
   final OnboardingStep step;
   final bool profileCompletionOnly;
   final bool runPreferencesOnly;
+  final List<String>? eventRequirements;
 
   @override
   Widget build(BuildContext context) {
     return switch (step) {
-      OnboardingStep.welcome => const WelcomePage(),
-      OnboardingStep.nameDob => const NameDobPage(),
-      OnboardingStep.genderInterest => const GenderInterestPage(),
-      OnboardingStep.instagram => const InstagramPage(),
-      OnboardingStep.photos => PhotosPage(
+      OnboardingStep.welcome => const OnboardingWelcomeBody(),
+      OnboardingStep.nameDob => OnboardingNameDobBody(
+        profileCompletionOnly: profileCompletionOnly,
+        eventRequirements: eventRequirements,
+      ),
+      OnboardingStep.genderInterest => OnboardingGenderInterestBody(
+        eventRequirements: eventRequirements,
+      ),
+      OnboardingStep.instagram => const OnboardingInstagramBody(),
+      OnboardingStep.photos => OnboardingPhotosBody(
         profileCompletionOnly: profileCompletionOnly,
       ),
-      OnboardingStep.prompts => ProfilePromptsPage(
+      OnboardingStep.prompts => OnboardingProfilePromptsBody(
         profileCompletionOnly: profileCompletionOnly,
       ),
-      OnboardingStep.runningPrefs => RunningPrefsPage(
+      OnboardingStep.runningPrefs => OnboardingRunningPrefsBody(
         profileCompletionOnly: profileCompletionOnly,
         runPreferencesOnly: runPreferencesOnly,
       ),

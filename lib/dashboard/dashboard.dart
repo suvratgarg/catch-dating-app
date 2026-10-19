@@ -5,7 +5,7 @@ export 'presentation/dashboard_screen.dart'; // public-api: route entry point ex
 export 'presentation/notification_route_util.dart'; // public-api: presentation value/helper API used across feature boundaries
 export 'presentation/notifications_list_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/widgets/activity_section.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/widgets/dashboard_empty.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/widgets/dashboard_empty_sliver_body.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/dashboard_full.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/empty_hero_card.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/event_focus_rail.dart'; // public-api: shared presentation component used outside this feature

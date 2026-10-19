@@ -40,6 +40,26 @@ if grep -Fq "'/generated/'" "$sizing_rule_source"; then
   exit 1
 fi
 
+# Rules scope owners and exemptions to exact files by path suffix. A renamed or
+# deleted file leaves a dead entry behind, which silently stops enforcing (or
+# exempting) anything, so every exact file a rule names must still exist.
+rule_file_suffixes="$(grep -ohE "'/(lib|packages|apps|widgetbook|test)/[A-Za-z0-9_/.]+[.]dart'" \
+  packages/catch_ui_lints/lib/src/*.dart | tr -d "'" | sort -u)"
+if [[ -z "$rule_file_suffixes" ]]; then
+  echo "Catch UI enforcement names no exact files; the path pattern in this check is stale." >&2
+  exit 1
+fi
+tracked_dart_files="$(git ls-files '*.dart' | sed 's#^#/#')"
+dead_rule_files=""
+while IFS= read -r suffix; do
+  grep -Fq -- "$suffix" <<< "$tracked_dart_files" ||
+    dead_rule_files+="  $suffix"$'\n'
+done <<< "$rule_file_suffixes"
+if [[ -n "$dead_rule_files" ]]; then
+  printf 'Catch UI enforcement names files that no longer exist:\n%s' "$dead_rule_files" >&2
+  exit 1
+fi
+
 cleanup() {
   rm -rf "$probe_root"
 }
@@ -77,6 +97,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_scaffold.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+import 'package:catch_dating_app/core/widgets/event_backdrop_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -129,7 +150,7 @@ class CatchUiLintProbe extends StatelessWidget {
         const Chip(label: Text('raw')),
         TextButton(onPressed: null, child: const Text('raw')),
         const IconButton(onPressed: null, icon: Icon(Icons.close)),
-        EventActivityBackdrop(
+        EventBackdropImage(
           visual: eventActivityVisual(ActivityKind.running),
         ),
         Image.asset('assets/branding/catch_icon.png'),
@@ -173,6 +194,10 @@ class CatchUiLintProbe extends StatelessWidget {
         ),
         const CatchSectionList(children: [SizedBox.shrink()]),
         const CatchField.read(title: 'Outside section'),
+        // A type name is not a composition boundary.
+        const _ProbeFormSchemaWrapper(
+          child: CatchField.read(title: 'Name-only boundary'),
+        ),
         const CatchFieldGeometryScope(
           gutterOwnership: CatchFieldGeometryScopeMode.container,
           child: SizedBox.shrink(),
@@ -283,6 +308,15 @@ class _ProviderProbe extends ConsumerWidget {
   }
 }
 
+class _ProbeFormSchemaWrapper extends StatelessWidget {
+  const _ProbeFormSchemaWrapper({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => child;
+}
+
 class _ProbeSection extends StatelessWidget {
   const _ProbeSection();
 
@@ -366,7 +400,7 @@ expect_code_count "seeded violation corpus" "catch_shell_owns_tab_scaffold" 1
 expect_code_count \
   "seeded violation corpus" \
   "catch_field_requires_section_context" \
-  1
+  2
 expect_code_count \
   "seeded violation corpus" \
   "catch_field_geometry_is_section_owned" \
@@ -764,7 +798,6 @@ expect_probe exact catch_notification_delivery_is_service_owned 0
 
 for status_owner in \
   "packages/catch_ui/lib/src/patterns/catch_root_screen_scroll_view.dart" \
-  "lib/core/widgets/catch_tabbed_screen.dart" \
   "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart" \
   "packages/catch_ui/lib/src/patterns/catch_scaffold.dart"; do
   probe_path="$probe_root/$status_owner"

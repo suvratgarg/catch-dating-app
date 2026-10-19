@@ -5,12 +5,15 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 enum OnboardingEntryMode {
   standard,
   profileCompletion,
+  eventBooking,
   runPreferences;
 
   static OnboardingEntryMode fromFlags({
     required bool profileCompletionOnly,
     required bool runPreferencesOnly,
+    List<String>? eventRequirements,
   }) {
+    if (eventRequirements != null) return OnboardingEntryMode.eventBooking;
     if (runPreferencesOnly) return OnboardingEntryMode.runPreferences;
     if (profileCompletionOnly) return OnboardingEntryMode.profileCompletion;
     return OnboardingEntryMode.standard;
@@ -41,13 +44,19 @@ class OnboardingFlowState {
     required OnboardingData data,
     required bool profileCompletionOnly,
     required bool runPreferencesOnly,
+    List<String>? eventRequirements,
   }) {
     final entryMode = OnboardingEntryMode.fromFlags(
       profileCompletionOnly: profileCompletionOnly,
       runPreferencesOnly: runPreferencesOnly,
+      eventRequirements: eventRequirements,
     );
     final minimumStep = entryMode.minimumBackStepFor(data.step);
-    final previousStep = data.step.previousWithin(minimumStep);
+    final previousStep =
+        eventRequirements != null &&
+            !eventRequirements.contains('ageRestricted')
+        ? null
+        : data.step.previousWithin(minimumStep);
 
     return OnboardingFlowState(
       entryMode: entryMode,
@@ -59,6 +68,7 @@ class OnboardingFlowState {
               step: data.step,
               l10n: l10n,
               entryMode: entryMode,
+              eventRequirements: eventRequirements,
               canGoBack: previousStep != null && !data.operationPending,
             )
           : null,
@@ -68,7 +78,8 @@ class OnboardingFlowState {
 
 extension OnboardingEntryModeX on OnboardingEntryMode {
   bool get profileCompletionOnly =>
-      this == OnboardingEntryMode.profileCompletion;
+      this == OnboardingEntryMode.profileCompletion ||
+      this == OnboardingEntryMode.eventBooking;
 
   bool get runPreferencesOnly => this == OnboardingEntryMode.runPreferences;
 
@@ -106,19 +117,28 @@ class OnboardingTopBarState {
     required OnboardingStep step,
     required OnboardingEntryMode entryMode,
     required bool canGoBack,
+    List<String>? eventRequirements,
   }) {
     final profileCompletionOnly = entryMode.profileCompletionOnly;
     final runPreferencesOnly = entryMode.runPreferencesOnly;
-    final socialOnly =
-        profileCompletionOnly && step.index >= OnboardingStep.photos.index;
-    final progressIndex = runPreferencesOnly
-        ? 0
-        : socialOnly
-        ? step.index - OnboardingStep.photos.index
-        : step == OnboardingStep.genderInterest
-        ? 1
+    final progressIndex = eventRequirements != null
+        ? (eventRequirements.contains('ageRestricted') &&
+                  step == OnboardingStep.genderInterest
+              ? 1
+              : 0)
+        : profileCompletionOnly
+        ? switch (step) {
+            OnboardingStep.genderInterest => 1,
+            OnboardingStep.photos => 2,
+            OnboardingStep.prompts => 3,
+            _ => 0,
+          }
         : 0;
-    final progressTotal = runPreferencesOnly ? 1 : 2;
+    final progressTotal = eventRequirements != null
+        ? (eventRequirements.length > 1 ? 2 : 1)
+        : runPreferencesOnly || !profileCompletionOnly
+        ? 1
+        : 4;
     final copy = step.headerCopy(
       l10n: l10n,
       profileCompletionOnly: profileCompletionOnly,
@@ -127,9 +147,13 @@ class OnboardingTopBarState {
 
     return OnboardingTopBarState(
       step: step,
-      title: copy.title,
-      subtitle: copy.subtitle,
-      stepNumber: progressIndex + 1,
+      title: profileCompletionOnly && step == OnboardingStep.nameDob
+          ? l10n.onboardingNameDobPageStateVisiblecopyDateOfBirth
+          : copy.title,
+      subtitle: profileCompletionOnly && step == OnboardingStep.nameDob
+          ? null
+          : copy.subtitle,
+      stepNumber: progressTotal == 1 ? 1 : progressIndex + 1,
       stepTotal: progressTotal,
       canGoBack: canGoBack,
     );

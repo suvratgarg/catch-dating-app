@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/featured_event_poster.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -358,12 +358,12 @@ Widget catchScrimContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchCoverStory,
+  type: FeaturedEventPoster,
   path: '[Core primitives]/Product composites',
 )
 Widget catchCoverStoryContractStates(BuildContext context) {
   return WidgetbookContractFrame(
-    title: 'CatchCoverStory',
+    title: 'FeaturedEventPoster',
     contractId: 'catch.cover_story',
     states: const [
       'event-cover',
@@ -378,7 +378,7 @@ Widget catchCoverStoryContractStates(BuildContext context) {
         label: 'event-cover',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchCoverStory(
+          child: FeaturedEventPoster(
             activityKind: ActivityKind.socialRun,
             kicker: 'Tonight',
             title: 'Run the bridge before dinner',
@@ -391,7 +391,7 @@ Widget catchCoverStoryContractStates(BuildContext context) {
         label: 'brand-cover',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchCoverStory(
+          child: FeaturedEventPoster(
             title: 'Find the room where you actually talk',
             body: 'Hosted evenings, clubs, and small-group events.',
             showGhostGlyph: false,
@@ -402,7 +402,7 @@ Widget catchCoverStoryContractStates(BuildContext context) {
         label: 'with-chrome',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchCoverStory(
+          child: FeaturedEventPoster(
             activityKind: ActivityKind.dinner,
             title: 'Supper club after work',
             location: 'Mumbai',
@@ -416,7 +416,7 @@ Widget catchCoverStoryContractStates(BuildContext context) {
         label: 'with-cta',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchCoverStory(
+          child: FeaturedEventPoster(
             activityKind: ActivityKind.pickleball,
             kicker: 'Open court',
             title: 'Meet your next doubles partner',
@@ -429,7 +429,7 @@ Widget catchCoverStoryContractStates(BuildContext context) {
         label: 'body-copy',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchCoverStory(
+          child: FeaturedEventPoster(
             activityKind: ActivityKind.pubQuiz,
             title: 'Trivia without the awkward table',
             body: 'Small teams rotate every round so everyone gets a turn.',
@@ -440,7 +440,7 @@ Widget catchCoverStoryContractStates(BuildContext context) {
         label: 'no-ghost-glyph',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchCoverStory(
+          child: FeaturedEventPoster(
             activityKind: ActivityKind.yoga,
             title: 'Stretch into Sunday',
             showGhostGlyph: false,

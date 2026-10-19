@@ -139,18 +139,18 @@ Widget profileSurfaceFactsSkeletonStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Review skeleton states',
-  type: CatchesProfileReviewSkeleton,
+  type: CatchesProfileBodySkeleton,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget catchesProfileReviewSkeletonStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'CatchesProfileReviewSkeleton',
+    title: 'CatchesProfileBodySkeleton',
     contractId: 'screen.catches.event.review_skeleton',
     children: [
       WidgetbookPageStateCard(
         label: 'loading deck',
         child: WidgetbookCatchesDeviceFrame(
-          child: CatchesProfileReviewSkeleton(),
+          child: CatchesProfileBodySkeleton(),
         ),
       ),
     ],

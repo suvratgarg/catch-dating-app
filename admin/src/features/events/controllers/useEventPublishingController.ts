@@ -218,16 +218,12 @@ export function useEventPublishingController({
   }, [listQuery, onError]);
 
   const refreshExternalList = useCallback(async () => {
-    const result = await externalListQuery.refetch();
-    if (result.error) {
-      onError(messageFromError(
-        result.error,
-        "Unable to load external event supply."
-      ));
-      return false;
-    }
-    return true;
-  }, [externalListQuery, onError]);
+    // Feedback belongs to the current observer below, including navigation
+    // between inventory and detail while this request is pending.
+    const result = await (selectedExternalEventId ?
+      externalDetailQuery.refetch() : externalListQuery.refetch());
+    return !result.error;
+  }, [externalDetailQuery, externalListQuery, selectedExternalEventId]);
 
   const refreshSupplyReadiness = useCallback(async () => {
     const result = await supplyReadinessQuery.refetch();
@@ -247,20 +243,44 @@ export function useEventPublishingController({
   }, [listQuery.error, onError]);
 
   useEffect(() => {
-    if (!externalListQuery.error) return;
-    onError(messageFromError(
-      externalListQuery.error,
-      "Unable to load external event supply."
-    ));
-  }, [externalListQuery.error, onError]);
+    if (activeWorkspace !== "external" || selectedExternalEventId ||
+      externalListQuery.isFetching) return;
+    if (externalListQuery.error) {
+      onError(messageFromError(
+        externalListQuery.error,
+        "Unable to load external event supply."
+      ));
+    } else if (externalListQuery.isSuccess) {
+      onError(null);
+    }
+  }, [
+    activeWorkspace,
+    externalListQuery.error,
+    externalListQuery.isFetching,
+    externalListQuery.isSuccess,
+    onError,
+    selectedExternalEventId,
+  ]);
 
   useEffect(() => {
-    if (!externalDetailQuery.error) return;
-    onError(messageFromError(
-      externalDetailQuery.error,
-      "Unable to load external event detail."
-    ));
-  }, [externalDetailQuery.error, onError]);
+    if (activeWorkspace !== "external" || !selectedExternalEventId ||
+      externalDetailQuery.isFetching) return;
+    if (externalDetailQuery.error) {
+      onError(messageFromError(
+        externalDetailQuery.error,
+        "Unable to load external event detail."
+      ));
+    } else if (externalDetailQuery.isSuccess) {
+      onError(null);
+    }
+  }, [
+    activeWorkspace,
+    externalDetailQuery.error,
+    externalDetailQuery.isFetching,
+    externalDetailQuery.isSuccess,
+    onError,
+    selectedExternalEventId,
+  ]);
 
   useEffect(() => {
     if (!supplyReadinessQuery.error) return;
@@ -366,13 +386,17 @@ export function useEventPublishingController({
     [externalFilter, externalListGeneratedAt, externalRows]
   );
   const selectedExternalEvent = useMemo(() => {
-    const rowsToSearch = [
-      ...(externalDetailQuery.data?.rows ?? []),
-      ...filteredExternalRows,
-    ];
-    return rowsToSearch.find((row) =>
+    // A list snapshot cannot establish current detail availability. Refetching
+    // and failed queries can retain prior data, so expose only settled success.
+    if (externalDetailQuery.isFetching || !externalDetailQuery.isSuccess) return null;
+    return externalDetailQuery.data.rows.find((row) =>
       row.eventId === selectedExternalEventId) ?? null;
-  }, [externalDetailQuery.data?.rows, filteredExternalRows, selectedExternalEventId]);
+  }, [
+    externalDetailQuery.data,
+    externalDetailQuery.isFetching,
+    externalDetailQuery.isSuccess,
+    selectedExternalEventId,
+  ]);
   const selectedExternalImportReview = useMemo(
     () => buildExternalEventImportReview(
       selectedExternalEvent,
@@ -560,6 +584,7 @@ export function useEventPublishingController({
     filteredRows,
     form,
     isDetailLoading: detailQuery.isPending || detailQuery.isFetching,
+    isExternalDetailError: externalDetailQuery.isError,
     isExternalListLoading: activeWorkspace === "external" && (
       selectedExternalEventId ?
         externalDetailQuery.isPending || externalDetailQuery.isFetching :

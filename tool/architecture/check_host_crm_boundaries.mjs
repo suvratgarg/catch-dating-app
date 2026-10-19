@@ -10,13 +10,13 @@ const isCli = process.argv[1] && path.resolve(process.argv[1]) === toolPath;
 
 const customerRouteConsumers = new Set([
   "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
-  "lib/hosts/presentation/customers/host_customer_timeline.dart",
+  "lib/hosts/presentation/customers/host_customer_timeline_section.dart",
 ]);
 const savedAudienceMutationOwners = new Set([
   "lib/hosts/presentation/host_audience_controller.dart",
 ]);
 const manualQueueOwners = new Set([
-  "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
+  "lib/hosts/presentation/inbox/host_manual_send_list.dart",
   "lib/hosts/presentation/inbox/host_sends_workspace.dart",
 ]);
 const permissionCollectionReviewers = new Set([
@@ -171,7 +171,7 @@ export function scanPresentationFile({relativePath, source}) {
       ));
     }
   }
-  const queueIndex = source.indexOf("HostManualSendQueue");
+  const queueIndex = source.indexOf("HostManualSendList");
   if (queueIndex >= 0 && !manualQueueOwners.has(relativePath)) {
     findings.push(finding(
       relativePath,
@@ -529,7 +529,7 @@ function scanAudienceWorkspacePresentation(root) {
   const workspacePath =
     "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart";
   const editorSheetsPath =
-    "lib/hosts/presentation/customers/host_customer_editor_sheets.dart";
+    "lib/hosts/presentation/customers/host_save_audience_sheet.dart";
   const routeContractPath = "lib/routing/route_contract.dart";
   const paths = [
     audienceViewPath,

@@ -108,10 +108,10 @@ void main() {
     expect(incomplete.firstIncompleteStep, 0);
     expect(complete.canSubmit, isTrue);
     expect(complete.items.map((item) => item.status), [
-      CatchFormStepRowListStatus.complete,
-      CatchFormStepRowListStatus.complete,
-      CatchFormStepRowListStatus.optional,
-      CatchFormStepRowListStatus.optional,
+      CatchFormStepListStatus.complete,
+      CatchFormStepListStatus.complete,
+      CatchFormStepListStatus.optional,
+      CatchFormStepListStatus.optional,
     ]);
 
     final reviewState = HostClubCreateState.resolve(

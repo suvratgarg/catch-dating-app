@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_renderer.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_body.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -55,7 +55,7 @@ class HostFormPreviewScreen extends ConsumerWidget {
                     style: CatchTextStyles.supporting(context),
                   ),
                   gapH24,
-                  HostFormRenderer(definition: value.editor.definition),
+                  HostFormBody(definition: value.editor.definition),
                 ],
               ),
             ),

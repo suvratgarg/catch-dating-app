@@ -1,14 +1,14 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
-import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
-import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
+import 'package:catch_dating_app/clubs/shared/club_cover.dart';
+import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
+import 'package:catch_dating_app/core/widgets/activity_map_pin.dart';
+import 'package:catch_dating_app/core/widgets/event_activity_badge.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
+import 'package:catch_dating_app/core/widgets/event_card.dart';
+import 'package:catch_dating_app/core/widgets/event_thumbnail.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/locations/shared/catch_map_preview.dart';
+import 'package:catch_dating_app/locations/shared/map_preview.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +19,7 @@ import '../../preview_layout_contracts.dart';
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchClubCover,
+  type: ClubCover,
   path: '[Core primitives]/Media',
 )
 Widget catchClubCoverContractStates(BuildContext context) {
@@ -37,7 +37,7 @@ Widget catchClubCoverContractStates(BuildContext context) {
         'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=720&q=80',
   );
   return WidgetbookContractFrame(
-    title: 'CatchClubCover',
+    title: 'ClubCover',
     contractId: 'catch.club_cover',
     states: const ['photo', 'fallback', 'compact', 'error-fallback'],
     children: [
@@ -46,7 +46,7 @@ Widget catchClubCoverContractStates(BuildContext context) {
         child: SizedBox(
           width: WidgetbookPreviewLayout.clubCoverWidth,
           height: WidgetbookPreviewLayout.clubCoverHeight,
-          child: CatchClubCover(club: photoClub),
+          child: ClubCover(club: photoClub),
         ),
       ),
       WidgetbookContractStateCard(
@@ -54,14 +54,14 @@ Widget catchClubCoverContractStates(BuildContext context) {
         child: SizedBox(
           width: WidgetbookPreviewLayout.clubCoverWidth,
           height: WidgetbookPreviewLayout.clubCoverHeight,
-          child: CatchClubCover(club: fallbackClub),
+          child: ClubCover(club: fallbackClub),
         ),
       ),
       WidgetbookContractStateCard(
         label: 'compact',
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.clubCoverCompactExtent,
-          child: CatchClubCover(club: fallbackClub, compact: true),
+          child: ClubCover(club: fallbackClub, compact: true),
         ),
       ),
     ],
@@ -70,7 +70,7 @@ Widget catchClubCoverContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchOrganizerPoster,
+  type: CatchPoster,
   path: '[Core primitives]/Media',
 )
 Widget catchOrganizerPosterContractStates(BuildContext context) {
@@ -83,22 +83,22 @@ Widget catchOrganizerPosterContractStates(BuildContext context) {
     createdAt: DateTime(2026),
   );
   Widget poster({
-    OrganizerPosterLayout layout = OrganizerPosterLayout.editorial,
-    OrganizerPosterTreatment treatment = OrganizerPosterTreatment.paper,
+    CatchPosterVariant variant = CatchPosterVariant.editorial,
+    CatchPosterTone tone = CatchPosterTone.paper,
   }) {
-    return CatchOrganizerPoster(
-      media: OrganizerPosterArtwork(club: club),
+    return CatchPoster(
+      media: ClubPlaceholderCover(club: club),
       kicker: 'Run club · Mumbai',
       title: club.name,
       tagline: club.description,
       meta: 'Every Saturday · 6:30 AM',
-      layout: layout,
-      treatment: treatment,
+      variant: variant,
+      tone: tone,
     );
   }
 
   return WidgetbookContractFrame(
-    title: 'CatchOrganizerPoster',
+    title: 'CatchPoster',
     contractId: 'catch.organizer_poster',
     states: const [
       'editorial-paper',
@@ -115,20 +115,20 @@ Widget catchOrganizerPosterContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'photo-ink',
         child: poster(
-          layout: OrganizerPosterLayout.photo,
-          treatment: OrganizerPosterTreatment.ink,
+          variant: CatchPosterVariant.photo,
+          tone: CatchPosterTone.ink,
         ),
       ),
       WidgetbookContractStateCard(
         label: 'split-signal',
         child: poster(
-          layout: OrganizerPosterLayout.split,
-          treatment: OrganizerPosterTreatment.signal,
+          variant: CatchPosterVariant.split,
+          tone: CatchPosterTone.signal,
         ),
       ),
       WidgetbookContractStateCard(
         label: 'minimal-paper',
-        child: poster(layout: OrganizerPosterLayout.minimal),
+        child: poster(variant: CatchPosterVariant.minimal),
       ),
     ],
   );
@@ -198,12 +198,12 @@ Widget catchPolaroidContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchMapPreview,
+  type: MapPreview,
   path: '[Core primitives]/Product composites',
 )
 Widget catchMapPreviewContractStates(BuildContext context) {
   return const WidgetbookContractFrame(
-    title: 'CatchMapPreview',
+    title: 'MapPreview',
     contractId: 'catch.map_preview',
     states: [
       'exact-location',
@@ -216,7 +216,7 @@ Widget catchMapPreviewContractStates(BuildContext context) {
         label: 'exact-location / network-disabled',
         child: SizedBox(
           height: WidgetbookPreviewLayout.mediaPanelHeight,
-          child: CatchMapPreview(
+          child: MapPreview(
             coordinate: LocationCoordinate(19.076, 72.8777),
             fallbackLabel: 'Bandra meeting point',
             enableNetworkTiles: false,
@@ -227,7 +227,7 @@ Widget catchMapPreviewContractStates(BuildContext context) {
         label: 'missing-coordinate',
         child: SizedBox(
           height: WidgetbookPreviewLayout.mediaPanelHeight,
-          child: CatchMapPreview(
+          child: MapPreview(
             coordinate: null,
             fallbackLabel: 'Location unavailable',
           ),
@@ -239,18 +239,18 @@ Widget catchMapPreviewContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchEventCard,
+  type: EventCard,
   path: '[Core primitives]/Product composites',
 )
 Widget catchEventCardContractStates(BuildContext context) {
   return WidgetbookContractFrame(
-    title: 'CatchEventCard',
+    title: 'EventCard',
     contractId: 'catch.event_card',
     states: const ['ticket', 'ticket-status', 'long-copy'],
     children: [
       const WidgetbookContractStateCard(
         label: 'ticket',
-        child: CatchEventCard.ticket(
+        child: EventCard(
           title: 'Sundowner 5K',
           subtitle: 'Marine Drive',
           timeLabel: '7:30 PM',
@@ -262,7 +262,7 @@ Widget catchEventCardContractStates(BuildContext context) {
       ),
       const WidgetbookContractStateCard(
         label: 'ticket-status',
-        child: CatchEventCard.ticket(
+        child: EventCard(
           title: 'Doubles ladder',
           subtitle: 'Versova Padel',
           timeLabel: '9:00 AM',
@@ -277,7 +277,7 @@ Widget catchEventCardContractStates(BuildContext context) {
         label: 'long-copy',
         child: SizedBox(
           width: WidgetbookPreviewLayout.codeInputWidth,
-          child: CatchEventCard.ticket(
+          child: EventCard(
             title: 'A very long event name that should wrap without clipping',
             subtitle: 'A long venue name near the waterfront',
             timeLabel: '7:30 PM',
@@ -294,24 +294,24 @@ Widget catchEventCardContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: EventActivityStamp,
+  type: EventActivityBadge,
   path: '[Core primitives]/Product composites',
 )
 Widget eventActivityStampContractStates(BuildContext context) {
   return WidgetbookContractFrame(
-    title: 'EventActivityStamp',
+    title: 'EventActivityBadge',
     contractId: 'catch.event_card.activity_stamp',
     states: const ['default', 'custom-size', 'activity-variants'],
     children: [
       WidgetbookContractStateCard(
         label: 'default',
-        child: EventActivityStamp(
+        child: EventActivityBadge(
           visual: eventActivityVisual(ActivityKind.socialRun, context: context),
         ),
       ),
       WidgetbookContractStateCard(
         label: 'custom-size',
-        child: EventActivityStamp(
+        child: EventActivityBadge(
           visual: eventActivityVisual(ActivityKind.dinner, context: context),
           size: 64,
           iconSize: 30,
@@ -321,19 +321,19 @@ Widget eventActivityStampContractStates(BuildContext context) {
         label: 'activity-variants',
         child: WidgetbookContractWrap(
           children: [
-            EventActivityStamp(
+            EventActivityBadge(
               visual: eventActivityVisual(
                 ActivityKind.socialRun,
                 context: context,
               ),
             ),
-            EventActivityStamp(
+            EventActivityBadge(
               visual: eventActivityVisual(
                 ActivityKind.dinner,
                 context: context,
               ),
             ),
-            EventActivityStamp(
+            EventActivityBadge(
               visual: eventActivityVisual(
                 ActivityKind.pickleball,
                 context: context,
@@ -348,12 +348,12 @@ Widget eventActivityStampContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchEventThumbnailActivityFallback,
+  type: EventFallbackThumbnail,
   path: '[Core primitives]/Media',
 )
 Widget catchEventThumbnailActivityFallbackContractStates(BuildContext context) {
   return const WidgetbookContractFrame(
-    title: 'CatchEventThumbnailActivityFallback',
+    title: 'EventFallbackThumbnail',
     contractId: 'catch.event_card.event_thumbnail.activity_fallback',
     states: ['run', 'dinner', 'large-icon'],
     children: [
@@ -364,21 +364,19 @@ Widget catchEventThumbnailActivityFallbackContractStates(BuildContext context) {
             SizedBox(
               width: WidgetbookPreviewLayout.thumbnailWidth,
               height: WidgetbookPreviewLayout.thumbnailHeight,
-              child: CatchEventThumbnailActivityFallback(
+              child: EventFallbackThumbnail(
                 activityKind: ActivityKind.socialRun,
               ),
             ),
             SizedBox(
               width: WidgetbookPreviewLayout.thumbnailWidth,
               height: WidgetbookPreviewLayout.thumbnailHeight,
-              child: CatchEventThumbnailActivityFallback(
-                activityKind: ActivityKind.dinner,
-              ),
+              child: EventFallbackThumbnail(activityKind: ActivityKind.dinner),
             ),
             SizedBox(
               width: WidgetbookPreviewLayout.thumbnailWidth,
               height: WidgetbookPreviewLayout.thumbnailHeight,
-              child: CatchEventThumbnailActivityFallback(
+              child: EventFallbackThumbnail(
                 activityKind: ActivityKind.pickleball,
                 iconSize: 92,
               ),
@@ -392,29 +390,29 @@ Widget catchEventThumbnailActivityFallbackContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchActivityMapPin,
+  type: ActivityMapPin,
   path: '[Core primitives]/Activity',
 )
 Widget catchActivityMapPinContractStates(BuildContext context) {
   return const WidgetbookContractFrame(
-    title: 'CatchActivityMapPin',
+    title: 'ActivityMapPin',
     contractId: 'catch.activity_map_pin',
     states: ['resting', 'selected', 'selected-label', 'custom-size'],
     children: [
       WidgetbookContractStateCard(
         label: 'resting',
-        child: CatchActivityMapPin(activityKind: ActivityKind.socialRun),
+        child: ActivityMapPin(activityKind: ActivityKind.socialRun),
       ),
       WidgetbookContractStateCard(
         label: 'selected',
-        child: CatchActivityMapPin(
+        child: ActivityMapPin(
           activityKind: ActivityKind.pickleball,
           selected: true,
         ),
       ),
       WidgetbookContractStateCard(
         label: 'selected-label',
-        child: CatchActivityMapPin(
+        child: ActivityMapPin(
           activityKind: ActivityKind.dinner,
           selected: true,
           label: 'Dinner',
@@ -422,10 +420,7 @@ Widget catchActivityMapPinContractStates(BuildContext context) {
       ),
       WidgetbookContractStateCard(
         label: 'custom-size',
-        child: CatchActivityMapPin(
-          activityKind: ActivityKind.pubQuiz,
-          size: 44,
-        ),
+        child: ActivityMapPin(activityKind: ActivityKind.pubQuiz, size: 44),
       ),
     ],
   );

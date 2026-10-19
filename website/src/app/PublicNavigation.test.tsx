@@ -21,14 +21,11 @@ function renderPage(page: React.ReactNode) {
 }
 
 describe("public route navigation targets", () => {
-  it("keeps every canonical root section reachable without a duplicate local menu", () => {
-    const {container} = renderPage(<HomePage captures={{}} />);
+  it("shares canonical audience destinations without a duplicate root menu", () => {
+    renderPage(<HomePage captures={{}} />);
     const nav = screen.getByRole("navigation", {name: "Primary"});
-    for (const link of within(nav).getAllByRole("link")) {
-      const href = link.getAttribute("href")!;
-      expect(href.startsWith("/#")).toBe(true);
-      expect(container.querySelector(href.slice(1))).toBeTruthy();
-    }
+    expect(within(nav).getAllByRole("link").map((link) => link.getAttribute("href")))
+      .toEqual(["/explore/", "/organizers/", "/host/", "/host/#pricing"]);
     expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
   });
 
@@ -38,7 +35,7 @@ describe("public route navigation targets", () => {
     expect(within(local).getAllByRole("link").map((link) => link.textContent)).toEqual([
       websiteCopy.homepage_0110, websiteCopy.homepage_0112, websiteCopy.homepage_0115,
       websiteCopy.homepage_0113, websiteCopy.homepage_0117, websiteCopy.homepage_0116,
-      websiteCopy.homepage_0111, websiteCopy.homepage_0114,
+      websiteCopy.homepage_0111, "Find events",
     ]);
     const links = [...within(local).getAllByRole("link"),
       ...within(screen.getByRole("navigation", {name: "Related links"})).getAllByRole("link")];

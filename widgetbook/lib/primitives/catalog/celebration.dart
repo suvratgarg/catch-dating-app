@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
+import 'package:catch_dating_app/core/celebration/celebration_screen.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -12,19 +12,19 @@ import '../../support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchCelebrationScreen,
+  type: CelebrationScreen,
   path: '[Core catalog]/Moments',
 )
 Widget catchCelebrationScreenCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchCelebrationScreen',
+    title: 'CelebrationScreen',
     catalogId: 'core.celebration.catch_celebration_screen',
     children: [
       WidgetbookCatalogStateCard(
         label: 'full-screen moment',
         child: WidgetbookCatalogPhoneFrame(
           height: WidgetbookPreviewLayout.celebrationViewportHeight,
-          child: CatchCelebrationScreen(
+          child: CelebrationScreen(
             kind: CelebrationMomentKind.eventJoined,
             playEffects: false,
             eyebrow: 'You are in',

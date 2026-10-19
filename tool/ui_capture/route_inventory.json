@@ -4,7 +4,7 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "6813808e4bc1fe0052258ed6395b1f5776d0ad69c9293cb63cc2b148fb98f662",
+    "routeContractSha256": "de888a3ab26623446b23982ebbfaf59afcbceba16b13e62f84fdb8b5d6fdb068",
     "goRouteCount": 127,
     "shellBranchCount": 9,
     "enumRouteCount": 112,
@@ -32,7 +32,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.loadingScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>const _RouteLoadingScreen()",
+      "presentationExpression": "(context,state)=>_RouteLoadingScreen(isHostApp:isHostApp)",
       "presentationTarget": "_RouteLoadingScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -77,7 +77,7 @@
       "runtimeParentId": null,
       "runtimePathExpression": "Routes.onboardingScreen.path",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>OnboardingScreen(profileCompletionOnly:state.uri.queryParameters[_onboardingIntentQueryParam]==_completeProfileIntent,runPreferencesOnly:state.uri.queryParameters[_onboardingIntentQueryParam]==_completeRunPreferencesIntent)",
+      "presentationExpression": "(context,state)=>OnboardingScreen(eventRequirements:state.uri.queryParameters[_onboardingIntentQueryParam]==_completeProfileIntent?_eventRequirementsFromUri(state.uri):null,profileCompletionOnly:state.uri.queryParameters[_onboardingIntentQueryParam]==_completeProfileIntent,runPreferencesOnly:state.uri.queryParameters[_onboardingIntentQueryParam]==_completeRunPreferencesIntent)",
       "presentationTarget": "OnboardingScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1881,9 +1881,9 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/events/presentation/widgets/event_detail_cta.dart:b78f6bac77f4bbd7ef1e4b4bc5e1b5083e2c42c1037f0d781e8e176e33bac412:1",
+      "siteId": "material-page:lib/events/presentation/widgets/event_detail_dock.dart:b78f6bac77f4bbd7ef1e4b4bc5e1b5083e2c42c1037f0d781e8e176e33bac412:1",
       "routeExpression": "MaterialPageRoute<void>(fullscreenDialog:true,builder:(routeContext)=>EventJoinedCelebrationScreen(event:event,onViewEvent:()=>Navigator.of(routeContext).pop(),onBackHome:(){Navigator.of(routeContext).pop();router?.goNamed(Routes.dashboardScreen.name);}))",
-      "sourcePath": "lib/events/presentation/widgets/event_detail_cta.dart",
+      "sourcePath": "lib/events/presentation/widgets/event_detail_dock.dart",
       "ordinal": 1,
       "presentationExpression": "(routeContext)=>EventJoinedCelebrationScreen(event:event,onViewEvent:()=>Navigator.of(routeContext).pop(),onBackHome:(){Navigator.of(routeContext).pop();router?.goNamed(Routes.dashboardScreen.name);})",
       "presentationTarget": "EventJoinedCelebrationScreen",
@@ -1953,11 +1953,11 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/hosts/presentation/host_operations/host_club_edit_tab.dart:28a1de16f30d0a2b439e9852a73ba9c3dd57c0f593e6a3d3ff2b177d3a0d35cb:1",
-      "routeExpression": "MaterialPageRoute<bool>(fullscreenDialog:true,builder:(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:_HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:_HostClubMediaManagerActions(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false))",
-      "sourcePath": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "siteId": "material-page:lib/hosts/presentation/host_operations/host_club_edit_body.dart:28074c60b4b9a06cb7fa3ea65f290a17d8b8135b3ee306cce99eecbc309a013d:1",
+      "routeExpression": "MaterialPageRoute<bool>(fullscreenDialog:true,builder:(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:HostClubMediaManagerDock(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false))",
+      "sourcePath": "lib/hosts/presentation/host_operations/host_club_edit_body.dart",
       "ordinal": 1,
-      "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:_HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:_HostClubMediaManagerActions(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false)",
+      "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:HostClubMediaManagerDock(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false)",
       "presentationTarget": "OrderedPhotoManagerScreen",
       "fullscreenDialogExpression": "true"
     },

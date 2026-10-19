@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_inline_edit_patch_factory.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_height.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_height_editor.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

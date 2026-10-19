@@ -7,12 +7,12 @@ import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_preview_body.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart'
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab_sliver_body.dart'
     show ProfileInsightsTabSliverBody;
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_body.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -153,7 +153,7 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
         label: 'edit tab complete profile',
         child: WidgetbookProfileSectionFrame(
           height: WidgetbookPreviewLayout.profileExpandedPreviewHeight,
-          child: ProfileTabContent(
+          child: ProfileTabBody(
             user: widgetbookProfileViewer,
             uploadState: widgetbookProfileIdlePhotoUploadState,
             builder: (context, children) => ListView(
@@ -168,7 +168,7 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
         label: 'edit tab incomplete profile',
         child: WidgetbookProfileSectionFrame(
           height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
-          child: ProfileTabContent(
+          child: ProfileTabBody(
             user: widgetbookProfileIncompleteViewer,
             uploadState: widgetbookProfileIdlePhotoUploadState,
             builder: (context, children) => ListView(
@@ -206,7 +206,7 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
         label: 'preview tab default',
         child: WidgetbookProfileSectionFrame(
           height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
-          child: PreviewTab(profile: widgetbookProfileOwnProfile),
+          child: ProfilePreviewBody(profile: widgetbookProfileOwnProfile),
         ),
       ),
       WidgetbookProfileStateCard(
@@ -215,7 +215,7 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profileEditorPreviewHeight,
           child: WidgetbookMediaOverride(
             textScaler: const TextScaler.linear(1.45),
-            child: ProfileTabContent(
+            child: ProfileTabBody(
               user: _longContentViewer,
               uploadState: widgetbookProfileIdlePhotoUploadState,
               builder: (context, children) => ListView(

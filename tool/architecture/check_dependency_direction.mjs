@@ -4,6 +4,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "../lib/repository_snapshot.mjs";
+import {scanDartSource} from "../lib/dart_source.mjs";
 
 const defaultBaselinePath =
   "tool/architecture/dependency_direction_baseline.json";
@@ -120,6 +121,7 @@ export function scanDependencyDirection({snapshot, baseline = emptyBaseline()}) 
 
 export function scanFile({relativePath, source}) {
   const findings = [];
+  const dart = scanDartSource(source);
   const addSourceFinding = ({rule, line, reason, symbol, operation}) => {
     const candidate = {rule, path: relativePath, line, reason,
       ...(symbol == null ? {} : {symbol}),
@@ -130,11 +132,11 @@ export function scanFile({relativePath, source}) {
     findings.push(candidate);
   };
 
-  for (const match of source.matchAll(/^import\s+['"]([^'"]+)['"][^;]*;/gmu)) {
-    const uri = match[1];
-    const line = lineForOffset(source, match.index ?? 0);
+  for (const {uri, offset} of dart.imports.flatMap((directive) => directive.uris)) {
+    const targetUri = resolveAppImport(relativePath, uri);
+    const line = lineForOffset(source, offset);
     if (isDomainFile(relativePath)) {
-      if (!isAllowedDomainImport(uri)) {
+      if (!isAllowedDomainImport(targetUri)) {
         findings.push({
           rule: "domainFrameworkImport",
           path: relativePath,
@@ -146,7 +148,7 @@ export function scanFile({relativePath, source}) {
       }
     }
 
-    if (isDataOrDomainFile(relativePath) && isFeaturePresentationImport(uri)) {
+    if (isDataOrDomainFile(relativePath) && isFeaturePresentationImport(targetUri)) {
       findings.push({
         rule: "dataDomainPresentationImport",
         path: relativePath,
@@ -157,7 +159,7 @@ export function scanFile({relativePath, source}) {
     }
 
     const sourceFeature = presentationSourceFeature(relativePath);
-    const targetFeature = featurePresentationImportTarget(uri);
+    const targetFeature = featurePresentationImportTarget(targetUri);
     if (
       sourceFeature != null &&
       targetFeature != null &&
@@ -165,7 +167,7 @@ export function scanFile({relativePath, source}) {
       targetFeature !== sourceFeature &&
       !isSanctionedCrossFeaturePresentationSeam({
         sourcePath: relativePath,
-        targetImport: uri,
+        targetImport: targetUri,
       })
     ) {
       findings.push({
@@ -181,7 +183,7 @@ export function scanFile({relativePath, source}) {
     if (
       isPresentationFile(relativePath) &&
       !isControllerOrServiceFile(relativePath) &&
-      isPluginPackageImport(uri)
+      isPluginPackageImport(targetUri)
     ) {
       findings.push({
         rule: "presentationPluginImport",
@@ -212,7 +214,7 @@ export function scanFile({relativePath, source}) {
   }
 
   if (isDomainFile(relativePath)) {
-    const match = /DateTime\s*\.\s*now\s*\(/u.exec(source);
+    const match = /\bDateTime\s*\.\s*now\s*\(/u.exec(dart.code);
     if (match) {
       findings.push({
         rule: "domainClockAccess",
@@ -379,6 +381,17 @@ function collectDartFiles(snapshot) {
 
 function isDomainFile(relativePath) {
   return /^lib\/[^/]+\/domain\/.+\.dart$/u.test(relativePath);
+}
+
+// Compare relative imports using the same app identity as package imports,
+// while retaining the authored URI in findings and existing baseline keys.
+function resolveAppImport(relativePath, uri) {
+  if (/^[A-Za-z][A-Za-z0-9+.-]*:/u.test(uri)) return uri;
+  const url = new URL(uri, new URL(relativePath, "file:///"));
+  const resolved = path.posix.normalize(decodeURIComponent(url.pathname));
+  return resolved.startsWith("/lib/")
+    ? `package:catch_dating_app/${resolved.slice("/lib/".length)}`
+    : uri;
 }
 
 function isDataOrDomainFile(relativePath) {

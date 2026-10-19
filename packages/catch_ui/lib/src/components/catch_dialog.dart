@@ -124,7 +124,6 @@ class CatchDialog<T> extends StatelessWidget {
       backgroundColor: Colors.transparent,
       child: CatchSurface(
         emphasis: CatchSurfaceEmphasis.floating,
-        borderWidth: 0,
         padding: CatchInsets.confirmDialogCard,
         width: CatchLayout.confirmDialogMaxWidth,
         child: Column(

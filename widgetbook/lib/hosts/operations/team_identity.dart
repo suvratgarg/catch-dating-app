@@ -37,7 +37,7 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
 
 @widgetbook.UseCase(
   name: 'Covered by host team route states',
-  type: HostTeamProfileRows,
+  type: HostTeamProfileList,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
