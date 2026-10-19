@@ -1,8 +1,8 @@
 import {websiteCopy} from "@content/generated";
-import {type FormEvent, useCallback, useMemo, useRef, useState} from "react";
+import {type FormEvent, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {trackCatchAcquisitionEvent, trackMarketingEvent} from "../../analytics";
 import {claimFirebaseConfigured} from "../../firebaseConfig";
-import {hostListings} from "../organizers/data";
+import {usePublicHostListings} from "../organizers/usePublicEventListingsController";
 import {organizerPolicyForListing} from "../organizers/organizerPolicy";
 import {
   isClaimSubmissionEnabledListing,
@@ -28,6 +28,8 @@ import {
 } from "./useClaimRequestMutation";
 
 export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimRouteState) {
+  const {listings: hostListings} = usePublicHostListings();
+  const previousCatalog = useRef(hostListings);
   const claimLookup = routeState.lookup;
   const preselectedListing = routeState.listing &&
     isPubliclyReadableListing(routeState.listing) ?
@@ -90,7 +92,15 @@ export function useClaimFlowController(routeState: ClaimRouteState = emptyClaimR
         ].join(" ").toLowerCase().includes(normalized)
       )
       .slice(0, 8);
-  }, [query]);
+  }, [query, hostListings]);
+
+  useEffect(() => {
+    if (previousCatalog.current === hostListings) return;
+    previousCatalog.current = hostListings;
+    if (submissionInFlight.current) return;
+    setListing(current => current ? hostListings.find(item => item.id === current.id &&
+      isClaimSubmissionEnabledListing(item)) ?? null : null);
+  }, [hostListings]);
 
   const currentStepIndex = claimFlowSteps.findIndex((item) => item.id === step);
   const selectedMethod =

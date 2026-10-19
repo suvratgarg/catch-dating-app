@@ -6,8 +6,8 @@ import {PendingRequestProvider} from "../../shared/pendingRequest";
 import {publicEventListingsContext} from "../../features/organizers/usePublicEventListingsController";
 import type {PublicCatalog} from "./publicCatalogTypes";
 
-export function PublicProviders({children, catalog, pathname}: {
-  children: ReactNode; catalog: PublicCatalog; pathname: string;
+export function PublicProviders({children, catalog, pathname, live = true}: {
+  children: ReactNode; catalog: PublicCatalog; pathname: string; live?: boolean;
 }) {
   const [location, setLocation] = useState({pathname, search: "", hash: ""});
   const [current, setCurrent] = useState<PublicCatalog | null>(catalog);
@@ -20,30 +20,38 @@ export function PublicProviders({children, catalog, pathname}: {
     return () => {window.removeEventListener("popstate", changed); window.removeEventListener("hashchange", changed);};
   }, []);
   useEffect(() => {
+    if (!live) return;
     let active = true;
     let pending = false;
     const controller = new AbortController();
+    let expiresAt = Date.now() + Math.max(0, 30_000 - (Date.now() - catalog.readAt));
+    let expiry = window.setTimeout(() => setCurrent(null), Math.max(0, expiresAt - Date.now()));
+    function accept(value: PublicCatalog) {
+      const remaining = Math.max(0, 30_000 - (Date.now() - value.readAt));
+      if (!remaining) {setCurrent(null); return;}
+      clearTimeout(expiry); expiresAt = Date.now() + remaining;
+      setCurrent(value); expiry = window.setTimeout(() => setCurrent(null), remaining);
+    }
     async function refresh() {
-      // Never retain expired publication state while a new request is in flight.
-      setCurrent(null);
+      if (Date.now() >= expiresAt) setCurrent(null);
       if (pending || document.hidden) return;
       pending = true;
       try {
         const response = await fetch("/api/public-catalog", {cache: "no-store", credentials: "omit", signal: controller.signal});
         if (!response.ok) throw new Error("Catalog unavailable");
         const value: PublicCatalog = await response.json();
-        if (active && Array.isArray(value.listings) && Number.isFinite(value.readAt)) setCurrent(value);
+        if (active && Array.isArray(value.listings) && Number.isFinite(value.readAt)) accept(value);
       } catch { if (active) setCurrent(null); }
       finally { pending = false; }
     }
     setCurrent(catalog);
-    const timer = window.setInterval(() => {void refresh();}, 30_000);
+    const timer = window.setInterval(() => {void refresh();}, 25_000);
     const focus = () => {void refresh();};
     document.addEventListener("visibilitychange", focus);
     window.addEventListener("focus", focus);
-    return () => {active = false; controller.abort(); clearInterval(timer);
+    return () => {active = false; controller.abort(); clearInterval(timer); clearTimeout(expiry);
       document.removeEventListener("visibilitychange", focus); window.removeEventListener("focus", focus);};
-  }, [catalog]);
+  }, [catalog, live]);
   const navigator = useMemo(() => {
     const navigate = (to: To, replace = false) => {
       const target = typeof to === "string" ? to : createPath(to);
@@ -61,7 +69,7 @@ export function PublicProviders({children, catalog, pathname}: {
   }, []);
   return <Router location={location} navigator={navigator}>
     <WebsiteQueryProvider><PendingRequestProvider>
-      <publicEventListingsContext.Provider value={{listings: current?.listings ?? [], phase: current ? "ready" : "unavailable"}}>
+      <publicEventListingsContext.Provider value={{listings: current?.listings ?? [], phase: current ? "ready" : "unavailable", readAt: current?.readAt}}>
         {children}
       </publicEventListingsContext.Provider>
     </PendingRequestProvider></WebsiteQueryProvider>

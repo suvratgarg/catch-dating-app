@@ -11,6 +11,9 @@ export default {
   output: "standalone",
   outputFileTracingRoot: path.resolve(root, ".."),
   poweredByHeader: false,
+  async headers() {
+    return [{source: "/.well-known/apple-app-site-association", headers: [{key: "Content-Type", value: "application/json"}]}];
+  },
   skipTrailingSlashRedirect: true,
   typescript: {tsconfigPath: "tsconfig.next.json"},
   // Public pages wait for authorization and metadata before sending any HTML.

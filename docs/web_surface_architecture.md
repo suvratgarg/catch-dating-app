@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.27.0
-updated: 2026-10-18
+version: 0.28.0
+updated: 2026-10-19
 owner: web_platform
 status: active
 ---
@@ -30,6 +30,51 @@ supports policy-specific identity verification, revisioned autosave, review,
 submission receipts, and withdrawal, and remains usable in a bounded iframe
 presentation. It never reads Forms collections directly and does not bootstrap
 the Consumer Flutter application.
+
+## Next.js candidate and cutover boundary
+
+The public website has a Next.js 16 App Router candidate alongside the current
+Vite/Firebase Hosting deployment. `npm run build --workspace catch-marketing`
+validates/builds both; deployment still consumes `website/dist`. This does not
+switch main traffic or change the consumer Flutter/admin applications.
+
+The candidate uses Node 24 and standalone output, including traced monorepo
+packages plus public/static assets. `website/Dockerfile` and its adjacent
+Dockerfile-specific ignore file define a non-root container with a minimal
+source context. Public Firebase/App Check/store configuration is supplied at
+build time through explicit arguments. Runtime ADC must be a dedicated
+Firestore-read-only identity; never include a service-account key or private
+environment file in an image. `CATCH_PUBLIC_FIRESTORE_PROJECT` selects the
+runtime project. The default `CATCH_WEBSITE_STAGE=preview` denies indexing;
+production indexing requires an explicit stage switch, the production project,
+and no emulator configuration. Local acceptance is restricted to `demo-catch-nextjs` on the
+loopback Firestore emulator. Docker execution itself requires separate evidence;
+a passing local standalone build is not a container/deployment proof.
+
+The proposed adapter is Firebase Hosting to Cloud Run.
+`firebase.next.preview.json` proposes service `catch-website-next-preview`
+in `asia-south1`, keeps the existing direct Function rewrites and redirects,
+and is for a reviewed Hosting preview channel only. It is not wired into the
+production deploy workflow and has not been deployed. Its service name is a
+proposal, not evidence that the service or identity exists. Preserve
+existing app-association files, Auth helpers, redirects, and the two direct
+HTTP Function rewrites before any Next catch-all. The standalone HTTP gateway
+is useful for isolated previews; production should retain direct Function
+routing so existing ingress/IP enforcement is not collapsed onto one runtime.
+Unknown-host handling must be verified through the actual Hosting/Cloud Run
+request chain. Do not infer original-host forwarding from Next's normalized URL.
+An explicitly configured preview hostname only enables the public server surface;
+private/custom-form acceptance still needs a recognized Hosting preview origin.
+
+Before any traffic switch, obtain review of the concrete hosting configuration,
+project/region/service identity, cost/scaling limits and rollback target. Prove
+least-privilege reads, real Host forwarding, App Check/Auth consent, callable
+forms/claim flows, Razorpay return behavior, native app links, cache withdrawal
+and failure statuses on that exact deployed preview. No new paid service,
+provider activation, DNS change, merge or production cutover is implied by the
+source migration. Preserve the guarded worktree and draft PR until accepted
+closeout. Source, CI, preview, provider acceptance and production are distinct
+states.
 
 ## Form embeds and proposed custom-host activation
 

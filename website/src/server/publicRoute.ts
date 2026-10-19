@@ -1,3 +1,4 @@
+import {productionIndexing} from "./publicEnvironment";
 import {cache} from "react";
 import {readPublicCatalog} from "./publicCatalog";
 import {pageMeta, pageMetaForHostPath, pageMetaForListing, pageMetaForEvent, type PageKey} from "../app/pageMeta";
@@ -5,10 +6,11 @@ import {getHostListingRouteForPath} from "../features/organizers/routing";
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../features/events/eventDetailModel";
 import type {Metadata} from "next";
 export const resolvePublicRoute = cache(async (pathname: string) => {
-  const catalog = await readPublicCatalog();
+  const key = pathname.replace(/\/+$/, "") || "/";
+  const live = key === "/" || key === "/explore" || /^\/(organizers|events|claim)(\/|$)/.test(key);
+  const catalog = live ? await readPublicCatalog() : {listings: [], readAt: 0};
   const listingRoute = getHostListingRouteForPath(pathname, catalog.listings);
   const event = getEventDetailForPath(pathname, buildPublicEventDetailRecords(catalog.listings, catalog.readAt));
-  const key = pathname.replace(/\/+$/, "") || "/";
   const routes: Record<string, PageKey> = {"/": "home", "/explore": "visitor_discovery", "/host": "host",
     "/host/apply": "host", "/organizers": "organizers", "/privacy": "privacy", "/terms": "terms", "/help": "help", "/claim": "claim"};
   const page: PageKey = listingRoute ? "listing" : event ? "event_detail" : routes[key] ??
@@ -17,8 +19,8 @@ export const resolvePublicRoute = cache(async (pathname: string) => {
     pageMetaForHostPath(pathname) ?? pageMeta[page as keyof typeof pageMeta];
   const metadata: Metadata = {title: meta.title, description: meta.description,
     alternates: {canonical: `https://catchdates.com${meta.canonicalPath}`},
-    robots: meta.robots ?? "index, follow", openGraph: {title: meta.title, description: meta.description,
+    robots: productionIndexing() ? meta.robots ?? "index, follow" : "noindex, follow", openGraph: {title: meta.title, description: meta.description,
       url: `https://catchdates.com${meta.canonicalPath}`, type: "website"},
     twitter: {card: "summary_large_image", title: meta.title, description: meta.twitterDescription}};
-  return {page, catalog, metadata, listingRoute, event};
+  return {page, catalog, metadata, listingRoute, event, live};
 });

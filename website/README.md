@@ -4,7 +4,46 @@ status: active
 
 # Catch Marketing Website
 
-Vite + React marketing surface for `catchdates.com`.
+React marketing surface for `catchdates.com`, with a Next.js migration candidate
+and the existing Vite/Firebase Hosting production artifact.
+
+## Next.js candidate
+
+`npm run build --workspace catch-marketing` runs existing checks, produces the
+Vite deployment artifact, then builds the Next standalone candidate. To build
+only the candidate, use `npm run build:next --workspace catch-marketing`.
+`npm run start:next --workspace catch-marketing` copies public/static assets into
+the standalone tree and starts it on `127.0.0.1:3107` (override `PORT` as needed).
+Set the explicit public build variables and runtime project in `env.example`.
+Runtime credentials are ADC with read-only Firestore authority; they are never
+browser variables. The current deploy workflow still publishes Vite `dist`.
+
+For isolated runtime acceptance, start the Firestore emulator on loopback port
+8765 with project `demo-catch-nextjs`. Start the packaged server with
+`FIRESTORE_EMULATOR_HOST=127.0.0.1:8765` and
+`CATCH_PUBLIC_FIRESTORE_PROJECT=demo-catch-nextjs`, then run:
+
+```sh
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8765 npm run test:next-runtime --workspace catch-marketing
+```
+
+The test writer is hard-bound to that emulator/project. It covers public initial
+HTML, metadata, 301/404 behavior, private-shell credential exclusion, custom-host
+isolation, no-JavaScript rendering, desktop/mobile, sharing, search, publication
+withdrawal, noindex and sitemap removal. Screenshots go to `/tmp`. Separately run
+the server without runtime project configuration to verify catalog/sitemap 503
+responses and authored Host/legal availability. Full callable/provider acceptance
+requires a controlled configured preview; these local fixtures do not prove it.
+
+Build the container from repository root with
+`docker build -f website/Dockerfile .`, supplying the public `VITE_*` build args.
+The adjacent `Dockerfile.dockerignore` excludes unrelated source and local state.
+`firebase.next.preview.json` is the separate, undeployed preview proposal
+for `catch-website-next-preview` in `asia-south1`; do not pass it to a production
+deploy. Container execution, cloud IAM, original-host forwarding, preview traffic and
+live provider acceptance remain explicit release gates in
+`docs/web_surface_architecture.md`. Do not deploy or switch traffic as part of a
+local build.
 
 ## CI/CD
 

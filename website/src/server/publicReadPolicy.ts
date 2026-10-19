@@ -15,7 +15,7 @@ export function organizerPath(value: unknown): value is string {
     /^\/organizers\/(?:[a-z0-9-]+\/){1,2}$/u.test(value);
 }
 
-function synthetic(data: Document): boolean {
+export function synthetic(data: Document): boolean {
   return data.synthetic === true || data.dataOrigin === "catchDemo" ||
     data.seedPrefix != null || data.scenario != null || data.demoOps != null ||
     data.demoOpsId != null || data.demoOpsCommand != null;
@@ -47,12 +47,7 @@ export function publicEventAuthorized(id: unknown, raw: unknown): boolean {
     !(data.organizerId && data.clubId && data.organizerId !== data.clubId);
 }
 
-/** Serialize structured data as inert script text even for hostile authored text. */
-export function publicJsonLd(value: unknown): string {
-  return JSON.stringify(value).replace(/</gu, "\\u003c")
-    .replace(/>/gu, "\\u003e").replace(/&/gu, "\\u0026")
-    .replace(/\u2028/gu, "\\u2028").replace(/\u2029/gu, "\\u2029");
-}
+export {publicJsonLd} from "../shared/next/publicJsonLd.ts";
 
 /** URLs emitted in public links must not carry embedded credentials or active schemes. */
 export function publicHttpsUrl(value: unknown): string | null {

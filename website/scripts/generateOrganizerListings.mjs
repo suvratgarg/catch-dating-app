@@ -1,3 +1,4 @@
+import {projectExternalEventDocument, timestampIso, validTimezone, eventDateLabelForTimezone, platformLabel, titleCaseText} from "./next/externalEventProjection.mjs";
 import {listingFromFirestoreOrganizer, listingFromOrganizerDocument, organizerAuthority, enumValue, staticPublicApi, disabledPublicApi, organizerTypeLabel, canonicalOrganizerType, initialsForName, publicReviewsForListing, dateLabel, publicOwnerResponse, publicSourcesForListing, listingCapabilities, claimCapabilityReason, searchText} from "./next/organizerProjection.mjs";
 export {listingFromFirestoreOrganizer} from "./next/organizerProjection.mjs";
 import crypto from "node:crypto";
@@ -336,7 +337,7 @@ function publicExternalEventProjections(readiness) {
   const actions = externalEventReadinessActions(readiness);
   return actions
     .filter(isPublishableExternalEventAction)
-    .map((action) => publicExternalEventProjectionFromAction(action))
+    .map((action) => projectExternalEventDocument(action.externalEventDocument))
     .filter(Boolean);
 }
 
@@ -368,44 +369,6 @@ function isPublishableExternalEventAction(action) {
     document?.booking?.catchReservationsEnabled === false &&
     document?.booking?.catchWaitlistEnabled === false
   );
-}
-
-function publicExternalEventProjectionFromAction(action) {
-  const event = action.externalEventDocument;
-  const startTime = timestampIso(event.startTime);
-  if (!startTime) return null;
-  const endTime = timestampIso(event.endTime);
-  const primaryLink =
-    event.booking.externalLinks.find((link) => link.primary) ??
-    event.booking.externalLinks[0] ??
-    null;
-  const sourceHref =
-    primaryLink?.url ?? event.externalSource?.eventUrl ?? event.externalSource?.sourceUrl;
-  if (!sourceHref) return null;
-  const sourceLabel = platformLabel(primaryLink?.platform ?? event.externalSource?.platform);
-  return {
-    canonicalHostId: event.canonicalHostId,
-    compatibilityClubId: event.compatibilityClubId,
-    projection: {
-      id: event.eventId,
-      title: event.title,
-      activityKind: event.activity.activityKind,
-      availability: event.discovery.availability,
-      startTime,
-      endTime,
-      timezone: validTimezone(event.timezone) ? event.timezone : "UTC",
-      date: eventDateLabelForTimezone(startTime, endTime, event.timezone),
-      location: event.meetingPoint,
-      locationDetails:
-        event.locationDetails ?? event.meetingLocation?.notes ?? "",
-      summary: event.description,
-      priceLabel: event.price.displayText ?? "External ticketing",
-      sourceLabel,
-      sourceHref,
-      externalLinkCount: event.booking.externalLinks.length,
-      dedupeKey: event.dedupe.normalizedEventKey,
-    },
-  };
 }
 
 function withPublicExternalEvents(listing) {
@@ -864,65 +827,9 @@ function eventDateLabel(start, end) {
   return `${date}, ${time}-${endTime}`;
 }
 
-function eventDateLabelForTimezone(startIso, endIso, timezone) {
-  const start = new Date(startIso);
-  const end = endIso ? new Date(endIso) : null;
-  const zone = validTimezone(timezone) ? timezone : "UTC";
-  const date = new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    timeZone: zone,
-  }).format(start);
-  const time = new Intl.DateTimeFormat("en", {
-    hour: "numeric",
-    minute: "2-digit",
-    timeZone: zone,
-  }).format(start);
-  if (!end || Number.isNaN(end.getTime())) return `${date}, ${time}`;
-  const endTime = new Intl.DateTimeFormat("en", {
-    hour: "numeric",
-    minute: "2-digit",
-    timeZone: zone,
-  }).format(end);
-  return `${date}, ${time}-${endTime}`;
-}
-
 function priceLabel(priceInPaise) {
   if (!priceInPaise) return "Free";
   return `$${(priceInPaise / 100 / 83).toFixed(0)}`;
-}
-
-function timestampIso(value) {
-  if (!value) return null;
-  if (typeof value === "string" && !Number.isNaN(Date.parse(value))) {
-    return new Date(value).toISOString();
-  }
-  if (typeof value._seconds === "number") {
-    return new Date(value._seconds * 1000).toISOString();
-  }
-  return null;
-}
-
-function validTimezone(value) {
-  if (!value) return false;
-  try {
-    new Intl.DateTimeFormat("en", {timeZone: value}).format(new Date());
-    return true;
-  } catch (_error) {
-    return false;
-  }
-}
-
-function platformLabel(platform) {
-  const labels = {
-    bookMyShow: "BookMyShow",
-    district: "District",
-    luma: "Luma",
-    partiful: "Partiful",
-    sortMyScene: "Sort My Scene",
-  };
-  return labels[platform] ?? titleCaseText(platform ?? "External source");
 }
 
 function uniqueById(items) {
@@ -959,14 +866,6 @@ function countryNameForCode(countryCode) {
   if (countryCode === "IN") return "India";
   if (countryCode === "US") return "United States";
   return countryCode ?? "";
-}
-
-function titleCaseText(value) {
-  return String(value)
-    .split(/[\s_-]+/)
-    .filter(Boolean)
-    .map((word) => `${word[0]?.toUpperCase() ?? ""}${word.slice(1)}`)
-    .join(" ");
 }
 
 function slugForName(name) {

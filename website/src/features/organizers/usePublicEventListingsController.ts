@@ -11,7 +11,7 @@ export interface PublicEventFeed {
 }
 const emptyFeed: PublicEventFeed = {phase: "loading", rows: []};
 const queryKey = ["public-catch-event-feed"] as const;
-export const publicEventListingsContext = createContext({
+export const publicEventListingsContext = createContext<{listings: readonly HostListing[]; phase: PublicEventFeed["phase"]; readAt?: number}>({
   listings: hostListings as readonly HostListing[], phase: "loading" as PublicEventFeed["phase"],
 });
 

@@ -1,4 +1,5 @@
 "use client";
+import {publicJsonLd} from "../../shared/next/publicJsonLd";
 import dynamic from "next/dynamic";
 import {useEffect, useState} from "react";
 import {retiredMarketingDestination} from "../retiredMarketingRoutes";
@@ -25,7 +26,7 @@ const Missing = dynamic(() => import("../../features/notFound/NotFoundPage").the
 
 export function PublicPage({page, readAt}: {page: PageKey; readAt: number}) {
   const location = useLocation();
-  const {listings} = usePublicHostListings();
+  const {listings, readAt: currentReadAt} = usePublicHostListings();
   const captures = useMarketingCaptures();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -37,6 +38,7 @@ export function PublicPage({page, readAt}: {page: PageKey; readAt: number}) {
   // Search strings may contain attribution or account continuation credentials.
   useMarketingAnalytics(page, location.pathname);
   let content;
+  let structured: unknown = null;
   if (page === "home") content = <Home captures={captures} />;
   else if (page === "visitor_discovery") content = <Explore captures={captures} />;
   else if (page === "host") content = location.pathname.replace(/\/$/, "") === "/host/apply"
@@ -44,9 +46,16 @@ export function PublicPage({page, readAt}: {page: PageKey; readAt: number}) {
   else if (page === "organizers") content = <Directory />;
   else if (page === "listing") {
     const listing = getHostListingRouteForPath(location.pathname, listings)?.listing;
+    if (listing) structured = {"@context": "https://schema.org", "@type": "Organization",
+      name: listing.name, description: listing.description, url: `https://catchdates.com${listing.path}`};
     content = listing ? <Listing listing={listing} /> : <Missing />;
   } else if (page === "event_detail") {
-    const event = getEventDetailForPath(location.pathname, buildPublicEventDetailRecords(listings, readAt));
+    const event = getEventDetailForPath(location.pathname, buildPublicEventDetailRecords(listings, currentReadAt ?? readAt));
+    if (event) structured = {"@context": "https://schema.org", "@type": "Event", name: event.title,
+      startDate: event.startTime, ...(event.endTime ? {endDate: event.endTime} : {}),
+      description: event.summary, url: `https://catchdates.com${event.path}`,
+      location: {"@type": "Place", name: event.location},
+      organizer: {"@type": "Organization", name: event.listing.name, url: `https://catchdates.com${event.listing.path}`}};
     content = event ? <Event event={event} /> : <Missing />;
   } else if (page === "claim") {
     const state = claimRouteStateForLocation(location);
@@ -56,5 +65,5 @@ export function PublicPage({page, readAt}: {page: PageKey; readAt: number}) {
   } else if (page === "privacy" || page === "terms" || page === "help") {
     content = <Legal page={publishedLegalContent.pages[page]} effectiveDate={publishedLegalContent.effectiveDate} />;
   } else content = <Missing />;
-  return <PageShell pageClassName={pageClassFor(page)}>{content}{mounted && <MarketingConsentBanner />}</PageShell>;
+  return <PageShell pageClassName={pageClassFor(page)}>{structured !== null && <script type="application/ld+json" dangerouslySetInnerHTML={{__html: publicJsonLd(structured)}} />}{content}{mounted && <MarketingConsentBanner />}</PageShell>;
 }

@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.12.0
-updated: 2026-10-18
+version: 0.13.0
+updated: 2026-10-19
 owner: marketing_website
 status: active
 ---
@@ -13,6 +13,61 @@ React marketing website in `website/`. Use `docs/web_surface_architecture.md`
 for domains, deploy targets, CI/CD, and cross-surface hosting boundaries. Use
 `design/website/routes.json` for the route-first contract and
 `design/website/components.json` for the component-first registry.
+
+## Next.js public rendering migration
+
+`website/app/[[...path]]/page.tsx` is the Next.js App Router entry for the
+public site. `src/app/next` adapts the existing feature pages, Router query/hash
+state, pending-action protection and per-provider TanStack Query client. Reuse
+existing content, primitives and layouts; do not introduce a second design
+system. Authored Host/legal pages render without catalog access. Discovery,
+organizer, claim and event pages receive current server-authorized DTOs.
+The current Firebase Hosting deployment still serves the Vite `dist` output;
+Next.js is a separately packaged migration candidate until cutover approval.
+
+`src/server/publicCatalog.ts` reads only the published organizer, Catch-event
+and external-event collections, bounded to 400 rows each with an eight-second
+read deadline. `publicReadPolicy.ts` rejects synthetic, withdrawn, suppressed,
+archived, malformed and non-live-market organizer records. Admin SDK access is
+not publication authority. `publicOrganizerProjection.ts` reuses the extracted
+CLI projector and validates its closed output contract before serialization;
+contact information, owner identities and arbitrary raw objects do not leave
+this boundary. External events retain outbound-only booking capabilities.
+The Next validator adapter compiles the same generated schemas as repository
+checks, with parity tests, without the CLI dependency-discovery loader.
+
+Public responses are uncached. React cache only deduplicates a render's reads;
+there is no cross-request snapshot or ISR fallback. The request gate checks
+availability and organizer aliases before rendering; the render independently
+reauthorizes its data. This currently costs two bounded reads for those pages.
+A failed preflight returns 503; a failure after that preflight can still surface
+as Next's uncached 500. Neither error authorizes stale content or a false 404.
+The browser refreshes at 25 seconds/focus and withholds its snapshot at 30
+seconds or on transport failure. Live withdrawals remove page content and
+structured data. Booking price/capacity authority stays in existing Functions.
+
+Next owns initial canonical/social metadata, escaped Organization/Event JSON-LD,
+robots and a live index-policy-filtered sitemap. Generated organizer snapshots
+are replaced with an empty module in both the Next graph and retained private
+shell; only request-authorized DTOs populate public pages. Reveal styling keeps
+initial HTML visible with JavaScript disabled. Legacy Host redirects remain
+301 and preserve queries before destination anchors.
+
+Existing `/join`, `/booking`, `/offer`, `/event-update`, `/rehearse`, `/invite`,
+`/rsvp`, `/f` and `/demo` flows retain the existing browser app. A fixed shell is
+built into `public/_legacy` and served by `app/private-shell/route.ts` with
+`no-store`, `noindex,nofollow` and `no-referrer`. Signed path/query/fragment values
+never enter RSC props. The request gate parses the actual Host authority; unknown
+hosts receive only this shell and the existing custom-form domain gate. They
+cannot read the public catalog endpoint. The accepted custom-domain controller
+and integration coverage remain in place.
+
+`tool/web/check_website_import_boundaries.mjs` recognizes Next entry and server
+layers, denies browser imports of server modules/privileged packages, and keeps
+the public projector's external imports explicitly bounded. Run the normal
+marketing build for both the existing Vite artifact and the Next candidate;
+`test:next-policy` is part of pretypecheck. `test:next-runtime` requires the
+isolated local emulator and packaged server described in `website/README.md`.
 
 ## Canonical public chrome
 

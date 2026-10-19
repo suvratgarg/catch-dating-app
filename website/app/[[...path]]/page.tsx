@@ -14,7 +14,7 @@ export async function generateMetadata(props: Props) {return (await routeFor(pro
 export default async function Page(props: Props) {
   const route = await routeFor(props);
   if (route.page === "not_found") notFound();
-  return <PublicProviders pathname={route.pathname} catalog={route.catalog}>
+  return <PublicProviders pathname={route.pathname} catalog={route.catalog} live={route.live}>
     <PublicPage page={route.page} readAt={route.catalog.readAt} />
   </PublicProviders>;
 }

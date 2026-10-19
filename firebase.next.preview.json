@@ -1,0 +1,194 @@
+{
+  "hosting": {
+    "target": "marketing",
+    "public": "website/public",
+    "ignore": [
+      "firebase.json",
+      "**/.git/**",
+      "**/.DS_Store",
+      "**/node_modules/**",
+      "**/index.html"
+    ],
+    "headers": [
+      {
+        "source": "/.well-known/apple-app-site-association",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ]
+      },
+      {
+        "source": "/.well-known/assetlinks.json",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ]
+      },
+      {
+        "source": "/demo/**",
+        "headers": [
+          {
+            "key": "Referrer-Policy",
+            "value": "no-referrer"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "private, no-store"
+          },
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex, nofollow"
+          }
+        ]
+      },
+      {
+        "source": "/events/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-store"
+          }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex, nofollow"
+          }
+        ]
+      }
+    ],
+    "redirects": [
+      {
+        "source": "/host/preview",
+        "destination": "/host/",
+        "type": 301
+      },
+      {
+        "source": "/host/preview/**",
+        "destination": "/host/",
+        "type": 301
+      },
+      {
+        "source": "/host/overview",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/host/overview/**",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/host/platform",
+        "destination": "/host/#features",
+        "type": 301
+      },
+      {
+        "source": "/host/platform/**",
+        "destination": "/host/#features",
+        "type": 301
+      },
+      {
+        "source": "/host/workflows",
+        "destination": "/host/#how-it-works",
+        "type": 301
+      },
+      {
+        "source": "/host/workflows/**",
+        "destination": "/host/#how-it-works",
+        "type": 301
+      },
+      {
+        "source": "/host/planners",
+        "destination": "/host/#use-cases",
+        "type": 301
+      },
+      {
+        "source": "/host/planners/**",
+        "destination": "/host/#use-cases",
+        "type": 301
+      },
+      {
+        "source": "/host/mixers",
+        "destination": "/host/#use-cases",
+        "type": 301
+      },
+      {
+        "source": "/host/mixers/**",
+        "destination": "/host/#use-cases",
+        "type": 301
+      },
+      {
+        "source": "/host/clubs",
+        "destination": "/host/#use-cases",
+        "type": 301
+      },
+      {
+        "source": "/host/clubs/**",
+        "destination": "/host/#use-cases",
+        "type": 301
+      },
+      {
+        "source": "/host/stack",
+        "destination": "/host/#existing-tools",
+        "type": 301
+      },
+      {
+        "source": "/host/stack/**",
+        "destination": "/host/#existing-tools",
+        "type": 301
+      },
+      {
+        "source": "/host/directory",
+        "destination": "/organizers/",
+        "type": 301
+      },
+      {
+        "source": "/host/directory/**",
+        "destination": "/organizers/",
+        "type": 301
+      },
+      {
+        "source": "/host/claim",
+        "destination": "/claim/",
+        "type": 301
+      },
+      {
+        "source": "/host/claim/**",
+        "destination": "/claim/",
+        "type": 301
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "/api/form-domain",
+        "function": {
+          "functionId": "resolvePublicFormDomain",
+          "region": "asia-south1"
+        }
+      },
+      {
+        "source": "/api/join-waitlist",
+        "function": {
+          "functionId": "joinWaitlist",
+          "region": "asia-south1"
+        }
+      },
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "catch-website-next-preview",
+          "region": "asia-south1",
+          "pinTag": true
+        }
+      }
+    ]
+  }
+}

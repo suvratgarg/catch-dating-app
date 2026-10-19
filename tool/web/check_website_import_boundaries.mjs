@@ -101,8 +101,9 @@ function importSpecifiers(source) {
 function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
   if (layerFor(sourceRelativePath).name === "next-entry" &&
       isInside(path.join(repoRoot, "website/app"), targetAbsolutePath)) return true;
-  if (sourceRelativePath === "server/publicOrganizerProjection.ts" && [
+  if (["server/publicOrganizerProjection.ts", "server/publicExternalEvent.ts"].includes(sourceRelativePath) && [
     "website/scripts/next/organizerProjection.mjs",
+    "website/scripts/next/externalEventProjection.mjs",
     "tool/contracts/generated/schema_contract_validators.mjs",
   ].some(target => targetAbsolutePath === path.join(repoRoot, target))) return true;
   return (

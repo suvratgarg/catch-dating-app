@@ -18,6 +18,7 @@ export function projectPublicOrganizer(id: string, data: unknown, liveMarkets: R
     const safeHref = publicHttpsUrl(href);
     return safeHref ? {...rest, href: safeHref} : rest;
   });
+  listing.eventEvidence = listing.eventEvidence.filter(event => publicHttpsUrl(event.sourceHref));
   listing.catchEvents = [];
   return listing;
 }
