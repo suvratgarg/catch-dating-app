@@ -2,7 +2,9 @@ import {GuestEventEntry} from "./GuestEventEntry";
 import {observeOrganizerProviders} from "../organizers/observeOrganizerProviders";
 import {observeOrganizerPageView} from "../organizers/analytics";
 import {useEffect} from "react";
-import {eventDetailCopy} from "../../content/events";
+import {consumerEventCopy} from "../../content/consumerEvent";
+import {ConsumerEventPage, EventDiscoveryLink} from "../../shared/ui/primitives/consumerEvent";
+import {PlainLink} from "../../shared/ui/primitives";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import type {EventDetailRecord} from "./eventDetailModel";
 import {recordEventInviteLinkOpen} from "../../firebase";
@@ -31,19 +33,13 @@ export function EventDetailPage({event}: {event: EventDetailRecord}) {
     }).catch(() => undefined);
   }, [event.eventId, inviteToken]);
   return (
-    <>
-      <PublicSiteHeader audience="guest" guestMenuCopy={eventDetailCopy.menu}
-        localActions={[{
-          href: event.listing.path,
-          label: eventDetailCopy.nav.organizerAction,
-        }]}
-        localNav={[
-          {href: "/organizers/", label: eventDetailCopy.nav.organizers},
-          {href: "/help/", label: eventDetailCopy.nav.help},
-        ]}
-      />
+    <ConsumerEventPage>
+      <PublicSiteHeader audience="consumer" />
 
       <WebsitePageMain id="event-detail">
+        <EventDiscoveryLink aria-label={consumerEventCopy.discoveryLabel}>
+          <PlainLink href="/explore/">← {consumerEventCopy.back}</PlainLink>
+        </EventDiscoveryLink>
         <EventDetailHeroSection
           event={event}
           guestEntry={event.supply === "catchNative" ? <GuestEventEntry key={event.eventId} eventId={event.eventId} invitation={{price: event.priceLabel, title: event.title}} /> : undefined}
@@ -53,12 +49,7 @@ export function EventDetailPage({event}: {event: EventDetailRecord}) {
         <EventDetailReviewsSection event={event} />
       </WebsitePageMain>
 
-      <PublicSiteFooter audience="guest"
-        body={eventDetailCopy.footerBody}
-        links={[
-          {href: event.listing.path, label: eventDetailCopy.nav.organizerAction},
-        ]}
-      />
-    </>
+      <PublicSiteFooter audience="consumer" />
+    </ConsumerEventPage>
   );
 }

@@ -706,7 +706,7 @@
       "staticOutput": "generated-postbuild",
       "indexing": "event-controlled",
       "sitemap": "event-controlled",
-      "notes": "Generated Event Detail routes derived from explicitly published organizer and event projections. Catch-native events may use event-scoped phone OTP registration without Consumer onboarding; profile-dependent events hand off to Catch, and external events hand off to the official source. Static output includes semantic Event JSON-LD, organizer provenance, source freshness, aggregate capacity only, and event-scoped reviews whose eventId matches the route.",
+      "notes": "Generated Event Detail routes derived from explicitly published organizer and event projections. Catch-native events may use event-scoped phone OTP registration without Consumer onboarding; profile-dependent events hand off to Catch, and external events hand off to the official source. Static output includes semantic Event JSON-LD, organizer provenance, source freshness, aggregate capacity only, and event-scoped reviews whose eventId matches the route. Consumer event presentation uses the shared homepage navigation and visual system. Explicit public participation declarations alone qualify for the linked Catch Experience badge and included-tools section. Preserve artwork fallback, schedule/timezone, location disclosure, itinerary, requirements, accessibility, event-scoped reviews, external booking attribution and the existing guest entry/payment recovery flow.",
       "review": {
         "priority": "p0",
         "status": "ready",

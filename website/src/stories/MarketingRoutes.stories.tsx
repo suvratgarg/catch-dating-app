@@ -462,6 +462,7 @@ export const OrganizerListing: Story = {
 export const EventDetailCatch: Story = {
   name: "/events/:eventId/ · Catch",
   parameters: {
+    a11y: {test: "error"},
     catchRoute: {
       id: "event_detail_canonical",
       path: catchEventDetailFixture.path,
@@ -503,6 +504,7 @@ export const EventDetailCatch: Story = {
 
 export const EventDetailExternal: Story = {
   name: "/events/:eventId/ · external",
+  parameters: {a11y: {test: "error"}},
   render: () => <EventDetailRouteStory event={externalEventDetailFixture} />,
 };
 
@@ -544,4 +546,15 @@ export const OrganiserProfileEmpty: Story = {
   name: "/organizers/:slug/ · No events yet",
   parameters: {a11y: {test: "error"}},
   render: () => <WebsiteQueryProvider><MemoryRouter><OrganizerListingRouteStory listing={{...consumerHomeStoryListings[0], catchEvents: [], externalEvents: [], eventEvidence: []}} /></MemoryRouter></WebsiteQueryProvider>,
+};
+
+export const EventDetailExperience: Story = {
+  name: "/events/:eventId/ · Catch Experience",
+  parameters: {a11y: {test: "error"}},
+  render: () => <EventDetailRouteStory event={{...catchEventDetailFixture, catchExperienceActivities: ["introductions", "sharedActivities"]}} />,
+};
+export const EventDetailSparse: Story = {
+  name: "/events/:eventId/ · Sparse event",
+  parameters: {a11y: {test: "error"}},
+  render: () => <EventDetailRouteStory event={{...catchEventDetailFixture, photoUrl: null, itinerary: [], summary: "", requirements: "", accessibility: ""}} />,
 };

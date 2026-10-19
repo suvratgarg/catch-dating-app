@@ -1,4 +1,4 @@
-import {cleanup, fireEvent, render, screen} from "@testing-library/react";
+import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {EventDetailPage} from "../EventDetailPage";
 import {hostListings} from "../../organizers/data";
@@ -20,6 +20,32 @@ vi.mock("../../organizers/analytics", () => ({trackOrganizerAnalytics, observeOr
 afterEach(() => {cleanup(); vi.clearAllMocks();});
 
 describe("Event Detail sections", () => {
+  it("uses the shared consumer navigation without moving the booking destination", () => {
+    render(<EventDetailPage event={externalEvent()} />);
+    const nav = screen.getByRole("navigation", {name: "Primary"});
+    expect(within(nav).getAllByRole("link").map(link => link.getAttribute("href")))
+      .toEqual(["/explore/", "/organizers/", "/host/"]);
+    expect(screen.getByRole("link", {name: "Open official source"}).getAttribute("href")).toBe("https://luma.com/example");
+  });
+
+  it("links the experience badge to only the declared interaction tools", () => {
+    const event = {...catchEvent(), catchExperienceActivities: ["rotations" as const]};
+    render(<><EventDetailHeroSection event={event} /><EventDetailFactsSection event={event} /></>);
+    expect(screen.getByRole("link", {name: "Catch Experience"}).getAttribute("href")).toBe("#catch-experience");
+    const panel = screen.getByRole("region", {name: "A little help joining in."});
+    expect(within(panel).getByRole("heading", {name: "Partner or group rotations"})).toBeTruthy();
+    expect(within(panel).getByText("Activities are optional. Join in at your own pace.")).toBeTruthy();
+    expect(screen.queryByText("Guided introductions")).toBeNull();
+    expect(screen.getByRole("link", {name: "Check event access"}).getAttribute("href")).toBe(`/booking/${event.eventId}/`);
+  });
+
+  it.each([undefined, [], ["checkIn"], ["rotations", "rotations"]])("does not badge booking-only or invalid declarations: %j", (activities) => {
+    const event = {...catchEvent(), catchExperienceActivities: activities} as EventDetailRecord;
+    render(<><EventDetailHeroSection event={event} /><EventDetailFactsSection event={event} /></>);
+    expect(screen.queryByText("Catch Experience")).toBeNull();
+    expect(screen.queryByRole("region", {name: "A little help joining in."})).toBeNull();
+  });
+
   it("observes a directly rendered external detail page and cleans up its consent subscription", () => {
     const event = externalEvent();
     const {unmount} = render(<EventDetailPage event={event} />);

@@ -1,6 +1,6 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 104,
+  "version": 105,
   "updated": "2026-10-19",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -1134,7 +1134,9 @@
       "css": [
         "website/src/styles/site-shell.css",
         "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/consumer-event.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1218,7 +1220,9 @@
       "exportName": "EventDetailHeroSection",
       "css": [
         "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/consumer-event.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1246,7 +1250,9 @@
       "exportName": "EventDetailFactsSection",
       "css": [
         "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/consumer-event.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1270,7 +1276,9 @@
       "exportName": "EventDetailReviewsSection",
       "css": [
         "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/consumer-event.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1294,7 +1302,9 @@
       "exportName": "EventDetailProvenanceSection",
       "css": [
         "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/consumer-event.css"
       ],
       "storybook": {
         "status": "ready",

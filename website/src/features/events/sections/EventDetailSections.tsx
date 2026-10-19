@@ -1,3 +1,5 @@
+import {consumerEventCopy} from "../../../content/consumerEvent";
+import {EventExperiencePanel} from "../../../shared/ui/primitives/consumerEvent";
 import {exploreCopy} from "../../../content/explore";
 import {publicExperienceActivities} from "../../organizers/publicExperience";
 import {ExploreBadge} from "../../../shared/ui/primitives/explore";
@@ -23,6 +25,8 @@ export function EventDetailHeroSection({event, guestEntry}: {
   const external = event.supply === "external";
   return <EventDetailHeroLayout activityToken={activity.token} eyebrow={activity.label}
     title={event.title}
+    badge={publicExperienceActivities(event.catchExperienceActivities).length ?
+      <EventDetailSourceLink href="#catch-experience"><ExploreBadge>{exploreCopy.experienceLabel}</ExploreBadge></EventDetailSourceLink> : undefined}
     media={<EventDetailMedia src={event.photoUrl} alt={interpolateContent(copy.invitation.coverAlt, {title: event.title})}
       fallback={<><span>{activity.label}</span><strong>{event.title}</strong><span>{event.listing.name}</span></>} />}
     host={<><ActivityMark listing={event.listing} size="sm" /><div><span>{copy.hero.hostedByLabel}</span>
@@ -58,7 +62,14 @@ export function EventDetailFactsSection({event}: {event: EventDetailRecord}) {
       metrics={[]} name={event.listing.name}
       primaryAction={<ButtonLink href={event.listing.path} variant="ghost">{copy.nav.organizerAction}</ButtonLink>} />}>
       {event.summary.trim() ? <><h2>{copy.invitation.about}</h2><p>{event.summary}</p></> : null}
-      {experience.length ? <><ExploreBadge>{exploreCopy.experienceLabel}</ExploreBadge><h2>{exploreCopy.experienceDetail}</h2><ul>{experience.map(item => <li key={item}>{exploreCopy.activities[item]}</li>)}</ul><p>{exploreCopy.experienceChoice}</p></> : null}
+      {experience.length ? <EventExperiencePanel id="catch-experience" aria-labelledby="event-experience-title">
+        <ExploreBadge>{exploreCopy.experienceLabel}</ExploreBadge>
+        <h2 id="event-experience-title">{consumerEventCopy.experienceIntro}</h2>
+        <p>{consumerEventCopy.experienceBody}</p>
+        <ul>{experience.map(item => <li key={item}><h3>{exploreCopy.activities[item]}</h3><p>{consumerEventCopy.activities[item]}</p></li>)}</ul>
+        <p><strong>{exploreCopy.experienceChoice}</strong></p>
+        <p>{consumerEventCopy.experienceMeaning}</p>
+      </EventExperiencePanel> : null}
       {itinerary.length ? <><h2>{copy.invitation.itinerary}</h2><EventDetailItinerary items={itinerary.map((item) => ({
         id: item.id, title: item.title, description: item.description,
         time: itineraryTime(event, item.offsetMinutes),
