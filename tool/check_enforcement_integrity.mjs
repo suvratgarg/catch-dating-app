@@ -4,6 +4,7 @@ import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "./lib/repo_paths.mjs";
 import {createRepositorySnapshot} from "./lib/repository_snapshot.mjs";
+import {headingAnchors} from "./docs/check_doc_metadata.mjs";
 
 const allowedStages = new Set([
   "manual",
@@ -481,26 +482,9 @@ function validateDocAnchor({snapshot, docAnchor, owner, errors}) {
     return;
   }
   const source = snapshot.readText(filePath, {required: true});
-  const anchors = new Set();
-  for (const line of source.split(/\r?\n/u)) {
-    const match = /^(#{1,6})\s+(.+)$/u.exec(line);
-    if (!match) continue;
-    anchors.add(slugifyHeading(match[2]));
-    // GitHub preserves the two spaces surrounding a removed em dash.
-    anchors.add(slugifyHeading(match[2], {preserveSpaces: true}));
-  }
-  if (!anchors.has(fragment)) {
+  if (!headingAnchors(source).has(fragment)) {
     errors.push(`${owner}: docAnchor heading not found: ${docAnchor}.`);
   }
-}
-
-function slugifyHeading(heading, {preserveSpaces = false} = {}) {
-  return heading
-    .trim()
-    .toLowerCase()
-    .replace(/`([^`]+)`/gu, "$1")
-    .replace(/[^\p{Letter}\p{Number}\s-]/gu, "")
-    .replace(preserveSpaces ? /\s/gu : /\s+/gu, "-");
 }
 
 function validateBaselineOwnership({snapshot, file, errors}) {

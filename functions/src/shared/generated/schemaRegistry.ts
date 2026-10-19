@@ -5,6 +5,8 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {manageWebsiteAccountCallablePayloadSchema} from "./schemas/manageWebsiteAccountInput";
+export {manageWebsiteAccountCallableResponseSchema} from "./schemas/manageWebsiteAccountOutput";
 export {hostResponseSummaryDocumentSchema} from "./schemas/hostResponseSummaryDocument";
 export {hostGroupDetailDocumentSchema} from "./schemas/hostGroupDetailDocument";
 export {hostGroupSummaryDocumentSchema} from "./schemas/hostGroupSummaryDocument";

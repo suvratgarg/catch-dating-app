@@ -10,6 +10,7 @@ import {requiresCommunityMembership} from
   "../memberships/communityMembershipAuthority";
 
 export const cohortIds = {
+  unspecified: "unspecified",
   menInterestedInWomen: "menInterestedInWomen",
   womenInterestedInMen: "womenInterestedInMen",
   queerOrOpen: "queerOrOpen",
@@ -228,6 +229,7 @@ export function legacyPolicyFromEvent(
 
 export function cohortIdForUser(user: UserProfileDocument): EventCohortId {
   const interests = new Set(user.interestedInGenders ?? []);
+  if (!user.gender || interests.size === 0) return cohortIds.unspecified;
   if (user.gender === "man" && interests.size === 1 &&
       interests.has("woman")) {
     return cohortIds.menInterestedInWomen;

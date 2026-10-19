@@ -1,3 +1,5 @@
+import {validateOrganizerMomentRunDocument} from
+  "../shared/generated/validators/organizerMomentRunDocument";
 import type {Query, Firestore, Transaction} from "firebase-admin/firestore";
 import {
   requireMillis,
@@ -87,6 +89,16 @@ export function momentToDocument(
 }
 
 export function runFromDocument(data: Record<string, unknown>): RunRecord {
+  if (typeof data.runId === "string" &&
+      /^travel_v1_[a-f0-9]{64}$/.test(data.runId)) {
+    if (!validateOrganizerMomentRunDocument(data)) {
+      throw new Error("Invalid durable travel run");
+    }
+    const travel = readTravelOccurrence(data.travelOccurrence)!;
+    if (data.expiresAtMillis !== travel.createdAtMillis + 6 * 60 * 60_000) {
+      throw new Error("Invalid travel recovery window");
+    }
+  }
   const status = data.status;
   if (status !== "planned" && status !== "resolving" &&
       status !== "dispatched" && status !== "skipped" &&
@@ -112,9 +124,27 @@ export function runFromDocument(data: Record<string, unknown>): RunRecord {
       {targetFunctionId: data.targetFunctionId} : {}),
     ...(typeof data.subjectId === "string" ?
       {subjectId: data.subjectId} : {}),
+    ...(data.travelOccurrence !== undefined ?
+      {travelOccurrence: readTravelOccurrence(data.travelOccurrence)} : {}),
     ...(data.automation && typeof data.automation === "object" ?
       {automation: readRunAutomation(data.automation)} : {}),
   };
+}
+
+function readTravelOccurrence(value: unknown): RunRecord["travelOccurrence"] {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error("Invalid travel occurrence");
+  }
+  const data = value as Record<string, unknown>;
+  const keys = ["momentRevision", "occurredAtMillis", "createdAtMillis"];
+  if (Object.keys(data).length !== keys.length || keys.some((key) =>
+    !Number.isSafeInteger(data[key]) || (data[key] as number) < 0) ||
+    (data.createdAtMillis as number) < (data.occurredAtMillis as number)) {
+    throw new Error("Invalid travel occurrence");
+  }
+  return {momentRevision: data.momentRevision as number,
+    occurredAtMillis: data.occurredAtMillis as number,
+    createdAtMillis: data.createdAtMillis as number};
 }
 
 /** The occurrence binding written by the automation handoff; absent on
@@ -423,33 +453,15 @@ export async function resolveMomentRecipients(
         const data = doc.data() as Record<string, unknown>;
         if (data.status !== "active" || data.revokedAt != null ||
             data.revokedBy != null) continue;
-        let duties = Array.isArray(data.duties) ? data.duties : [];
         if (scope.kind === "program") {
           const grant = data as unknown as ProgramStaffGrantDocument;
-          if (!program || grant.programId !== scope.programId ||
-              grant.organizerId !== program.organizerId ||
-              typeof grant.uid !== "string" || !grant.uid ||
-              doc.id !== programStaffGrantId(scope.programId, grant.uid) ||
-              programOwnerAuthorizationDeadline(program, grant) === null ||
+          if (!program || typeof grant.uid !== "string" ||
+              programMomentStaffDeadline(program, grant, doc.id,
+                scope.programId, grant.uid, audience, nowMillis) === null ||
               (await tx.get(db.collection("deletedUsers").doc(grant.uid)))
                 .exists) continue;
-          duties = activeProgramDuties(grant, nowMillis);
-        }
-        const match = duties.some((duty: unknown) => {
-          if (typeof duty !== "object" || duty === null) return false;
-          const row = duty as Record<string, unknown>;
-          if (row.duty !== audience.duty) return false;
-          if (audience.scopeIds === null) return true;
-          const scoped = [
-            ...(Array.isArray(row.functionIds) ?
-              row.functionIds as string[] : []),
-            ...(Array.isArray(row.pickupPointIds) ?
-              row.pickupPointIds as string[] : []),
-            ...(Array.isArray(row.hotelIds) ? row.hotelIds as string[] : []),
-          ];
-          return audience.scopeIds!.some((id) => scoped.includes(id));
-        });
-        if (!match) continue;
+        } else if (!(Array.isArray(data.duties) ? data.duties : [])
+          .some((duty) => momentDutyMatches(duty, audience))) continue;
         const uid = typeof data.uid === "string" ? data.uid : null;
         if (!uid) continue;
         recipients.push({
@@ -836,3 +848,38 @@ function readTimestamp(value: unknown): number | null {
 }
 
 export {sameScope, scopeId, requireMillis};
+
+/** Same duty/scope predicate for audience resolution and delivery claims. */
+function momentDutyMatches(duty: unknown,
+  audience: {duty: string; scopeIds: ReadonlyArray<string> | null}): boolean {
+  if (typeof duty !== "object" || duty === null) return false;
+  const row = duty as Record<string, unknown>;
+  if (row.duty !== audience.duty) return false;
+  if (audience.scopeIds === null) return true;
+  const scoped = [
+    ...(Array.isArray(row.functionIds) ? row.functionIds as string[] : []),
+    ...(Array.isArray(row.pickupPointIds) ?
+      row.pickupPointIds as string[] : []),
+    ...(Array.isArray(row.hotelIds) ? row.hotelIds as string[] : []),
+  ];
+  return audience.scopeIds.some((id) => scoped.includes(id));
+}
+
+/** Latest instant this exact recipient duty remains authorized. */
+export function programMomentStaffDeadline(
+  program: OrganizerProgramDocument, grant: ProgramStaffGrantDocument,
+  grantId: string, programId: string, uid: string,
+  audience: {duty: string; scopeIds: ReadonlyArray<string> | null},
+  now: number,
+): number | null {
+  if (!uid || grant.programId !== programId || grant.uid !== uid ||
+      grant.organizerId !== program.organizerId ||
+      grantId !== programStaffGrantId(programId, uid)) return null;
+  const ownerDeadline = programOwnerAuthorizationDeadline(program, grant);
+  if (ownerDeadline === null) return null;
+  const matching = activeProgramDuties(grant, now)
+    .filter((duty) => momentDutyMatches(duty, audience));
+  if (matching.length === 0) return null;
+  return Math.min(ownerDeadline,
+    Math.max(...matching.map((duty) => duty.expiresAtMillis)));
+}

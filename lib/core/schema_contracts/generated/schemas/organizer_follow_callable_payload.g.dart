@@ -24,5 +24,10 @@ const schemaOrganizerFollowCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
+    'expectedUid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 128,
+    },
   },
 };

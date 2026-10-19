@@ -56,4 +56,30 @@ export interface ProgramDeliveryMessageIntent {
       [k: string]: string;
     };
   };
+  /**
+   * Frozen staff activity and push semantics; claim revalidates the original Moment revision and current recipient authority.
+   */
+  activity?:
+    | {
+        appRole: "host";
+        audienceDuty: string;
+        /**
+         * @maxItems 200
+         */
+        scopeIds: string[] | null;
+        actionKind: "push";
+        notificationType: string;
+        preferenceKey: string;
+      }
+    | {
+        appRole: "host";
+        audienceDuty: string;
+        /**
+         * @maxItems 200
+         */
+        scopeIds: string[] | null;
+        actionKind: "staffAttention";
+        actionDuty: string;
+        severity: "info" | "warning" | "urgent";
+      };
 }

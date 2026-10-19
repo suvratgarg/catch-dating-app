@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
@@ -10,7 +11,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OnboardingNameDobBody extends ConsumerStatefulWidget {
-  const OnboardingNameDobBody({super.key});
+  const OnboardingNameDobBody({
+    super.key,
+    this.profileCompletionOnly = false,
+    this.eventRequirements,
+  });
+
+  final List<String>? eventRequirements;
+
+  final bool profileCompletionOnly;
 
   @override
   ConsumerState<OnboardingNameDobBody> createState() =>
@@ -41,6 +50,7 @@ class _OnboardingNameDobBodyState extends ConsumerState<OnboardingNameDobBody> {
   }
 
   Future<void> _pickDate(OnboardingNameDobDatePickerRequest request) async {
+    if (ref.read(OnboardingController.saveProfileMutation).isPending) return;
     final picked = await showCatchDatePicker(
       copy: catchDatePickerCopy(context.l10n),
       context: context,
@@ -49,7 +59,7 @@ class _OnboardingNameDobBodyState extends ConsumerState<OnboardingNameDobBody> {
       lastDate: request.lastDate,
       title: request.title,
     );
-    if (picked != null) {
+    if (picked != null && mounted) {
       setState(() {
         _selectedDate = picked;
         _dateController.text = OnboardingNameDobState.formatDate(picked);
@@ -69,8 +79,15 @@ class _OnboardingNameDobBodyState extends ConsumerState<OnboardingNameDobBody> {
   }
 
   OnboardingNameDobState _stateFor(OnboardingData data) {
+    final mutation = ref.read(OnboardingController.saveProfileMutation);
     return OnboardingNameDobState.fromDraft(
       l10n: context.l10n,
+      profileCompletionOnly: widget.profileCompletionOnly,
+      eventRequirements: widget.eventRequirements,
+      isSaving: mutation.isPending,
+      saveErrorMessage: mutation.hasError
+          ? mutationErrorMessage(mutation, l10n: context.l10n)
+          : null,
       firstName: _firstNameController.text,
       lastName: _lastNameController.text,
       phoneNumber: _phoneController.text,
@@ -82,6 +99,7 @@ class _OnboardingNameDobBodyState extends ConsumerState<OnboardingNameDobBody> {
   }
 
   void _submit() {
+    if (ref.read(OnboardingController.saveProfileMutation).isPending) return;
     final data = ref.read(onboardingControllerProvider);
     final state = _stateFor(data);
     if (!_formKey.currentState!.validate()) return;
@@ -92,19 +110,43 @@ class _OnboardingNameDobBodyState extends ConsumerState<OnboardingNameDobBody> {
     );
     if (intent == null) return;
 
-    ref
-        .read(onboardingControllerProvider.notifier)
-        .advanceToGenderInterest(
-          firstName: intent.firstName,
-          lastName: intent.lastName,
-          dateOfBirth: intent.dateOfBirth,
-          phoneNumber: intent.phoneNumber,
-          countryCode: intent.countryCode,
-        );
+    final controller = ref.read(onboardingControllerProvider.notifier);
+    controller.setNameDob(
+      firstName: intent.firstName,
+      lastName: intent.lastName,
+      dateOfBirth: intent.dateOfBirth,
+      phoneNumber: intent.phoneNumber,
+      countryCode: intent.countryCode,
+    );
+    final needsCohort =
+        widget.eventRequirements == null ||
+        widget.eventRequirements!.contains('cohortRestricted');
+    if (widget.profileCompletionOnly &&
+        needsCohort &&
+        (data.gender == null || data.interestedInGenders.isEmpty)) {
+      controller.advanceToGenderInterest(
+        firstName: intent.firstName,
+        lastName: intent.lastName,
+        dateOfBirth: intent.dateOfBirth,
+        phoneNumber: intent.phoneNumber,
+        countryCode: intent.countryCode,
+      );
+      return;
+    }
+    // The mutation retains failures for the inline error banner and retry.
+    OnboardingController.saveProfileMutation.run(ref, (tx) async {
+      await tx
+          .get(onboardingControllerProvider.notifier)
+          .saveProfile(
+            socialIdentityOnly: widget.profileCompletionOnly,
+            eventRequirements: widget.eventRequirements,
+          );
+    }).ignore();
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(OnboardingController.saveProfileMutation);
     final data = ref.watch(onboardingControllerProvider);
     final state = _stateFor(data);
 
@@ -148,7 +190,10 @@ class OnboardingNameDobStep extends StatelessWidget {
       child: OnboardingStepLayout(
         footer: CatchButton(
           label: context.l10n.onboardingNameDobPageLabelContinue,
-          onPressed: callbacks.onContinue,
+          onPressed: state.isSaving ? null : callbacks.onContinue,
+          status: state.isSaving
+              ? CatchButtonStatus.loading
+              : CatchButtonStatus.idle,
           fullWidth: true,
           size: CatchButtonSize.lg,
         ),
@@ -156,40 +201,49 @@ class OnboardingNameDobStep extends StatelessWidget {
           CatchSection.fieldRows(
             first: true,
             children: [
-              CatchField.input(
-                copy: catchFieldCopy(context.l10n),
-                title: context.l10n.onboardingNameDobPageTitleFirstName,
-                contract:
-                    CatchContractConstraints.onboardingDraftDocumentFirstName,
-                controller: controllers.firstName,
-                autofocus: state.shouldAutofocus,
-                icon: CatchIcons.personOutlineRounded,
-                textCapitalization: TextCapitalization.words,
-                textInputAction: TextInputAction.next,
-                autofillHints: const [AutofillHints.givenName],
-                helperText: context
-                    .l10n
-                    .onboardingNameDobPageHelpertextDisplayedOnYourProfile,
-                onValidate: state.validateFirstName,
-              ),
-              CatchField.input(
-                copy: catchFieldCopy(context.l10n),
-                title: context.l10n.onboardingNameDobPageTitleLastName,
-                contract:
-                    CatchContractConstraints.onboardingDraftDocumentLastName,
-                controller: controllers.lastName,
-                icon: CatchIcons.personOutlineRounded,
-                textCapitalization: TextCapitalization.words,
-                textInputAction: TextInputAction.next,
-                autofillHints: const [AutofillHints.familyName],
-                helperText: context
-                    .l10n
-                    .onboardingNameDobPageHelpertextPrivateWeNeverShow,
-                onValidate: state.validateLastName,
-              ),
+              if (!state.profileCompletionOnly)
+                CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
+                  states: {if (state.isSaving) WidgetState.disabled},
+                  title: context.l10n.onboardingNameDobPageTitleFirstName,
+                  contract:
+                      CatchContractConstraints.onboardingDraftDocumentFirstName,
+                  controller: controllers.firstName,
+                  autofocus: state.shouldAutofocus,
+                  icon: CatchIcons.personOutlineRounded,
+                  textCapitalization: TextCapitalization.words,
+                  textInputAction: TextInputAction.next,
+                  autofillHints: const [AutofillHints.givenName],
+                  helperText: context
+                      .l10n
+                      .onboardingNameDobPageHelpertextDisplayedOnYourProfile,
+                  onValidate: state.validateFirstName,
+                ),
+              if (!state.profileCompletionOnly)
+                CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
+                  states: {if (state.isSaving) WidgetState.disabled},
+                  labelMode: CatchFieldLabelTextMode.optional,
+                  title: context.l10n.onboardingNameDobPageTitleLastName,
+                  contract:
+                      CatchContractConstraints.onboardingDraftDocumentLastName,
+                  controller: controllers.lastName,
+                  icon: CatchIcons.personOutlineRounded,
+                  textCapitalization: TextCapitalization.words,
+                  textInputAction: TextInputAction.next,
+                  autofillHints: const [AutofillHints.familyName],
+                  helperText: context
+                      .l10n
+                      .onboardingNameDobPageHelpertextPrivateWeNeverShow,
+                  onValidate: state.validateLastName,
+                ),
               CatchField.input(
                 copy: catchFieldCopy(context.l10n),
                 key: OnboardingFormKeys.dateOfBirth,
+                states: {if (state.isSaving) WidgetState.disabled},
+                labelMode: state.birthdayRequired
+                    ? CatchFieldLabelTextMode.visible
+                    : CatchFieldLabelTextMode.optional,
                 title: context.l10n.onboardingNameDobPageTitleDateOfBirth,
                 contract: CatchContractConstraints
                     .mobileFormStateOnboardingDateOfBirthText,
@@ -202,27 +256,31 @@ class OnboardingNameDobStep extends StatelessWidget {
                     context.l10n.onboardingNameDobPageHelpertextWeNeverShowYour,
                 onValidate: (_) => state.validateDateOfBirth(),
               ),
-              CatchField.input(
-                copy: catchFieldCopy(context.l10n),
-                key: OnboardingFormKeys.phone,
-                title: context.l10n.onboardingNameDobPageTitlePhone,
-                contract:
-                    CatchContractConstraints.onboardingDraftDocumentPhoneNumber,
-                controller: controllers.phone,
-                inputMode: CatchTextInputMode.inactiveWithoutSelection,
-                keyboardType: TextInputType.phone,
-                textInputAction: TextInputAction.done,
-                autofillHints: const [AutofillHints.telephoneNumberNational],
-                icon: CatchIcons.phoneOutlined,
-                prefixText: state.phonePrefix,
-                trailing: Icon(CatchIcons.verifiedRounded),
-                helperText:
-                    context.l10n.onboardingNameDobPageHelpertextVerifiedViaOtp,
-                helperTone: CatchFieldSupportRowTone.success,
-                onValidate: state.validatePhoneNumber,
-              ),
+              if (!state.profileCompletionOnly)
+                CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
+                  key: OnboardingFormKeys.phone,
+                  title: context.l10n.onboardingNameDobPageTitlePhone,
+                  contract: CatchContractConstraints
+                      .onboardingDraftDocumentPhoneNumber,
+                  controller: controllers.phone,
+                  inputMode: CatchTextInputMode.inactiveWithoutSelection,
+                  keyboardType: TextInputType.phone,
+                  textInputAction: TextInputAction.done,
+                  autofillHints: const [AutofillHints.telephoneNumberNational],
+                  icon: CatchIcons.phoneOutlined,
+                  prefixText: state.phonePrefix,
+                  trailing: Icon(CatchIcons.verifiedRounded),
+                  helperText: context
+                      .l10n
+                      .onboardingNameDobPageHelpertextVerifiedViaOtp,
+                  helperTone: CatchFieldSupportRowTone.success,
+                  onValidate: state.validatePhoneNumber,
+                ),
             ],
           ),
+          if (state.saveErrorMessage case final message?)
+            CatchSection.plain(child: CatchBanner.error(message: message)),
         ],
       ),
     );

@@ -147,3 +147,207 @@ test("over-limit evidence fails instead of returning an incomplete " +
   await assert.rejects(savedAudienceSourceMatches(db.asFirestore(), "org-1",
     definition(attendance)), {code: "resource-exhausted"});
 });
+
+interface SourceRead {
+  collection: string;
+  returned: number;
+}
+
+function countSourceReads(store: AudienceTestStore, reads: SourceRead[],
+  beforeRead: (collection: string) => void = () => undefined) {
+  const db = store.asFirestore();
+  const wrap = (query: FirebaseFirestore.Query, collection: string):
+    FirebaseFirestore.Query => new Proxy(query, {
+    get(target, key) {
+      if (key === "get") {
+        return async () => {
+          beforeRead(collection);
+          const result = await target.get();
+          reads.push({collection, returned: result.size});
+          return result;
+        };
+      }
+      const value = Reflect.get(target, key);
+      if (typeof value !== "function") return value;
+      if (["where", "limit", "orderBy", "startAfter"].includes(String(key))) {
+        return (...args: unknown[]) => wrap(
+          Reflect.apply(value, target, args), collection);
+      }
+      return value.bind(target);
+    },
+  });
+  return new Proxy(db, {
+    get(target, key) {
+      if (key === "collection") {
+        return (name: string) => wrap(target.collection(name), name);
+      }
+      const value = Reflect.get(target, key);
+      return typeof value === "function" ? value.bind(target) : value;
+    },
+  });
+}
+
+function addResponses(db: AudienceTestStore, count: number) {
+  for (let i = 0; i < count; i++) {
+    db.docs[`organizerFormResponses/extra-${i}`] = {
+      ...db.docs["organizerFormResponses/r1"],
+    };
+    db.docs[`organizerContactOrigins/extra-${i}`] = {
+      ...db.docs["organizerContactOrigins/origin-1"],
+      sourceEntityId: `extra-${i}`, currentContactId: `person-${i}`,
+    };
+  }
+}
+
+test("same-form predicates reuse one bounded query across questions " +
+  "and versions beyond 500 responses", async () => {
+  const db = store();
+  addResponses(db, 500);
+  db.docs["organizerFormVersions/v2"] = {
+    ...db.docs["organizerFormVersions/v1"], version: 2,
+  };
+  db.docs["organizerFormResponses/extra-0"].versionId = "v2";
+  const boolean: Predicate = {...answer, questionId: "member", value: false};
+  const newer: Predicate = {...answer, versionId: "v2"};
+  const reads: SourceRead[] = [];
+  const matches = await savedAudienceSourceMatches(countSourceReads(db, reads),
+    "org-1", definition(answer, boolean, newer));
+  assert.equal(matches.get(JSON.stringify(answer))!.size, 500);
+  assert.deepEqual(matches.get(JSON.stringify(boolean)),
+    matches.get(JSON.stringify(answer)));
+  assert.deepEqual([...matches.get(JSON.stringify(newer))!], ["person-0"]);
+  assert.deepEqual(reads.filter((r) =>
+    r.collection === "organizerFormResponses"),
+  [{collection: "organizerFormResponses", returned: 501}]);
+});
+
+test("application predicates reuse query rows but retain real source " +
+  "access and collection identity", async () => {
+  const db = store();
+  addResponses(db, 500);
+  for (const responseId of ["r1", ...Array.from({length: 500},
+    (_, i) => `extra-${i}`)]) {
+    const applicationId = genericFormApplicationId(responseId);
+    const source = {kind: "native", externalResponseId: responseId};
+    db.docs[`organizerApplications/${applicationId}`] = {
+      organizerId: "org-1", formId: "form-1", formVersionId: "v1",
+      latestResponseId: responseId, reviewStatus: responseId === "r1" ?
+        "submitted" : "approved", contactId: "alias", linkedUid: null, source,
+    };
+    db.docs[`organizerApplicationResponses/${responseId}`] = {
+      organizerId: "org-1", applicationId, formId: "form-1",
+      formVersionId: "v1", linkedUid: null, source, answers: [],
+    };
+  }
+  const approved: Predicate = {kind: "applicationStatus", formId: "form-1",
+    reviewStatus: "approved"};
+  const submitted: Predicate = {...approved, reviewStatus: "submitted"};
+  const reads: SourceRead[] = [];
+  const run = () => savedAudienceSourceMatches(countSourceReads(db, reads),
+    "org-1", definition(approved, submitted, answer));
+  const matches = await run();
+  assert.equal(matches.get(JSON.stringify(approved))!.size, 500);
+  assert.deepEqual([...matches.get(JSON.stringify(submitted))!], ["survivor"]);
+  assert.equal(matches.get(JSON.stringify(answer))!.size, 501);
+  assert.deepEqual(reads.filter((r) =>
+    r.collection === "organizerApplications"),
+  [{collection: "organizerApplications", returned: 501}]);
+  assert.equal(reads.filter((r) =>
+    r.collection === "organizerFormResponses").length, 1);
+  db.docs["organizerFormResponses/r1"].status = "withdrawn";
+  db.docs["organizerFormResponses/extra-0"].status = "withdrawn";
+  reads.length = 0;
+  const refreshed = await run();
+  assert.equal(refreshed.get(JSON.stringify(approved))!.size, 499);
+  assert.equal(refreshed.get(JSON.stringify(submitted))!.size, 0);
+  assert.equal(refreshed.get(JSON.stringify(answer))!.size, 499);
+  assert.equal(reads.filter((r) =>
+    r.collection === "organizerApplications").length, 1);
+});
+
+test("source reuse keeps forms separate and revalidates each question",
+  async () => {
+    const db = store();
+    db.docs["organizerFormVersions/other-v"] = {
+      ...db.docs["organizerFormVersions/v1"], formId: "other-form",
+    };
+    const other: Predicate = {...answer, formId: "other-form",
+      versionId: "other-v"};
+    const reads: SourceRead[] = [];
+    const result = await savedAudienceSourceMatches(countSourceReads(db, reads),
+      "org-1", definition(answer, other));
+    assert.equal(result.get(JSON.stringify(answer))!.size, 1);
+    assert.equal(result.get(JSON.stringify(other))!.size, 0);
+    assert.deepEqual(reads.filter((r) =>
+      r.collection === "organizerFormResponses").map((r) => r.returned),
+    [1, 0]);
+    reads.length = 0;
+    await assert.rejects(savedAudienceSourceMatches(countSourceReads(db, reads),
+      "org-1", definition(answer, {...answer, questionId: "private"})),
+    {code: "failed-precondition"});
+    assert.equal(reads.length, 0);
+  });
+
+test("source reuse preserves exact 5000 cap and fresh retry after failure",
+  async () => {
+    const db = store();
+    for (let i = 0; i < 4999; i++) {
+      db.docs[`organizerFormResponses/extra-${i}`] = {
+        ...db.docs["organizerFormResponses/r1"],
+      };
+    }
+    const coffee: Predicate = {...answer, value: "coffee"};
+    const reads: SourceRead[] = [];
+    let fail = true;
+    const observed = countSourceReads(db, reads, (collection) => {
+      if (collection === "organizerFormResponses" && fail) {
+        throw new Error("transient source read");
+      }
+    });
+    const run = () => savedAudienceSourceMatches(observed, "org-1",
+      definition(answer, coffee));
+    await assert.rejects(run(), /transient source read/);
+    fail = false;
+    const matches = await run();
+    assert.deepEqual([...matches.get(JSON.stringify(answer))!], ["survivor"]);
+    assert.deepEqual([...matches.get(JSON.stringify(coffee))!], ["survivor"]);
+    assert.deepEqual(reads.filter((r) =>
+      r.collection === "organizerFormResponses"),
+    [{collection: "organizerFormResponses", returned: 5000}]);
+    db.docs["organizerFormResponses/overflow"] = {
+      ...db.docs["organizerFormResponses/r1"],
+    };
+    await assert.rejects(run(), {code: "resource-exhausted"});
+  });
+
+test("a reused application query never caches participant grant authority",
+  async () => {
+    const db = store();
+    const applicationId = "participant-application";
+    const responseId = "participant-response";
+    const source = {kind: "native"};
+    db.docs[`organizerApplications/${applicationId}`] = {
+      organizerId: "org-1", formId: "form-1", formVersionId: "v1",
+      latestResponseId: responseId, reviewStatus: "approved",
+      contactId: "participant", linkedUid: "uid", source,
+    };
+    db.docs[`organizerApplicationResponses/${responseId}`] = {
+      organizerId: "org-1", applicationId, formId: "form-1",
+      formVersionId: "v1", linkedUid: "uid", source, answers: [],
+      grantId: `${applicationId}_grant`,
+    };
+    const grant = {applicationId, responseId, organizerId: "org-1",
+      participantUid: "uid", purpose: "organizerApplicationReview",
+      revokedAt: null as Timestamp | null, grantedQuestionIds: [],
+      grantedCanonicalFieldIds: []};
+    db.docs[`participantOrganizerDataGrants/${applicationId}_grant`] = grant;
+    const approved: Predicate = {kind: "applicationStatus", formId: "form-1",
+      reviewStatus: "approved"};
+    const submitted: Predicate = {...approved, reviewStatus: "submitted"};
+    const run = () => savedAudienceSourceMatches(db.asFirestore(), "org-1",
+      definition(approved, submitted));
+    assert.deepEqual([...((await run()).get(JSON.stringify(approved))!)],
+      ["participant"]);
+    grant.revokedAt = Timestamp.now();
+    assert.equal((await run()).get(JSON.stringify(approved))!.size, 0);
+  });

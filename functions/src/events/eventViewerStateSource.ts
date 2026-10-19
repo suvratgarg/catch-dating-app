@@ -1,3 +1,4 @@
+import {eventAgeEligibility} from "../profiles/eventProfileRequirements";
 import {isLiveOffer} from "./waitlistOffers";
 import {validateEventWaitlistOfferDocument} from
   "../shared/generated/validators/eventWaitlistOfferDocument";
@@ -19,7 +20,6 @@ import {eventParticipationId, eventParticipationsByStatusInTransaction,
 import {isBookingReadyUserProfile} from "../shared/profileReadiness";
 import {eventRequiresRunPreferences, hasCurrentRunPreferences} from
   "../shared/runPreferencesReadiness";
-import {computeAge} from "../shared/dates";
 import {hasBlockingRelationshipInTransaction} from "../safety/blocking";
 import {readCommunityMembership, requiresCommunityMembership} from
   "../memberships/communityMembershipAuthority";
@@ -183,16 +183,15 @@ export async function readEventViewerStateSource(params: {
         return deny("unsupportedRoute");
       }
       result.basis.policyHash = deriveEventSeatPolicy(event).policyHash;
-      if (!user || !isBookingReadyUserProfile(user)) {
+      if (!user || !isBookingReadyUserProfile(user, event)) {
         return deny("bookingDetailsRequired");
       }
       if (eventRequiresRunPreferences(event) &&
           !hasCurrentRunPreferences(user)) {
         return deny("runPreferencesRequired");
       }
-      const age = computeAge(user.dateOfBirth.toDate());
-      if (age < (event.constraints?.minAge ?? 0) ||
-          age > (event.constraints?.maxAge ?? 99)) return deny("ageRestricted");
+      if (eventAgeEligibility(event, user, new Date(nowMillis))
+        ?.eligible === false) return deny("ageRestricted");
       const peers = await eventParticipationsByStatusInTransaction(tx, db,
         eventId, ["signedUp", "attended"], {limit: readLimit + 1});
       if (peers.length > readLimit ||

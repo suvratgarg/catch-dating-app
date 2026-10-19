@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
@@ -57,6 +59,11 @@ class HostTodayFeedData {
     this.attentionGeneratedAt,
     this.attentionHorizonEndsAt,
     this.localAttendanceMerged = false,
+    this.attentionPending = false,
+    this.attendancePending = false,
+    this.historyPending = false,
+    this.historyError,
+    this.historyStackTrace,
   });
 
   final List<Event> activeEvents;
@@ -67,6 +74,14 @@ class HostTodayFeedData {
   final DateTime? attentionGeneratedAt;
   final DateTime? attentionHorizonEndsAt;
   final bool localAttendanceMerged;
+  final bool attentionPending;
+  final bool attendancePending;
+  final bool historyPending;
+  final Object? historyError;
+  final StackTrace? historyStackTrace;
+
+  bool get hasPendingSources =>
+      attentionPending || attendancePending || historyPending;
 
   bool get hasPastEvents => pastEvents.isNotEmpty;
   bool get hasAttentionIssues => attentionIssues.isNotEmpty;
@@ -81,18 +96,16 @@ class HostTodayFeedController extends _$HostTodayFeedController {
     final evaluationRef = ref;
     final generation = ++_generation;
     evaluationRef.onDispose(() => _generation += 1);
-    void requireCurrentEvaluation() {
-      if (!evaluationRef.mounted || generation != _generation) {
-        throw StateError('Today feed evaluation was disposed.');
-      }
-    }
+    bool isCurrentEvaluation() =>
+        evaluationRef.mounted && generation == _generation;
 
     final eventRepository = evaluationRef.watch(eventRepositoryProvider);
-    final activePage = await eventRepository.fetchActiveEventsPage(
-      organizerId: request.organizerId,
-      sessionBoundary: request.sessionBoundary,
+    final activeFuture = _captureOptional(
+      () => eventRepository.fetchActiveEventsPage(
+        organizerId: request.organizerId,
+        sessionBoundary: request.sessionBoundary,
+      ),
     );
-    requireCurrentEvaluation();
     final attentionFuture = _captureOptional(
       () => evaluationRef
           .read(hostAttentionRepositoryProvider)
@@ -104,54 +117,95 @@ class HostTodayFeedController extends _$HostTodayFeedController {
           .loadAll(accountId: request.accountId, now: request.sessionBoundary),
     );
     final historyFuture = _captureOptional(
-      () => eventRepository.fetchPastEventsPage(
+      () async => (await eventRepository.fetchPastEventsPage(
         organizerId: request.organizerId,
         sessionBoundary: request.sessionBoundary,
-      ),
+      )).items,
     );
-    final attention = await attentionFuture;
-    final attendance = await attendanceFuture;
-    final history = await historyFuture;
-    requireCurrentEvaluation();
-    final projection = attention.value;
-    final issues = <HostTodayAttentionIssue>[
-      if (attention.error case final error?)
-        HostTodayAttentionIssue(
-          source: HostTodayAttentionIssueSource.serverProjection,
-          error: error,
-          stackTrace: attention.stackTrace!,
-        ),
-      if (attendance.error case final error?)
-        HostTodayAttentionIssue(
-          source: HostTodayAttentionIssueSource.attendanceOutbox,
-          error: error,
-          stackTrace: attendance.stackTrace!,
-        ),
-    ];
-    final items = <HostAttentionItem>[
-      ...?projection?.items,
-      if (attendance.value case final outbox?)
-        ..._attendanceItems(
-          outbox,
-          activeEvents: activePage.items,
-          accountId: request.accountId,
-          now: request.sessionBoundary,
-          policyVersion: projection?.policyVersion,
-        ),
-    ]..sort(_compareAttentionItems);
-    return HostTodayFeedData(
-      activeEvents: List<Event>.unmodifiable(activePage.items),
-      pastEvents: List<Event>.unmodifiable(
-        history.value?.items ?? const <Event>[],
-      ),
-      attentionItems: List<HostAttentionItem>.unmodifiable(items),
-      attentionCoverage:
-          projection?.coverage ?? const <HostAttentionCoverage>[],
-      attentionIssues: List<HostTodayAttentionIssue>.unmodifiable(issues),
-      attentionGeneratedAt: projection?.generatedAt,
-      attentionHorizonEndsAt: projection?.horizonEndsAt,
-      localAttendanceMerged: attendance.value != null,
-    );
+    final active = await activeFuture;
+    if (!isCurrentEvaluation()) {
+      throw StateError('Today feed evaluation was disposed.');
+    }
+    if (active.error case final error?) {
+      Error.throwWithStackTrace(error, active.stackTrace!);
+    }
+    final activeEvents = List<Event>.unmodifiable(active.value!.items);
+    _OptionalLoad<HostAttentionProjection>? attention;
+    _OptionalLoad<HostAttendanceOutboxSummary>? attendance;
+    _OptionalLoad<List<Event>>? history;
+
+    HostTodayFeedData compose() {
+      final projection = attention?.value;
+      final issues = <HostTodayAttentionIssue>[
+        if (attention?.error case final error?)
+          HostTodayAttentionIssue(
+            source: HostTodayAttentionIssueSource.serverProjection,
+            error: error,
+            stackTrace: attention!.stackTrace!,
+          ),
+        if (attendance?.error case final error?)
+          HostTodayAttentionIssue(
+            source: HostTodayAttentionIssueSource.attendanceOutbox,
+            error: error,
+            stackTrace: attendance!.stackTrace!,
+          ),
+      ];
+      // Rebuild from the original sources, never from an already merged list.
+      // In particular, a later projection supplies the local rows' policy.
+      final items = <HostAttentionItem>[
+        ...?projection?.items,
+        if (attendance?.value case final outbox?)
+          ..._attendanceItems(
+            outbox,
+            activeEvents: activeEvents,
+            accountId: request.accountId,
+            now: request.sessionBoundary,
+            policyVersion: projection?.policyVersion,
+          ),
+      ]..sort(_compareAttentionItems);
+      return HostTodayFeedData(
+        activeEvents: activeEvents,
+        pastEvents: List<Event>.unmodifiable(history?.value ?? const []),
+        attentionItems: List<HostAttentionItem>.unmodifiable(items),
+        attentionCoverage: projection?.coverage ?? const [],
+        attentionIssues: List<HostTodayAttentionIssue>.unmodifiable(issues),
+        attentionGeneratedAt: projection?.generatedAt,
+        attentionHorizonEndsAt: projection?.horizonEndsAt,
+        localAttendanceMerged: attendance?.value != null,
+        attentionPending: attention == null,
+        attendancePending: attendance == null,
+        historyPending: history == null,
+        historyError: history?.error,
+        historyStackTrace: history?.stackTrace,
+      );
+    }
+
+    // Riverpod publishes build's first AsyncData before completing this future.
+    // Even already-completed optional reads must wait for that publication;
+    // otherwise build could overwrite their updates with its initial result.
+    final initialPublication = future;
+    Future<void> publish<T>(
+      Future<_OptionalLoad<T>> source,
+      void Function(_OptionalLoad<T>) accept,
+    ) async {
+      try {
+        await initialPublication;
+      } on Object {
+        return;
+      }
+      final result = await source;
+      if (!isCurrentEvaluation()) return;
+      if (state.isLoading || state.asData == null) return;
+      // All slots belong to this evaluation. Update and compose synchronously
+      // so sibling completions cannot restore an older source snapshot.
+      accept(result);
+      state = AsyncData(compose());
+    }
+
+    unawaited(publish(attentionFuture, (value) => attention = value));
+    unawaited(publish(attendanceFuture, (value) => attendance = value));
+    unawaited(publish(historyFuture, (value) => history = value));
+    return compose();
   }
 
   void retry() {
