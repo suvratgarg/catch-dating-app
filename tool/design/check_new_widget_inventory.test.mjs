@@ -477,6 +477,34 @@ topLevelInferredHelper() => topLevelObjectHelper();
   assert.equal(helpers.some(({name}) => name === "callback"), false);
 });
 
+test("returning closures does not invent a helper named return", () => {
+  const source = `
+CheckoutFactory checkoutFactory() {
+  return () => NativeCheckout();
+}
+Object blockCallbackFactory() {
+  return () {
+    return NativeCheckout();
+  };
+}
+Object genuineWidgetHelper() {
+  return const SizedBox();
+}
+inferredWidgetHelper() => genuineWidgetHelper();
+`;
+  const lineStarts = buildLineStarts(source);
+  const helpers = collectWidgetHelpers(
+    source,
+    lineStarts,
+    collectClassRanges(source, lineStarts),
+    resolveWidgetTypeNames(collectClassDeclarations(source, lineStarts)),
+  );
+  assert.deepEqual(helpers.map(({name}) => name), [
+    "genuineWidgetHelper",
+    "inferredWidgetHelper",
+  ]);
+});
+
 test("distinguishes unchanged Object data from created or shadowed widgets", () => {
   const source = `
 Object? copyJsonValue(Object? value) {

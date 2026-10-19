@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/external_links.dart';
@@ -22,11 +23,13 @@ class PaymentRepository {
     this._functions, {
     RazorpayCheckoutFactory? razorpayFactory,
     ExternalUrlLauncher? externalUrlLauncher,
+    bool Function()? isSessionCurrent,
     bool? isWebOverride,
     TargetPlatform? targetPlatformOverride,
   }) : // Keep the public adapter-factory name stable for app-package injection.
        // ignore: prefer_initializing_formals
        _razorpayFactory = razorpayFactory,
+       _isSessionCurrent = isSessionCurrent ?? (() => true),
        _externalUrlLauncher =
            externalUrlLauncher ??
            ((uri, {mode = LaunchMode.platformDefault}) =>
@@ -42,14 +45,9 @@ class PaymentRepository {
   final ExternalUrlLauncher _externalUrlLauncher;
   final bool? _isWebOverride;
   final TargetPlatform? _targetPlatformOverride;
-  RazorpayCheckout? _razorpay;
-
-  Completer<PaymentConfirmationData>? _completer;
-
-  /// Captured order data used to build the confirmation payload on success.
-  String? _pendingEventId;
-  int? _pendingAmountInPaise;
-  String? _pendingCurrency;
+  final bool Function() _isSessionCurrent;
+  _PaymentAttempt? _activeAttempt;
+  bool _disposed = false;
 
   bool get supportsPaidBookings {
     if (_isWebOverride ?? kIsWeb) return false;
@@ -121,32 +119,73 @@ class PaymentRepository {
     if (!supportsPaidBookings) {
       throw const PaidBookingUnsupportedException();
     }
-    final razorpay = _ensureRazorpay();
-
-    if (_completer != null && !_completer!.isCompleted) {
+    _requireCurrentSession();
+    if (_activeAttempt != null) {
       throw const PaymentFailedException(
         'Another payment is already in progress.',
       );
     }
 
-    // Step 1: Create a Razorpay order server-side.
-    final orderResult = await _createOrder(
-      eventId: eventId,
-      inviteCode: inviteCode,
-      inviteLinkId: inviteLinkId,
-      crossPathsPairHoldId: crossPathsPairHoldId,
+    // Reserve the shared repository before creating the order. Events and
+    // Cross Paths can call it independently, including during verification.
+    final attempt = _PaymentAttempt(eventId);
+    _activeAttempt = attempt;
+    unawaited(
+      _openRazorpay(
+        attempt,
+        description: description,
+        userName: userName,
+        userEmail: userEmail,
+        userContact: userContact,
+        inviteCode: inviteCode,
+        inviteLinkId: inviteLinkId,
+        crossPathsPairHoldId: crossPathsPairHoldId,
+      ),
     );
-    final order = _parseOrderResponse(orderResult.data);
+    return attempt.result.future;
+  }
 
-    // Step 2: Open the Razorpay checkout sheet.
-    final completer = Completer<PaymentConfirmationData>();
-    _completer = completer;
-    _pendingEventId = eventId;
-    _pendingAmountInPaise = order.amountInPaise;
-    _pendingCurrency = order.currency;
-
+  Future<void> _openRazorpay(
+    _PaymentAttempt attempt, {
+    required String description,
+    required String userName,
+    required String userEmail,
+    required String userContact,
+    String? inviteCode,
+    String? inviteLinkId,
+    String? crossPathsPairHoldId,
+  }) async {
     try {
-      razorpay.open({
+      // The production factory reserves the app-wide native checkout lease
+      // synchronously, before any account-bound order request.
+      final checkout = _razorpayFactory!();
+      attempt.checkout = checkout;
+      final orderResult = await _createOrder(
+        eventId: attempt.eventId,
+        inviteCode: inviteCode,
+        inviteLinkId: inviteLinkId,
+        crossPathsPairHoldId: crossPathsPairHoldId,
+      );
+      if (!_ownsAttempt(attempt)) return;
+      final order = _parseOrderResponse(orderResult.data);
+      checkout.configure(
+        onSuccess: (response) => _onSuccess(attempt, order, response),
+        onFailure: (response) => _onError(attempt, response),
+      );
+      if (!_ownsAttempt(attempt)) return;
+
+      // This is the caller deadline, not proof of a cancelled provider charge.
+      // The native adapter must retain native-open exclusion until its own
+      // operation settles, even after clear() detaches these callbacks.
+      attempt.deadline = Timer(const Duration(minutes: 10), () {
+        _failAttempt(
+          attempt,
+          const PaymentFailedException(
+            'The payment took too long. Please check its status before retrying.',
+          ),
+        );
+      });
+      checkout.open({
         'key': order.keyId,
         'order_id': order.orderId,
         'amount': order.amountInPaise,
@@ -160,35 +199,17 @@ class PaymentRepository {
         },
         'theme': {'color': '#16140F'},
       });
-
-      // Step 3: Wait for the Razorpay callback. Interactive checkout (card + bank
-      // OTP, or switching to a UPI app to enter a PIN) routinely takes minutes,
-      // so the guard is long enough not to abandon a real attempt. On timeout we
-      // dismiss the native sheet (clear + recreate) so a late success cannot
-      // charge the user after we have already surfaced a failure — there is no
-      // server-side webhook reconciliation yet (see backlog: payment webhook).
-      // architecture:allow stream-timeout -- reason: Razorpay checkout deadline
-      return await completer.future.timeout(
-        const Duration(minutes: 10),
-        onTimeout: () {
-          if (identical(_completer, completer)) {
-            _completer = null;
-          }
-          _razorpay?.clear();
-          _razorpay = null;
-          throw const PaymentFailedException(
-            'The payment took too long. Please try again.',
-          );
-        },
-      );
-    } catch (error, st) {
-      if (identical(_completer, completer)) {
-        _completer = null;
-      }
-      throw _normalizePaymentError(
-        error,
-        stackTrace: st,
-        fallbackMessage: 'Unable to launch the payment checkout.',
+    } catch (error, stackTrace) {
+      // Forward the normalized failure and stack to the caller's attempt result.
+      // Rethrowing here would escape the unawaited checkout task.
+      _failAttempt(
+        attempt,
+        _normalizePaymentError(
+          error,
+          stackTrace: stackTrace,
+          fallbackMessage: 'Unable to launch the payment checkout.',
+        ),
+        stackTrace,
       );
     }
   }
@@ -199,12 +220,14 @@ class PaymentRepository {
     String? inviteLinkId,
     String? crossPathsPairHoldId,
   }) async {
+    _requireCurrentSession();
     final result = await _createStripeCheckoutSession(
       eventId: eventId,
       inviteCode: inviteCode,
       inviteLinkId: inviteLinkId,
       crossPathsPairHoldId: crossPathsPairHoldId,
     );
+    _requireCurrentSession();
     final session = _parseStripeCheckoutResponse(result.data);
     final opened = await withBackendErrorContext(
       () => _externalUrlLauncher(
@@ -220,6 +243,7 @@ class PaymentRepository {
         fallbackMessage: 'Unable to open Stripe checkout.',
       ),
     );
+    _requireCurrentSession();
     if (!opened) {
       throw const PaymentFailedException('Unable to open Stripe checkout.');
     }
@@ -267,20 +291,24 @@ class PaymentRepository {
 
   // ── Razorpay callbacks ────────────────────────────────────────────────────
 
-  Future<void> _onSuccess(RazorpaySuccessResponse response) async {
-    final completer = _takeCompleter();
-    if (completer == null || completer.isCompleted) return;
-
+  Future<void> _onSuccess(
+    _PaymentAttempt attempt,
+    RazorpayOrderCallableResponse order,
+    RazorpaySuccessResponse response,
+  ) async {
+    if (!_ownsAttempt(attempt) || attempt.verifying) return;
+    // A response for another order (including a late native replay) cannot
+    // consume this attempt. A matching malformed response remains a failure.
+    if (response.orderId != null && response.orderId != order.orderId) return;
     final paymentId = response.paymentId;
     final orderId = response.orderId;
     final signature = response.signature;
     if (paymentId == null || orderId == null || signature == null) {
-      completer.completeError(const PaymentVerificationFailedException());
+      _failAttempt(attempt, const PaymentVerificationFailedException());
       return;
     }
-
+    attempt.verifying = true;
     try {
-      // Step 4: Verify payment signature server-side and sign user up.
       await withBackendErrorContext(
         () => _functions
             .httpsCallable('verifyRazorpayPayment')
@@ -300,49 +328,93 @@ class PaymentRepository {
           fallbackMessage: 'Unable to complete the payment verification.',
         ),
       );
-      completer.complete(
+      if (!_ownsAttempt(attempt)) return;
+      _releaseAttempt(attempt);
+      attempt.result.complete(
         PaymentConfirmationData(
           paymentId: paymentId,
           orderId: orderId,
-          amountInPaise: _pendingAmountInPaise ?? 0,
-          currency: _pendingCurrency ?? defaultCurrencyCode,
-          eventId: _pendingEventId ?? '',
+          amountInPaise: order.amountInPaise,
+          currency: order.currency,
+          eventId: attempt.eventId,
         ),
       );
-    } catch (e, st) {
-      completer.completeError(
+    } catch (error, stackTrace) {
+      // The caller awaits the attempt result, not this SDK callback.
+      // _failAttempt forwards the normalized error and stack to that result.
+      _failAttempt(
+        attempt,
         _normalizePaymentError(
-          e,
-          stackTrace: st,
+          error,
+          stackTrace: stackTrace,
           fallbackMessage: 'Unable to complete the payment verification.',
         ),
+        stackTrace,
       );
     }
   }
 
-  void _onError(RazorpayFailureResponse response) {
-    final completer = _takeCompleter();
-    if (completer == null || completer.isCompleted) return;
-    completer.completeError(_mapCheckoutFailure(response));
+  void _onError(_PaymentAttempt attempt, RazorpayFailureResponse response) {
+    if (!_ownsAttempt(attempt) || attempt.verifying) return;
+    _failAttempt(attempt, _mapCheckoutFailure(response));
   }
 
-  RazorpayCheckout _ensureRazorpay() {
-    final existing = _razorpay;
-    if (existing != null) return existing;
-
-    final factory = _razorpayFactory;
-    if (factory == null) {
-      throw const PaidBookingUnsupportedException();
+  void _requireCurrentSession() {
+    if (_disposed || !_isSessionCurrent()) {
+      throw const SignInRequiredException('complete this payment');
     }
-    final razorpay = factory();
-    razorpay.configure(onSuccess: _onSuccess, onFailure: _onError);
-    _razorpay = razorpay;
-    return razorpay;
+  }
+
+  bool _ownsAttempt(_PaymentAttempt attempt) {
+    if (!identical(_activeAttempt, attempt)) return false;
+    if (_disposed || !_isSessionCurrent()) {
+      _failAttempt(
+        attempt,
+        const SignInRequiredException('complete this payment'),
+      );
+      return false;
+    }
+    return true;
+  }
+
+  void _failAttempt(
+    _PaymentAttempt attempt,
+    Object error, [
+    StackTrace? stackTrace,
+  ]) {
+    if (!identical(_activeAttempt, attempt)) return;
+    _releaseAttempt(attempt);
+    attempt.result.completeError(error, stackTrace);
+  }
+
+  void _releaseAttempt(_PaymentAttempt attempt) {
+    _activeAttempt = null;
+    attempt.deadline?.cancel();
+    try {
+      attempt.checkout?.clear();
+    } catch (error, stackTrace) {
+      // Listener cleanup must not replace an authoritative payment result.
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error,
+          stack: stackTrace,
+          library: 'payments',
+          context: ErrorDescription('while detaching checkout callbacks'),
+        ),
+      );
+    }
   }
 
   void dispose() {
-    _razorpay?.clear();
-    _razorpay = null;
+    if (_disposed) return;
+    _disposed = true;
+    final attempt = _activeAttempt;
+    if (attempt != null) {
+      _failAttempt(
+        attempt,
+        const SignInRequiredException('complete this payment'),
+      );
+    }
   }
 
   Future<HttpsCallableResult<Object?>> _createOrder({
@@ -415,12 +487,6 @@ class PaymentRepository {
     }
   }
 
-  Completer<PaymentConfirmationData>? _takeCompleter() {
-    final completer = _completer;
-    _completer = null;
-    return completer;
-  }
-
   AppException _normalizePaymentError(
     Object error, {
     required String fallbackMessage,
@@ -459,6 +525,17 @@ class PaymentRepository {
       ),
     );
   }
+}
+
+// Mutable lifecycle belongs to one reserved operation; receipt fields are
+// captured from its immutable event id and server order, never shared globals.
+final class _PaymentAttempt {
+  _PaymentAttempt(this.eventId);
+  final String eventId;
+  final result = Completer<PaymentConfirmationData>();
+  RazorpayCheckout? checkout;
+  Timer? deadline;
+  bool verifying = false;
 }
 
 BackendErrorMapper _paymentErrorMapper({required String fallbackMessage}) {
@@ -516,10 +593,19 @@ BackendErrorMapper _eventBookingErrorMapper({required String fallbackMessage}) {
 // and confirmation flows.
 @Riverpod(keepAlive: true)
 PaymentRepository paymentRepository(Ref ref) {
+  final auth = ref.watch(authenticatedSessionProvider);
+  final session = !auth.isLoading && !auth.hasError ? auth.asData?.value : null;
   final repo = PaymentRepository(
     ref.watch(firebaseFunctionsProvider),
     razorpayFactory: ref.watch(razorpayCheckoutFactoryProvider),
     externalUrlLauncher: ref.watch(externalUrlLauncherProvider),
+    isSessionCurrent: () {
+      if (!ref.mounted || session == null) return false;
+      final current = ref.read(authenticatedSessionProvider);
+      return !current.isLoading &&
+          !current.hasError &&
+          identical(current.asData?.value, session);
+    },
   );
   ref.onDispose(repo.dispose);
   return repo;
