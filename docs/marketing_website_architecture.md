@@ -73,7 +73,8 @@ cannot read the public catalog endpoint. The accepted custom-domain controller
 and integration coverage remain in place.
 
 `tool/web/check_website_import_boundaries.mjs` recognizes Next entry and server
-layers, denies browser imports of server modules/privileged packages, and keeps
+layers, parses imports and re-exports with the TypeScript AST, denies browser
+imports of server modules/privileged packages (including `use client` entries), and keeps
 the public projector's external imports explicitly bounded. Run the normal
 marketing build for both the existing Vite artifact and the Next candidate;
 `test:next-policy` is part of pretypecheck. `test:next-runtime` requires the

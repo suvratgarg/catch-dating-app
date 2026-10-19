@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import ts from "typescript";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -84,18 +85,37 @@ function layerFor(relativePath) {
   return {name: "root"};
 }
 
+function sourceModule(source) {
+  return ts.createSourceFile("boundary.tsx", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+}
+
 function importSpecifiers(source) {
-  const staticImports =
-    /\bimport\s+(?:type\s+)?(?:[\s\S]*?\s+from\s+)?["']([^"']+)["']/g;
-  const dynamicImports = /\bimport\(\s*["']([^"']+)["']\s*\)/g;
   const specifiers = [];
-  for (const match of source.matchAll(staticImports)) {
-    specifiers.push(match[1]);
+  const add = value => {if (value && ts.isStringLiteralLike(value)) specifiers.push(value.text);};
+  function visit(node) {
+    if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) add(node.moduleSpecifier);
+    if (ts.isImportEqualsDeclaration(node) && ts.isExternalModuleReference(node.moduleReference)) add(node.moduleReference.expression);
+    if (ts.isImportTypeNode(node) && ts.isLiteralTypeNode(node.argument)) add(node.argument.literal);
+    if (ts.isCallExpression(node) && (node.expression.kind === ts.SyntaxKind.ImportKeyword ||
+        (ts.isIdentifier(node.expression) && node.expression.text === "require"))) add(node.arguments[0]);
+    ts.forEachChild(node, visit);
   }
-  for (const match of source.matchAll(dynamicImports)) {
-    specifiers.push(match[1]);
-  }
+  visit(sourceModule(source));
   return specifiers;
+}
+
+function isClientModule(source) {
+  for (const statement of sourceModule(source).statements) {
+    if (!ts.isExpressionStatement(statement) || !ts.isStringLiteral(statement.expression)) return false;
+    if (statement.expression.text === "use client") return true;
+  }
+  return false;
+}
+
+function privilegedImport(specifier, sourceRelativePath, sourceLayer, source) {
+  return /^(firebase-admin(?:\/|$)|node:)/.test(specifier) &&
+    (isClientModule(source) || !["server", "next-entry"].includes(sourceLayer.name)) &&
+    !/\.test\./.test(sourceRelativePath);
 }
 
 function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
@@ -229,9 +249,7 @@ for (const file of [...walkSourceFiles(websiteSrcRoot),
   }
 
   for (const specifier of importSpecifiers(source)) {
-    if (/^(firebase-admin|node:)(?:\/|$|[a-z])/.test(specifier) &&
-        !["server", "next-entry"].includes(sourceLayer.name) &&
-        !/\.test\./.test(sourceRelativePath)) {
+    if (privilegedImport(specifier, sourceRelativePath, sourceLayer, source)) {
       violations.push({source: sourceRelativePath, specifier,
         reason: "privileged runtime packages must remain in server modules"});
     }
@@ -260,7 +278,7 @@ for (const file of [...walkSourceFiles(websiteSrcRoot),
 
     const targetRelativePath = relativeToWebsiteSource(resolveModulePath(targetAbsolutePath));
     const targetLayer = layerFor(targetRelativePath);
-    const clientImportsServer = /^\s*["']use client["'];/m.test(source) && targetLayer.name === "server";
+    const clientImportsServer = isClientModule(source) && targetLayer.name === "server";
     const reason = clientImportsServer ? "client components must not import server modules" :
       violationFor(sourceRelativePath, sourceLayer, targetLayer, targetRelativePath);
     if (reason !== null) {
@@ -335,6 +353,26 @@ ownership, and environment-access boundaries.
 }
 
 function runSelfTest() {
+  const imports = importSpecifiers(`
+    // export * from "ignored-comment";
+    const example = 'import("ignored-string")';
+    import type {PublicDto} from "../server/dto";
+    export {read} from "../server/catalog";
+    export * from "firebase-admin/firestore";
+    export * as admin from "firebase-admin/app";
+    const lazy = import /* comment */ ("node:fs");
+    const required = require("node:crypto");
+    import filesystem = require("node:path");
+    type Reader = import("../server/reader").Reader;
+  `);
+  assert.deepEqual(imports, ["../server/dto", "../server/catalog", "firebase-admin/firestore",
+    "firebase-admin/app", "node:fs", "node:crypto", "node:path", "../server/reader"]);
+  for (const source of ['"use client"; export * from "firebase-admin/app";', '/* boundary */ "use client"\nimport "node:fs";']) {
+    assert.equal(isClientModule(source), true);
+    assert.equal(privilegedImport(importSpecifiers(source)[0], "../app/client.tsx", {name: "next-entry"}, source), true);
+  }
+  assert.equal(isClientModule('// "use client";\nconst text = "use client";'), false);
+
   assert.deepEqual(layerFor("server/publicCatalog.ts"), {name: "server"});
   assert.deepEqual(layerFor("../app/page.tsx"), {name: "next-entry"});
   for (const layer of ["app", "feature", "shared", "content", "service", "story"]) {
