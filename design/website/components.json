@@ -146,7 +146,11 @@
           "secondary-navigation"
         ]
       },
-      "notes": "Canonical public chrome. Route links and actions remain secondary; transactional/private route shells do not use this owner."
+      "notes": "Canonical public chrome. Route links and actions remain secondary; transactional/private route shells do not use this owner.",
+      "comparedWith": [
+        "catch.step_header"
+      ],
+      "comparisonReason": "Site navigation chrome (brand, nav, menu, actions); Flutter's equivalent is the native top bar, which is T3."
     },
     {
       "id": "route_home",
@@ -426,7 +430,8 @@
           "claim-review-panel"
         ]
       },
-      "notes": "Shared process status panel shell for claim review, pending, already-claimed, and missing-listing states; raw process-status-panel markup is blocked by web:react-component-governance."
+      "notes": "Shared process status panel shell for claim review, pending, already-claimed, and missing-listing states; raw process-status-panel markup is blocked by web:react-component-governance. Phase 7d: Status module with mark, heading, copy, item grid and actions: the status recipe of catch.section.",
+      "componentId": "catch.section"
     },
     {
       "id": "home_download_section",
@@ -527,7 +532,12 @@
           "live-meter"
         ]
       },
-      "notes": "Shared website marketing section shell primitives for Home hero slots, marketing sections, section copy, format cards, configured info-card grids, host comparison summary cards, featured organizer card grids, and live meters; raw marketing section and reveal-article info-card shells are blocked by web:react-component-governance."
+      "notes": "Shared website marketing section shell primitives for Home hero slots, marketing sections, section copy, format cards, configured info-card grids, host comparison summary cards, featured organizer card grids, and live meters; raw marketing section and reveal-article info-card shells are blocked by web:react-component-governance.",
+      "comparedWith": [
+        "catch.section",
+        "catch.metric_strip"
+      ],
+      "comparisonReason": "Full-width page band with layout variants; CatchSection is a contained content module."
     },
     {
       "id": "shared_marketing_loop_list_shell",
@@ -553,7 +563,8 @@
           "host-loop"
         ]
       },
-      "notes": "Shared website loop-list shell primitive for Home member loop and Host workflow loop; raw loop-list markup, legacy LoopList imports, and local LoopList components are blocked by web:react-component-governance."
+      "notes": "Shared website loop-list shell primitive for Home member loop and Host workflow loop; raw loop-list markup, legacy LoopList imports, and local LoopList components are blocked by web:react-component-governance. Phase 7d: Numbered how-it-works sequence: CatchStepList (alias HowItWorksList).",
+      "componentId": "catch.journey_steps"
     },
     {
       "id": "shared_marketing_consent_banner_shell",
@@ -615,7 +626,13 @@
           "pending-status"
         ]
       },
-      "notes": "Shared website app-download CTA group for configured store CTA rows, launch-pending status, button/link selection, store marks, kicker text, and live status. Route sections pass placement, variant, and optional initial status while marketing/useAppDownloadCtas.ts owns telemetry configuration; the deleted feature AppDownloadCtas component, raw app-download classes, and raw store-button shells are blocked by web:react-component-governance."
+      "notes": "Shared website app-download CTA group for configured store CTA rows, launch-pending status, button/link selection, store marks, kicker text, and live status. Route sections pass placement, variant, and optional initial status while marketing/useAppDownloadCtas.ts owns telemetry configuration; the deleted feature AppDownloadCtas component, raw app-download classes, and raw store-button shells are blocked by web:react-component-governance.",
+      "comparedWith": [
+        "catch.journey_steps",
+        "catch.section",
+        "catch.metric_strip"
+      ],
+      "comparisonReason": "App Store and Play Store download links with pending-status copy; a marketing composition."
     },
     {
       "id": "shared_featured_organizer_card_shell",
@@ -1745,7 +1762,11 @@
           "disabled"
         ]
       },
-      "notes": "Shared website operational step rail primitive used by host application and claim flows; raw operational-step-rail shells are blocked by web:react-component-governance."
+      "notes": "Shared website operational step rail primitive used by host application and claim flows; raw operational-step-rail shells are blocked by web:react-component-governance.",
+      "comparedWith": [
+        "catch.button"
+      ],
+      "comparisonReason": "Numbered step navigation rail that renders one button per step. It is a web port of Flutter's CatchFormStepList. The owner decided on 2026-10-19 to promote that list to a T2 contract; the follow-up that registers catch.form_step_list points this entry at it, and Phase 7e replaces both rails."
     },
     {
       "id": "shared_choice_chip_controls",
@@ -1896,17 +1917,22 @@
       "id": "shared_button",
       "kind": "supporting-component",
       "routeIds": [
+        "claim",
+        "claim_lookup",
         "event_assistance",
         "event_booking",
         "event_detail_canonical",
         "event_invite",
         "event_offer",
+        "event_rehearsal",
         "event_runtime",
         "host_apply",
         "household_rsvp",
         "organizer_listing_canonical",
         "organizer_listing_legacy",
         "organizer_search",
+        "public_form",
+        "sales_demo",
         "visitor_discovery"
       ],
       "owner": "shared/ui",
@@ -1932,15 +1958,20 @@
       "id": "shared_text_field",
       "kind": "supporting-component",
       "routeIds": [
+        "claim",
+        "claim_lookup",
         "event_booking",
         "event_detail_canonical",
         "event_invite",
         "event_offer",
         "event_runtime",
         "host_apply",
+        "household_rsvp",
         "organizer_listing_canonical",
         "organizer_listing_legacy",
         "organizer_search",
+        "public_form",
+        "sales_demo",
         "visitor_discovery"
       ],
       "owner": "shared/ui",
@@ -1960,6 +1991,554 @@
         ]
       },
       "notes": "Website adapter of catch.field over the @catch/web-ui TextInputControl; Phase 7e replaces it with the styled CatchField. Route coverage is the 2026-10-18 TypeScript reference measurement."
+    },
+    {
+      "id": "shared_site_header",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup",
+        "event_detail_canonical",
+        "help",
+        "home",
+        "host",
+        "host_apply",
+        "not_found",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy",
+        "organizer_search",
+        "privacy",
+        "terms",
+        "visitor_discovery"
+      ],
+      "owner": "shared/site",
+      "source": "website/src/shared/site/SiteHeader.tsx",
+      "exportName": "SiteHeader",
+      "comparedWith": [
+        "catch.step_header"
+      ],
+      "comparisonReason": "Navigation header rendered only by PublicSiteHeader; site chrome, not a wizard header.",
+      "css": [
+        "website/src/styles/site-footer.css",
+        "website/src/styles/site-shell.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "light",
+          "dark",
+          "menu-open",
+          "scrolled"
+        ]
+      },
+      "notes": "Shared website component; Navigation header rendered only by PublicSiteHeader; site chrome, not a wizard header."
+    },
+    {
+      "id": "shared_plain_button",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup",
+        "event_detail_canonical",
+        "help",
+        "home",
+        "host",
+        "host_apply",
+        "not_found",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy",
+        "organizer_search",
+        "privacy",
+        "terms",
+        "visitor_discovery"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/actionControls.tsx",
+      "exportName": "PlainButton",
+      "componentId": "catch.button",
+      "css": [],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default",
+          "disabled"
+        ]
+      },
+      "notes": "Unstyled native button that duplicates the role of ButtonControl."
+    },
+    {
+      "id": "shared_text_action_button",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup",
+        "organizer_search"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/actions.tsx",
+      "exportName": "TextActionButton",
+      "componentId": "catch.button",
+      "css": [
+        "website/src/styles/flows.css",
+        "website/src/styles/host.css",
+        "website/src/styles/organizers.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default",
+          "disabled"
+        ]
+      },
+      "notes": "Text-styled action button: a text recipe of catch.button."
+    },
+    {
+      "id": "shared_data_table",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host"
+      ],
+      "owner": "features/host",
+      "source": "website/src/shared/ui/primitives/actions2.tsx",
+      "exportName": "DataTable",
+      "componentId": "catch.table",
+      "css": [],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "named-table",
+          "keyboard-scroll-region"
+        ]
+      },
+      "notes": "Website adapter of the @catch/web-ui DataTableControl."
+    },
+    {
+      "id": "shared_store_button",
+      "kind": "supporting-component",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy",
+        "visitor_discovery"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/actions2.tsx",
+      "exportName": "StoreButton",
+      "comparedWith": [
+        "catch.button"
+      ],
+      "comparisonReason": "App Store or Play Store badge link; the store artwork is governed by Apple and Google badge guidelines, so it is not a CatchButton recipe.",
+      "css": [
+        "website/src/styles/home.css",
+        "website/src/styles/organizers.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "app-store",
+          "play-store",
+          "pending"
+        ]
+      },
+      "notes": "Shared website component; App Store or Play Store badge link; the store artwork is governed by Apple and Google badge guidelines, so it is not a CatchButton recipe."
+    },
+    {
+      "id": "shared_event_runtime_live_header",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_rehearsal",
+        "event_runtime"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
+      "exportName": "EventRuntimeLiveHeader",
+      "comparedWith": [
+        "catch.step_header"
+      ],
+      "comparisonReason": "Live-event header with a check-in badge; no step navigation or progress.",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "checked-in"
+        ]
+      },
+      "notes": "Shared website component; Live-event header with a check-in badge; no step navigation or progress."
+    },
+    {
+      "id": "shared_event_runtime_loading",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup",
+        "event_assistance",
+        "event_booking",
+        "event_detail_canonical",
+        "event_invite",
+        "event_offer",
+        "event_rehearsal",
+        "event_runtime",
+        "household_rsvp",
+        "sales_demo"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
+      "exportName": "EventRuntimeLoading",
+      "componentId": "catch.loading_indicator",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "loading"
+        ]
+      },
+      "notes": "Labelled pulse with role status: an inline recipe of CatchLoadingIndicator."
+    },
+    {
+      "id": "shared_event_runtime_notice_stack",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_assistance",
+        "event_rehearsal",
+        "household_rsvp"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
+      "exportName": "EventRuntimeNoticeStack",
+      "comparedWith": [
+        "catch.section_stack"
+      ],
+      "comparisonReason": "Vertical stack of runtime notices, not of complete sections.",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "notices"
+        ]
+      },
+      "notes": "Shared website component; Vertical stack of runtime notices, not of complete sections."
+    },
+    {
+      "id": "shared_event_runtime_panel",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup",
+        "event_assistance",
+        "event_booking",
+        "event_invite",
+        "event_offer",
+        "event_rehearsal",
+        "event_runtime",
+        "household_rsvp",
+        "sales_demo"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
+      "exportName": "EventRuntimePanel",
+      "comparedWith": [
+        "catch.section",
+        "catch.metric_strip",
+        "catch.control_shell",
+        "catch.surface"
+      ],
+      "comparisonReason": "Route main with an intro heading; page body layout, whose Flutter counterpart CatchPageBody is T3.",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "intro",
+          "with-modules"
+        ]
+      },
+      "notes": "Shared website component; Route main with an intro heading; page body layout, whose Flutter counterpart CatchPageBody is T3."
+    },
+    {
+      "id": "shared_event_runtime_practice_banner",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_rehearsal",
+        "sales_demo"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
+      "exportName": "EventRuntimePracticeBanner",
+      "componentId": "catch.banner",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "practice"
+        ]
+      },
+      "notes": "Practice-mode notice above the runtime: an informational CatchBanner."
+    },
+    {
+      "id": "shared_auth_status_row",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/feedback.tsx",
+      "exportName": "AuthStatusRow",
+      "comparedWith": [
+        "catch.meta_row",
+        "catch.index_row"
+      ],
+      "comparisonReason": "Sign-in state sentence with an inline action; not passive metadata and not navigation.",
+      "css": [
+        "website/src/styles/flows.css",
+        "website/src/styles/organizers.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default",
+          "flow"
+        ]
+      },
+      "notes": "Shared website component; Sign-in state sentence with an inline action; not passive metadata and not navigation."
+    },
+    {
+      "id": "shared_checkbox_field",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_booking",
+        "event_detail_canonical",
+        "event_invite",
+        "event_runtime",
+        "household_rsvp",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy",
+        "public_form"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/forms.tsx",
+      "exportName": "CheckboxField",
+      "componentId": "catch.toggle",
+      "css": [],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "unchecked",
+          "checked",
+          "disabled"
+        ]
+      },
+      "notes": "Website adapter of CheckboxControl, the one-boolean input."
+    },
+    {
+      "id": "shared_field",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup",
+        "event_booking",
+        "event_detail_canonical",
+        "event_invite",
+        "event_offer",
+        "event_runtime",
+        "host_apply",
+        "household_rsvp",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy",
+        "organizer_search",
+        "public_form",
+        "sales_demo",
+        "visitor_discovery"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/forms.tsx",
+      "exportName": "Field",
+      "componentId": "catch.field",
+      "css": [
+        "website/src/styles/flows.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "labelled",
+          "spanning",
+          "hidden"
+        ]
+      },
+      "notes": "Label and layout anatomy shared by the website field adapters."
+    },
+    {
+      "id": "shared_select_field",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup",
+        "event_runtime",
+        "host_apply",
+        "household_rsvp",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy",
+        "organizer_search",
+        "public_form",
+        "visitor_discovery"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/forms.tsx",
+      "exportName": "SelectField",
+      "componentId": "catch.field",
+      "css": [
+        "website/src/styles/flows.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default",
+          "invalid",
+          "described"
+        ]
+      },
+      "notes": "Website adapter of SelectControl."
+    },
+    {
+      "id": "shared_text_area_field",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup",
+        "event_runtime",
+        "host_apply",
+        "organizer_listing_canonical",
+        "organizer_listing_legacy",
+        "public_form"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/forms.tsx",
+      "exportName": "TextAreaField",
+      "componentId": "catch.field",
+      "css": [
+        "website/src/styles/flows.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default",
+          "invalid",
+          "described"
+        ]
+      },
+      "notes": "Website adapter of TextareaControl."
+    },
+    {
+      "id": "shared_host_preview_section",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup",
+        "host"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/host2.tsx",
+      "exportName": "HostPreviewSection",
+      "comparedWith": [
+        "catch.section",
+        "catch.metric_strip"
+      ],
+      "comparisonReason": "Full-width page band of the host page; CatchSection is a contained content module.",
+      "css": [
+        "website/src/styles/host.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Shared website component; Full-width page band of the host page; CatchSection is a contained content module."
+    },
+    {
+      "id": "shared_host_preview_faq_list",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup",
+        "host"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/host3.tsx",
+      "exportName": "HostPreviewFaqList",
+      "comparedWith": [
+        "catch.journey_steps"
+      ],
+      "comparisonReason": "FAQ accordion of details elements; not a numbered journey.",
+      "css": [
+        "website/src/styles/host.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "collapsed",
+          "one-open"
+        ]
+      },
+      "notes": "Shared website component; FAQ accordion of details elements; not a numbered journey."
+    },
+    {
+      "id": "shared_verification_method_grid",
+      "kind": "supporting-component",
+      "routeIds": [
+        "claim",
+        "claim_lookup"
+      ],
+      "owner": "features/claims",
+      "source": "website/src/shared/ui/primitives/layout.tsx",
+      "exportName": "VerificationMethodGrid",
+      "componentId": "catch.chip.field",
+      "css": [
+        "website/src/styles/flows.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "unselected",
+          "selected"
+        ]
+      },
+      "notes": "Single-select verification method group over ToggleGroupControl: a choice-input adapter."
+    },
+    {
+      "id": "shared_choice_chip_grid",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_runtime",
+        "host_apply",
+        "household_rsvp"
+      ],
+      "owner": "shared/ui",
+      "source": "website/src/shared/ui/primitives/layout2.tsx",
+      "exportName": "ChoiceChipGrid",
+      "componentId": "catch.chip.field",
+      "css": [
+        "website/src/styles/event-runtime.css",
+        "website/src/styles/flows.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "chip-grid",
+          "selected"
+        ]
+      },
+      "notes": "Labelled choice group over ToggleGroupControl."
     },
     {
       "id": "shared_status_badge",
@@ -2013,7 +2592,8 @@
           "neutral"
         ]
       },
-      "notes": "Shared website review-source/verification badge primitive; raw review-signal-badge shells are blocked by web:react-component-governance."
+      "notes": "Shared website review-source/verification badge primitive; raw review-signal-badge shells are blocked by web:react-component-governance. Phase 7d: Website adapter of BadgeControl for review signals.",
+      "componentId": "catch.badge"
     },
     {
       "id": "shared_badge_row",
@@ -2120,7 +2700,11 @@
           "h1"
         ]
       },
-      "notes": "Shared website section-heading primitive for route and section headings; raw section-heading shells are blocked by web:react-component-governance."
+      "notes": "Shared website section-heading primitive for route and section headings; raw section-heading shells are blocked by web:react-component-governance.",
+      "comparedWith": [
+        "catch.step_header"
+      ],
+      "comparisonReason": "Page-section heading with eyebrow, title and copy; no step navigation or progress."
     },
     {
       "id": "shared_action_group",
@@ -2153,7 +2737,13 @@
           "host-create-flow"
         ]
       },
-      "notes": "Shared website action-group primitive for hero, flow, and host-create-flow action wrappers; raw flow-actions, hero__actions, and host-create-flow__actions shells are blocked by web:react-component-governance."
+      "notes": "Shared website action-group primitive for hero, flow, and host-create-flow action wrappers; raw flow-actions, hero__actions, and host-create-flow__actions shells are blocked by web:react-component-governance.",
+      "comparedWith": [
+        "catch.journey_steps",
+        "catch.section",
+        "catch.metric_strip"
+      ],
+      "comparisonReason": "Layout container with no heading, state or row anatomy of its own; the matched contract owns a different responsibility."
     },
     {
       "id": "shared_control_row",
@@ -2203,7 +2793,12 @@
           "host"
         ]
       },
-      "notes": "Shared website waitlist/application section primitive for member waitlist and host application shells; raw waitlist-section and waitlist__intro shells are blocked by web:react-component-governance."
+      "notes": "Shared website waitlist/application section primitive for member waitlist and host application shells; raw waitlist-section and waitlist__intro shells are blocked by web:react-component-governance.",
+      "comparedWith": [
+        "catch.section",
+        "catch.metric_strip"
+      ],
+      "comparisonReason": "Full-width page band with an intro and a form; CatchSection is a contained content module."
     },
     {
       "id": "shared_waitlist_form_shell",
@@ -3636,7 +4231,11 @@
           "closed-instructions"
         ]
       },
-      "notes": "Neutral vertical spacing between event sections without notice-specific paragraph styling."
+      "notes": "Neutral vertical spacing between event sections without notice-specific paragraph styling.",
+      "comparedWith": [
+        "catch.section_stack"
+      ],
+      "comparisonReason": "Vertical stack of mixed runtime modules, buttons and banners, not of complete sections."
     },
     {
       "id": "event_rcs_preferences_panel",

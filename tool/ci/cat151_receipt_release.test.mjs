@@ -112,7 +112,7 @@ test('CAT151 protected workflow admits only fixed mode and chains exact DEV evid
  assert.ok(jobText(caller,'authorize-cat151-receipt').includes(RELEASE.sourceSha));
  for(const key of ['receipt_sha256','artifact_id','artifact_digest'])assert.ok(prod.includes(`needs['dev-cat151-receipt'].outputs.${key}`));
  const job=jobText(reusable,'promote-cat151-receipt');assert.match(job,/environment: \$\{\{ inputs.environment \}\}/);assert.match(job,/cancel-in-progress: false/);
- const steps=extractSteps(job),names=steps.map(s=>s.name);
+ const steps=extractSteps(`jobs:\n${job}`),names=steps.map(s=>s.name);
  const approval=steps.find(s=>s.name?.startsWith('Require recorded human'));assert.match(approval.run,/reviewers/);assert.match(approval.run,/actions\/runs\/\$GITHUB_RUN_ID\/approvals/);
  assert.ok(job.indexOf('Verify this run')<job.indexOf('google-github-actions/auth@v3'));
  assert.ok(job.indexOf('if: ${{ inputs.environment == \'prod\' }}')<job.indexOf('Require recorded human')+150);
@@ -135,7 +135,7 @@ test('CAT151 completion and DEV admission reject cross-environment or partial de
 });
 test('CAT151 caller scope predicate rejects mixed profiles and missing DEV evidence',()=>{
  const source=fs.readFileSync('.github/workflows/_cat151-receipt-promote.yml','utf8');
- const step=extractSteps(jobText(source,'promote-cat151-receipt'))[0];
+ const step=extractSteps(`jobs:\n${jobText(source,'promote-cat151-receipt')}`)[0];
  const predicate=step.run.match(/jq -e '\n([\s\S]*?)\n\s*' <<</)[1];
  const base={environment:'dev',control_plane_sha:'a'.repeat(40),dev_completion_artifact_id:'',dev_completion_artifact_digest:'',dev_completion_receipt_sha256:''};
  const accepts=v=>spawnSync('jq',['-e',predicate],{input:JSON.stringify(v),encoding:'utf8',env:{...process.env,GITHUB_SHA:'a'.repeat(40)}}).status===0;

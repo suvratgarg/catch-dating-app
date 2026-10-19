@@ -288,10 +288,19 @@ implementation and proof fails strict mode.
   running architecture. Naming is binding in the Cross-Framework Names
   subsection of `docs/app_architecture.md`, and parity tiers in
   `design/components/README.md`.
-- `design/web-ui/shared_primitive_adoption.json` is the active
-  cross-surface compatibility and improvement queue. The non-vacuous
-  `web:shared-ui-adoption` gate classifies every exact-name primitive overlap,
-  every package export, the shared focus contract, and package CI coverage.
+- The `web:shared-ui-adoption` gate is the generated React component
+  inventory (UI blueprint Phase 7d). A TypeScript reference graph of
+  `website/`, `admin/` and `packages/web-ui` follows barrels, dynamic imports
+  and private helpers, and maps every exported component to a registry concept
+  (`react` record or `componentId` adapter), a T4 owner, or deletion (no
+  production consumer). Ownership passes through shared layers: a shared export
+  that one feature renders is that feature's, and Phase 7e moves it. A
+  shared-layer export that matches a registered contract by name or role noun,
+  or renders a `@catch/web-ui` implementation, needs a recorded decision:
+  `componentId`, or `comparedWith` with a `comparisonReason`. Exact-name
+  exports on both surfaces must name one contract. `--write` saves the
+  inventory to ignored `build/react_component_inventory.json`. The gate also
+  holds the shared focus contract and package CI wiring.
 - The adopted package layer now owns compatible native behavior for buttons,
   checkboxes, text/select/textarea controls, labelled toggle groups, badges,
   empty states, and named keyboard-scrollable data tables. Website/admin

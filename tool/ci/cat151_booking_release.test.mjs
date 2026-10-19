@@ -102,7 +102,7 @@ test('CAT151 protected workflow admits only fixed mode and chains exact DEV evid
  for(const job of [dev,prod]){assert.ok(job.includes(RELEASE.sourceSha));assert.match(job,/cat151_booking_release: true/);assert.match(job,/uses: \.\/\.github\/workflows\/_firebase-promote.yml/);}
  for(const key of ['receipt_sha256','artifact_id','artifact_digest'])assert.ok(prod.includes(`needs['dev-cat151-booking'].outputs.cat151_${key}`));
  const job=jobText(reusable,'promote-cat151-booking');assert.match(job,/environment: \$\{\{ inputs.environment \}\}/);assert.match(job,/cancel-in-progress: false/);
- const steps=extractSteps(job),names=steps.map(s=>s.name);
+ const steps=extractSteps(`jobs:\n${job}`),names=steps.map(s=>s.name);
  const approval=steps.find(s=>s.name?.startsWith('Require recorded human'));assert.match(approval.run,/reviewers/);assert.match(approval.run,/actions\/runs\/\$GITHUB_RUN_ID\/approvals/);
  assert.ok(job.indexOf('Verify this run')<job.indexOf('google-github-actions/auth@v3'));
  assert.ok(job.indexOf('if: ${{ inputs.environment == \'prod\' }}')<job.indexOf('Require recorded human')+150);
@@ -125,7 +125,7 @@ test('CAT151 completion and DEV admission reject cross-environment or partial de
 });
 test('CAT151 caller scope predicate rejects mixed profiles and missing DEV evidence',()=>{
  const source=fs.readFileSync('.github/workflows/_firebase-promote.yml','utf8');
- const step=extractSteps(jobText(source,'promote-cat151-booking'))[0];
+ const step=extractSteps(`jobs:\n${jobText(source,'promote-cat151-booking')}`)[0];
  const predicate=step.run.match(/jq -e '\n([\s\S]*?)\n\s*' <<</)[1];
  const base={cat151_predeploy_recovery:false,cat151_booking_release:true,intake_pr596_release:false,operator_release:false,whatsapp_five_release:false,sales_pr543_release:false,wedding_phone_import_release:false,require_current_main:false,environment:'dev',approval_environment:'',control_plane_sha:'a'.repeat(40),source_sha:RELEASE.sourceSha,base_sha:RELEASE.baseSha,source_ci_run_id:RELEASE.sourceCiRunId,source_ci_run_attempt:'1',resume_delivery_run_id:'',resume_delivery_attempt:'1',dev_completion_artifact_id:'',dev_completion_artifact_digest:'',dev_completion_receipt_sha256:''};
  const accepts=v=>spawnSync('jq',['-e',predicate],{input:JSON.stringify(v),encoding:'utf8',env:{...process.env,GITHUB_SHA:'a'.repeat(40)}}).status===0;
@@ -171,7 +171,7 @@ test('CAT151 recovery workflow pins DEV proof and checks prior failure before cl
  const job=jobText(reusable,'promote-cat151-booking');
  assert.ok(job.indexOf('verify-predeploy-recovery')<job.indexOf('google-github-actions/auth@v3'));
  assert.match(job,/actions\/runs\/38910329785\/attempts\/1/);
- const predicate=extractSteps(job)[0].run.match(/jq -e '\n([\s\S]*?)\n\s*' <<</)[1];
+ const predicate=extractSteps(`jobs:\n${job}`)[0].run.match(/jq -e '\n([\s\S]*?)\n\s*' <<</)[1];
  const base={cat151_predeploy_recovery:true,cat151_booking_release:true,intake_pr596_release:false,operator_release:false,whatsapp_five_release:false,sales_pr543_release:false,wedding_phone_import_release:false,require_current_main:false,environment:'prod',approval_environment:'',control_plane_sha:'a'.repeat(40),source_sha:RELEASE.sourceSha,base_sha:RELEASE.baseSha,source_ci_run_id:RELEASE.sourceCiRunId,source_ci_run_attempt:'1',resume_delivery_run_id:'',resume_delivery_attempt:'1',dev_completion_artifact_id:'12051195096',dev_completion_artifact_digest:'ddc8037be3aa68377cd6cd8c0e59433e944f5dc4a7eb2d87c52d8615bca7266f',dev_completion_receipt_sha256:'b93c177b877956d8b044c3f1f3b8f89c1a31b2fdc026013170b6a625ab62bb09'};
  const accepts=v=>spawnSync('jq',['-e',predicate],{input:JSON.stringify(v),encoding:'utf8',env:{...process.env,GITHUB_SHA:'a'.repeat(40)}}).status===0;
  assert.equal(accepts(base),true);

@@ -1,7 +1,7 @@
 ---
 doc_id: component_contract_registry
-version: 1.9.0
-updated: 2026-10-18
+version: 1.10.0
+updated: 2026-10-19
 owner: ui_elevation_initiative
 status: active
 ---
@@ -75,6 +75,23 @@ files Phase 7e moves.
 and story symbol exists in its named file, that React symbols are exported
 from `packages/web-ui/src/index.ts`, and that every `componentId` resolves to a
 T1 or T2 contract whose adapter export exists.
+
+### React component inventory
+
+`node tool/run.mjs check web:shared-ui-adoption` maps every exported React
+component in `website/`, `admin/` and `packages/web-ui` to a contract (`react`
+record or `componentId` adapter), a T4 owner, or deletion. A TypeScript
+reference graph measures owners and deletions. Ownership passes through shared
+layers, so a shared export that one feature renders belongs to that feature,
+and an export with no production consumer is a deletion. Judgments are
+recorded in the surface registries. A shared-layer export that matches a T1 or
+T2 L2–L4 contract by name, alias or role noun and is used by more than one
+area, or that renders a `@catch/web-ui` implementation, needs `componentId` or
+`comparedWith` with a `comparisonReason`. The gate rejects a stale comparison,
+an admin entry whose kind contradicts its measured owners, a package export
+that implements no contract but serves more than one area, and exact-name
+exports on both surfaces that name different contracts. `--write` saves the
+inventory to ignored `build/react_component_inventory.json`.
 
 ### React prop types
 

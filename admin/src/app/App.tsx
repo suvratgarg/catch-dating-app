@@ -67,6 +67,14 @@ import {
   signOutAdmin,
 } from "../shared/api/firebase";
 import {firebaseApp} from "../shared/api/firebaseCore";
+import {
+  adminPathForNav,
+  adminRoutes,
+  adminSections,
+  marketingPathForTab,
+  resolveAdminRoute,
+  type AdminNavId,
+} from "./adminRoutes";
 import {useAdminSession} from "./useAdminSession";
 import {AdminQueryProvider} from "../shared/query/queryClient";
 import {dataMode} from "../shared/api/dataMode";
@@ -82,23 +90,6 @@ import type {OverviewQueueDestination} from
 
 const PartnerRouteApp = lazy(() => import("./PartnerRouteApp").then((m) => ({default: m.PartnerRouteApp})));
 const OperatorSessionRoute = lazy(() => import("../features/operator-session/ui/OperatorSessionScreen").then((m) => ({default: m.OperatorSessionScreen})));
-
-type AdminNavId =
-  | "overview"
-  | "safety"
-  | "access"
-  | "cross-paths"
-  | "growth"
-  | "marketing-ops"
-  | "sales"
-  | "organizer-intake"
-  | "organizers"
-  | "events"
-  | "users"
-  | "finance"
-  | "quality"
-  | "operations"
-  | "admin-roles";
 
 type PhoneSignInStage = "phone" | "code";
 
@@ -295,29 +286,22 @@ function writeAdminSidebarPreference(collapsed: boolean): void {
   }
 }
 
-const adminSectionTitles: Record<AdminNavId, string> = {
-  overview: "Overview",
-  safety: "Safety",
-  access: "Launch access",
-  "cross-paths": "Cross Paths showcase",
-  growth: "Growth",
-  "marketing-ops": "Marketing",
-  sales: "Sales",
-  "organizer-intake": "Intake",
-  organizers: "Organizers",
-  events: "Events",
-  users: "Users",
-  finance: "Finance",
-  quality: "Data quality",
-  operations: "Agent activity",
-  "admin-roles": "Admin roles",
-};
-
 export function App() {
-  const [router] = useState(() => createBrowserRouter([{path: "/operator-session", element: <Suspense fallback={<AdminFeatureLoadingState label="Loading session handoff" />}><OperatorSessionRoute /></Suspense>}, {path: "/partners/*", element: <Suspense fallback={<AdminFeatureLoadingState label="Loading partner workspace" />}><PartnerRouteApp /></Suspense>}, {
-    path: "*",
-    element: <AdminRouteApp />,
-  }]));
+  const [router] = useState(() => createBrowserRouter([
+    {
+      path: "/operator-session",
+      element: <Suspense fallback={<AdminFeatureLoadingState label="Loading session handoff" />}>
+        <OperatorSessionRoute />
+      </Suspense>,
+    },
+    {
+      path: "/partners/*",
+      element: <Suspense fallback={<AdminFeatureLoadingState label="Loading partner workspace" />}>
+        <PartnerRouteApp />
+      </Suspense>,
+    },
+    ...adminRoutes.map((route) => ({...route, element: <AdminRouteApp />})),
+  ]));
   return <RouterProvider router={router} />;
 }
 
@@ -372,8 +356,8 @@ function AdminRouteApp() {
   const [marketingDirty, setMarketingDirty] = useState(false);
   const blocker = useBlocker(useCallback(({currentLocation, nextLocation}) =>
     marketingDirty &&
-    adminNavForPath(currentLocation.pathname) === "marketing-ops" &&
-    adminNavForPath(nextLocation.pathname) !== "marketing-ops",
+    resolveAdminRoute(currentLocation.pathname).nav === "marketing-ops" &&
+    resolveAdminRoute(nextLocation.pathname).nav !== "marketing-ops",
   [marketingDirty]));
 
   useEffect(() => {
@@ -404,7 +388,8 @@ function AdminRouteApp() {
       hasAnyAdminRole(adminRoles, navRoleMap[item.id])),
     [adminRoles, mode]
   );
-  const routeNav = adminNavForPath(location.pathname);
+  const route = resolveAdminRoute(location.pathname);
+  const routeNav = route.nav;
   const routeNavVisible = routeNav !== null &&
     visibleNavigation.some((item) => item.id === routeNav);
   const currentNav: AdminNavId = routeNavVisible ?
@@ -560,7 +545,7 @@ function AdminRouteApp() {
     setActiveNav(destination);
   }, [navigate, setActiveNav, setError, setNotice, visibleNavigation]);
 
-  const topbarTitle = titleForAdminSection(currentNav, location.pathname);
+  const topbarTitle = (routeNav === currentNav ? route.title : undefined) ?? adminSections[currentNav].title;
 
   useEffect(() => {
     const nextTitle = mode === "live" && !user ?
@@ -719,12 +704,12 @@ function AdminRouteApp() {
           {currentNav === "sales" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Sales" />}>
             <SalesWorkspaceScreen
-              area={salesAreaForPath(location.pathname)}
+              area={route.salesArea}
               isAdminOwner={adminRoles.includes("adminOwner")}
               assignedStaffOnly={adminRoles.includes("salesStaff") &&
                 !adminRoles.some((role) => role === "admin" || role === "adminOwner")}
               currentUserUid={user?.uid ?? (mode === "sample" ? "sample-owner" : "")}
-              selectedOrganizerId={salesOrganizerIdForPath(location.pathname)}
+              selectedOrganizerId={route.params.salesOrganizerId ?? null}
               onAreaChange={(area) => navigate(`/sales/${area}`)}
               onOpenHost={(organizerId) => navigate(
                 `/sales/hosts/${encodeURIComponent(organizerId)}`
@@ -741,7 +726,7 @@ function AdminRouteApp() {
             <SafetyTriageScreen
               onError={setError}
               onNotice={setNotice}
-              selectedTargetPath={safetyTargetPathForPath(location.pathname)}
+              selectedTargetPath={route.params.targetPath ?? null}
               onBackToList={() => navigate(adminPathForNav("safety"))}
               onSelectTargetPath={(targetPath) => {
                 navigate(
@@ -753,10 +738,10 @@ function AdminRouteApp() {
         ) : currentNav === "marketing-ops" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Marketing" />}>
             <MarketingOpsScreen
-              activeTab={marketingTabForPath(location.pathname)}
-              composerStep={marketingComposerStepForPath(location.pathname)}
+              activeTab={route.marketingTab}
+              composerStep={route.composerStep}
               onComposerStepChange={(step) => {
-                const draftId = marketingDraftIdForPath(location.pathname);
+                const draftId = route.params.draftId ?? null;
                 if (draftId) {
                   navigate(`/marketing/drafts/${encodeURIComponent(draftId)}/${step}`);
                 }
@@ -768,13 +753,13 @@ function AdminRouteApp() {
               onNotice={setNotice}
               onTabChange={(tab) => navigate(marketingPathForTab(tab))}
               onUnsavedChangesChange={setMarketingDirty}
-              selectedDraftId={marketingDraftIdForPath(location.pathname)}
+              selectedDraftId={route.params.draftId ?? null}
             />
           </Suspense>
         ) : currentNav === "access" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Access" />}>
             <AccessReviewScreen
-              selectedApplicationUid={accessApplicationUidForPath(location.pathname)}
+              selectedApplicationUid={route.params.applicationUid ?? null}
               onBackToList={() => navigate(adminPathForNav("access"))}
               onError={setError}
               onNotice={setNotice}
@@ -791,7 +776,7 @@ function AdminRouteApp() {
               onSelectSignalId={(signalId) => {
                 navigate(`/growth/signals/${encodeURIComponent(signalId)}`);
               }}
-              selectedSignalId={growthSignalIdForPath(location.pathname)}
+              selectedSignalId={route.params.growthSignalId ?? null}
             />
           </Suspense>
         ) : currentNav === "organizer-intake" ? (
@@ -801,10 +786,8 @@ function AdminRouteApp() {
         ) : currentNav === "organizers" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Organizers" />}>
             <OrganizerPublishingScreen
-              activeWorkspace={isOrganizerClaimsPath(location.pathname) ?
-                "claims" :
-                "directory"}
-              selectedClubId={organizerClubIdForPath(location.pathname)}
+              activeWorkspace={route.organizerWorkspace}
+              selectedClubId={route.params.clubId ?? null}
               onBackToList={() => navigate(adminPathForNav("organizers"))}
               onBackToClaims={() => navigate(`${adminPathForNav("organizers")}/claims`)}
               onSelectClaimRequestId={(requestId) => {
@@ -820,16 +803,16 @@ function AdminRouteApp() {
                   `${adminPathForNav("organizers")}/claims` :
                   adminPathForNav("organizers"));
               }}
-              selectedClaimRequestId={organizerClaimRequestIdForPath(location.pathname)}
+              selectedClaimRequestId={route.params.claimRequestId ?? null}
             />
           </Suspense>
         ) : currentNav === "events" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Events" />}>
             <EventPublishingScreen
-              activeWorkspace={eventWorkspaceForPath(location.pathname)}
-              selectedEventId={eventIdForPath(location.pathname)}
-              selectedExternalEventId={externalEventIdForPath(location.pathname)}
-              selectedReadinessActionId={readinessActionIdForPath(location.pathname)}
+              activeWorkspace={route.eventWorkspace}
+              selectedEventId={route.params.eventId ?? null}
+              selectedExternalEventId={route.params.externalEventId ?? null}
+              selectedReadinessActionId={route.params.readinessActionId ?? null}
               onBackToList={() => navigate(
                 `${adminPathForNav("events")}${location.search}`
               )}
@@ -892,7 +875,7 @@ function AdminRouteApp() {
               onSelectIssueId={(issueId) => {
                 navigate(`/finance/issues/${encodeURIComponent(issueId)}`);
               }}
-              selectedIssueId={financeIssueIdForPath(location.pathname)}
+              selectedIssueId={route.params.financeIssueId ?? null}
             />
           </Suspense>
         ) : currentNav === "quality" ? (
@@ -904,7 +887,7 @@ function AdminRouteApp() {
               onSelectSignalId={(signalId) => {
                 navigate(`/quality/signals/${encodeURIComponent(signalId)}`);
               }}
-              selectedSignalId={qualitySignalIdForPath(location.pathname)}
+              selectedSignalId={route.params.qualitySignalId ?? null}
             />
           </Suspense>
         ) : currentNav === "admin-roles" ? (
@@ -917,7 +900,7 @@ function AdminRouteApp() {
               onSelectTargetUid={(targetUid) => {
                 navigate(`/admin-roles/${encodeURIComponent(targetUid)}`);
               }}
-              selectedTargetUid={adminRoleTargetUidForPath(location.pathname)}
+              selectedTargetUid={route.params.adminRoleTargetUid ?? null}
             />
           </Suspense>
         ) : currentNav === "operations" ? (
@@ -943,248 +926,6 @@ function AdminRouteApp() {
     </AdminQueryProvider>
     </AdminPendingOperationProvider>
   );
-}
-
-function titleForAdminSection(activeNav: AdminNavId, pathname = ""): string {
-  if (activeNav === "safety" && safetyTargetPathForPath(pathname)) {
-    return "Safety case";
-  }
-  if (activeNav === "organizer-intake") {
-    if (pathname.startsWith("/intake/events")) return "Event intake";
-    if (pathname.startsWith("/intake/operations")) {
-      return "Supply intake operations";
-    }
-    return "Organizer intake";
-  }
-  if (activeNav === "events") {
-    if (eventIdForPath(pathname)) return "Event detail";
-    if (eventWorkspaceForPath(pathname) === "readiness") {
-      return readinessActionIdForPath(pathname) ?
-        "Event readiness review" :
-        "Event readiness";
-    }
-    if (eventWorkspaceForPath(pathname) === "external") {
-      return externalEventIdForPath(pathname) ?
-        "External event" :
-        "External inventory";
-    }
-  }
-  if (activeNav === "growth" && growthSignalIdForPath(pathname)) {
-    return "Growth signal";
-  }
-  if (activeNav === "finance" && financeIssueIdForPath(pathname)) {
-    return "Finance issue";
-  }
-  if (activeNav === "quality" && qualitySignalIdForPath(pathname)) {
-    return "Data quality signal";
-  }
-  if (activeNav === "admin-roles" && adminRoleTargetUidForPath(pathname)) {
-    return "Admin role assignment";
-  }
-  if (activeNav === "marketing-ops" && marketingDraftIdForPath(pathname)) {
-    return "Marketing draft";
-  }
-  return adminSectionTitles[activeNav];
-}
-
-function adminNavForPath(pathname: string): AdminNavId | null {
-  const segment = pathname.replace(/^\/+|\/+$/gu, "").split("/")[0] ?? "";
-  if (segment === "") return "overview";
-  if (segment === "marketing") return "marketing-ops";
-  if (segment === "intake") return "organizer-intake";
-  if (segment === "admin-roles") return "admin-roles";
-  if (isAdminNavId(segment)) return segment;
-  return null;
-}
-
-function adminPathForNav(nav: AdminNavId): string {
-  if (nav === "overview") return "/overview";
-  if (nav === "marketing-ops") return "/marketing";
-  if (nav === "organizer-intake") return "/intake/organizers";
-  if (nav === "sales") return "/sales/today";
-  return `/${nav}`;
-}
-
-function salesAreaForPath(pathname: string):
-  "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings" {
-  const area = pathname.split("/")[2];
-  if (area === "hosts" || area === "pipeline" || area === "research" ||
-    area === "pilots" || area === "settings") return area;
-  return "today";
-}
-
-function salesOrganizerIdForPath(pathname: string): string | null {
-  const match = pathname.match(/^\/sales\/hosts\/([^/]+)\/?$/u);
-  if (!match) return null;
-  try { return decodeURIComponent(match[1]); } catch { return match[1]; }
-}
-
-function isAdminNavId(value: string): value is AdminNavId {
-  return navigation.some((item) => item.id === value);
-}
-
-function organizerClubIdForPath(pathname: string): string | null {
-  const match = pathname.match(/^\/organizers\/([^/]+)\/?$/u);
-  if (!match || match[1] === "claims") return null;
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return match[1];
-  }
-}
-
-function isOrganizerClaimsPath(pathname: string): boolean {
-  return /^\/organizers\/claims(?:\/|$)/u.test(pathname);
-}
-
-function organizerClaimRequestIdForPath(pathname: string): string | null {
-  const match = pathname.match(/^\/organizers\/claims\/([^/]+)\/?$/u);
-  if (!match) return null;
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return match[1];
-  }
-}
-
-function accessApplicationUidForPath(pathname: string): string | null {
-  const match = pathname.match(/^\/access\/([^/]+)\/?$/u);
-  if (!match) return null;
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return match[1];
-  }
-}
-
-function eventWorkspaceForPath(
-  pathname: string
-): "directory" | "readiness" | "external" {
-  if (/^\/events\/readiness(?:\/|$)/u.test(pathname)) return "readiness";
-  if (/^\/events\/external(?:\/|$)/u.test(pathname)) return "external";
-  return "directory";
-}
-
-function growthSignalIdForPath(pathname: string): string | null {
-  const match = pathname.match(/^\/growth\/signals\/([^/]+)\/?$/u);
-  if (!match) return null;
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return match[1];
-  }
-}
-
-function financeIssueIdForPath(pathname: string): string | null {
-  const match = pathname.match(/^\/finance\/issues\/([^/]+)\/?$/u);
-  if (!match) return null;
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return match[1];
-  }
-}
-
-function qualitySignalIdForPath(pathname: string): string | null {
-  const match = pathname.match(/^\/quality\/signals\/([^/]+)\/?$/u);
-  if (!match) return null;
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return match[1];
-  }
-}
-
-function adminRoleTargetUidForPath(pathname: string): string | null {
-  const match = pathname.match(/^\/admin-roles\/([^/]+)\/?$/u);
-  if (!match) return null;
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return match[1];
-  }
-}
-
-type MarketingRouteTab =
-  | "posts"
-  | "new"
-  | "events"
-  | "media"
-  | "activity"
-  | "diagnostics"
-  | "draft";
-type MarketingRouteStep = "source" | "copy" | "compliance" | "export";
-
-function marketingTabForPath(pathname: string): MarketingRouteTab {
-  if (/^\/marketing\/drafts\//u.test(pathname)) return "draft";
-  const segment = pathname.match(/^\/marketing\/([^/]+)\/?/u)?.[1] ?? "posts";
-  if (["new", "events", "media", "activity", "diagnostics"].includes(segment)) {
-    return segment as Exclude<MarketingRouteTab, "posts" | "draft">;
-  }
-  return "posts";
-}
-
-function marketingDraftIdForPath(pathname: string): string | null {
-  const match = pathname.match(/^\/marketing\/drafts\/([^/]+)(?:\/|$)/u);
-  if (!match) return null;
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return match[1];
-  }
-}
-
-function marketingComposerStepForPath(pathname: string): MarketingRouteStep {
-  const match = pathname.match(/^\/marketing\/drafts\/[^/]+\/([^/]+)\/?$/u);
-  const step = match?.[1] ?? "source";
-  return ["source", "copy", "compliance", "export"].includes(step) ?
-    step as MarketingRouteStep : "source";
-}
-
-function marketingPathForTab(tab: Exclude<MarketingRouteTab, "draft">): string {
-  return tab === "posts" ? "/marketing/posts" : `/marketing/${tab}`;
-}
-
-function eventIdForPath(pathname: string): string | null {
-  const match = pathname.match(/^\/events\/([^/]+)\/?$/u);
-  if (!match || match[1] === "readiness" || match[1] === "external") {
-    return null;
-  }
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return match[1];
-  }
-}
-
-function externalEventIdForPath(pathname: string): string | null {
-  const match = pathname.match(/^\/events\/external\/([^/]+)\/?$/u);
-  if (!match) return null;
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return match[1];
-  }
-}
-
-function readinessActionIdForPath(pathname: string): string | null {
-  const match = pathname.match(/^\/events\/readiness\/([^/]+)\/?$/u);
-  if (!match) return null;
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return match[1];
-  }
-}
-
-function safetyTargetPathForPath(pathname: string): string | null {
-  const match = pathname.match(/^\/safety\/([^/]+)\/?$/u);
-  if (!match) return null;
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return match[1];
-  }
 }
 
 function hasAnyAdminRole(

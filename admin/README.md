@@ -47,6 +47,12 @@ analytics workspace; access decisions, organizer claim decisions, and organizer
 indexing decisions are handled in their owning tabs where the operator must
 select a row and enter a review note.
 
+`src/app/adminRoutes.ts` owns the Admin URL patterns, selected-record parameters,
+workspace state, and titles. React Router matches this table; feature controllers
+receive the resolved state and navigation callbacks. Unknown sections return to
+the first permitted section after authentication and role resolution. Partner
+and operator-session routes retain their separate entry boundaries.
+
 The app shell owns shared navigation, Firebase auth, role gating, the
 plain route title, and feature composition. Overview range state, refresh,
 analytics loading, and queue triage live in

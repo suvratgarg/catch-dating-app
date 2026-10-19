@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.23.0
+version: 1.24.0
 updated: 2026-10-18
 owner: app_architecture
 status: active
@@ -1652,10 +1652,11 @@ what the 7d inventory replaces. Two items wait on the task that holds
 `tool/tools_manifest.json`: listing the website and admin registries and
 `packages/web-ui/src` as `design:component-lexicon` impact paths, and a
 `root-npm` gate for the ownership measurement, which 7d's inventory check
-needs anyway. Drift surfaced but not fixed here: website `routeIds` are
-maintained by hand and are wrong. For example, `StatusBadge` lists `claim`,
-which never renders it, and omits `event_detail_canonical`, which does. Phase
-7d derives route coverage from the same reference graph.
+needs anyway. Website `routeIds` are maintained by hand; the 7d status below
+measures how far they drift. (A first version of this record cited
+`StatusBadge` on `claim` as drift. That was wrong: the claim pages render it
+through the organizers' `StatusBadge` wrapper. The early graph dropped uses
+made through private helpers.)
 
 **Phase 7d — Generated React inventory.** A deterministic scan of
 `website/`, `admin/` and `packages/web-ui` maps every exported component to
@@ -1664,6 +1665,103 @@ name-match duplicates found on 2026-10-17 (for example `AdminTag` and
 `TagList` against `CatchChip`, `StatusBanner` against `CatchBanner`) and
 settles D13's metric comparison. Inventory output stays in ignored local
 output, per AGENTS.md. DoD: zero unmapped exports.
+
+**Phase 7d status (2026-10-19).** Landed on `codex/xf-react-inventory-7d`.
+`web:shared-ui-adoption` is now the inventory gate. It builds a TypeScript
+reference graph of `website/`, `admin/` and `packages/web-ui`
+(`tool/web/lib/react_component_graph.mjs`) that follows barrels, `import()`
+of default exports, and private top-level helpers. A component is an exported
+PascalCase declaration that renders JSX, or a memo, forwardRef or lazy
+component. The gate maps all 698 to exactly one of four outcomes, with
+`--write` saving the inventory to ignored `build/react_component_inventory.json`:
+
+| Outcome | How it is decided | website | admin | web-ui |
+|---|---|---:|---:|---:|
+| Concept | `react` record | | | 11 |
+| Adapter | `componentId` in the surface registry | 21 | 30 | |
+| T4 owner | measured: the export's own area, or its one consumer area for a shared export (7e moves those) | 158 + 170 to move | 83 + 147 to move | 1 to move |
+| Deletion | measured: no production consumer (tests and stories do not count) | 53 | 24 | |
+
+Only judgments are recorded. A shared-layer export that matches a T1 or T2
+L2–L4 contract by name, alias or role noun (after redirects), and is consumed
+by more than one area, needs a decision. So does any shared-layer export that
+renders a `@catch/web-ui` implementation. An export that renders the matched
+contract's implementation is a binding and needs no record. The decision is
+`componentId` (it implements the contract) or `comparedWith` plus a
+`comparisonReason` (it does not). 70 decisions are recorded: 36 confirmed and
+34 rejected. Exports with the same name on website and admin must name one
+contract. The gate also checks that admin `feature-component` and
+`shared-primitive` entries match their measured owners; re-measured with
+private-helper chains, 7c's 146 entries all hold. The self-test seeds a
+TypeScript fixture for the graph and a known-bad inventory for every rule.
+
+- **2026-10-17 name matches.** `AdminTag` is a duplicate implementation, of
+  `catch.badge` rather than `catch.chip`. It labels muted metadata and status
+  values with status tones, which is CatchBadge's job; CatchChip covers
+  interest tags, choices and removable values. The retired tracker listed it
+  as adopting `BadgeControl`, but its check looked only at file imports;
+  `AdminTag` renders a raw `span`. `TagList` (admin marketing) and
+  `AdminTagList` are rejected: they are wrap containers for badges. `StatusBanner`
+  is confirmed as `catch.banner`, and so is the inline `AlertRow`.
+- **D13 metrics, settled.** Admin's metric family implements
+  `catch.metric_strip`. `AdminMetricGrid` (a labelled grid of independent
+  measurements) is `CatchMetricSection.grid`, and `AdminMetricCard` (label,
+  value, caption) is its `CatchMetricTile` member. Admin's `footer` slot and
+  `attention` tone have no Flutter counterpart, and Flutter's grid data
+  requires an icon that admin does not render; 7e reconciles the contract.
+  The website `MetricCard` has no production consumer and is a deletion.
+  `WEB-SHARED-METRIC-001` therefore leaves `keep_surface_specific`.
+- **D13 panels.** A titled panel (`Panel`, `AdminEditorPanel`, website
+  `ProcessStatusPanel`) is the contained recipe of `catch.section`, whose
+  aliases already include `SectionPanel` and `TitledSection`. Plain card
+  containment (`AdminSearchCandidatePanel`, `AdminSignInPanel`) is
+  `catch.surface`. D13's "panel and card containment become `CatchSurface`
+  recipes" therefore holds for the box, and the heading belongs to the section.
+- **Adapters per contract (7e's worklist):** field 9, button 7, badge 5,
+  banner 3, choice input 3, table 3, section 4, and the rest 1–2. Four T2
+  contracts now have web adapters (`meta_row`, `metric_strip`,
+  `journey_steps`, `toggle`), so their first web need has arrived.
+- **Rejected with a recorded reason:** full-width marketing page bands named
+  `*Section` (`MarketingSection`, `WaitlistSection`, `HostPreviewSection`),
+  site and page headers against `catch.step_header`, layout stacks and rows
+  against `catch.section_stack` and the row contracts, and `StoreButton`.
+  Store badges follow Apple's and Google's artwork rules, so `StoreButton`
+  cannot be a `CatchButton` recipe.
+- **Owner decision (2026-10-19): one shared step list.** Website `StepRail`
+  and admin `AdminIntakeStageRail` are two web ports of Flutter's
+  `CatchFormStepList` (`catch.screen_body.form_step_overview`, T3). The owner
+  decided to promote it to its own T2 contract, `catch.form_step_list`, which
+  the app, website and admin all share, and to replace both ports with it in
+  7e. A top-level concept needs its own Widgetbook contract preview, which is
+  Flutter code, so registration is a small follow-up rather than part of this
+  PR. Until it lands, both entries record the decision in their
+  `comparisonReason`. When the contract is registered, the inventory flags the
+  eight shared `*List` and `*Group` exports that match its role noun, and each
+  needs its comparison extended.
+
+Retired: `design/web-ui/shared_primitive_adoption.json`. The inventory now
+covers each of its gates: package exports, exact-name overlaps, and family
+adoption. The adoption import check is gone, not replaced; it accepted a
+file-level import as evidence, and D10 deletes the adapters in 7e anyway. The
+website schema now lets an unstyled supporting component (`PlainButton`, the
+website `DataTable` and `CheckboxField` adapters) list no stylesheet, rather
+than name one it does not own. Nineteen website entries are new, with route
+ids measured from the graph.
+
+Not done, with reasons:
+
+- **Route coverage.** Measured against the graph, 63 of 131 non-route website
+  entries differ from their declared `routeIds`. Some of that is staleness
+  after #693; for example, `HomeDiscoverySection` now renders only on visitor
+  discovery. The rest is a measurement gap: app-shell wrappers such as
+  `PageShell` and the consent banner render above the route tree, so they need
+  route-tree semantics before `routeIds` can be generated. That is a follow-up.
+- **`tool/tools_manifest.json` changes.** That file is still held by #688.
+  The `web:shared-ui-adoption` description still names the retired tracker,
+  and the lexicon impact paths from 7c are unchanged.
+- **`docs/agent_skills/skills_manifest.json`.** Held by the docs task (#696);
+  its two tracker paths are updated once that claim is released, before this
+  PR runs CI.
 
 **Phase 7e — T1 in `@catch/web-ui`.** Build each T1 concept (plus
 `catch.table`) as a styled `Catch*` component under the Cross-Framework

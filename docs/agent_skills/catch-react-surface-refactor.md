@@ -1,7 +1,7 @@
 ---
 doc_id: agent_skill_catch_react_surface_refactor
-version: 1.1.0
-updated: 2026-10-17
+version: 1.2.0
+updated: 2026-10-19
 owner: agent_operating_model
 status: active
 ---
@@ -38,13 +38,16 @@ Loop:
    shared UI primitive owner and run:
    `node tool/run.mjs check web:react-ui-primitives`.
 7. Do not hand-roll governed component families in feature code. Print the scanner's current governed-family view on demand with `node tool/web/check_react_component_governance.mjs --families-json`; do not check in a generated reader snapshot. Run `node tool/run.mjs check web:react-component-governance`. This scanner is a known-family blocklist: passing it does not classify novel shell families automatically, so repeated new shell drift must be added to the scanner before handoff.
-   Cross-surface compatibility decisions live in
-   `design/web-ui/shared_primitive_adoption.json`; run
-   `node tool/run.mjs check web:shared-ui-adoption` whenever either surface
-   primitive owner or `packages/web-ui` changes. Adopted candidates must route
-   through package controls in both surface adapters. Styling and feature
-   composition stay surface-owned only until UI blueprint Phase 7 moves styled
-   `Catch*` components into `@catch/web-ui` (ratified 2026-10-17). Before
+   Run `node tool/run.mjs check web:shared-ui-adoption` whenever a React
+   component export changes: it maps every exported component to a registry
+   concept, a T4 owner or deletion, and fails when a shared-layer export
+   matches a registered contract by name or renders its `@catch/web-ui`
+   implementation without a recorded `componentId` (it implements the
+   contract) or `comparedWith` plus `comparisonReason` (it does not) in its
+   surface registry. `--write` saves the inventory to ignored
+   `build/react_component_inventory.json`. Styling stays surface-owned only
+   until UI blueprint Phase 7e moves styled `Catch*` components into
+   `@catch/web-ui` (ratified 2026-10-17). Before
    adding a shared React component, find its concept in
    `design/components/catch.components.json`: use the concept's symbol and prop
    names (Cross-Framework Names in `docs/app_architecture.md`), build it in

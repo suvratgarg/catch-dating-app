@@ -5,7 +5,8 @@
   "workspaces": [
     "admin",
     "website",
-    "packages/web-ui"
+    "packages/web-ui",
+    "packages/web-config"
   ],
   "scripts": {
     "agent:context": "node tool/agent/context_pack.mjs",

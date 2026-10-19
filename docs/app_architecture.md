@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.80.0
-updated: 2026-10-18
+version: 1.81.0
+updated: 2026-10-19
 owner: app_architecture
 status: active
 ---
@@ -2847,9 +2847,13 @@ by the component registry (`design/components/README.md`).
 - **Banned qualifiers** (`Custom`, `New`, `Modern`, `Legacy`, `Old`, version
   qualifiers such as `V2`) apply in both frameworks.
 
-React exports that predate this subsection migrate under blueprint Phase 7,
-which also adds the executable checks. Until those checks land, reviewers
-apply the subsection to new and moved React code.
+React exports that predate this subsection migrate under blueprint Phase 7.
+The React component inventory (`web:shared-ui-adoption`, Phase 7d) already
+maps every exported React component to a contract, a T4 owner or deletion,
+and it fails when a shared export that matches a registered contract has no
+recorded `componentId` or `comparedWith`. The naming check for new shared React
+exports arrives in Phase 7f; until then, reviewers apply this subsection to
+new and moved React code.
 
 ## Cross-Feature Behavior
 

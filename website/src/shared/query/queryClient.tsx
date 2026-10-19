@@ -1,26 +1,8 @@
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {useState, type ReactNode} from "react";
-
-function createWebsiteQueryClient() { return new QueryClient({
-  defaultOptions: {
-    mutations: {
-      retry: 0,
-    },
-    queries: {
-      gcTime: 10 * 60 * 1000,
-      refetchOnWindowFocus: false,
-      retry: 1,
-      staleTime: 5 * 60 * 1000,
-    },
-  },
-});
-}
+import {createWebQueryClient} from "@catch/web-config/query";
+import {QueryClientProvider} from "@tanstack/react-query";
+import {type ReactNode, useState} from "react";
 
 export function WebsiteQueryProvider({children}: {children: ReactNode}) {
-  const [websiteQueryClient] = useState(createWebsiteQueryClient);
-  return (
-    <QueryClientProvider client={websiteQueryClient}>
-      {children}
-    </QueryClientProvider>
-  );
+  const [client] = useState(createWebQueryClient);
+  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }

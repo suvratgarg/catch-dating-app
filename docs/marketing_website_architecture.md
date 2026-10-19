@@ -269,11 +269,13 @@ The website is already split out of the old monolithic shell:
   code from hand-rolling governed component families. Its `--families-json`
   output is generated on demand and documents the known-family blocklist
   limitation; it is not a checked-in reader snapshot.
-- `design/web-ui/shared_primitive_adoption.json` owns the audited
-  marketing/admin compatibility queue. Website buttons, fields, choice chips,
-  choice cards, empty states, status badges, and data tables adapt the
-  compatible `@catch/web-ui` native semantics; visual classes, authored labels,
-  domain variants, and feature composition remain website-owned.
+- Website buttons, fields, checkboxes, choice chips and grids, choice cards,
+  empty states, status badges and data tables adapt the `@catch/web-ui` native
+  controls; each adapter's entry in `design/website/components.json` names its
+  contract with `componentId`. Visual classes, authored labels, domain variants
+  and feature composition stay website-owned until Phase 7e ships the styled
+  components. The `web:shared-ui-adoption` inventory gate requires that
+  decision for every shared export matching a registered contract.
 - Shared route/page shell presentation lives in `website/src/shared/site` as
   `PageShell` and `WebsitePageMain`. `website/src/app/App.tsx` owns React
   Router, route metadata, lifecycle hooks, and page-class selection, but
