@@ -147,7 +147,10 @@ function validateComponent(component, context) {
     }
   }
 
-  if (!Array.isArray(component.css) || component.css.length === 0) {
+  // Only an unstyled supporting component (an element callers style) owns no
+  // stylesheet; routes, sections and flows always do.
+  if (!Array.isArray(component.css) ||
+      (component.css.length === 0 && component.kind !== "supporting-component")) {
     errors.push(`${label}: css must list at least one owned stylesheet.`);
   } else {
     for (const cssPath of component.css) {
