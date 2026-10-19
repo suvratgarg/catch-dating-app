@@ -283,7 +283,8 @@ export function reviewedUserProfile(input: {
   return result as unknown as User;
 }
 
-function currentReviewedProfile(user: User): Payload["profile"] {
+function currentReviewedProfile(user: User): Payload["profile"] | null {
+  if (!user.dateOfBirth || !user.gender) return null;
   const schema = claimParticipantFormProfileCallablePayloadSchema as {
     properties: {profile: {properties: Record<string, unknown>}};
   };

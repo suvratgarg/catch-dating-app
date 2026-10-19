@@ -55,10 +55,11 @@ extension EventEligibilityPatterns on EventEligibility {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( Eligible value)?  eligible,TResult Function( AlreadySignedUp value)?  alreadySignedUp,TResult Function( OnWaitlist value)?  onWaitlist,TResult Function( Attended value)?  attended,TResult Function( EventPast value)?  eventPast,TResult Function( EventFull value)?  eventFull,TResult Function( EventInviteRequired value)?  inviteRequired,TResult Function( GenderCapacityReached value)?  genderCapacityReached,TResult Function( AgeTooYoung value)?  ageTooYoung,TResult Function( AgeTooOld value)?  ageTooOld,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ProfileDetailsRequired value)?  profileDetailsRequired,TResult Function( Eligible value)?  eligible,TResult Function( AlreadySignedUp value)?  alreadySignedUp,TResult Function( OnWaitlist value)?  onWaitlist,TResult Function( Attended value)?  attended,TResult Function( EventPast value)?  eventPast,TResult Function( EventFull value)?  eventFull,TResult Function( EventInviteRequired value)?  inviteRequired,TResult Function( GenderCapacityReached value)?  genderCapacityReached,TResult Function( AgeTooYoung value)?  ageTooYoung,TResult Function( AgeTooOld value)?  ageTooOld,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case Eligible() when eligible != null:
+case ProfileDetailsRequired() when profileDetailsRequired != null:
+return profileDetailsRequired(_that);case Eligible() when eligible != null:
 return eligible(_that);case AlreadySignedUp() when alreadySignedUp != null:
 return alreadySignedUp(_that);case OnWaitlist() when onWaitlist != null:
 return onWaitlist(_that);case Attended() when attended != null:
@@ -86,10 +87,11 @@ return ageTooOld(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( Eligible value)  eligible,required TResult Function( AlreadySignedUp value)  alreadySignedUp,required TResult Function( OnWaitlist value)  onWaitlist,required TResult Function( Attended value)  attended,required TResult Function( EventPast value)  eventPast,required TResult Function( EventFull value)  eventFull,required TResult Function( EventInviteRequired value)  inviteRequired,required TResult Function( GenderCapacityReached value)  genderCapacityReached,required TResult Function( AgeTooYoung value)  ageTooYoung,required TResult Function( AgeTooOld value)  ageTooOld,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ProfileDetailsRequired value)  profileDetailsRequired,required TResult Function( Eligible value)  eligible,required TResult Function( AlreadySignedUp value)  alreadySignedUp,required TResult Function( OnWaitlist value)  onWaitlist,required TResult Function( Attended value)  attended,required TResult Function( EventPast value)  eventPast,required TResult Function( EventFull value)  eventFull,required TResult Function( EventInviteRequired value)  inviteRequired,required TResult Function( GenderCapacityReached value)  genderCapacityReached,required TResult Function( AgeTooYoung value)  ageTooYoung,required TResult Function( AgeTooOld value)  ageTooOld,}){
 final _that = this;
 switch (_that) {
-case Eligible():
+case ProfileDetailsRequired():
+return profileDetailsRequired(_that);case Eligible():
 return eligible(_that);case AlreadySignedUp():
 return alreadySignedUp(_that);case OnWaitlist():
 return onWaitlist(_that);case Attended():
@@ -113,10 +115,11 @@ return ageTooOld(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( Eligible value)?  eligible,TResult? Function( AlreadySignedUp value)?  alreadySignedUp,TResult? Function( OnWaitlist value)?  onWaitlist,TResult? Function( Attended value)?  attended,TResult? Function( EventPast value)?  eventPast,TResult? Function( EventFull value)?  eventFull,TResult? Function( EventInviteRequired value)?  inviteRequired,TResult? Function( GenderCapacityReached value)?  genderCapacityReached,TResult? Function( AgeTooYoung value)?  ageTooYoung,TResult? Function( AgeTooOld value)?  ageTooOld,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ProfileDetailsRequired value)?  profileDetailsRequired,TResult? Function( Eligible value)?  eligible,TResult? Function( AlreadySignedUp value)?  alreadySignedUp,TResult? Function( OnWaitlist value)?  onWaitlist,TResult? Function( Attended value)?  attended,TResult? Function( EventPast value)?  eventPast,TResult? Function( EventFull value)?  eventFull,TResult? Function( EventInviteRequired value)?  inviteRequired,TResult? Function( GenderCapacityReached value)?  genderCapacityReached,TResult? Function( AgeTooYoung value)?  ageTooYoung,TResult? Function( AgeTooOld value)?  ageTooOld,}){
 final _that = this;
 switch (_that) {
-case Eligible() when eligible != null:
+case ProfileDetailsRequired() when profileDetailsRequired != null:
+return profileDetailsRequired(_that);case Eligible() when eligible != null:
 return eligible(_that);case AlreadySignedUp() when alreadySignedUp != null:
 return alreadySignedUp(_that);case OnWaitlist() when onWaitlist != null:
 return onWaitlist(_that);case Attended() when attended != null:
@@ -143,9 +146,10 @@ return ageTooOld(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  eligible,TResult Function()?  alreadySignedUp,TResult Function()?  onWaitlist,TResult Function()?  attended,TResult Function()?  eventPast,TResult Function()?  eventFull,TResult Function()?  inviteRequired,TResult Function()?  genderCapacityReached,TResult Function( int minAge)?  ageTooYoung,TResult Function( int maxAge)?  ageTooOld,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  profileDetailsRequired,TResult Function()?  eligible,TResult Function()?  alreadySignedUp,TResult Function()?  onWaitlist,TResult Function()?  attended,TResult Function()?  eventPast,TResult Function()?  eventFull,TResult Function()?  inviteRequired,TResult Function()?  genderCapacityReached,TResult Function( int minAge)?  ageTooYoung,TResult Function( int maxAge)?  ageTooOld,required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case Eligible() when eligible != null:
+case ProfileDetailsRequired() when profileDetailsRequired != null:
+return profileDetailsRequired();case Eligible() when eligible != null:
 return eligible();case AlreadySignedUp() when alreadySignedUp != null:
 return alreadySignedUp();case OnWaitlist() when onWaitlist != null:
 return onWaitlist();case Attended() when attended != null:
@@ -173,9 +177,10 @@ return ageTooOld(_that.maxAge);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  eligible,required TResult Function()  alreadySignedUp,required TResult Function()  onWaitlist,required TResult Function()  attended,required TResult Function()  eventPast,required TResult Function()  eventFull,required TResult Function()  inviteRequired,required TResult Function()  genderCapacityReached,required TResult Function( int minAge)  ageTooYoung,required TResult Function( int maxAge)  ageTooOld,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  profileDetailsRequired,required TResult Function()  eligible,required TResult Function()  alreadySignedUp,required TResult Function()  onWaitlist,required TResult Function()  attended,required TResult Function()  eventPast,required TResult Function()  eventFull,required TResult Function()  inviteRequired,required TResult Function()  genderCapacityReached,required TResult Function( int minAge)  ageTooYoung,required TResult Function( int maxAge)  ageTooOld,}) {final _that = this;
 switch (_that) {
-case Eligible():
+case ProfileDetailsRequired():
+return profileDetailsRequired();case Eligible():
 return eligible();case AlreadySignedUp():
 return alreadySignedUp();case OnWaitlist():
 return onWaitlist();case Attended():
@@ -199,9 +204,10 @@ return ageTooOld(_that.maxAge);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  eligible,TResult? Function()?  alreadySignedUp,TResult? Function()?  onWaitlist,TResult? Function()?  attended,TResult? Function()?  eventPast,TResult? Function()?  eventFull,TResult? Function()?  inviteRequired,TResult? Function()?  genderCapacityReached,TResult? Function( int minAge)?  ageTooYoung,TResult? Function( int maxAge)?  ageTooOld,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  profileDetailsRequired,TResult? Function()?  eligible,TResult? Function()?  alreadySignedUp,TResult? Function()?  onWaitlist,TResult? Function()?  attended,TResult? Function()?  eventPast,TResult? Function()?  eventFull,TResult? Function()?  inviteRequired,TResult? Function()?  genderCapacityReached,TResult? Function( int minAge)?  ageTooYoung,TResult? Function( int maxAge)?  ageTooOld,}) {final _that = this;
 switch (_that) {
-case Eligible() when eligible != null:
+case ProfileDetailsRequired() when profileDetailsRequired != null:
+return profileDetailsRequired();case Eligible() when eligible != null:
 return eligible();case AlreadySignedUp() when alreadySignedUp != null:
 return alreadySignedUp();case OnWaitlist() when onWaitlist != null:
 return onWaitlist();case Attended() when attended != null:
@@ -218,6 +224,38 @@ return ageTooOld(_that.maxAge);case _:
 }
 
 }
+
+/// @nodoc
+
+
+class ProfileDetailsRequired implements EventEligibility {
+  const ProfileDetailsRequired();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileDetailsRequired);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'EventEligibility.profileDetailsRequired()';
+}
+
+
+}
+
+
+
 
 /// @nodoc
 

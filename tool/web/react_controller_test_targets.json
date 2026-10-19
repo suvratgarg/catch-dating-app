@@ -225,11 +225,6 @@
       "status": "required"
     },
     {
-      "source": "website/src/features/host/useHostApplicationController.ts",
-      "status": "exempt",
-      "reason": "Compatibility re-export of the application controller."
-    },
-    {
       "source": "website/src/features/householdRsvp/useHouseholdRsvpController.ts",
       "test": "website/src/features/householdRsvp/useHouseholdRsvpController.test.tsx",
       "status": "required"
@@ -307,6 +302,11 @@
     {
       "source": "admin/src/features/sales/controllers/useSalesPartnerOfferController.ts",
       "test": "admin/src/features/sales/controllers/useSalesPartnerOfferController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/account/useWebsiteAccountController.ts",
+      "test": "website/src/features/account/useWebsiteAccountController.test.tsx",
       "status": "required"
     }
   ]

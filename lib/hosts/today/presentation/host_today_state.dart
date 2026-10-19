@@ -41,6 +41,9 @@ class HostTodayState {
     this.laterEvents = const <HostTodayEventRowData>[],
     this.hasPastEvents = false,
     this.attentionCountIsComplete = false,
+    this.hasPendingSources = false,
+    this.historyError,
+    this.historyStackTrace,
     this.error,
     this.stackTrace,
   });
@@ -54,6 +57,9 @@ class HostTodayState {
 
   /// Counts are exact only when every projected kind and local merge is known.
   final bool attentionCountIsComplete;
+  final bool hasPendingSources;
+  final Object? historyError;
+  final StackTrace? historyStackTrace;
   final Object? error;
   final StackTrace? stackTrace;
 }

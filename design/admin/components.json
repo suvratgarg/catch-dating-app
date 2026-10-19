@@ -1,7 +1,7 @@
 {
   "$schema": "./admin.components.schema.json",
-  "version": 41,
-  "updated": "2026-10-07",
+  "version": 42,
+  "updated": "2026-10-18",
   "owner": "admin_dashboard",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -51,6 +51,7 @@
       "route",
       "workspace",
       "shared-primitive",
+      "feature-component",
       "provider"
     ]
   },
@@ -713,7 +714,7 @@
           "honest-preview-analytics"
         ]
       },
-      "notes": "URL-owned Safety list route backed by an explicit SafetyTriageController fixture. Metric cards and queue-composition bars use aggregate open counts; priority and age disclose their capped returned-preview scope. Opening a row navigates to a separate encoded target-path route instead of stacking detail below the table."
+      "notes": "URL-owned Safety list route backed by an explicit SafetyTriageController fixture. Metric cards use aggregate open counts and disclose returned preview row counts separately. Queue filtering and search apply only to the loaded preview; priority and age distributions are not implemented. Opening a row navigates to a separate encoded target-path route instead of stacking detail below the table."
     },
     {
       "id": "workspace_safety_triage",
@@ -778,8 +779,8 @@
     },
     {
       "id": "shared_admin_profile_photo_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/cross-paths",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminProfilePhotoGrid",
       "css": [
@@ -835,8 +836,8 @@
     },
     {
       "id": "shared_admin_app_shell",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminAppShell",
       "css": [
@@ -856,8 +857,8 @@
     },
     {
       "id": "shared_admin_account_menu",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminAccountMenu",
       "css": [
@@ -877,8 +878,8 @@
     },
     {
       "id": "shared_admin_brand_block",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminBrandBlock",
       "css": [
@@ -896,8 +897,8 @@
     },
     {
       "id": "shared_admin_brand_copy",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminBrandCopy",
       "css": [
@@ -915,8 +916,8 @@
     },
     {
       "id": "shared_admin_brand_mark",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminBrandMark",
       "css": [
@@ -935,8 +936,8 @@
     },
     {
       "id": "shared_admin_brand_title",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminBrandTitle",
       "css": [
@@ -973,13 +974,12 @@
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "exportName": "AdminButton",
-      "lexicon": true,
-      "lexiconId": "catch.button"
+      "componentId": "catch.button"
     },
     {
       "id": "shared_admin_card",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
       "exportName": "AdminCard",
       "css": [
@@ -998,8 +998,8 @@
     },
     {
       "id": "shared_admin_card_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
       "exportName": "AdminCardList",
       "css": [
@@ -1017,8 +1017,8 @@
     },
     {
       "id": "shared_admin_checklist_copy",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/organizers",
       "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
       "exportName": "AdminChecklistCopy",
       "css": [
@@ -1036,8 +1036,8 @@
     },
     {
       "id": "shared_admin_checklist_header",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/organizers",
       "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
       "exportName": "AdminChecklistHeader",
       "css": [
@@ -1055,8 +1055,8 @@
     },
     {
       "id": "shared_admin_checklist_stack",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/organizers",
       "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
       "exportName": "AdminChecklistStack",
       "css": [
@@ -1267,8 +1267,8 @@
     },
     {
       "id": "shared_admin_environment_status",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
       "exportName": "AdminEnvironmentStatus",
       "css": [
@@ -1288,8 +1288,8 @@
     },
     {
       "id": "shared_admin_event_supply_detail",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/events",
       "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
       "exportName": "AdminEventSupplyDetail",
       "css": [
@@ -1326,8 +1326,8 @@
     },
     {
       "id": "shared_admin_event_supply_empty_state",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/events",
       "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
       "exportName": "AdminEventSupplyEmptyState",
       "css": [
@@ -1345,8 +1345,8 @@
     },
     {
       "id": "shared_admin_event_supply_links",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/events",
       "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
       "exportName": "AdminEventSupplyLinks",
       "css": [
@@ -1364,8 +1364,8 @@
     },
     {
       "id": "shared_admin_event_supply_review_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/events",
       "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
       "exportName": "AdminEventSupplyReviewGrid",
       "css": [
@@ -1387,8 +1387,6 @@
       "owner": "shared/ui",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminEyebrow",
-      "lexicon": true,
-      "lexiconId": "catch.typography",
       "css": [
         "admin/src/styles.css"
       ],
@@ -1401,12 +1399,13 @@
           "span"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
+      "componentId": "catch.typography"
     },
     {
       "id": "shared_admin_feature_drop_capture_thumb",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminFeatureDropCaptureThumb",
       "css": [
@@ -1424,8 +1423,8 @@
     },
     {
       "id": "shared_admin_feature_drop_control_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminFeatureDropControlGrid",
       "css": [
@@ -1443,8 +1442,8 @@
     },
     {
       "id": "shared_admin_feature_drop_feature_editor",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminFeatureDropFeatureEditor",
       "css": [
@@ -1462,8 +1461,8 @@
     },
     {
       "id": "shared_admin_feature_drop_feature_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminFeatureDropFeatureList",
       "css": [
@@ -1481,8 +1480,8 @@
     },
     {
       "id": "shared_admin_feature_drop_preview_card",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminFeatureDropPreviewCard",
       "css": [
@@ -1501,8 +1500,8 @@
     },
     {
       "id": "shared_admin_feature_drop_preview_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminFeatureDropPreviewGrid",
       "css": [
@@ -1520,8 +1519,8 @@
     },
     {
       "id": "shared_admin_feature_drop_wide_field",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminFeatureDropWideField",
       "css": [
@@ -1578,8 +1577,8 @@
     },
     {
       "id": "shared_admin_filter_bar",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/overview",
       "source": "admin/src/shared/ui/AdminPrimitives/workbench.tsx",
       "exportName": "AdminFilterBar",
       "css": [
@@ -1617,8 +1616,8 @@
     },
     {
       "id": "shared_admin_guardrail_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminGuardrailList",
       "css": [
@@ -1652,13 +1651,12 @@
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "exportName": "AdminIconButton",
-      "lexicon": true,
-      "lexiconId": "catch.icon_button"
+      "componentId": "catch.icon_button"
     },
     {
       "id": "shared_admin_intake_boundary_notice",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminIntakeBoundaryNotice",
       "css": [
@@ -1696,8 +1694,8 @@
     },
     {
       "id": "shared_admin_intake_decision_box",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminIntakeDecisionBox",
       "css": [
@@ -1753,8 +1751,8 @@
     },
     {
       "id": "shared_admin_intake_gate",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminIntakeGate",
       "css": [
@@ -1774,8 +1772,8 @@
     },
     {
       "id": "shared_admin_intake_gate_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminIntakeGateList",
       "css": [
@@ -1793,8 +1791,8 @@
     },
     {
       "id": "shared_admin_intake_layout",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
       "exportName": "AdminIntakeLayout",
       "css": [
@@ -1812,8 +1810,8 @@
     },
     {
       "id": "shared_admin_intake_publication_boundary_panel",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
       "exportName": "AdminIntakePublicationBoundaryPanel",
       "css": [
@@ -1832,8 +1830,8 @@
     },
     {
       "id": "shared_admin_intake_review_workbench",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intakeWorkbench.tsx",
       "exportName": "AdminIntakeReviewWorkbench",
       "css": [
@@ -1862,8 +1860,8 @@
     },
     {
       "id": "shared_admin_intake_workspace_frame",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminIntakeWorkspaceFrame",
       "css": [
@@ -1939,8 +1937,8 @@
     },
     {
       "id": "shared_admin_intake_stage_rail",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminIntakeStageRail",
       "css": [
@@ -1980,8 +1978,8 @@
     },
     {
       "id": "shared_admin_intake_task_toolbar",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminIntakeTaskToolbar",
       "css": [
@@ -2021,8 +2019,8 @@
     },
     {
       "id": "shared_admin_intake_workspace_tabs",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
       "exportName": "AdminIntakeWorkspaceTabs",
       "css": [
@@ -2083,8 +2081,8 @@
     },
     {
       "id": "shared_admin_marketing_app_capture_preview",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
       "exportName": "AdminMarketingAppCapturePreview",
       "css": [
@@ -2102,8 +2100,8 @@
     },
     {
       "id": "shared_admin_marketing_app_media_paths",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
       "exportName": "AdminMarketingAppMediaPaths",
       "css": [
@@ -2122,8 +2120,8 @@
     },
     {
       "id": "shared_admin_marketing_audit_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingAuditList",
       "css": [
@@ -2141,8 +2139,8 @@
     },
     {
       "id": "shared_admin_marketing_audit_row",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingAuditRow",
       "css": [
@@ -2160,8 +2158,8 @@
     },
     {
       "id": "shared_admin_marketing_board_column",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
       "exportName": "AdminMarketingBoardColumn",
       "css": [
@@ -2179,8 +2177,8 @@
     },
     {
       "id": "shared_admin_marketing_board_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
       "exportName": "AdminMarketingBoardList",
       "css": [
@@ -2198,8 +2196,8 @@
     },
     {
       "id": "shared_admin_marketing_brand_contract",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
       "exportName": "AdminMarketingBrandContract",
       "css": [
@@ -2217,8 +2215,8 @@
     },
     {
       "id": "shared_admin_marketing_brand_contract_item",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
       "exportName": "AdminMarketingBrandContractItem",
       "css": [
@@ -2236,8 +2234,8 @@
     },
     {
       "id": "shared_admin_marketing_card_link",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
       "exportName": "AdminMarketingCardLink",
       "css": [
@@ -2256,8 +2254,8 @@
     },
     {
       "id": "shared_admin_marketing_carousel_preview",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingCarouselPreview",
       "css": [
@@ -2275,8 +2273,8 @@
     },
     {
       "id": "shared_admin_marketing_compliance_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
       "exportName": "AdminMarketingComplianceList",
       "css": [
@@ -2294,8 +2292,8 @@
     },
     {
       "id": "shared_admin_marketing_composer",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
       "exportName": "AdminMarketingComposer",
       "css": [
@@ -2313,8 +2311,8 @@
     },
     {
       "id": "shared_admin_marketing_composer_back_button",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
       "exportName": "AdminMarketingComposerBackButton",
       "css": [
@@ -2332,8 +2330,8 @@
     },
     {
       "id": "shared_admin_marketing_composer_footer",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
       "exportName": "AdminMarketingComposerFooter",
       "css": [
@@ -2351,8 +2349,8 @@
     },
     {
       "id": "shared_admin_marketing_composer_header",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
       "exportName": "AdminMarketingComposerHeader",
       "css": [
@@ -2370,8 +2368,8 @@
     },
     {
       "id": "shared_admin_marketing_deliverable",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
       "exportName": "AdminMarketingDeliverable",
       "css": [
@@ -2408,8 +2406,8 @@
     },
     {
       "id": "shared_admin_marketing_event_library_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
       "exportName": "AdminMarketingEventLibraryGrid",
       "css": [
@@ -2427,8 +2425,8 @@
     },
     {
       "id": "shared_admin_marketing_export_status",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingExportStatus",
       "css": [
@@ -2447,8 +2445,8 @@
     },
     {
       "id": "shared_admin_marketing_feature_shot_card",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
       "exportName": "AdminMarketingFeatureShotCard",
       "css": [
@@ -2466,8 +2464,8 @@
     },
     {
       "id": "shared_admin_marketing_feature_shot_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
       "exportName": "AdminMarketingFeatureShotGrid",
       "css": [
@@ -2485,8 +2483,8 @@
     },
     {
       "id": "shared_admin_marketing_file_picker_button",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminMarketingFilePickerButton",
       "css": [
@@ -2523,8 +2521,8 @@
     },
     {
       "id": "shared_admin_marketing_guide_layout",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
       "exportName": "AdminMarketingGuideLayout",
       "css": [
@@ -2542,8 +2540,8 @@
     },
     {
       "id": "shared_admin_marketing_help_text",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
       "exportName": "AdminMarketingHelpText",
       "css": [
@@ -2561,8 +2559,8 @@
     },
     {
       "id": "shared_admin_marketing_image_controls",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminMarketingImageControls",
       "css": [
@@ -2580,8 +2578,8 @@
     },
     {
       "id": "shared_admin_marketing_image_editor",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminMarketingImageEditor",
       "css": [
@@ -2599,8 +2597,8 @@
     },
     {
       "id": "shared_admin_marketing_image_editor_header",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminMarketingImageEditorHeader",
       "css": [
@@ -2618,8 +2616,8 @@
     },
     {
       "id": "shared_admin_marketing_image_empty",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminMarketingImageEmpty",
       "css": [
@@ -2637,8 +2635,8 @@
     },
     {
       "id": "shared_admin_marketing_image_meta_fields",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminMarketingImageMetaFields",
       "css": [
@@ -2656,8 +2654,8 @@
     },
     {
       "id": "shared_admin_marketing_image_review_row",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminMarketingImageReviewRow",
       "css": [
@@ -2675,8 +2673,8 @@
     },
     {
       "id": "shared_admin_marketing_image_source_note",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminMarketingImageSourceNote",
       "css": [
@@ -2694,8 +2692,8 @@
     },
     {
       "id": "shared_admin_marketing_image_thumb",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/media.tsx",
       "exportName": "AdminMarketingImageThumb",
       "css": [
@@ -2713,8 +2711,8 @@
     },
     {
       "id": "shared_admin_marketing_library_card",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
       "exportName": "AdminMarketingLibraryCard",
       "css": [
@@ -2733,8 +2731,8 @@
     },
     {
       "id": "shared_admin_marketing_media_card",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
       "exportName": "AdminMarketingMediaCard",
       "css": [
@@ -2753,8 +2751,8 @@
     },
     {
       "id": "shared_admin_marketing_media_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
       "exportName": "AdminMarketingMediaGrid",
       "css": [
@@ -2772,8 +2770,8 @@
     },
     {
       "id": "shared_admin_marketing_new_post_card",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
       "exportName": "AdminMarketingNewPostCard",
       "css": [
@@ -2793,8 +2791,8 @@
     },
     {
       "id": "shared_admin_marketing_new_post_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
       "exportName": "AdminMarketingNewPostGrid",
       "css": [
@@ -2812,8 +2810,8 @@
     },
     {
       "id": "shared_admin_marketing_ops_shell",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
       "exportName": "AdminMarketingOpsShell",
       "css": [
@@ -2852,8 +2850,8 @@
     },
     {
       "id": "shared_admin_marketing_picker_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
       "exportName": "AdminMarketingPickerList",
       "css": [
@@ -2871,8 +2869,8 @@
     },
     {
       "id": "shared_admin_marketing_picker_row",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
       "exportName": "AdminMarketingPickerRow",
       "css": [
@@ -2891,8 +2889,8 @@
     },
     {
       "id": "shared_admin_marketing_post_board",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
       "exportName": "AdminMarketingPostBoard",
       "css": [
@@ -2910,8 +2908,8 @@
     },
     {
       "id": "shared_admin_marketing_post_type_badge",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
       "exportName": "AdminMarketingPostTypeBadge",
       "css": [
@@ -2931,8 +2929,8 @@
     },
     {
       "id": "shared_admin_marketing_preview_actions",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingPreviewActions",
       "css": [
@@ -2950,8 +2948,8 @@
     },
     {
       "id": "shared_admin_marketing_preview_brand_note",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingPreviewBrandNote",
       "css": [
@@ -2969,8 +2967,8 @@
     },
     {
       "id": "shared_admin_marketing_preview_copy",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingPreviewCopy",
       "css": [
@@ -2989,8 +2987,8 @@
     },
     {
       "id": "shared_admin_marketing_preview_image",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingPreviewImage",
       "css": [
@@ -3008,8 +3006,8 @@
     },
     {
       "id": "shared_admin_marketing_preview_meta",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingPreviewMeta",
       "css": [
@@ -3027,8 +3025,8 @@
     },
     {
       "id": "shared_admin_marketing_preview_shell",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingPreviewShell",
       "css": [
@@ -3046,8 +3044,8 @@
     },
     {
       "id": "shared_admin_marketing_preview_slide",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingPreviewSlide",
       "css": [
@@ -3066,8 +3064,8 @@
     },
     {
       "id": "shared_admin_marketing_preview_toolbar",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingPreviewToolbar",
       "css": [
@@ -3085,8 +3083,8 @@
     },
     {
       "id": "shared_admin_marketing_recommendation_item",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingRecommendationItem",
       "css": [
@@ -3104,8 +3102,8 @@
     },
     {
       "id": "shared_admin_marketing_recommendation_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingRecommendationList",
       "css": [
@@ -3163,8 +3161,8 @@
     },
     {
       "id": "shared_admin_marketing_select_field",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
       "exportName": "AdminMarketingSelectField",
       "css": [
@@ -3182,8 +3180,8 @@
     },
     {
       "id": "shared_admin_marketing_slide_editor",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingSlideEditor",
       "css": [
@@ -3201,8 +3199,8 @@
     },
     {
       "id": "shared_admin_marketing_slide_editor_topline",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingSlideEditorTopline",
       "css": [
@@ -3220,8 +3218,8 @@
     },
     {
       "id": "shared_admin_marketing_slide_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminMarketingSlideList",
       "css": [
@@ -3240,8 +3238,8 @@
     },
     {
       "id": "shared_admin_marketing_stacked_sections",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
       "exportName": "AdminMarketingStackedSections",
       "css": [
@@ -3259,8 +3257,8 @@
     },
     {
       "id": "shared_admin_marketing_step_chip",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
       "exportName": "AdminMarketingStepChip",
       "css": [
@@ -3280,8 +3278,8 @@
     },
     {
       "id": "shared_admin_marketing_step_layout",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
       "exportName": "AdminMarketingStepLayout",
       "css": [
@@ -3299,8 +3297,8 @@
     },
     {
       "id": "shared_admin_marketing_step_strip",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-composer.tsx",
       "exportName": "AdminMarketingStepStrip",
       "css": [
@@ -3318,8 +3316,8 @@
     },
     {
       "id": "shared_admin_marketing_studio_actions",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
       "exportName": "AdminMarketingStudioActions",
       "css": [
@@ -3337,8 +3335,8 @@
     },
     {
       "id": "shared_admin_marketing_studio_filter_tabs",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
       "exportName": "AdminMarketingStudioFilterTabs",
       "css": [
@@ -3377,8 +3375,8 @@
     },
     {
       "id": "shared_admin_marketing_studio_nav",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
       "exportName": "AdminMarketingStudioNav",
       "css": [
@@ -3396,8 +3394,8 @@
     },
     {
       "id": "shared_admin_marketing_studio_stack",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
       "exportName": "AdminMarketingStudioStack",
       "css": [
@@ -3415,8 +3413,8 @@
     },
     {
       "id": "shared_admin_marketing_studio_summary",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
       "exportName": "AdminMarketingStudioSummary",
       "css": [
@@ -3434,8 +3432,8 @@
     },
     {
       "id": "shared_admin_marketing_studio_summary_item",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
       "exportName": "AdminMarketingStudioSummaryItem",
       "css": [
@@ -3453,8 +3451,8 @@
     },
     {
       "id": "shared_admin_marketing_tabs",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
       "exportName": "AdminMarketingTabs",
       "css": [
@@ -3574,8 +3572,8 @@
     },
     {
       "id": "shared_admin_nav_button",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/actions.tsx",
       "exportName": "AdminNavButton",
       "css": [
@@ -3594,8 +3592,8 @@
     },
     {
       "id": "shared_admin_nav_group",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminNavGroup",
       "css": [
@@ -3614,8 +3612,8 @@
     },
     {
       "id": "shared_admin_nav_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminNavList",
       "css": [
@@ -3634,8 +3632,8 @@
     },
     {
       "id": "shared_admin_organizer_curation_control_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminOrganizerCurationControlGrid",
       "css": [
@@ -3653,8 +3651,8 @@
     },
     {
       "id": "shared_admin_organizer_curation_control_section",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminOrganizerCurationControlSection",
       "css": [
@@ -3672,8 +3670,8 @@
     },
     {
       "id": "shared_admin_organizer_intake_badges",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminOrganizerIntakeBadges",
       "css": [
@@ -3691,8 +3689,8 @@
     },
     {
       "id": "shared_admin_organizer_intake_card",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminOrganizerIntakeCard",
       "css": [
@@ -3711,8 +3709,8 @@
     },
     {
       "id": "shared_admin_organizer_intake_card_header",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminOrganizerIntakeCardHeader",
       "css": [
@@ -3730,8 +3728,8 @@
     },
     {
       "id": "shared_admin_organizer_intake_checkbox_field",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
       "exportName": "AdminOrganizerIntakeCheckboxField",
       "css": [
@@ -3750,8 +3748,8 @@
     },
     {
       "id": "shared_admin_organizer_intake_curation_panel",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminOrganizerIntakeCurationPanel",
       "css": [
@@ -3769,8 +3767,8 @@
     },
     {
       "id": "shared_admin_organizer_intake_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminOrganizerIntakeList",
       "css": [
@@ -3788,8 +3786,8 @@
     },
     {
       "id": "shared_admin_organizer_intake_surface_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminOrganizerIntakeSurfaceGrid",
       "css": [
@@ -3807,8 +3805,8 @@
     },
     {
       "id": "shared_admin_organizer_location_resolution_form",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminOrganizerLocationResolutionForm",
       "css": [
@@ -3826,8 +3824,8 @@
     },
     {
       "id": "shared_admin_organizer_policy_gap_columns",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminOrganizerPolicyGapColumns",
       "css": [
@@ -3845,8 +3843,8 @@
     },
     {
       "id": "shared_admin_organizer_surface_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminOrganizerSurfaceList",
       "css": [
@@ -3864,8 +3862,8 @@
     },
     {
       "id": "shared_admin_organizer_surface_row",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminOrganizerSurfaceRow",
       "css": [
@@ -3943,8 +3941,8 @@
     },
     {
       "id": "shared_admin_overview_main_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/overview",
       "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
       "exportName": "AdminOverviewMainGrid",
       "css": [
@@ -4021,8 +4019,8 @@
     },
     {
       "id": "shared_admin_overview_queue_decision_button",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/overview",
       "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
       "exportName": "AdminOverviewQueueDecisionButton",
       "css": [
@@ -4079,8 +4077,8 @@
     },
     {
       "id": "shared_admin_overview_queue_items",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/overview",
       "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
       "exportName": "AdminOverviewQueueItems",
       "css": [
@@ -4117,8 +4115,8 @@
     },
     {
       "id": "shared_admin_overview_queue_row",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/overview",
       "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
       "exportName": "AdminOverviewQueueRow",
       "css": [
@@ -4138,8 +4136,8 @@
     },
     {
       "id": "shared_admin_overview_queue_row_actions",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/overview",
       "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
       "exportName": "AdminOverviewQueueRowActions",
       "css": [
@@ -4176,8 +4174,8 @@
     },
     {
       "id": "shared_admin_panel",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
       "exportName": "AdminPanel",
       "css": [
@@ -4254,8 +4252,8 @@
     },
     {
       "id": "shared_admin_query_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminQueryList",
       "css": [
@@ -4273,8 +4271,8 @@
     },
     {
       "id": "shared_admin_query_row",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "AdminQueryRow",
       "css": [
@@ -4350,8 +4348,8 @@
     },
     {
       "id": "shared_admin_search_candidate_actions",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminSearchCandidateActions",
       "css": [
@@ -4369,8 +4367,8 @@
     },
     {
       "id": "shared_admin_search_candidate_card",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminSearchCandidateCard",
       "css": [
@@ -4408,8 +4406,8 @@
     },
     {
       "id": "shared_admin_search_candidate_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminSearchCandidateList",
       "css": [
@@ -4447,8 +4445,8 @@
     },
     {
       "id": "shared_admin_search_candidate_snippet",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/intake",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminSearchCandidateSnippet",
       "css": [
@@ -4466,8 +4464,8 @@
     },
     {
       "id": "shared_admin_sidebar",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminSidebar",
       "css": [
@@ -4487,8 +4485,8 @@
     },
     {
       "id": "shared_admin_sidebar_toggle",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminSidebarToggle",
       "css": [
@@ -4507,8 +4505,8 @@
     },
     {
       "id": "shared_admin_sign_in_actions",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminSignInActions",
       "css": [
@@ -4527,8 +4525,8 @@
     },
     {
       "id": "shared_admin_sign_in_meta",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminSignInMeta",
       "css": [
@@ -4586,8 +4584,8 @@
     },
     {
       "id": "shared_admin_state_row",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
       "exportName": "AdminStateRow",
       "css": [
@@ -4606,8 +4604,8 @@
     },
     {
       "id": "shared_admin_stat_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
       "exportName": "AdminStatGrid",
       "css": [
@@ -4745,8 +4743,8 @@
     },
     {
       "id": "shared_admin_textarea_field",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
       "exportName": "AdminTextareaField",
       "css": [
@@ -4765,8 +4763,8 @@
     },
     {
       "id": "shared_admin_text_field",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
       "exportName": "AdminTextField",
       "css": [
@@ -4805,8 +4803,8 @@
     },
     {
       "id": "shared_admin_topbar",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminTopbar",
       "css": [
@@ -4825,8 +4823,8 @@
     },
     {
       "id": "shared_admin_topbar_actions",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminTopbarActions",
       "css": [
@@ -4924,8 +4922,8 @@
     },
     {
       "id": "shared_admin_workspace",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "app",
       "source": "admin/src/shared/ui/AdminPrimitives/shell.tsx",
       "exportName": "AdminWorkspace",
       "css": [
@@ -4965,8 +4963,8 @@
     },
     {
       "id": "shared_card_header",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
       "exportName": "CardHeader",
       "css": [
@@ -5030,8 +5028,8 @@
     },
     {
       "id": "shared_decision_footer",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
       "exportName": "DecisionFooter",
       "css": [
@@ -5071,8 +5069,7 @@
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "exportName": "EmptyState",
-      "lexicon": true,
-      "lexiconId": "catch.empty_state"
+      "componentId": "catch.empty_state"
     },
     {
       "id": "shared_file_picker_button",
@@ -5236,8 +5233,7 @@
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "exportName": "SearchField",
-      "lexicon": true,
-      "lexiconId": "catch.search_field"
+      "componentId": "catch.search_field"
     },
     {
       "id": "shared_segmented_control",
@@ -5258,13 +5254,12 @@
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "exportName": "SegmentedControl",
-      "lexicon": true,
-      "lexiconId": "catch.chip.field"
+      "componentId": "catch.chip.field"
     },
     {
       "id": "shared_selectable_card_button",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
       "exportName": "SelectableCardButton",
       "css": [
@@ -5364,8 +5359,7 @@
       },
       "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "exportName": "StatusChip",
-      "lexicon": true,
-      "lexiconId": "catch.badge"
+      "componentId": "catch.badge"
     },
     {
       "id": "shared_table_action_button",
@@ -5388,8 +5382,8 @@
     },
     {
       "id": "shared_tag_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
+      "kind": "feature-component",
+      "owner": "features/marketing",
       "source": "admin/src/shared/ui/AdminPrimitives/marketing-editor.tsx",
       "exportName": "TagList",
       "css": [
@@ -5448,12 +5442,11 @@
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "exportName": "TextField",
-      "lexicon": true,
-      "lexiconId": "catch.field",
       "interactionContract": {
         "concept": "field_row",
         "mode": "input"
-      }
+      },
+      "componentId": "catch.field"
     },
     {
       "id": "workspace_event_intake",

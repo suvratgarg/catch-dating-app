@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/clubs/shared/club_host_identity_row.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -8,21 +8,21 @@ import 'fixtures.dart';
 
 @widgetbook.UseCase(
   name: 'Tag wrap states',
-  type: ClubTagWrap,
+  type: ClubTagList,
   path: '[Club Discovery]/Atoms',
 )
 Widget clubTagWrapStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubTagWrap',
+    title: 'ClubTagList',
     catalogId: 'atom.club.tag_wrap',
     children: [
       WidgetbookPageStateCard(
         label: 'brand tags',
-        child: ClubTagWrap(tags: visibleClubTags(widgetbookClubClub, limit: 4)),
+        child: ClubTagList(tags: visibleClubTags(widgetbookClubClub, limit: 4)),
       ),
       const WidgetbookPageStateCard(
         label: 'neutral mixed case',
-        child: ClubTagWrap(
+        child: ClubTagList(
           tags: ['coffee', 'first timers'],
           tone: CatchBadgeTone.neutral,
         ),
@@ -33,17 +33,17 @@ Widget clubTagWrapStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Host identity states',
-  type: ClubHostIdentityLine,
+  type: ClubHostIdentityRow,
   path: '[Club Discovery]/Atoms',
 )
 Widget clubHostIdentityLineStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ClubHostIdentityLine',
+    title: 'ClubHostIdentityRow',
     catalogId: 'atom.club.host_identity_line',
     children: [
       WidgetbookPageStateCard(
         label: 'with trailing',
-        child: ClubHostIdentityLine(
+        child: ClubHostIdentityRow(
           hostName: widgetbookClubClub.displayHostName,
           hostAvatarUrl: widgetbookClubClub.hostAvatarUrl,
           trailing: const CatchBadge(label: 'Owner'),
@@ -51,7 +51,7 @@ Widget clubHostIdentityLineStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'fallback avatar',
-        child: ClubHostIdentityLine(
+        child: ClubHostIdentityRow(
           hostName: widgetbookClubMinimalClub.displayHostName,
         ),
       ),

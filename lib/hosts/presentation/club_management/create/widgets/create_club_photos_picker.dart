@@ -255,7 +255,7 @@ class ClubProfileImageTile extends StatelessWidget {
       child: CatchSurface(
         tone: CatchSurfaceTone.raised,
         radius: CatchRadius.md,
-        borderColor: t.line2,
+        borderRole: CatchBorderRole.boundary,
         clipBehavior: Clip.antiAlias,
         child: content,
       ),

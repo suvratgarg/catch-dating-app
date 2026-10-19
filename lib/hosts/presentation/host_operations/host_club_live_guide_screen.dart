@@ -7,7 +7,7 @@ class HostClubLiveGuideScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HostClubSpokeResolver._(
+    return HostClubSpokeAsyncBoundary._(
       clubId: clubId,
       title: context.l10n.hostsHostClubEditTabLabelLiveEventGuide,
       builder: (context, club, _, isOwner) {
@@ -38,7 +38,7 @@ class HostClubLiveGuideScreen extends StatelessWidget {
             return CatchSectionList(
               emptyStateOmitted: true,
               children: [
-                EventSuccessDefaultsPanel(
+                EventSuccessDefaultsSection(
                   defaults: defaults.eventSuccessForActivity(currentActivity),
                   activityKind: currentActivity,
                   onChanged: (update) => apply((current) {

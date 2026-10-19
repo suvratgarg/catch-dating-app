@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/shared/review_keys.dart';
-import 'package:catch_dating_app/reviews/shared/star_rating.dart';
+import 'package:catch_dating_app/reviews/shared/star_rating_row.dart';
 import 'package:catch_dating_app/reviews/shared/write_review_controller.dart';
 import 'package:catch_dating_app/reviews/shared/write_review_sheet.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -225,7 +225,10 @@ class ReviewsPreviewSection extends StatelessWidget {
                 ),
               ),
               if (avgRating != null) ...[
-                StarRating(rating: avgRating.round(), size: CatchIcon.rating),
+                StarRatingRow(
+                  rating: avgRating.round(),
+                  size: CatchIcon.rating,
+                ),
                 gapW4,
                 Text(
                   context.l10n.reviewsReviewsSectionTextTostringasfixedLength(
@@ -326,7 +329,7 @@ class ReviewCard extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       padding: CatchInsets.tileContentCompact,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -345,7 +348,10 @@ class ReviewCard extends StatelessWidget {
                           : review.reviewerName,
                       style: CatchTextStyles.labelL(context),
                     ),
-                    StarRating(rating: review.rating, size: CatchIcon.rating),
+                    StarRatingRow(
+                      rating: review.rating,
+                      size: CatchIcon.rating,
+                    ),
                   ],
                 ),
               ),
@@ -390,7 +396,7 @@ class ReviewCard extends StatelessWidget {
           ],
           if (review.ownerResponse case final response?) ...[
             gapH12,
-            ReviewOwnerResponseBlock(response: response),
+            ReviewOwnerResponseCard(response: response),
           ],
         ],
       ),
@@ -398,8 +404,8 @@ class ReviewCard extends StatelessWidget {
   }
 }
 
-class ReviewOwnerResponseBlock extends StatelessWidget {
-  const ReviewOwnerResponseBlock({super.key, required this.response});
+class ReviewOwnerResponseCard extends StatelessWidget {
+  const ReviewOwnerResponseCard({super.key, required this.response});
 
   final ReviewOwnerResponse response;
 
@@ -414,7 +420,11 @@ class ReviewOwnerResponseBlock extends StatelessWidget {
       backgroundColor: t.accent.withValues(
         alpha: CatchOpacity.activityIconFill,
       ),
-      borderColor: t.accent.withValues(alpha: CatchOpacity.activityIconBorder),
+      borderSpec: CatchBorder.resolve(
+        t,
+        CatchBorderRole.boundary,
+        color: t.accent.withValues(alpha: CatchOpacity.activityIconBorder),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

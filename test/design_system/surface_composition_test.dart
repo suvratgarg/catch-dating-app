@@ -93,7 +93,7 @@ void main() {
   ) async {
     await mount(
       tester,
-      HostClubEditTab(
+      HostClubEditBody(
         club: buildClub(
           id: 'private',
           ownerUserId: 'owner',

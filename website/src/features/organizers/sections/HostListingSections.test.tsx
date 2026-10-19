@@ -10,7 +10,7 @@ import {HostListingSections} from "./HostListingSections";
 import {PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {ListingFactsSection} from "./ListingFactsSection";
 
-vi.mock("../../../firebaseConfig", () => ({publicReviewsFirebaseConfigured: false}));
+vi.mock("../../../firebaseConfig", () => ({publicReviewsFirebaseConfigured: false, claimFirebaseConfigured: false}));
 vi.mock("../../../analytics", () => ({trackMarketingEvent: vi.fn()}));
 vi.mock("../analytics", () => ({trackOrganizerAnalytics: vi.fn(), observeOrganizerPageView: vi.fn(() => () => undefined)}));
 vi.mock("../observeOrganizerProviders", () => ({observeOrganizerProviders: vi.fn(() => () => undefined)}));
@@ -53,7 +53,7 @@ describe("organizer presence sections", () => {
     const localNav = screen.getByRole("navigation", {name: "On this page"});
     const globalNav = screen.getByRole("navigation", {name: "Primary"});
     expect(within(globalNav).getAllByRole("link").map((link) => link.textContent))
-      .toEqual(["Product", "Solutions", "Explore", "Resources"]);
+      .toEqual(["Find events", "Organisers", "Catch Host", "Pricing and access"]);
     for (const label of ["Events", "About", "Reviews"]) {
       expect(within(localNav).getByRole("link", {name: label})).toBeTruthy();
       expect(within(globalNav).queryByRole("link", {name: label})).toBeNull();

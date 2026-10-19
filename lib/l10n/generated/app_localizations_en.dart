@@ -21505,6 +21505,24 @@ class AppLocalizationsEn extends AppLocalizations {
       'Nothing needs your attention right now.';
 
   @override
+  String get programsGuestDeskAccessTitle => 'Guest desk access required';
+
+  @override
+  String get programsGuestDeskAccessMessage =>
+      'Ask the organizer to assign you guest relations or program coordinator duty for this program.';
+
+  @override
+  String get programsGuestNotInvited => 'Not invited';
+
+  @override
+  String programsGuestFunctionStatus({
+    required String functionName,
+    required String status,
+  }) {
+    return '$functionName: $status';
+  }
+
+  @override
   String get programsWorkShellEmptyTitle => 'No duties assigned';
 
   @override

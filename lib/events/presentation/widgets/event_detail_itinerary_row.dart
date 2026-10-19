@@ -1,4 +1,4 @@
-part of 'event_detail_design_primitives.dart';
+part of 'event_detail_fact_list.dart';
 
 class ItineraryStep {
   const ItineraryStep({required this.time, required this.title, this.detail});

@@ -142,7 +142,11 @@ class CatchEmptyState extends StatelessWidget {
       return Padding(padding: padding, child: content);
     }
 
-    return CatchSurface(padding: padding, borderColor: t.line, child: content);
+    return CatchSurface(
+      padding: padding,
+      borderRole: CatchBorderRole.separator,
+      child: content,
+    );
   }
 }
 

@@ -7,7 +7,7 @@ import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
 import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
-import 'package:catch_dating_app/reviews/shared/star_rating.dart';
+import 'package:catch_dating_app/reviews/shared/star_rating_row.dart';
 import 'package:catch_dating_app/reviews/shared/write_review_sheet.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -223,17 +223,17 @@ Widget reviewsHistorySkeletonStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'History row skeleton states',
-  type: ReviewHistoryItemSkeleton,
+  type: ReviewHistoryRowSkeleton,
   path: '[P3 utility surfaces]/Reviews history',
 )
 Widget reviewHistoryItemSkeletonStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'ReviewHistoryItemSkeleton',
+    title: 'ReviewHistoryRowSkeleton',
     contractId: 'screen.reviews.history.row_skeleton',
     children: [
       WidgetbookPageStateCard(
         label: 'loading row',
-        child: ReviewHistoryItemSkeleton(),
+        child: ReviewHistoryRowSkeleton(),
       ),
     ],
   );
@@ -241,19 +241,19 @@ Widget reviewHistoryItemSkeletonStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'History row states',
-  type: ReviewHistoryItem,
+  type: ReviewHistoryRow,
   path: '[P3 utility surfaces]/Reviews history',
 )
 Widget reviewHistoryItemStates(BuildContext context) {
   final editableReview = _reviews.first;
   final responseReview = _reviewWithOwnerResponse();
   return WidgetbookPageCatalogFrame(
-    title: 'ReviewHistoryItem',
+    title: 'ReviewHistoryRow',
     contractId: 'screen.reviews.history.row',
     children: [
       WidgetbookPageStateCard(
         label: 'editable own review',
-        child: ReviewHistoryItem(
+        child: ReviewHistoryRow(
           row: ReviewsHistoryRow(
             review: editableReview,
             contextLabel: 'Sunday Sea Face Crew · Jun 22',
@@ -264,7 +264,7 @@ Widget reviewHistoryItemStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'host response',
-        child: ReviewHistoryItem(
+        child: ReviewHistoryRow(
           row: ReviewsHistoryRow(
             review: responseReview,
             contextLabel: 'Bandra afterglow run · missing event context',
@@ -346,17 +346,17 @@ Widget reviewsPreviewSectionStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Host response block',
-  type: ReviewOwnerResponseBlock,
+  type: ReviewOwnerResponseCard,
   path: '[P3 utility surfaces]/Reviews history',
 )
 Widget reviewOwnerResponseBlockState(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'ReviewOwnerResponseBlock',
+    title: 'ReviewOwnerResponseCard',
     contractId: 'component.reviews.host_response',
     children: [
       WidgetbookPageStateCard(
         label: 'host response',
-        child: ReviewOwnerResponseBlock(
+        child: ReviewOwnerResponseCard(
           response: _reviewWithOwnerResponse().ownerResponse!,
         ),
       ),
@@ -397,22 +397,22 @@ Widget reviewResponseSheetStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Rating states',
-  type: StarRating,
+  type: StarRatingRow,
   path: '[P3 utility surfaces]/Reviews history',
 )
 Widget starRatingStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'StarRating',
+    title: 'StarRatingRow',
     contractId: 'component.reviews.star_rating',
     children: const [
-      WidgetbookPageStateCard(label: 'empty', child: StarRating(rating: 0)),
+      WidgetbookPageStateCard(label: 'empty', child: StarRatingRow(rating: 0)),
       WidgetbookPageStateCard(
         label: 'three stars',
-        child: StarRating(rating: 3),
+        child: StarRatingRow(rating: 3),
       ),
       WidgetbookPageStateCard(
         label: 'five stars',
-        child: StarRating(rating: 5),
+        child: StarRatingRow(rating: 5),
       ),
     ],
   );

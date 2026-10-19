@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_site_visual_references
-version: 0.2.0
-updated: 2026-05-25
+version: 0.2.1
+updated: 2026-10-18
 owner: marketing_website
 status: active
 ---
@@ -19,8 +19,8 @@ allowed it.
 |---|---|---|---|
 | `current-catch-home.png` | `http://127.0.0.1:8125/` | Captured | Current local Catch homepage evidence. |
 | `current-catch-host.png` | `http://127.0.0.1:8125/host/` | Captured | Current local Catch host page evidence. |
-| `catch-preview.png` | `website/research-preview/index.html` | Rejected | Discarded isolated preview; too run-specific and visually weak. |
-| `catch-preview-mobile.png` | `website/research-preview/index.html` | Rejected | Discarded isolated preview at a narrow mobile viewport. |
+| `catch-preview.png` | Historical `website/research-preview/index.html` (source deleted 2026-10-18) | Rejected | Discarded isolated preview; too run-specific and visually weak. |
+| `catch-preview-mobile.png` | Historical `website/research-preview/index.html` (source deleted 2026-10-18) | Rejected | Discarded isolated preview at a narrow mobile viewport. |
 | `catch-production-concept-desktop.png` | Generated concept | Captured | Approved production visual direction for the live rewrite. |
 | `catch-production-concept-mobile.png` | Generated concept | Captured | Mobile reference; useful for tone, but final copy avoids run-only framing. |
 | `catch-production-home-desktop.png` | `http://127.0.0.1:8125/` | Captured | Final homepage QA screenshot at 1440 x 1600. |

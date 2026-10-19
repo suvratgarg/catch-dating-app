@@ -5,9 +5,11 @@ import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
-import 'package:catch_dating_app/events/presentation/widgets/map_overlay_controls.dart';
+import 'package:catch_dating_app/events/presentation/widgets/map_overlay_top_bar.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/domain/place.dart';
+import 'package:catch_dating_app/locations/shared/location_map.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -37,14 +39,113 @@ Widget locationPickerScreenStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Place search states',
+  type: PlaceSearchSection,
+  path: '[Events]/Map',
+)
+Widget placeSearchSectionStates(BuildContext context) {
+  const suggestions = [
+    PlaceAutocompleteSuggestion(
+      placeId: 'cubbon-park',
+      description: 'Cubbon Park, Bengaluru',
+      mainText: 'Cubbon Park',
+      secondaryText: 'Bengaluru, Karnataka',
+    ),
+    PlaceAutocompleteSuggestion(
+      placeId: 'lalbagh',
+      description: 'Lalbagh Botanical Garden, Bengaluru',
+      mainText: 'Lalbagh Botanical Garden',
+      secondaryText: 'Bengaluru, Karnataka',
+    ),
+  ];
+  return WidgetbookPageCatalogFrame(
+    title: 'PlaceSearchSection',
+    contractId: 'screen.events.location_picker.search',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'suggestions',
+        child: PlaceSearchSection(
+          controller: TextEditingController(text: 'Park'),
+          suggestions: suggestions,
+          stateText: null,
+          errorText: null,
+          onChanged: (_) {},
+          onSuggestionSelected: (_) {},
+        ),
+      ),
+      WidgetbookPageStateCard(
+        label: 'searching',
+        child: PlaceSearchSection(
+          controller: TextEditingController(text: 'Cubbon'),
+          suggestions: const [],
+          stateText: 'Searching places',
+          errorText: null,
+          onChanged: (_) {},
+          onSuggestionSelected: (_) {},
+        ),
+      ),
+      WidgetbookPageStateCard(
+        label: 'search error',
+        child: PlaceSearchSection(
+          controller: TextEditingController(text: 'Cubbon'),
+          suggestions: const [],
+          stateText: null,
+          errorText: 'Place search is unavailable right now.',
+          onChanged: (_) {},
+          onSuggestionSelected: (_) {},
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Selected point states',
+  type: SelectedPointSection,
+  path: '[Events]/Map',
+)
+Widget selectedPointSectionStates(BuildContext context) {
+  return WidgetbookPageCatalogFrame(
+    title: 'SelectedPointSection',
+    contractId: 'screen.events.location_picker.selection',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'named place',
+        child: SelectedPointSection(
+          hasSelection: true,
+          selectedLabel: 'Cubbon Park, Bengaluru',
+          onConfirm: () {},
+        ),
+      ),
+      WidgetbookPageStateCard(
+        label: 'dropped pin',
+        child: SelectedPointSection(
+          hasSelection: true,
+          selectedLabel: null,
+          onConfirm: () {},
+        ),
+      ),
+      const WidgetbookPageStateCard(
+        label: 'nothing selected',
+        child: SelectedPointSection(
+          hasSelection: false,
+          selectedLabel: null,
+          onConfirm: null,
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Map view states',
-  type: EventMapView,
+  type: EventMap,
   path: '[Events]/Map',
 )
 Widget eventMapViewStates(BuildContext context) {
   final items = _eventMapItems();
   return WidgetbookScrollCatalogFrame(
-    title: 'EventMapView',
+    title: 'EventMap',
     catalogId: 'screen.events.map',
     children: [
       WidgetbookPageStateCard(
@@ -55,9 +156,7 @@ Widget eventMapViewStates(BuildContext context) {
             overrides: [
               deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
             ],
-            child: const EventMapView(
-              viewModel: AsyncLoading<EventMapViewModel>(),
-            ),
+            child: const EventMap(viewModel: AsyncLoading<EventMapViewModel>()),
           ),
         ),
       ),
@@ -69,7 +168,7 @@ Widget eventMapViewStates(BuildContext context) {
             overrides: [
               deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
             ],
-            child: EventMapView(
+            child: EventMap(
               enableNetworkTiles: false,
               viewModel: AsyncData(
                 EventMapViewModel(
@@ -91,7 +190,7 @@ Widget eventMapViewStates(BuildContext context) {
             overrides: [
               deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
             ],
-            child: const EventMapView(
+            child: const EventMap(
               viewModel: AsyncData(
                 EventMapViewModel(events: <Event>[], pinnedEvents: <Event>[]),
               ),
@@ -161,13 +260,13 @@ Widget eventPinsMapState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Pins placeholder',
-  type: EventPinsMapPlaceholder,
+  type: EventPinsFallbackMap,
   path: '[Events]/Map',
 )
 Widget eventPinsMapPlaceholderState(BuildContext context) {
   return SizedBox(
     height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
-    child: EventPinsMapPlaceholder(
+    child: EventPinsFallbackMap(
       items: _eventMapItems(),
       selectedEventId: widgetbookEvent.id,
       userLocation: _mapCenter,
@@ -179,7 +278,7 @@ Widget eventPinsMapPlaceholderState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Overlay controls',
-  type: MapOverlayControls,
+  type: MapOverlayTopBar,
   path: '[Events]/Map',
 )
 Widget mapOverlayControlsState(BuildContext context) {
@@ -194,7 +293,7 @@ Widget mapOverlayControlsState(BuildContext context) {
             ),
           ),
         ),
-        MapOverlayControls(
+        MapOverlayTopBar(
           trailing: Icon(CatchIcons.locationOnOutlined),
           below: const Text('Carter Road Jetty'),
           onBack: widgetbookNoop,
@@ -237,5 +336,17 @@ Event _eventAtMapCoordinate(Event event, int index) {
     ),
     startingPointLat: latitude,
     startingPointLng: longitude,
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Interactive map',
+  type: LocationMap,
+  path: '[Events]/Map',
+)
+Widget locationMapState(BuildContext context) {
+  return SizedBox(
+    height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
+    child: LocationMap(initialCenter: _mapCenter, initialZoom: 13),
   );
 }

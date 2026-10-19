@@ -2,9 +2,10 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import type {PropsWithChildren} from "react";
 import {cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
 import {afterEach, beforeEach, expect, it, vi} from "vitest";
-const api = vi.hoisted(() => ({begin: vi.fn(), register: vi.fn(), confirm: vi.fn(), clear: vi.fn(), watch: vi.fn()}));
+const api = vi.hoisted(() => ({begin: vi.fn(), register: vi.fn(), confirm: vi.fn(), clear: vi.fn(), watch: vi.fn(), account: vi.fn()}));
 vi.mock("../../firebase", () => ({beginPublicEventPhoneVerification: api.begin,
-  registerPublicEvent: api.register, watchPublicFormAuthState: api.watch}));
+  registerPublicEvent: api.register, watchPublicFormAuthState: api.watch,
+  watchWebsiteAccountAuthState: api.watch, manageWebsiteAccount: api.account}));
 vi.mock("../eventMessaging/EventSmsPreferencePanel", () => ({
   EventSmsPreferencePanel: ({eventId, attendeeId}: {eventId: string; attendeeId: string}) =>
     <section aria-label="Event text preferences">{eventId}:{attendeeId}</section>,
@@ -30,18 +31,18 @@ beforeEach(() => {
   vi.clearAllMocks();
   api.begin.mockResolvedValue({confirm: api.confirm, clear: api.clear});
   api.confirm.mockResolvedValue({uid: "guest", phoneNumber: "+919999999999"});
-  api.watch.mockImplementation((next) => { next(null); return () => undefined; });
+  api.account.mockResolvedValue({uid: "guest", accountReady: true, displayName: "Fixture Guest", phoneNumber: "+919999999999", profileRevision: 1, dateOfBirth: null, eventAge: null});
+  api.watch.mockImplementation((next) => { next({uid: "guest", phoneNumber: "+919999999999"}); return () => undefined; });
 });
 async function register() {
   render(<PublicEventRegistration eventId="event-1" />, {wrapper});
   expect(screen.queryByRole("region", {name: "Event text preferences"})).toBeNull();
   expect(screen.queryByRole("region", {name: "Event RCS preferences"})).toBeNull();
   expect(screen.queryByRole("region", {name: "Event WhatsApp preferences"})).toBeNull();
-  fireEvent.change(screen.getByLabelText(copy.nameLabel), {target: {value: "Fixture Guest"}});
-  fireEvent.change(screen.getByLabelText(copy.phoneLabel), {target: {value: "+919999999999"}});
-  fireEvent.click(screen.getByRole("button", {name: copy.sendCodeAction}));
-  fireEvent.change(await screen.findByLabelText(copy.codeLabel), {target: {value: "123456"}});
-  fireEvent.click(screen.getByRole("button", {name: copy.confirmAction}));
+  const name = await screen.findByLabelText(copy.nameLabel) as HTMLInputElement;
+  expect(name.value).toBe("Fixture Guest");
+  expect((screen.getByLabelText(copy.phoneLabel) as HTMLInputElement).value).toBe("+919999999999");
+  fireEvent.click(screen.getByRole("button", {name: copy.registerAction}));
   await waitFor(() => expect(api.register).toHaveBeenCalledOnce());
 }
 it.each(["registered", "alreadyRegistered"])("offers separate event texts after %s", async (status) => {
@@ -63,4 +64,19 @@ it("does not offer event-service texts for a waitlist place", async () => {
   expect(screen.queryByRole("region", {name: "Event text preferences"})).toBeNull();
   expect(screen.queryByRole("region", {name: "Event RCS preferences"})).toBeNull();
   expect(screen.queryByRole("region", {name: "Event WhatsApp preferences"})).toBeNull();
+});
+
+it("offers minimal inline onboarding without social fields", async () => {
+  api.account.mockResolvedValue({uid: "guest", accountReady: false, displayName: "", phoneNumber: "+919999999999", profileRevision: 0, dateOfBirth: null, eventAge: null});
+  render(<PublicEventRegistration eventId="event-1" />, {wrapper});
+  expect(await screen.findByLabelText("Date of birth (optional)")).toBeTruthy();
+  expect(screen.getByLabelText("Name")).toBeTruthy();
+  expect(screen.queryByLabelText(/photo|gender|interested/iu)).toBeNull();
+  expect(api.register).not.toHaveBeenCalled();
+});
+it("requires birth date when the current event has an age restriction", async () => {
+  api.account.mockResolvedValue({uid: "guest", accountReady: true, displayName: "Fixture Guest", phoneNumber: "+919999999999", profileRevision: 1, dateOfBirth: null, eventAge: {minimum: 18, maximum: 99, needsDateOfBirth: true, eligible: false}});
+  render(<PublicEventRegistration eventId="event-1" />, {wrapper});
+  expect(await screen.findByLabelText("Date of birth — required for this event")).toBeTruthy();
+  expect(api.register).not.toHaveBeenCalled();
 });

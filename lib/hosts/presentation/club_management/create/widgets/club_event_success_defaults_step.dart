@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
-    show EventSuccessDefaultsPanel;
+    show EventSuccessDefaultsSection;
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +23,7 @@ class ClubEventSuccessDefaultsStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final panel = EventSuccessDefaultsPanel(
+    final panel = EventSuccessDefaultsSection(
       defaults: defaults.eventSuccessForActivity(defaults.primaryActivityKind),
       activityKind: defaults.primaryActivityKind,
       onChanged: (update) {

@@ -2,9 +2,9 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/organizer_detail.feature.json",
-  "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:6f68464b6ad22655b5ff4bc62ef5eae2affe4a911818092f61f7a853bbdbe92a",
-  "resolvedDigest": "sha256:e49f82c50d3dc77d72e55b16c68390fba49f0f1bf643d272d1c61829ce2064a4",
+  "generatedFor": "2026-10-19",
+  "sourceDigest": "sha256:e42501ed06eb96a948f14485afe80fe62ebc705926d0507e7e8477f3dc36df36",
+  "resolvedDigest": "sha256:629fd2eb53ef8ff311580d067f5cc54acb97ebff2116023bc4f4f55f383dba56",
   "feature": {
     "id": "feature.organizer_detail",
     "name": "Organizer Detail",
@@ -1171,10 +1171,10 @@
             "id": "catch.event_card",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchEventCard",
-              "file": "lib/core/widgets/catch_event_activity_cards.dart",
+              "symbol": "EventCard",
+              "file": "lib/core/widgets/event_card.dart",
               "constructors": [
-                "CatchEventCard.ticket"
+                "EventCard"
               ]
             }
           },
@@ -2450,10 +2450,10 @@
             "id": "catch.event_card",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchEventCard",
-              "file": "lib/core/widgets/catch_event_activity_cards.dart",
+              "symbol": "EventCard",
+              "file": "lib/core/widgets/event_card.dart",
               "constructors": [
-                "CatchEventCard.ticket"
+                "EventCard"
               ]
             }
           },
@@ -2513,7 +2513,7 @@
         "id": "organizer_listing_canonical"
       },
       "actionScope": {
-        "included": "Public organizer listing save, share, claim-request, and public-review mutations with indexing, runtime, event-supply, and claim capability states.",
+        "included": "Public organizer account-backed follow, share, claim-request, and public-review mutations with indexing, runtime, event-supply, and claim capability states.",
         "excluded": [
           "Anchor navigation, canonical/legacy path resolution, event and source links, recommended-organizer navigation, and metadata emission retain route, static-output, and section owners."
         ]
@@ -2657,22 +2657,22 @@
       },
       "actions": [
         {
-          "id": "save_listing",
+          "id": "follow_listing",
           "owner": "listing_controller",
-          "codeValue": "handleSaveListing",
-          "cardinality": "unbounded",
+          "codeValue": "handleFollowListing",
+          "cardinality": "singleton",
           "scopeKeys": [
-            "browserProfileId",
+            "uid",
             "listingId",
-            "savedStateVersion"
+            "desiredFollowing"
           ],
           "outcomes": [
             {
               "kind": "side_effect",
-              "id": "organizer.web_saved_state_persisted"
+              "id": "organizer.account_follow_persisted"
             }
           ],
-          "description": "Toggles the local saved-organizer state and records organizer-save analytics when saved.",
+          "description": "Completes a minimal account inline when needed, then follows or unfollows through the authenticated server operation. Prevents duplicate pending writes and preserves the prior follow state on failure.",
           "implementationStatus": "implemented"
         },
         {
@@ -2789,7 +2789,7 @@
               },
               "actions": {
                 "enabled": [
-                  "save_listing",
+                  "follow_listing",
                   "share_listing"
                 ],
                 "disabled": [],
@@ -2811,7 +2811,7 @@
               },
               "actions": {
                 "enabled": [
-                  "save_listing",
+                  "follow_listing",
                   "share_listing",
                   "submit_public_review"
                 ],
@@ -2857,7 +2857,7 @@
               },
               "actions": {
                 "enabled": [
-                  "save_listing",
+                  "follow_listing",
                   "share_listing"
                 ],
                 "disabled": [],
@@ -2906,7 +2906,7 @@
               },
               "actions": {
                 "enabled": [
-                  "save_listing",
+                  "follow_listing",
                   "share_listing"
                 ],
                 "disabled": [
@@ -2954,7 +2954,7 @@
               },
               "actions": {
                 "enabled": [
-                  "save_listing",
+                  "follow_listing",
                   "share_listing"
                 ],
                 "disabled": [],
@@ -3005,7 +3005,7 @@
               },
               "actions": {
                 "enabled": [
-                  "save_listing",
+                  "follow_listing",
                   "share_listing",
                   "request_claim"
                 ],
@@ -3027,7 +3027,7 @@
               },
               "actions": {
                 "enabled": [
-                  "save_listing",
+                  "follow_listing",
                   "share_listing",
                   "request_claim",
                   "submit_public_review"
@@ -3048,7 +3048,7 @@
               },
               "actions": {
                 "enabled": [
-                  "save_listing",
+                  "follow_listing",
                   "share_listing"
                 ],
                 "disabled": [

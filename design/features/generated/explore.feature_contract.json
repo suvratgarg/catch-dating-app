@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-09-14",
   "sourceDigest": "sha256:9486af42475eb47fdac3b04d8d3184a0fb7c5d18f54deb686130f90447573077",
-  "resolvedDigest": "sha256:5a2ab64075a2010378eb3e0511dce70bb91b335a43a1654a09b30adcf1cd7c56",
+  "resolvedDigest": "sha256:f44375da9abefbb100a31b44df85dceb5ad1278195146eaf8fd39fefb888a9f9",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -475,7 +475,7 @@
               "explore_feed_error"
             ],
             "previewIds": [
-              "ExploreFeedContentSliver/Feed states"
+              "ExploreFeedSliverBody/Feed states"
             ],
             "tests": [
               "test/explore/explore_widgets_test.dart"
@@ -590,7 +590,7 @@
             ],
             "previewIds": [
               "CatchEmptyState/Empty states",
-              "ExploreFeedContentSliver/Feed states",
+              "ExploreFeedSliverBody/Feed states",
               "ExploreScreen/Screen states"
             ],
             "tests": [
@@ -705,7 +705,7 @@
             ],
             "previewIds": [
               "ExploreScreen/Screen states",
-              "ExploreFeedContentSliver/Feed states",
+              "ExploreFeedSliverBody/Feed states",
               "ExploreEventTypeBrowseGrid/Activity states",
               "CatchButton/Map launcher states"
             ],
@@ -1083,7 +1083,7 @@
               "explore_unclaimed_host_projection"
             ],
             "previewIds": [
-              "ExploreFeedContentSliver/Feed states",
+              "ExploreFeedSliverBody/Feed states",
               "ExploreScreen/Screen states"
             ],
             "tests": [
@@ -1782,10 +1782,10 @@
             "id": "catch.cover_story",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchCoverStory",
-              "file": "lib/explore/presentation/widgets/catch_cover_story.dart",
+              "symbol": "FeaturedEventPoster",
+              "file": "lib/explore/presentation/widgets/featured_event_poster.dart",
               "constructors": [
-                "CatchCoverStory"
+                "FeaturedEventPoster"
               ]
             }
           },
@@ -1793,10 +1793,10 @@
             "id": "catch.event_card",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchEventCard",
-              "file": "lib/core/widgets/catch_event_activity_cards.dart",
+              "symbol": "EventCard",
+              "file": "lib/core/widgets/event_card.dart",
               "constructors": [
-                "CatchEventCard.ticket"
+                "EventCard"
               ]
             }
           },
@@ -1886,7 +1886,7 @@
           "CrossPathsProfilePreviewSheet/Cross Paths profile preview",
           "ExploreDiscoveryCoverHeader/Cover header states",
           "ExploreEventTypeBrowseGrid/Activity states",
-          "ExploreFeedContentSliver/Feed states",
+          "ExploreFeedSliverBody/Feed states",
           "ExploreFilterRail/Filter states",
           "ExploreMapScreen/Map route states",
           "ExploreScreen/Screen states"

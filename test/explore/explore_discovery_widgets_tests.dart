@@ -1,12 +1,10 @@
 part of 'explore_widgets_test.dart';
 
 void _registerExploreDiscoveryWidgetsTests() {
-  testWidgets('CatchOrganizerPoster uses title and arrow defaults', (
-    tester,
-  ) async {
+  testWidgets('CatchPoster uses title and arrow defaults', (tester) async {
     await pumpTestApp(
       tester,
-      CatchOrganizerPoster(
+      CatchPoster(
         media: const ColoredBox(color: Colors.black),
         kicker: 'CLUB TO KNOW',
         title: 'Neighbourhood Club',
@@ -21,7 +19,7 @@ void _registerExploreDiscoveryWidgetsTests() {
 
     await pumpTestApp(
       tester,
-      const CatchOrganizerPoster(
+      const CatchPoster(
         media: ColoredBox(color: Colors.black),
         kicker: 'CLUB TO KNOW',
         title: 'Neighbourhood Club',
@@ -212,7 +210,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     expect(find.text('This week'), findsNothing);
     expect(find.textContaining('COMING UP'), findsNothing);
     expect(find.textContaining('2 PLANS'), findsOneWidget);
-    expect(find.byType(CatchCoverStory), findsNothing);
+    expect(find.byType(FeaturedEventPoster), findsNothing);
     expect(find.text('Social run'), findsOneWidget);
     expect(
       find.textContaining('8 GOING · 4 SPOTS LEFT', findRichText: true),
@@ -621,7 +619,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     await tester.pump();
 
     expect(tester.getTopLeft(find.byType(ExploreDiscoveryCoverHeader)).dy, 0);
-    expect(tester.getTopLeft(find.byType(CatchCoverStory)).dy, 0);
+    expect(tester.getTopLeft(find.byType(FeaturedEventPoster)).dy, 0);
     expect(
       tester.getSize(find.byType(ExploreDiscoveryCoverHeader)).height,
       greaterThan(topInset),
@@ -708,7 +706,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     expect(find.byIcon(CatchIcons.search), findsOneWidget);
     expect(find.text('Mumbai'), findsOneWidget);
     expect(find.text('Find an event worth showing up for.'), findsNothing);
-    expect(find.byType(CatchCoverStory), findsNothing);
+    expect(find.byType(FeaturedEventPoster), findsNothing);
     final cityButton = tester.widget<CatchSurface>(
       find
           .descendant(

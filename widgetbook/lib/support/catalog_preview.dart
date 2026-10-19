@@ -21,7 +21,7 @@ class WidgetbookCatalogStateCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       padding: const EdgeInsets.all(CatchSpacing.s4),
-      borderColor: t.line,
+      borderRole: CatchBorderRole.separator,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

@@ -291,8 +291,8 @@ service cloud.firestore {
           'deletedAt', 'profileRevision', 'profileClaimedAt'
         ])
         && data.keys().hasAll([
-          'name', 'displayName', 'email', 'phoneNumber', 'dateOfBirth',
-          'gender', 'profileComplete', 'profilePrompts',
+          'name', 'displayName', 'email', 'phoneNumber',
+          'profileComplete', 'profilePrompts',
           'firstName', 'lastName',
           'profilePhotos',
           'interestedInGenders', 'minAgePreference', 'maxAgePreference',
@@ -316,8 +316,9 @@ service cloud.firestore {
 	        && optionalString(data, 'instagramHandle')
 	        && data.phoneNumber == request.auth.token.phone_number
 	        && optionalString(data, 'countryCode')
-	        && data.dateOfBirth is timestamp
-        && data.gender in ['man', 'woman', 'nonBinary', 'other']
+	        && (!('dateOfBirth' in data) || data.dateOfBirth is timestamp)
+        && (!('gender' in data) ||
+          data.gender in ['man', 'woman', 'nonBinary', 'other'])
         && data.profileComplete is bool
         // Photos
         && data.profilePhotos is list
@@ -328,7 +329,6 @@ service cloud.firestore {
         && optionalNumber(data, 'longitude')
         // Matching
         && data.interestedInGenders is list
-        && data.interestedInGenders.size() > 0
         && data.interestedInGenders.size() <= 8
         && data.minAgePreference is number
         && data.minAgePreference >= 18

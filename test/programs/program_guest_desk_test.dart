@@ -253,36 +253,83 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  testWidgets('staff without the duty see a locked desk', (tester) async {
-    final router = GoRouter(
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (_, _) => const ProgramGuestDeskScreen(programId: 'p-1'),
-        ),
+  for (final scenario in <String, Map<String, Object?>>{
+    'airport-only staff': _access(
+      role: 'staff',
+      duties: [_duty('airportGreeter')],
+    ),
+    'hotel-only staff': _access(role: 'staff', duties: [_duty('hotelDesk')]),
+    'staff with no duty': _access(role: 'staff'),
+    'expired guest relations duty': _access(
+      role: 'staff',
+      duties: [
+        {
+          ..._duty('guestRelations'),
+          'expiresAtMillis': _now
+              .subtract(const Duration(days: 1))
+              .millisecondsSinceEpoch,
+        },
       ],
-    );
-    addTearDown(router.dispose);
-    await tester.pumpWidget(
-      ProviderScope(
-        retry: (_, _) => null,
-        overrides: _deskOverrides(
-          _access(role: 'staff', duties: [_duty('hotelDesk')]),
+    ),
+    'expired staff grant': {
+      ..._access(role: 'staff', duties: [_duty('guestRelations')]),
+      'grantExpiresAtMillis': _now
+          .subtract(const Duration(days: 1))
+          .millisecondsSinceEpoch,
+    },
+    'manager': _access(role: 'manager'),
+  }.entries) {
+    testWidgets('${scenario.key} gets the correct guest desk access', (
+      tester,
+    ) async {
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) => const ProgramGuestDeskScreen(programId: 'p-1'),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        ProviderScope(
+          retry: (_, _) => null,
+          overrides: _deskOverrides(scenario.value),
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
         ),
-        child: MaterialApp.router(
-          theme: AppTheme.light,
-          routerConfig: router,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
-    await tester.runAsync(flushTestEventQueue);
-    await pumpFeatureUi(tester);
-    expect(find.text('Rohan Sharma'), findsNothing);
-    expect(find.text('No duties assigned'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-    await tester.pumpWidget(const SizedBox.shrink());
-  });
+      );
+      await pumpFeatureUi(tester);
+      await tester.runAsync(flushTestEventQueue);
+      await pumpFeatureUi(tester);
+      if (scenario.key == 'manager') {
+        expect(find.text('Rohan Sharma'), findsOneWidget);
+        expect(find.text('Add guest'), findsOneWidget);
+        expect(find.text('Guest desk access required'), findsNothing);
+      } else {
+        expect(find.text('Rohan Sharma'), findsNothing);
+        expect(find.text('Add guest'), findsNothing);
+        expect(find.text('Guest desk access required'), findsOneWidget);
+        expect(
+          find.text(
+            'Ask the organizer to assign you guest relations or program coordinator duty for this program.',
+          ),
+          findsOneWidget,
+        );
+        expect(find.text('No duties assigned'), findsNothing);
+        expect(
+          find.text(
+            'Ask the organizer to grant you an airport, hotel or dispatch duty for this program.',
+          ),
+          findsNothing,
+        );
+      }
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  }
 }

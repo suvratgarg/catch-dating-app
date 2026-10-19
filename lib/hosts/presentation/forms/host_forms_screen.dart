@@ -21,7 +21,7 @@ import 'package:catch_dating_app/hosts/presentation/applications/host_applicatio
 import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_no_organizer_empty_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
@@ -439,7 +439,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
                     'host-forms-responses',
                   ),
                   children: [
-                    HostFormResponsesPanel(
+                    HostFormResponsesSection(
                       key: ValueKey(
                         'responses-$uid-${selectedClub.id}-$_accountGeneration-import-$_importRevision',
                       ),

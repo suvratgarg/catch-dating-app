@@ -1,3 +1,4 @@
+import {accountCopy} from "../../../content/account";
 import {organizerPresenceCopy} from "@content/organizerPresence";
 import {
   organizerHeroMediaForSlug,
@@ -67,18 +68,20 @@ export function ListingHeroRailSection({
   canRequestClaim,
   claimHref,
   isAppCreated,
-  isSaved,
+  isFollowing,
+  followPending,
   listing,
-  onSaveListing,
+  onFollowListing,
   onShareListing,
   shareStatus,
 }: {
   canRequestClaim?: boolean;
   claimHref: string;
   isAppCreated: boolean;
-  isSaved: boolean;
+  isFollowing: boolean;
+  followPending?: boolean;
   listing: HostListing;
-  onSaveListing: () => void;
+  onFollowListing: () => void;
   onShareListing: () => void;
   shareStatus: string;
 }) {
@@ -133,10 +136,11 @@ export function ListingHeroRailSection({
         <Button
           variant="ghost"
           type="button"
-          aria-pressed={isSaved}
-          onClick={onSaveListing}
+          aria-pressed={isFollowing}
+          disabled={followPending}
+          onClick={onFollowListing}
         >
-          {isSaved ? "Saved" : "Save"}
+          {isFollowing ? accountCopy.following : accountCopy.follow}
         </Button>
       </ListingRailActions>
     </>

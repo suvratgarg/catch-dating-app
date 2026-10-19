@@ -18,9 +18,85 @@ import {
   buildDocumentInventory,
   buildDocumentRetirementReport,
   retiredDocumentReferences,
+  headingAnchors,
+  machineReferenceFindings,
+  uniqueRetiredNames,
 } from "./check_doc_metadata.mjs";
 
 const scriptPath = fileURLToPath(new URL("./check_doc_metadata.mjs", import.meta.url));
+
+for (const mode of ["working tree", "ref", "base"]) {
+  test(`CLI ${mode} reads fail locally when a promised document blob is missing`, () => {
+    const fixture = fs.mkdtempSync(path.join(os.tmpdir(), "catch-doc-promisor-"));
+    const repo = path.join(fixture, "repo");
+    const receipt = path.join(fixture, "remote-invoked");
+    const env = {
+      ...process.env,
+      PATH: `${fixture}${path.delimiter}${process.env.PATH}`,
+      GIT_CONFIG_GLOBAL: os.devNull,
+      GIT_CONFIG_NOSYSTEM: "1",
+      GIT_TERMINAL_PROMPT: "0",
+      GIT_NO_LAZY_FETCH: "0",
+      GIT_OPTIONAL_LOCKS: "1",
+      CATCH_DOC_TEST_RECEIPT: receipt,
+    };
+    const fixtureGit = (args) => execFileSync("git", args, {cwd: repo, env, encoding: "utf8"});
+    const args = mode === "ref" ? ["--ref", "HEAD"] : mode === "base" ? ["--base", "HEAD"] : [];
+    const run = () => spawnSync(process.execPath, [scriptPath, "--repo", repo, ...args, "--json"], {
+      env, encoding: "utf8", timeout: 10000,
+    });
+    try {
+      fs.mkdirSync(repo);
+      // This protocol can only leave a receipt and refuse; it has no network destination.
+      fs.writeFileSync(path.join(fixture, "git-remote-denydocs"),
+        '#!/bin/sh\nprintf invoked > "$CATCH_DOC_TEST_RECEIPT"\nexit 1\n', {mode: 0o755});
+      fixtureGit(["init", "-q"]);
+      fixtureGit(["config", "user.email", "test@example.com"]);
+      fixtureGit(["config", "user.name", "Catch Test"]);
+      fixtureGit(["config", "core.hooksPath", os.devNull]);
+      fixtureGit(["config", "commit.gpgSign", "false"]);
+      writeDoc(repo, "1.2.0", "active");
+      fixtureGit(["add", "."]);
+      fixtureGit(["commit", "-qm", "local document"]);
+      fixtureGit(["config", "remote.origin.url", "denydocs::fixture"]);
+      fixtureGit(["config", "remote.origin.promisor", "true"]);
+      fixtureGit(["config", "remote.origin.partialclonefilter", "blob:none"]);
+      const blob = fixtureGit(["rev-parse", "HEAD:docs/sample.md"]).trim();
+      const documentPath = path.join(repo, "docs/sample.md");
+      if (mode === "working tree") {
+        fixtureGit(["update-index", "--skip-worktree", "docs/sample.md"]);
+        fs.unlinkSync(documentPath);
+      }
+      const complete = run();
+      assert.equal(complete.status, 0, complete.stderr);
+      assert.equal(JSON.parse(complete.stdout).pass, true);
+      assert.equal(fs.existsSync(receipt), false);
+      const preservedPaths = [".git/index", ".git/config", ".git/HEAD"];
+      if (mode !== "working tree") preservedPaths.push("docs/sample.md");
+      const before = preservedPaths.map((relative) => fs.readFileSync(path.join(repo, relative)));
+      fs.unlinkSync(path.join(repo, ".git/objects", blob.slice(0, 2), blob.slice(2)));
+
+      // Prove the fixture would actually attempt retrieval without the production guard.
+      const control = spawnSync("git", ["show", "HEAD:docs/sample.md"], {
+        cwd: repo, env, encoding: "utf8", timeout: 10000,
+      });
+      assert.equal(control.status, 128, control.stderr);
+      assert.equal(fs.readFileSync(receipt, "utf8"), "invoked");
+      fs.unlinkSync(receipt);
+
+      const missing = run();
+      assert.equal(missing.status, 1, missing.stderr);
+      assert.match(missing.stderr, /bad object|unable to read|missing|invalid object/u);
+      assert.equal(fs.existsSync(receipt), false, "documentation reads must not invoke the promisor helper");
+      for (const [index, relative] of preservedPaths.entries()) {
+        assert.deepEqual(fs.readFileSync(path.join(repo, relative)), before[index], relative);
+      }
+      if (mode === "working tree") assert.equal(fs.existsSync(documentPath), false);
+    } finally {
+      fs.rmSync(fixture, {recursive: true, force: true});
+    }
+  });
+}
 
 test("source frontmatter is the sole governed Markdown authority", () => {
   const source = `---
@@ -387,4 +463,108 @@ test("completed checklist signals are advisory and historical prose is protected
   assert.equal(report.protectedDocuments.length, 2);
   assert.equal(report.findings.filter((row) => row.kind === "completed-checklist-review").length, 1);
   assert.equal(report.findings.filter((row) => row.kind.startsWith("missing-")).length, 0);
+});
+
+test("heading anchors follow GitHub slugs and ignore fenced examples", () => {
+  const anchors = headingAnchors([
+    "# Release `deploy` Order",
+    "## Phase 6 — Continuous conformance ##",
+    "```md",
+    "## Not A Heading",
+    "```",
+  ].join("\n"));
+  assert.ok(anchors.has("release-deploy-order"));
+  assert.ok(anchors.has("phase-6--continuous-conformance"));
+  assert.ok(!anchors.has("not-a-heading"));
+});
+
+test("machine references to removed documents and headings fail; old gaps are advisory", () => {
+  const matches = [
+    {path: "tool/policy/rules.json", line: 4, text: '"docAnchor": "docs/plans/old.md#scope"'},
+    {path: "tool/check.mjs", line: 7, text: 'read("../../docs/plans/old.md")'},
+    {path: "website/README.txt", line: 1, text: "website/docs/plans/old.md and docs/plans/old.mdx"},
+    {path: "tool/owner.json", line: 2, text: '"docs/guide.md#usage", "docs/guide.md#kept"'},
+    {path: "tool/owner.json", line: 3, text: '"docs/guide.md#never-existed", "docs/guide.md"'},
+    {path: "tool/other.json", line: 1, text: '"docs/untouched.md#anything"'},
+    {path: "lib/styles.dart", line: 9, text: "/// approved in `old.md` and `README.md`."},
+  ];
+  const sources = {
+    base: {"docs/guide.md": "# Guide\n## Usage\n## Kept\n"},
+    target: {"docs/guide.md": "# Guide\n## Kept\n```\n## Usage\n```\n"},
+  };
+  const result = machineReferenceFindings({
+    matches,
+    retiredPaths: ["docs/plans/old.md"],
+    retiredByName: uniqueRetiredNames(
+      ["docs/plans/old.md", "docs/README.md", "lib/README.md", "docs/guide.md"],
+      ["docs/plans/old.md", "docs/README.md"]),
+    changedPaths: ["docs/guide.md"],
+    readBase: (file) => sources.base[file],
+    readTarget: (file) => sources.target[file],
+  });
+  assert.deepEqual(result.findings.map((row) => [row.kind, row.path, row.line, row.target, row.fragment]), [
+    ["retired-document-machine-reference", "tool/policy/rules.json", 4, "docs/plans/old.md", undefined],
+    ["retired-document-machine-reference", "tool/check.mjs", 7, "docs/plans/old.md", undefined],
+    ["removed-document-anchor", "tool/owner.json", 2, "docs/guide.md", "usage"],
+    ["retired-document-machine-reference", "lib/styles.dart", 9, "docs/plans/old.md", undefined],
+  ]);
+  assert.deepEqual(result.advisories.map((row) => [row.kind, row.fragment]),
+    [["unresolved-document-anchor", "never-existed"]]);
+});
+
+test("CLI rejects registry and code references to removed documents and headings", () => {
+  const repo = fs.mkdtempSync(path.join(os.tmpdir(), "catch-doc-machine-refs-"));
+  try {
+    git(repo, ["init", "-q"]);
+    git(repo, ["config", "user.email", "test@example.com"]);
+    git(repo, ["config", "user.name", "Catch Test"]);
+    const write = (relative, content) => {
+      fs.mkdirSync(path.dirname(path.join(repo, relative)), {recursive: true});
+      fs.writeFileSync(path.join(repo, relative), content);
+    };
+    write("docs/old.md", "# Old\n");
+    write("docs/guide.md", "# Guide\n\n## Scope\n");
+    write("tool/policy/rules.json", '{"docAnchor": "docs/guide.md#scope"}\n');
+    write("tool/check.mjs", 'const owner = "docs/old.md";\n');
+    write("lib/styles.dart", "/// Approved in `old.md`.\n");
+    git(repo, ["add", "."]);
+    git(repo, ["commit", "-qm", "base"]);
+    const base = git(repo, ["rev-parse", "HEAD"]).trim();
+    const run = (...args) => spawnSync(process.execPath,
+      [scriptPath, "--repo", repo, "--base", base, "--json", ...args], {encoding: "utf8"});
+    const kinds = (result) => JSON.parse(result.stdout).findings.map((row) => row.kind).sort();
+
+    fs.unlinkSync(path.join(repo, "docs/old.md"));
+    write("docs/guide.md", "# Guide\n\n## Ownership\n");
+    const bad = run();
+    assert.equal(bad.status, 1, bad.stderr);
+    assert.deepEqual(kinds(bad), ["removed-document-anchor", "retired-document-machine-reference",
+      "retired-document-machine-reference"]);
+
+    // Sparse CI working trees omit consumers; the index still binds them.
+    git(repo, ["add", "-A"]);
+    git(repo, ["commit", "-qm", "break consumers"]);
+    const broken = git(repo, ["rev-parse", "HEAD"]).trim();
+    git(repo, ["update-index", "--skip-worktree", "tool/policy/rules.json", "tool/check.mjs"]);
+    fs.rmSync(path.join(repo, "tool"), {recursive: true});
+    assert.deepEqual(kinds(run()), ["removed-document-anchor", "retired-document-machine-reference",
+      "retired-document-machine-reference"]);
+    git(repo, ["update-index", "--no-skip-worktree", "tool/policy/rules.json", "tool/check.mjs"]);
+    git(repo, ["checkout", "--", "tool"]);
+    assert.deepEqual(kinds(run("--ref", broken)), ["removed-document-anchor", "retired-document-machine-reference",
+      "retired-document-machine-reference"]);
+
+    write("tool/policy/rules.json", '{"docAnchor": "docs/guide.md#ownership"}\n');
+    write("tool/check.mjs", 'const owner = "docs/guide.md";\n');
+    const bare = run();
+    assert.equal(bare.status, 1, bare.stderr);
+    assert.deepEqual(JSON.parse(bare.stdout).findings.map((row) => [row.path, row.target]),
+      [["lib/styles.dart", "docs/old.md"]]);
+    write("lib/styles.dart", "/// Approved by the owner.\n");
+    const good = run();
+    assert.equal(good.status, 0, good.stderr);
+    assert.deepEqual(JSON.parse(good.stdout).advisories, []);
+  } finally {
+    fs.rmSync(repo, {recursive: true, force: true});
+  }
 });

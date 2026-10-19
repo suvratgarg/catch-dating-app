@@ -42,7 +42,7 @@ const _reach = HostAudienceReachSummary(
 
 @widgetbook.UseCase(
   name: 'Membership filters and saved counts',
-  type: HostSavedAudiencesDirectory,
+  type: HostSavedAudiencesList,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostGroupsDirectory(BuildContext context) => ProviderScope(
@@ -63,7 +63,7 @@ Widget hostGroupsDirectory(BuildContext context) => ProviderScope(
     height: WidgetbookPreviewLayout.hostEditorViewportHeight,
     child: CustomScrollView(
       slivers: [
-        HostSavedAudiencesDirectory(
+        HostSavedAudiencesList(
           organizerId: _audience.organizerId,
           query: null,
           onOpen: (_) {},
@@ -140,7 +140,7 @@ class _PreviewAudienceMembers extends HostSavedAudienceMembersController {
 
 @widgetbook.UseCase(
   name: 'Published source filters',
-  type: HostAudienceSourceRuleFields,
+  type: HostAudienceSourceRuleSection,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostAudienceSourceRuleStates(BuildContext context) => SizedBox(
@@ -149,7 +149,7 @@ Widget hostAudienceSourceRuleStates(BuildContext context) => SizedBox(
     child: Column(
       children: [
         for (final kind in HostAudienceSourceRuleKind.values)
-          HostAudienceSourceRuleFields(
+          HostAudienceSourceRuleSection(
             kind: kind,
             options: _options,
             enabled: true,
@@ -184,7 +184,7 @@ Widget hostAudienceSourceRuleStates(BuildContext context) => SizedBox(
 
 @widgetbook.UseCase(
   name: 'Members, rules and evaluated reach',
-  type: HostSavedAudienceOverview,
+  type: HostSavedAudienceSection,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostSavedAudienceOverviewOnlyState(BuildContext context) =>

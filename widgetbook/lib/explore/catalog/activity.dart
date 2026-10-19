@@ -58,17 +58,17 @@ Widget exploreEventTypeBrowseGridStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Activity content states',
-  type: EventTypeBrowseContent,
+  type: EventTypeBrowseBody,
   path: '[Explore]/Sections',
 )
 Widget eventTypeBrowseContentStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'EventTypeBrowseContent',
+    title: 'EventTypeBrowseBody',
     catalogId: 'section.explore.activity_grid.content',
     children: [
       WidgetbookPageStateCard(
         label: 'collapsed preview',
-        child: EventTypeBrowseContent(
+        child: EventTypeBrowseBody(
           items: widgetbookExploreFeedItems,
           activeActivityTag: ActivityKind.dinner.name,
           expanded: false,
@@ -78,7 +78,7 @@ Widget eventTypeBrowseContentStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'expanded list',
-        child: EventTypeBrowseContent(
+        child: EventTypeBrowseBody(
           items: widgetbookExploreFeedItems,
           activeActivityTag: null,
           expanded: true,
@@ -92,19 +92,19 @@ Widget eventTypeBrowseContentStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Activity rows states',
-  type: ActivityTypeRows,
+  type: ActivityTypeList,
   path: '[Explore]/Sections',
 )
 Widget activityTypeRowsStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ActivityTypeRows',
+    title: 'ActivityTypeList',
     catalogId: 'section.explore.activity_grid.rows',
     children: [
       WidgetbookPageStateCard(
         label: 'single column',
         child: SizedBox(
           width: WidgetbookPreviewLayout.mediumComponentWidth,
-          child: ActivityTypeRows(
+          child: ActivityTypeList(
             slots: _activitySlots,
             activeActivityTag: ActivityKind.socialRun.name,
             onCategoryTap: _ignoreActivityKind,
@@ -116,7 +116,7 @@ Widget activityTypeRowsStates(BuildContext context) {
         label: 'two columns',
         child: SizedBox(
           width: WidgetbookPreviewLayout.exploreComparisonWidth,
-          child: ActivityTypeRows(
+          child: ActivityTypeList(
             slots: _activitySlots,
             activeActivityTag: ActivityKind.pickleball.label,
             onCategoryTap: _ignoreActivityKind,
@@ -130,17 +130,17 @@ Widget activityTypeRowsStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Activity slot states',
-  type: ActivitySlotView,
+  type: ActivitySlotRow,
   path: '[Explore]/Sections',
 )
 Widget activitySlotViewStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ActivitySlotView',
+    title: 'ActivitySlotRow',
     catalogId: 'section.explore.activity_grid.slot',
     children: [
       WidgetbookPageStateCard(
         label: 'activity entry',
-        child: ActivitySlotView(
+        child: ActivitySlotRow(
           slot: const ActivitySlot.entry(_socialRunActivityEntry),
           activeActivityTag: ActivityKind.socialRun.name,
           onCategoryTap: _ignoreActivityKind,
@@ -149,7 +149,7 @@ Widget activitySlotViewStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'more slot',
-        child: ActivitySlotView(
+        child: ActivitySlotRow(
           slot: const ActivitySlot.more(3),
           activeActivityTag: null,
           onCategoryTap: _ignoreActivityKind,

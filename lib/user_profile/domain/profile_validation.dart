@@ -162,6 +162,17 @@ String? validateOptionalInstagramHandle(String? value) {
   return valid ? null : StructuredDomainCopy.profileValidationInvalidInstagram;
 }
 
+/// Account birthdays are optional; age limits belong to the requested feature.
+String? validateOptionalDateOfBirth(
+  DateTime? dateOfBirth, {
+  required DateTime today,
+}) {
+  if (dateOfBirth == null) return null;
+  return isAtLeastAge(dateOfBirth, minimumAge: 0, today: today)
+      ? null
+      : StructuredDomainCopy.profileValidationSelectDateOfBirth;
+}
+
 String? validateRequiredDateOfBirth(
   DateTime? dateOfBirth, {
   required DateTime today,

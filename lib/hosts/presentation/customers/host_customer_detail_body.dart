@@ -110,7 +110,7 @@ class HostCustomerDetailBody extends StatelessWidget {
       HostCustomerDetailView.overview => CatchSectionList(
         emptyStateOmitted: true,
         children: [
-          HostCustomerDetailOverview(
+          HostCustomerOverviewSectionList(
             customer: customer,
             onOpenRevenue: onOpenRevenue,
           ),
@@ -118,7 +118,7 @@ class HostCustomerDetailBody extends StatelessWidget {
             customer: customer,
             onOpenMemory: onOpenMemory ?? () {},
           ),
-          HostCustomerRecentEvents(
+          HostCustomerRecentEventsList(
             customer: customer,
             onOpenEvent: onOpenEvent,
           ),
@@ -154,7 +154,7 @@ class HostCustomerDetailBody extends StatelessWidget {
             customer: customer,
             onOpen: onOpenFormResponse,
           ),
-          HostCustomerApplicationsPanel(
+          HostCustomerApplicationsSection(
             organizerId: customer.organizerId,
             contactId: customer.contactId,
             onOpenApplication: onOpenApplication,
@@ -180,7 +180,7 @@ class HostCustomerDetailBody extends StatelessWidget {
           ),
         ],
       ),
-      HostCustomerDetailView.history => HostCustomerHistoryPanel(
+      HostCustomerDetailView.history => HostCustomerHistorySection(
         customer: customer,
         onOpenFormResponse: onOpenFormResponse,
         onOpenEvent: onOpenEvent,
@@ -212,8 +212,8 @@ class HostCustomerDetailBody extends StatelessWidget {
   );
 }
 
-class HostCustomerDetailOverview extends StatelessWidget {
-  const HostCustomerDetailOverview({
+class HostCustomerOverviewSectionList extends StatelessWidget {
+  const HostCustomerOverviewSectionList({
     super.key,
     required this.customer,
     required this.onOpenRevenue,
