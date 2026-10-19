@@ -1,14 +1,16 @@
+import {exploreCopy} from "../../../content/explore";
+import {organiserProfileCopy} from "../../../content/organiserProfile";
+import {publicExperienceActivities} from "../publicExperience";
+import {ExploreBadge} from "../../../shared/ui/primitives/explore";
 import {websiteCopy} from "@content/generated";
 import {organizerListingCopy} from "@content/organizer";
 import {trackMarketingEvent} from "../../../analytics";
 import {SectionHeader} from "../../../shared/site";
 import {
-  AppDownloadCtaGroup,
   ContentGrid,
   EventActionCard,
   type EventActionCardAction,
   type EventActionCardModel,
-  ListingEventDownloadPanel,
   ListingEventEvidenceList,
   ListingRailEmptyState,
   ListingRailSection,
@@ -16,7 +18,6 @@ import {
   ListingSection,
   ButtonLink,
 } from "../../../shared/ui/primitives";
-import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
 import {trackOrganizerAnalytics} from "../analytics";
 import {
   eventActionCardForListing,
@@ -51,9 +52,7 @@ export function ListingCatchEventsSection({listing}: {listing: HostListing}) {
   const eventCards = events.map((event) =>
     eventActionCardForListing(listing, event)
   );
-  const appDownloadCtas = useAppDownloadCtas({
-    placement: `listing-events-${listing.slug}`,
-  });
+
 
   return (
     <ListingSection
@@ -64,24 +63,20 @@ export function ListingCatchEventsSection({listing}: {listing: HostListing}) {
       <SectionHeader
         eyebrow={websiteCopy["listingeventssections_0388"]}
         id="listing-catch-events-title"
-        title={websiteCopy["listingeventssections_0394"]}
-        body={websiteCopy["listingeventssections_0385"]} />
+        title={organiserProfileCopy.eventsTitle(listing.name)}
+        body={organiserProfileCopy.eventsBody} />
       <ContentGrid variant="listing-event">
-        {eventCards.map((event) => (
+        {eventCards.map((event, index) => (
           <EventActionCard
             event={event}
+            badge={publicExperienceActivities(events[index].catchExperienceActivities).length ?
+              <ExploreBadge title={exploreCopy.experienceBody}>{exploreCopy.experienceLabel}</ExploreBadge> : undefined}
             key={event.id}
             onActionClick={trackListingEventActionClick}
           />
         ))}
       </ContentGrid>
-      <ListingEventDownloadPanel
-        kicker={websiteCopy["listingeventssections_0396"]}
-        heading={websiteCopy["listingeventssections_0386"]}
-        body={websiteCopy["listingeventssections_0399"]}
-      >
-        <AppDownloadCtaGroup {...appDownloadCtas} variant="compact" />
-      </ListingEventDownloadPanel>
+
     </ListingSection>
   );
 }
@@ -197,10 +192,10 @@ export function ListingEventSuccessSection({
       aria-labelledby="event-success-title"
     >
       <SectionHeader
-        eyebrow={websiteCopy["listingeventssections_0393"]}
+        eyebrow={organiserProfileCopy.outcomesEyebrow}
         id="event-success-title"
-        title={websiteCopy["listingeventssections_0402"]}
-        body={websiteCopy["listingeventssections_0403"]} />
+        title={organiserProfileCopy.outcomesTitle}
+        body={organiserProfileCopy.outcomesBody} />
       <ListingSuccessMetricGrid items={metrics} />
     </ListingSection>
   );

@@ -20,8 +20,7 @@ afterEach(cleanup);
 function Profile({listing}: {listing: HostListing}) {
   const controller = useHostListingPageController(listing);
   const claimController = {presentation: {panel: "hidden"}} as ListingClaimController;
-  return <><PublicSiteHeader localNav={controller.nav}
-    localActions={[{href: controller.claimHref, label: controller.headerCtaLabel}]} />
+  return <><PublicSiteHeader audience="consumer" />
     <WebsitePageMain id="profile"><HostListingSections listing={listing} controller={controller}
       claimController={claimController} /></WebsitePageMain></>;
 }
@@ -44,16 +43,30 @@ function externalListing(): HostListing {
 }
 
 describe("organizer presence sections", () => {
+  it("only badges events with explicit participation tools, never an entire organiser", () => {
+    const listing = externalListing();
+    const demo = (demoListings as HostListing[]).find((item) => item.catchEvents?.length)!;
+    listing.catchEvents = [
+      {...demo.catchEvents![0], title: "Participation event", catchExperienceActivities: ["rotations"]},
+      {...demo.catchEvents![0], id: "booking-only", title: "Booking only", catchExperienceActivities: undefined},
+    ];
+    const {container} = renderProfile(listing);
+    expect(screen.getAllByText("Catch Experience")).toHaveLength(1);
+    const badge = screen.getByText("Catch Experience");
+    expect(badge.closest("article")?.textContent).toContain("Participation event");
+    expect(container.querySelector("#listing-profile-title")?.parentElement?.textContent).not.toContain("Catch Experience");
+  });
+
   it("keeps external events first with real details/source links and all anchor sections visible", () => {
     const listing = externalListing();
     const {container} = renderProfile(listing);
     const events = container.querySelector("#events")!;
     const about = container.querySelector("#about")!;
     const reviews = container.querySelector("#reviews")!;
-    const localNav = screen.getByRole("navigation", {name: "On this page"});
+    const localNav = screen.getByRole("navigation", {name: "On this profile"});
     const globalNav = screen.getByRole("navigation", {name: "Primary"});
     expect(within(globalNav).getAllByRole("link").map((link) => link.textContent))
-      .toEqual(["Find events", "Organisers", "Catch Host", "Pricing and access"]);
+      .toEqual(["Find events", "Organisers", "For organisers"]);
     for (const label of ["Events", "About", "Reviews"]) {
       expect(within(localNav).getByRole("link", {name: label})).toBeTruthy();
       expect(within(globalNav).queryByRole("link", {name: label})).toBeNull();
@@ -71,7 +84,8 @@ describe("organizer presence sections", () => {
       ?.getAttribute("rel")).toContain("noreferrer");
     expect(screen.queryByRole("link", {name: /contact host|book now|reply/iu})).toBeNull();
     expect(screen.queryByRole("button", {name: /contact host|book now|reply/iu})).toBeNull();
-    expect(container.querySelector("#fit")).toBeTruthy();
+    expect(container.querySelector("#fit")).toBeNull();
+    expect(container.querySelector("#profile-information summary")).toBeTruthy();
     expect(within(about as HTMLElement).getByText(listing.sourceSummary)).toBeTruthy();
     for (const source of listing.sources) {
       expect(within(about as HTMLElement).getByText(source.detail)).toBeTruthy();
@@ -99,10 +113,11 @@ describe("organizer presence sections", () => {
 
   it("keeps About and Reviews reachable when no events have been published", () => {
     const {container} = renderProfile({...hostListings[0], catchEvents: [], externalEvents: []});
-    expect(container.querySelector("#events")).toBeNull();
+    expect(container.querySelector("#events")).toBeTruthy();
+    expect(screen.getByText("More good plans to come.")).toBeTruthy();
     expect(container.querySelector("#event-evidence")).toBeTruthy();
     for (const link of screen.getAllByRole("link", {name: "Events"})) {
-      expect(link.getAttribute("href")).toBe("#event-evidence");
+      expect(link.getAttribute("href")).toBe("#events");
     }
     expect(container.querySelector("#about")).toBeTruthy();
     expect(container.querySelector("#reviews")).toBeTruthy();

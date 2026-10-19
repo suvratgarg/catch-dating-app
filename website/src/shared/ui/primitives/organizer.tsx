@@ -410,7 +410,7 @@ export function ListingRailActions({
       {children}
       <p>{description}</p>
       {shareStatus ? (
-        <div className="listing-profile-rail__live">{shareStatus}</div>
+        <div className="listing-profile-rail__live" role="status">{shareStatus}</div>
       ) : null}
     </div>
   );

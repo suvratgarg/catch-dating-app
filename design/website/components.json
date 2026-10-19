@@ -1,6 +1,6 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 103,
+  "version": 104,
   "updated": "2026-10-19",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -1106,7 +1106,9 @@
       "css": [
         "website/src/styles/site-shell.css",
         "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/organiser-profile.css"
       ],
       "storybook": {
         "status": "ready",
@@ -2666,7 +2668,11 @@
       "exportName": "ListingHeroSection",
       "css": [
         "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/organiser-profile.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/organiser-profile.css"
       ],
       "storybook": {
         "status": "ready",
@@ -2676,7 +2682,7 @@
           "claimable-unclaimed"
         ]
       },
-      "notes": "Generated organizer hero using the Catch polaroid material, a provenance ledger, and a separate capability-aware action rail; public profile-strength scores and event-ticket chrome are deliberately omitted."
+      "notes": "Community identity, approved imagery or activity fallback, and accessible profile section navigation."
     },
     {
       "id": "listing_hero_rail_section",
@@ -2690,7 +2696,9 @@
       "exportName": "ListingHeroRailSection",
       "css": [
         "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/organiser-profile.css"
       ],
       "storybook": {
         "status": "ready",
@@ -2700,7 +2708,7 @@
           "claim-enabled"
         ]
       },
-      "notes": "Capability-aware organizer identity and action rail. Enabled claims link to the claim route; unavailable claims stay visibly disabled with the canonical capability reason."
+      "notes": "Follow and share lead the visitor actions; ownership requests remain capability gated in a disclosure."
     },
     {
       "id": "listing_facts_section",
@@ -4058,6 +4066,34 @@
         ]
       },
       "notes": "The sole Host pilot intake page, using the existing application controller."
+    },
+    {
+      "id": "listing_profile_information",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/ListingHeroSection.tsx",
+      "exportName": "ListingProfileInformation",
+      "css": [
+        "website/src/styles/organizers.css",
+        "website/src/styles/responsive.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/organiser-profile.css",
+        "website/src/styles/consumer-home.css",
+        "website/src/styles/organiser-profile.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
+        "exportName": "ProfileInformation",
+        "states": [
+          "unclaimed"
+        ]
+      },
+      "notes": "Disclosure retains source count, freshness, visibility and ownership without leading the guest experience."
     }
   ]
 }

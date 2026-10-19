@@ -42,6 +42,12 @@ import {
 } from "../features/eventRuntime/eventRuntimeMotion";
 
 const generatedOrganizerListing = requireListing("afterfly");
+// Synthetic, Storybook-only review permissions to exercise the populated public state.
+const communityProfileFixture: HostListing = {
+  ...requireListing("club-sales-sunday-table"),
+  capabilities: {...requireListing("club-sales-sunday-table").capabilities,
+    publicReviews: {targetState: "enabled", readState: "enabled", writeState: "disabled", reason: "Review submission is disabled in this illustrative preview."}},
+};
 
 const meta = {
   title: "Marketing Website/Routes",
@@ -417,6 +423,7 @@ export const OrganisersUnavailable: Story = {
 export const OrganizerListing: Story = {
   name: "/organizers/:slug/",
   parameters: {
+    a11y: {test: "error"},
     catchRoute: {
       id: "organizer_listing_canonical",
       path: generatedOrganizerListing.path,
@@ -527,3 +534,14 @@ function LegalStoryPage({pageKey}: {pageKey: "privacy" | "terms" | "help"}) {
     </PageShell>
   );
 }
+
+export const OrganiserProfileCommunity: Story = {
+  name: "/organizers/:slug/ · Events and community reviews",
+  parameters: {a11y: {test: "error"}},
+  render: () => <WebsiteQueryProvider><MemoryRouter><OrganizerListingRouteStory listing={communityProfileFixture} /></MemoryRouter></WebsiteQueryProvider>,
+};
+export const OrganiserProfileEmpty: Story = {
+  name: "/organizers/:slug/ · No events yet",
+  parameters: {a11y: {test: "error"}},
+  render: () => <WebsiteQueryProvider><MemoryRouter><OrganizerListingRouteStory listing={{...consumerHomeStoryListings[0], catchEvents: [], externalEvents: [], eventEvidence: []}} /></MemoryRouter></WebsiteQueryProvider>,
+};

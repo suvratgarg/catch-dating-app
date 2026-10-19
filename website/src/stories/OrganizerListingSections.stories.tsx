@@ -14,6 +14,7 @@ import {ListingFitSection} from "../features/organizers/sections/ListingFitSecti
 import {
   ListingHeroRailSection,
   ListingHeroSection,
+  ListingProfileInformation,
 } from "../features/organizers/sections/ListingHeroSection";
 import {ListingMissingEvidenceSection} from "../features/organizers/sections/ListingClaimSections";
 import {ListingReviewsSection} from "../features/organizers/sections/ListingReviewsSection";
@@ -79,8 +80,11 @@ const eventEvidenceListing: HostListing = {
 };
 const listingRouteIds = ["organizer_listing_canonical", "organizer_listing_legacy"];
 
+import {OrganiserProfile} from "../shared/ui/primitives/organiserProfile";
+
 const meta = {
   title: "Marketing Website/Organizers/Listing Sections",
+  decorators: [(Story) => <OrganiserProfile><Story /></OrganiserProfile>],
   parameters: {
     catchComponentRegistry: {
       path: "design/website/components.json",
@@ -433,3 +437,8 @@ function requireListing(id: string): HostListing {
   }
   return listing;
 }
+
+export const ProfileInformation: Story = {
+  parameters: {catchComponent: {id: "listing_profile_information", routeIds: listingRouteIds, states: ["unclaimed"]}},
+  render: () => <ListingProfileInformation listing={claimableListing} />,
+};

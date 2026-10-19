@@ -1,4 +1,4 @@
-import {websiteCopy} from "@content/generated";
+import {OrganiserProfile} from "../../shared/ui/primitives/organiserProfile";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import type {HostListing} from "./types";
 import {useListingClaimController} from "../claims/useListingClaimController";
@@ -10,11 +10,8 @@ export function HostListingPage({listing}: {listing: HostListing}) {
   const claimController = useListingClaimController(listing);
 
   return (
-    <>
-      <PublicSiteHeader
-        localNav={controller.nav}
-        localActions={[{href: controller.claimHref, label: controller.headerCtaLabel}]}
-      />
+    <OrganiserProfile>
+      <PublicSiteHeader audience="consumer" />
 
       <WebsitePageMain id="profile">
         <HostListingSections
@@ -24,10 +21,7 @@ export function HostListingPage({listing}: {listing: HostListing}) {
         />
       </WebsitePageMain>
 
-      <PublicSiteFooter
-        body={websiteCopy["hostlistingpage_0346"]}
-        links={[...controller.footerLinks]}
-      />
-    </>
+      <PublicSiteFooter audience="consumer" />
+    </OrganiserProfile>
   );
 }

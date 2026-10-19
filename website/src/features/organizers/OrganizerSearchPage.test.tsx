@@ -23,7 +23,7 @@ it("preserves spaces while typing multiword searches and recovers from an empty 
  expect((input as HTMLInputElement).value).toBe("Sunday ");
  fireEvent.change(input,{target:{value:"Sunday Run"}});
  expect(screen.getByRole("heading",{name:"Sunday Run Club"})).toBeTruthy();
- fireEvent.change(screen.getByRole("combobox",{name:"City",exact:true}),{target:{value:"Indore"}});
+ fireEvent.change(screen.getByRole("combobox",{name:"City"}),{target:{value:"Indore"}});
  expect(screen.getByRole("heading",{name:"No organisers match these filters."})).toBeTruthy();
  fireEvent.click(screen.getByRole("button",{name:"See all organisers"}));
  expect(screen.getByRole("heading",{name:"Sunday Run Club"})).toBeTruthy();

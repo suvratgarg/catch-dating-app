@@ -638,7 +638,7 @@
       "staticOutput": "generated-postbuild",
       "indexing": "listing-controlled",
       "sitemap": "listing-controlled",
-      "notes": "Generated canonical organizer profile routes from website/src/generated/hostListings.json. The deployable projection includes only organizers with at least one market whose status is live in the active market pack; waitlist-market records remain available to review tooling and Storybook but cannot enter static output, search, or sitemap. Postbuild emits crawlable semantic profile content, Organization JSON-LD, canonical metadata, and lastVerifiedAt sitemap dates before React starts.",
+      "notes": "Generated canonical organizer profile routes from website/src/generated/hostListings.json. The deployable projection includes only organizers with at least one market whose status is live in the active market pack; waitlist-market records remain available to review tooling and Storybook but cannot enter static output, search, or sitemap. Postbuild emits crawlable semantic profile content, Organization JSON-LD, canonical metadata, and lastVerifiedAt sitemap dates before React starts. Consumer profile presentation shares the homepage navigation and visual system. Community identity and follow/share lead into events, about, reviews, and source/ownership context. Preserve authenticated follows, review provenance and permissions, external booking links, and empty event states. Catch Experience is an explicit event-level participation declaration, never an organiser endorsement.",
       "review": {
         "priority": "p0",
         "status": "ready",
