@@ -140,7 +140,7 @@ export const trustItems = [
   },
   {
     title: "Private by default",
-    body: "Catches are private unless mutual. Host reports stay aggregate-safe.",
+    body: "Catches are private unless mutual. Host reports show totals, never who caught whom.",
   },
   {
     title: "Format-aware facilitation",
@@ -161,7 +161,7 @@ export const hostModules = [
   {
     label: "Movement",
     title: "Assignments",
-    body: "Balanced pairs, tables, pods, teams, and rotations with aggregate-safe reasons and host overrides.",
+    body: "Balanced pairs, tables, pods, teams, and rotations. Hosts see how groups are balanced and can adjust assignments without seeing guests' private catches.",
   },
   {
     label: "Control",
@@ -226,7 +226,7 @@ export const hostFillRoomModules = [
     facts: [
       "Preview gender balance, group size, pace, skill, and repeat-attendee gaps.",
       "Use cohorts for tables, teams, pods, courts, or rotations.",
-      "Keep host reporting aggregate-safe before, during, and after the event.",
+      "Before, during, and after the event, host reports show overall numbers without revealing guests' private choices.",
     ],
     activityToken: "var(--catch-activity-padel-accent)",
   },
