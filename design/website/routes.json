@@ -18,7 +18,7 @@
     "nextRuntime": "website/app/[[...path]]/page.tsx",
     "nextPublicationPolicy": "website/src/server/publicReadPolicy.ts",
     "nextImplementation": "docs/marketing_website_architecture.md",
-    "nextPreviewHosting": "firebase.next.preview.json"
+    "nextPreviewHosting": "website/next-hosting.preview.json"
   },
   "routes": [
     {

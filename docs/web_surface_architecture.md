@@ -52,7 +52,7 @@ loopback Firestore emulator. Docker execution itself requires separate evidence;
 a passing local standalone build is not a container/deployment proof.
 
 The proposed adapter is Firebase Hosting to Cloud Run.
-`firebase.next.preview.json` proposes service `catch-website-next-preview`
+`website/next-hosting.preview.json` proposes service `catch-website-next-preview`
 in `asia-south1`, keeps the existing direct Function rewrites and redirects,
 and is for a reviewed Hosting preview channel only. It is not wired into the
 production deploy workflow and has not been deployed. Its service name is a

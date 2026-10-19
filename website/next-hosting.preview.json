@@ -1,7 +1,7 @@
 {
   "hosting": {
     "target": "marketing",
-    "public": "website/public",
+    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.git/**",

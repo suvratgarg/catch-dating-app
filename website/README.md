@@ -38,7 +38,7 @@ requires a controlled configured preview; these local fixtures do not prove it.
 Build the container from repository root with
 `docker build -f website/Dockerfile .`, supplying the public `VITE_*` build args.
 The adjacent `Dockerfile.dockerignore` excludes unrelated source and local state.
-`firebase.next.preview.json` is the separate, undeployed preview proposal
+`website/next-hosting.preview.json` is the separate, undeployed preview proposal
 for `catch-website-next-preview` in `asia-south1`; do not pass it to a production
 deploy. Container execution, cloud IAM, original-host forwarding, preview traffic and
 live provider acceptance remain explicit release gates in
