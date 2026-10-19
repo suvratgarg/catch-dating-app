@@ -29,5 +29,15 @@ List<Override> consumerPlatformOverrides() => [
   healthActivityClientProvider.overrideWith(
     (ref) => MobileHealthActivityClient(),
   ),
-  razorpayCheckoutFactoryProvider.overrideWithValue(PluginRazorpayCheckout.new),
+  razorpayCheckoutFactoryProvider.overrideWith(_nativeCheckoutFactory),
 ];
+
+// The keep-alive factory owns native exclusion across auth-scoped repository
+// replacements. Each app container gets its own coordinator; no global test
+// or account state is retained outside the existing platform provider scope.
+RazorpayCheckoutFactory _nativeCheckoutFactory(Ref ref) {
+  final coordinator = RazorpayNativeCheckoutCoordinator();
+  return () => PluginRazorpayCheckout(
+    gateway: PluginRazorpayGateway(coordinator: coordinator),
+  );
+}

@@ -254,14 +254,15 @@ function collectGates(targets, context) {
           const key = `${workflow}::${index}`;
           if (!seenSkipped.has(key)) {
             seenSkipped.add(key);
-            skipped.push({workflow, name: step.name, reason: step.skipReason});
+            skipped.push({workflow, job: step.job, line: step.line,
+              name: step.name, reason: step.skipReason});
           }
           continue;
         }
         // Targets share workflows (android/ios/web all route to the build
         // matrix); running a gate once per target would multiply the cost of
         // a full verification for no additional coverage.
-        const key = `${step.workingDirectory}::${step.run}`;
+        const key = JSON.stringify([step.workingDirectory, step.run]);
         if (seen.has(key)) continue;
         seen.add(key);
         gates.push({target, workflow, name: step.name, command: step.run, workingDirectory: step.workingDirectory});
@@ -312,7 +313,15 @@ function main() {
     return;
   }
 
-  const {gates, unresolved, skipped} = collectGates(targets, context);
+  let collected;
+  try {
+    collected = collectGates(targets, context);
+  } catch (error) {
+    console.error(`Cannot derive local workflow checks: ${error.message}`);
+    process.exitCode = 2;
+    return;
+  }
+  const {gates, unresolved, skipped} = collected;
 
   if (unresolved.length > 0) {
     console.error(
@@ -350,7 +359,7 @@ function main() {
       `\n${skipped.length} CI step(s) are NOT covered locally — this run is not ` +
       `equivalent to CI:`,
     );
-    for (const step of skipped) console.log(`  ${step.name}  (${step.workflow}) — ${step.reason}`);
+    for (const step of skipped) console.log(`  ${step.name}  (${step.workflow}${step.job ? ` / ${step.job}:${step.line}` : ""}) — ${step.reason}`);
     console.log("\nTools selection is resolved through the same registered planner and runner as CI.");
   };
 

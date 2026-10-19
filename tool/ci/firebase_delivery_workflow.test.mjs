@@ -111,7 +111,7 @@ test("CI fences plan consumers and sends Rules retries to executable refusal", (
   const required = ciJob(ci, "required");
   assert.match(required, /if: \$\{\{ !cancelled\(\)/);
   assert.ok(!required.includes(guard), "Required CI must run after incompatible leaves skip.");
-  const steps = extractSteps(required).filter((step) => step.run || step.uses);
+  const steps = extractSteps(`jobs:\n${required}`).filter((step) => step.run || step.uses);
   assert.equal(steps[0].name, "Refuse deferred PR validation");
   assert.equal(steps[1].name, "Require this attempt's planner");
   const plan = ciJob(ci, "plan");
@@ -351,7 +351,7 @@ test("actual CI retry refusal accepts full reruns and stops incompatible attempt
   }});
   assert.equal(producer.status, 0, producer.stderr);
   assert.equal(fs.readFileSync(output, "utf8"), "producer_attempt=1\n");
-  const gate = extractSteps(ciJob(ci, "required")).find((step) => step.name === "Require this attempt's planner");
+  const gate = extractSteps(`jobs:\n${ciJob(ci, "required")}`).find((step) => step.name === "Require this attempt's planner");
   assert.ok(gate?.run);
   assert.match(ciJob(ci, "required"), /PRODUCER_ATTEMPT: \$\{\{ needs.plan.outputs.producer_attempt \}\}/);
   for (const [prior, current, compatible] of [
@@ -369,7 +369,7 @@ test("actual CI retry refusal accepts full reruns and stops incompatible attempt
 });
 
 test("current-attempt Required CI still distinguishes selected failure from unaffected skips", () => {
-  const steps = extractSteps(ciJob(workflow("ci.yml"), "required"));
+  const steps = extractSteps(`jobs:\n${ciJob(workflow("ci.yml"), "required")}`);
   const guard = steps.find((step) => step.name === "Require this attempt's planner")?.run;
   assert.ok(guard);
   const selected = steps.find((step) => step.name === "Require every selected lane").run;
@@ -1503,7 +1503,7 @@ test("rebaseline defaults to DEV and validates the target before authorizing sou
   const authorize = ciJob(worker, "authorize");
   assert.ok(authorize.includes("target_environment: ${{ steps.inputs.outputs.target_environment }}"));
   assert.ok(authorize.includes("TARGET_ENVIRONMENT: ${{ inputs.target_environment }}"));
-  const script = extractSteps(authorize).find((step) => step.name === "Require an explicit exact-current-main authorization").run;
+  const script = extractSteps(`jobs:\n${authorize}`).find((step) => step.name === "Require an explicit exact-current-main authorization").run;
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-rebaseline-target-"));
   t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
   fs.writeFileSync(path.join(directory, "git"), '#!/bin/sh\ntouch "$GIT_CALLED"\nif [ "$1" = rev-parse ]; then printf "%s\\n" "$SOURCE_SHA"; fi\n', {mode: 0o755});
@@ -1572,7 +1572,7 @@ test("DEV rebaseline cannot schedule production or finalization even without env
 test("rebaseline impact plan binds the validated environment without changing backend stages", (t) => {
   const authorize = ciJob(workflow("_backend-rebaseline.yml"), "authorize");
   assert.ok(authorize.includes("TARGET_ENVIRONMENT: ${{ steps.inputs.outputs.target_environment }}"));
-  const script = extractSteps(authorize).find((step) => step.name === "Create the graph-authorized all-backend impact plan").run;
+  const script = extractSteps(`jobs:\n${authorize}`).find((step) => step.name === "Create the graph-authorized all-backend impact plan").run;
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-rebaseline-plan-target-"));
   t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
   fs.writeFileSync(path.join(directory, "git"), "#!/bin/sh\nexit 0\n", {mode: 0o755});
@@ -1705,7 +1705,7 @@ test("Required CI cannot succeed when main publication is skipped or absent", (c
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-required-finalization-"));
   context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
   fs.writeFileSync(path.join(directory, "gh"), '#!/bin/sh\ntouch "$GH_CALLED"\nexit 1\n', {mode: 0o755});
-  const command = extractSteps(ciJob(workflow("ci.yml"), "required"))
+  const command = extractSteps(`jobs:\n${ciJob(workflow("ci.yml"), "required")}`)
     .find((step) => step.name === "Require every selected lane").run;
   for (const result of [undefined, "skipped", "failure", "cancelled"]) {
     const needs = {plan: {result: "success"}, "package-firebase": {result: "skipped"},
@@ -2032,7 +2032,7 @@ test("Intake PR596 uses the protected fixed-scope job and cannot enter generic m
 });
 test("Intake PR596 copied approval predicate rejects a bypass or wrong reviewer", () => {
   const job = ciJob(workflow("_firebase-promote.yml"), "promote-intake-pr596");
-  const step = extractSteps(job).find((entry) => entry.name === "Require recorded human PROD environment approval for operator release");
+  const step = extractSteps(`jobs:\n${job}`).find((entry) => entry.name === "Require recorded human PROD environment approval for operator release");
   const filter = /--argjson history "\$history" '([\s\S]*?)' > \/dev\/null/.exec(step.run)[1];
   const environment = {id: 5, protection_rules: [{type: "required_reviewers", reviewers: [{type: "User", reviewer: {id: 7}}]}]};
   const approval = {state: "approved", user: {id: 7}, environments: [{id: 5, name: "prod"}]};
@@ -2045,7 +2045,7 @@ test("Intake PR596 copied approval predicate rejects a bypass or wrong reviewer"
 });
 test("Intake PR596 invocation is first-attempt-only and cannot retry a failed CLI", (t) => {
   const job = ciJob(workflow("_firebase-promote.yml"), "promote-intake-pr596");
-  const body = extractSteps(job).find((step) => step.name === "Deploy the fixed Intake Function once").run;
+  const body = extractSteps(`jobs:\n${job}`).find((step) => step.name === "Deploy the fixed Intake Function once").run;
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "intake-one-invocation-"));
   t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
   fs.mkdirSync(path.join(directory, "build/delivery"), {recursive: true});
@@ -2062,7 +2062,7 @@ test("Intake PR596 invocation is first-attempt-only and cannot retry a failed CL
 });
 test("Intake PR596 input predicate rejects mixed flags, another environment, producer and recovery", () => {
   const job = ciJob(workflow("_firebase-promote.yml"), "promote-intake-pr596");
-  const body = extractSteps(job).find((step) => step.name === "Validate the fixed Intake caller and prohibit recovery or other modes").run;
+  const body = extractSteps(`jobs:\n${job}`).find((step) => step.name === "Validate the fixed Intake caller and prohibit recovery or other modes").run;
   const filter = /jq -e '([\s\S]*?)' <<< "\$INPUTS"/.exec(body)[1];
   const inputs = {intake_pr596_release: true, operator_release: false, whatsapp_five_release: false,
     sales_pr543_release: false, wedding_phone_import_release: false, require_current_main: false,
@@ -2081,7 +2081,7 @@ test("Intake PR596 input predicate rejects mixed flags, another environment, pro
 
 test("Intake PR596 caller accepts GitHub-omitted empty recovery and rejects any recovery value", () => {
   const job = ciJob(workflow("selective-backend-release.yml"), "authorize-intake-pr596");
-  const body = extractSteps(job).find((step) => step.name === "Bind the fixed Intake source, producer and operator confirmation").run;
+  const body = extractSteps(`jobs:\n${job}`).find((step) => step.name === "Bind the fixed Intake source, producer and operator confirmation").run;
   const filter = /jq -e '([\s\S]*?)' <<< "\$INPUTS"/.exec(body)[1];
   const inputs = {release_kind: "intake-pr596", confirm_intake_pr596: true,
     confirm_four_functions_five_indexes: false, confirm_whatsapp_five: false, confirm_sales_pr543: false,
@@ -2106,9 +2106,9 @@ test("Intake PR596 caller accepts GitHub-omitted empty recovery and rejects any 
 import {CAT165_RELEASE} from "./selective_backend_release.mjs";
 import {RELEASE as CAT151_RELEASE} from "./cat151_booking_release.mjs";
 test("CAT151 ordinary and recovery admission reject mixed CAT165 authority", () => {
-  const caller = extractSteps(ciJob(workflow("selective-backend-release.yml"), "authorize-cat151-booking"))
+  const caller = extractSteps(`jobs:\n${ciJob(workflow("selective-backend-release.yml"), "authorize-cat151-booking")}`)
     .find((step) => step.name === "Verify immutable source, producer and operator scope").run;
-  const promoter = extractSteps(ciJob(workflow("_firebase-promote.yml"), "promote-cat151-booking"))[0].run;
+  const promoter = extractSteps(`jobs:\n${ciJob(workflow("_firebase-promote.yml"), "promote-cat151-booking")}`)[0].run;
   const accepts = (body, inputs) => {
     const filter = /jq -e '([\s\S]*?)' <<< "\$INPUTS"/.exec(body)[1];
     return spawnSync("jq", ["-e", filter], {input: JSON.stringify(inputs), encoding: "utf8",
@@ -2147,7 +2147,7 @@ test("CAT165 uses protected approval, fixed artifact proofs and isolated selecte
   assert.doesNotMatch(job, /--force|--functions-postconditions-only|sync:callable-invokers|restore-decision|checkpoint restore|delivery_core\.mjs next|backend-delivery-cursor|adminListCAT165Operations/);
   assert.equal((job.match(/firebase_with_env\.sh prod deploy/g) ?? []).length, 1);
   assert.equal((job.match(/gcloud firestore indexes composite create/g) ?? []).length, 1);
-  const capture = extractSteps(job).find((step) => step.name === "Bind all 73 reviewed predecessors and capture retained resources");
+  const capture = extractSteps(`jobs:\n${job}`).find((step) => step.name === "Bind all 73 reviewed predecessors and capture retained resources");
   assert.equal(capture.run.trim(), "node tool/ci/selective_backend_release.mjs cat165-before --output build/delivery/cat165-before.json");
   assert.ok(job.indexOf("cat165-before --output") < job.indexOf("gcloud firestore indexes composite create"));
   assert.match(job, /--collection-group=organizerPrograms --query-scope=COLLECTION/);
@@ -2159,7 +2159,7 @@ test("CAT165 uses protected approval, fixed artifact proofs and isolated selecte
 });
 test("CAT165 reusable input predicate rejects every other mode, authority drift and recovery", () => {
   const job = ciJob(workflow("_firebase-promote.yml"), "promote-cat165");
-  const body = extractSteps(job).find((step) => step.name === "Validate the fixed CAT165 caller and prohibit recovery or other modes").run;
+  const body = extractSteps(`jobs:\n${job}`).find((step) => step.name === "Validate the fixed CAT165 caller and prohibit recovery or other modes").run;
   assert.match(body, /test "\$GITHUB_RUN_ATTEMPT" = 1/);
   assert.match(body, /selective-backend-release\.yml@refs\/heads\/main/);
   const filter = /jq -e '([\s\S]*?)' <<< "\$INPUTS"/.exec(body)[1];
@@ -2181,7 +2181,7 @@ test("CAT165 reusable input predicate rejects every other mode, authority drift 
 });
 test("CAT165 caller rejects missing consent, mixed release confirmations and malformed recovery", () => {
   const job = ciJob(workflow("selective-backend-release.yml"), "authorize-cat165");
-  const body = extractSteps(job).find((step) => step.name === "Bind the fixed CAT165 source, producer and operator confirmation").run;
+  const body = extractSteps(`jobs:\n${job}`).find((step) => step.name === "Bind the fixed CAT165 source, producer and operator confirmation").run;
   const filter = /jq -e '([\s\S]*?)' <<< "\$INPUTS"/.exec(body)[1];
   const inputs = {release_kind: "cat165", confirm_cat165: true, confirm_intake_pr596: false,
     confirm_four_functions_five_indexes: false, confirm_whatsapp_five: false, confirm_sales_pr543: false,
@@ -2196,7 +2196,7 @@ test("CAT165 caller rejects missing consent, mixed release confirmations and mal
     {resume_delivery_run_id: "123"}]) assert.equal(accepted({...inputs, ...patch}), false);
 });
 test("CAT165 rejects bypass approval and requires an explicitly configured human reviewer", () => {
-  const step = extractSteps(ciJob(workflow("_firebase-promote.yml"), "promote-cat165"))
+  const step = extractSteps(`jobs:\n${ciJob(workflow("_firebase-promote.yml"), "promote-cat165")}`)
     .find((entry) => entry.name === "Require recorded human PROD environment approval for operator release");
   const filter = /--argjson history "\$history" '([\s\S]*?)' > \/dev\/null/.exec(step.run)[1];
   const environment = {id: 5, protection_rules: [{type: "required_reviewers", reviewers: [{type: "User", reviewer: {id: 7}}]}]};
@@ -2209,7 +2209,7 @@ test("CAT165 rejects bypass approval and requires an explicitly configured human
   assert.equal(accepted([approval], {...environment, protection_rules: []}), false);
 });
 test("CAT165 executes one Functions invocation and no mutation after a preflight failure", (t) => {
-  const body = extractSteps(ciJob(workflow("_firebase-promote.yml"), "promote-cat165"))
+  const body = extractSteps(`jobs:\n${ciJob(workflow("_firebase-promote.yml"), "promote-cat165")}`)
     .find((step) => step.name === "Recheck the indexed boundary and deploy exactly 62 Functions once").run
     .replaceAll("${{ inputs.control_plane_sha }}", "a".repeat(40)).replaceAll("${{ steps.verify.outputs.targets }}", CAT165_RELEASE.targets.join(","));
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "cat165-once-"));

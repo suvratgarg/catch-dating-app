@@ -9,8 +9,7 @@ status: implemented-live
 # Home = The Live Layer — Product Spec
 
 Repo: `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app`
-Related: `docs/design_parity/composition_audit.md` (Screen 1),
-`docs/design_language.md` §7 (surfaces), `docs/data_contracts.md`,
+Related: `docs/design_language.md` §7 (surfaces), `docs/data_contracts.md`,
 `functions/README.md`.
 
 ## Problem + thesis

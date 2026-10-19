@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -59,7 +60,7 @@ class EventBookingController extends _$EventBookingController {
     String? inviteLinkId,
     int? quotedPriceInPaise,
   }) async {
-    _requireSignedIn(action: 'book an event');
+    _requireBookingSession(user, action: 'book an event');
     final paymentRepo = ref.read(paymentRepositoryProvider);
     final currentPriceInPaise =
         quotedPriceInPaise ?? event.priceInPaiseFor(user);
@@ -146,21 +147,50 @@ class EventBookingController extends _$EventBookingController {
     String? inviteCode,
     String? inviteLinkId,
   }) async {
-    _requireSignedIn(action: 'accept a waitlist offer');
-    final response = await ref
-        .read(eventRepositoryProvider)
-        .acceptWaitlistOffer(eventId: event.id);
-    if (response.requiresPayment) {
-      // Acceptance is the current server-owned route; a stale local zero price
-      // cannot turn the accepted paid offer into a free booking command.
-      return _startCheckout(
-        event: event,
-        user: user,
-        inviteCode: inviteCode,
-        inviteLinkId: inviteLinkId,
-      );
+    const action = 'accept a waitlist offer';
+    final session = _requireBookingSession(user, action: action);
+    var canContinue = true;
+    // Keep observing even when a mounted route pauses its provider listeners.
+    // Once revoked, returning to the same UID cannot restore this continuation.
+    final subscription = ref.container.listen(authenticatedSessionProvider, (
+      previous,
+      next,
+    ) {
+      if (next.isLoading ||
+          next.hasError ||
+          !identical(next.asData?.value, session)) {
+        canContinue = false;
+      }
+    });
+    final removeDisposeListener = ref.onDispose(subscription.close);
+    try {
+      final response = await ref
+          .read(eventRepositoryProvider)
+          .acceptWaitlistOffer(eventId: event.id);
+      if (response.requiresPayment) {
+        if (!ref.mounted || !canContinue) {
+          throw const SignInRequiredException(action);
+        }
+        final current = _requireBookingSession(user, action: action);
+        if (!identical(current, session)) {
+          throw const SignInRequiredException(action);
+        }
+        // Acceptance is the current server-owned route; a stale local zero price
+        // cannot turn the accepted paid offer into a free booking command.
+        return _startCheckout(
+          event: event,
+          user: user,
+          inviteCode: inviteCode,
+          inviteLinkId: inviteLinkId,
+        );
+      }
+      // A completed free booking remains authoritative after departure. Its
+      // originating route separately decides whether to present completion.
+      return null;
+    } finally {
+      removeDisposeListener();
+      subscription.close();
     }
-    return null;
   }
 
   /// Declines an expiring waitlist offer without leaving the waitlist.
@@ -183,6 +213,21 @@ class EventBookingController extends _$EventBookingController {
           eventId: eventId,
           venueSessionToken: venueSessionToken,
         );
+  }
+
+  AuthenticatedSession _requireBookingSession(
+    UserProfile user, {
+    required String action,
+  }) {
+    final auth = ref.read(authenticatedSessionProvider);
+    final session = auth.asData?.value;
+    if (auth.isLoading ||
+        auth.hasError ||
+        session == null ||
+        session.uid != user.uid) {
+      throw SignInRequiredException(action);
+    }
+    return session;
   }
 
   String _requireSignedIn({required String action}) {
