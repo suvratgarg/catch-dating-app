@@ -108,7 +108,7 @@ describe("canonical public chrome", () => {
       const analyticsChoice = screen.getByRole("button", {name: "Allow analytics"});
       const marketingChoice = screen.getByRole("button", {name: "Allow analytics and marketing"});
       const essentialChoice = screen.getByRole("button", {name: "Essential only"});
-      const storedConsent = localStorage.getItem("catch_marketing_consent_v2");
+      const storedConsent = localStorage.getItem("catch_marketing_consent_v3");
       const consent = getMarketingConsent();
       const consentMode = [...(window.dataLayer ?? [])];
       const menu = screen.getByRole("button", {name: "Menu"});
@@ -142,14 +142,15 @@ describe("canonical public chrome", () => {
       expect(dialog.hasAttribute("inert")).toBe(true);
       expect(document.activeElement).toBe(menu);
       expect(document.body.style.overflow).toBe("auto");
-      expect(localStorage.getItem("catch_marketing_consent_v2")).toBe(storedConsent);
+      expect(localStorage.getItem("catch_marketing_consent_v3")).toBe(storedConsent);
       expect(getMarketingConsent()).toEqual(consent);
       expect(window.dataLayer).toEqual(consentMode);
       expect(screen.getByRole("button", {name: "Allow analytics"})).toBe(analyticsChoice);
       expect(screen.getByRole("button", {name: "Allow analytics and marketing"})).toBe(marketingChoice);
       expect(screen.getByRole("button", {name: "Essential only"})).toBe(essentialChoice);
       fireEvent.click(essentialChoice);
-      expect(getMarketingConsent()).toMatchObject({version: 2, choice: "essential", analytics: false, marketing: false});
+      expect(getMarketingConsent()).toMatchObject({version: 3, measurementMode: "disabled",
+        choice: "essential", analytics: false, marketing: false});
     }
   );
 });

@@ -4,9 +4,16 @@ import type {CatchProviderSession, SafeAcquisitionEvent} from "../analytics.ts";
  * acceptance and refreshed consent copy; merely configuring an account is not activation. */
 export const catchLiveDestinations = Object.freeze({
   enabled: false,
+  previewOrigin: "https://catch-dating-app-64e51--next-candidate-tnpxnhes.web.app",
   googleMeasurementId: "G-HZFG0DL2DK",
   googleAdsLeadDestination: "AW-18526407471/dUL7CNKBn6MdEK-WioJF",
 });
+
+export type CatchMeasurementMode = "disabled" | "google-preview-v1" | "google-live-v1";
+export function catchMeasurementMode(origin = typeof window === "undefined" ? "" : window.location.origin): CatchMeasurementMode {
+  if (origin === catchLiveDestinations.previewOrigin) return "google-preview-v1";
+  return catchLiveDestinations.enabled && origin === "https://catchdates.com" ? "google-live-v1" : "disabled";
+}
 
 type RuntimePort = Pick<HTMLIFrameElement, "contentWindow" | "remove" | "addEventListener" | "removeEventListener">;
 export interface RuntimeEnvironment {
@@ -34,8 +41,8 @@ function browserEnvironment(): RuntimeEnvironment {
 
 /** This factory never consumes window.dataLayer or an external gtag. An opaque
  * frame cannot read Catch's DOM/storage and is removed on every lifecycle exit.
- * Cookie/click-ID attribution is intentionally absent; do not call this a
- * verified campaign-attribution implementation. */
+ * Attribution is supplied only by the consented browser context. Provider
+ * receipt and real ad-click attribution still require separate live acceptance. */
 export function createCatchLiveGoogleSession(
   environment: RuntimeEnvironment = browserEnvironment(),
 ): CatchProviderSession {
@@ -75,7 +82,7 @@ export function createCatchLiveGoogleSession(
 }
 
 export function configuredCatchTransport(provider: "google" | "meta"): CatchProviderSession {
-  if (!catchLiveDestinations.enabled || provider !== "google") {
+  if (catchMeasurementMode() === "disabled" || provider !== "google") {
     return {send() {}, destroy() {}};
   }
   return createCatchLiveGoogleSession();
