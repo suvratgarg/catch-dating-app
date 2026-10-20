@@ -9,7 +9,7 @@ import {validateFunctionsDeployment, validateFunctionIdentity, readMaterializedP
 import {gcloudIndexList} from "../firebase/wait_firestore_indexes_ready.mjs";
 
 // Fixed, executable release admission. Never a general target selector or cursor.
-// Preparation only: pending immutable main-CI pins deliberately reject execution.
+// Exact artifact from successful main CI 39447727509, with observed runtime predecessors.
 export const RELEASE = Object.freeze({
  sourceSha: "171c1cb07e5b8b405904ad8e3504b6e1ea93607b",
  baseSha: "329f9bf7eabc126ca34a3882939ad318a72953ef",
