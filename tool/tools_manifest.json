@@ -8379,6 +8379,39 @@
           "ZIP validates local names and CRCs and rejects prefixed or truncated archives"
         ]
       }
+    },
+    {
+      "id": "ci:host-deletion-indexes",
+      "category": "ci",
+      "path": "tool/firebase/host_deletion_indexes.mjs",
+      "command": "node --test tool/firebase/host_deletion_indexes.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/firebase/host_deletion_indexes.test.mjs",
+        ".github/workflows/host-deletion-indexes.yml",
+        "tool/ci/host_deletion_release.mjs"
+      ],
+      "description": "Checks the bounded additive Host deletion query indexes and DEV-to-protected-PROD preservation.",
+      "checks": [
+        "node --check tool/firebase/host_deletion_indexes.mjs",
+        "node --test tool/firebase/host_deletion_indexes.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/host_deletion_indexes.test.mjs",
+        "contains": [
+          "field patch adds one query scope without dropping inherited indexes or changing TTL",
+          "index repair rejects unrelated runtime and field configuration drift"
+        ]
+      }
     }
   ]
 }
