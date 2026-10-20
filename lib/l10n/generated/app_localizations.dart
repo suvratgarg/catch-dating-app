@@ -40721,6 +40721,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save guest information'**
   String get hostsEventGuestDetailsSave;
+
+  /// Confirmation before a Host deletes their Catch account; explains shared business records and ownership.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently delete your Catch account and Host profile? You’ll lose organizer access. Shared business records and required safety/payment records remain. Transfer organizer ownership first if needed.'**
+  String get hostAccountDeletionConfirmation;
 }
 
 class _AppLocalizationsDelegate
