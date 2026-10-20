@@ -1,6 +1,6 @@
 ---
 doc_id: ads_conversion_spec
-version: 0.4.0
+version: 0.5.0
 updated: 2026-10-20
 owner: marketing_website
 status: active
@@ -14,6 +14,28 @@ Catch acquisition uses one typed contract in
 adapters in `website/src/shared/analytics/catchProviders.ts` accept synthetic destinations only. The production
 controller has a disabled configured transport; no provider, credentials, tag,
 customer list, spend, policy change, or backend deployment is enabled by default.
+
+### Host server permission preparation
+
+`functions/src/acquisition/consentHttp.ts` owns the separate
+`/api/host-acquisition-consent` grant/withdrawal handshake. Its activation gate
+is off. A new versioned purpose, a 32-byte random capability and a recent choice
+are required; old intake analytics fields do not authorize server advertising.
+Only a domain-separated capability hash is stored. Consent expires 30 days
+after the original choice, and an exact retry cannot extend that expiry.
+Withdrawal creates an irreversible tombstone for that capability, including
+when it arrives before a delayed grant. Fresh permission uses a new capability.
+The expiry worker transactionally rechecks at most 500 records every 15 minutes;
+withdrawal tombstones outlive the grant and delivery windows.
+
+The Meta policy prepares only a website `Lead` with the accepted Host receipt,
+a canonical application URL, a hashed random browser identifier, browser user
+agent and an optional real consented click. Contact details, answers, account
+identifiers and guest information are excluded. Dispatch requires current
+permission, at most five attempts and an age below 24 hours. Uncertain provider
+outcomes are held for reconciliation. An HTTP 200 alone does not confirm receipt.
+Browser handshake wiring, the durable delivery worker, production credentials
+and destination acceptance remain separate from these source preparations.
 
 ### Catch Host pilot destination configuration
 

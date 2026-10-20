@@ -3629,6 +3629,29 @@ export interface SalesEvidenceProposalsDocument {
 }
 
 /**
+ * Private anonymous device permission, keyed by a domain-separated capability hash. Revocation tombstones cannot be reactivated; fresh permission requires a new capability.
+ */
+export interface HostAcquisitionConsentDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  consentId: string;
+  status: "active" | "revoked";
+  authority: {
+    version: 1;
+    purpose: "host_acquisition_measurement";
+    analytics: true;
+    advertising: boolean;
+    chosenAt: number;
+    acceptedAt: number;
+    expiresAt: number;
+    revokedAt: number | null;
+  } | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Private self-reported host submission, immutable at capture and linked only after identity review.
  */
 export interface SalesInboundIntentsDocument {

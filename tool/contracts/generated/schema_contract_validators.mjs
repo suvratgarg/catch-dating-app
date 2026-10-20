@@ -239,6 +239,7 @@ import {
   salesDemoSetupCallableResponseSchema,
   salesDemoSessionsDocumentSchema,
   salesEvidenceProposalsDocumentSchema,
+  hostAcquisitionConsentDocumentSchema,
   salesInboundIntentsDocumentSchema,
   salesIntelligenceAssessmentDocumentSchema,
   salesIntelligenceClauseDocumentSchema,
@@ -1240,6 +1241,8 @@ import {
   adminRecordMarketingReviewDecisionCallableResponseSchema,
   adminListCrossPathsShowcaseCandidatesCallableResponseSchema,
   adminSetCrossPathsShowcaseEligibilityCallableResponseSchema,
+  hostAcquisitionConsentHTTPRequestSchema,
+  hostAcquisitionConsentHTTPResponseSchema,
   joinWaitlistHTTPRequestSchema,
   joinWaitlistHTTPResponseSchema,
 } from "./schema_contract_registry.mjs";
@@ -1502,6 +1505,7 @@ export const validateSalesDemoSetupCallablePayload = ajv.compile(salesDemoSetupC
 export const validateSalesDemoSetupCallableResponse = ajv.compile(salesDemoSetupCallableResponseSchema);
 export const validateSalesDemoSessionsDocument = ajv.compile(salesDemoSessionsDocumentSchema);
 export const validateSalesEvidenceProposalsDocument = ajv.compile(salesEvidenceProposalsDocumentSchema);
+export const validateHostAcquisitionConsentDocument = ajv.compile(hostAcquisitionConsentDocumentSchema);
 export const validateSalesInboundIntentsDocument = ajv.compile(salesInboundIntentsDocumentSchema);
 export const validateSalesIntelligenceAssessmentDocument = ajv.compile(salesIntelligenceAssessmentDocumentSchema);
 export const validateSalesIntelligenceClauseDocument = ajv.compile(salesIntelligenceClauseDocumentSchema);
@@ -2503,6 +2507,8 @@ export const validateAdminRecordMarketingReviewDecisionCallablePayload = ajv.com
 export const validateAdminRecordMarketingReviewDecisionCallableResponse = ajv.compile(adminRecordMarketingReviewDecisionCallableResponseSchema);
 export const validateAdminListCrossPathsShowcaseCandidatesCallableResponse = ajv.compile(adminListCrossPathsShowcaseCandidatesCallableResponseSchema);
 export const validateAdminSetCrossPathsShowcaseEligibilityCallableResponse = ajv.compile(adminSetCrossPathsShowcaseEligibilityCallableResponseSchema);
+export const validateHostAcquisitionConsentHTTPRequest = ajv.compile(hostAcquisitionConsentHTTPRequestSchema);
+export const validateHostAcquisitionConsentHTTPResponse = ajv.compile(hostAcquisitionConsentHTTPResponseSchema);
 export const validateJoinWaitlistHTTPRequest = ajv.compile(joinWaitlistHTTPRequestSchema);
 export const validateJoinWaitlistHTTPResponse = ajv.compile(joinWaitlistHTTPResponseSchema);
 

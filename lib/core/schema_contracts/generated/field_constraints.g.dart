@@ -87475,6 +87475,185 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const hostAcquisitionConsentDocumentAuthorityAcceptedAt = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.authority.acceptedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostAcquisitionConsentDocumentAuthorityAdvertising = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.authority.advertising',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const hostAcquisitionConsentDocumentAuthorityAnalytics = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.authority.analytics',
+    required: true,
+  );
+
+  static const hostAcquisitionConsentDocumentAuthorityChosenAt = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.authority.chosenAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostAcquisitionConsentDocumentAuthorityExpiresAt = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.authority.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostAcquisitionConsentDocumentAuthorityPurpose = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.authority.purpose',
+    required: true,
+  );
+
+  static const hostAcquisitionConsentDocumentAuthorityRevokedAt = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.authority.revokedAt',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostAcquisitionConsentDocumentAuthorityVersion = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.authority.version',
+    required: true,
+  );
+
+  static const hostAcquisitionConsentDocumentClassification = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.classification',
+    required: true,
+  );
+
+  static const hostAcquisitionConsentDocumentConsentId = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.consentId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const hostAcquisitionConsentDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const hostAcquisitionConsentDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const hostAcquisitionConsentDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const hostAcquisitionConsentDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const hostAcquisitionConsentDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.schemaVersion',
+    required: true,
+  );
+
+  static const hostAcquisitionConsentDocumentStatus = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.status',
+    required: true,
+    enumValues: <String>['active', 'revoked'],
+  );
+
+  static const hostAcquisitionConsentDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const hostAcquisitionConsentDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const hostAcquisitionConsentHTTPRequestAction = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentHTTPRequest.action',
+    required: true,
+    enumValues: <String>['grant', 'revoke'],
+  );
+
+  static const hostAcquisitionConsentHTTPRequestCapability = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentHTTPRequest.capability',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const hostAcquisitionConsentHTTPRequestChoiceAdvertising = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentHTTPRequest.choice.advertising',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const hostAcquisitionConsentHTTPRequestChoiceAnalytics = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentHTTPRequest.choice.analytics',
+    required: true,
+  );
+
+  static const hostAcquisitionConsentHTTPRequestChoiceChosenAt = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentHTTPRequest.choice.chosenAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostAcquisitionConsentHTTPRequestChoicePurpose = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentHTTPRequest.choice.purpose',
+    required: true,
+  );
+
+  static const hostAcquisitionConsentHTTPRequestChoiceVersion = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentHTTPRequest.choice.version',
+    required: true,
+  );
+
+  static const hostAcquisitionConsentHTTPResponseError = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentHTTPResponse.error',
+    maxLength: 200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostAcquisitionConsentHTTPResponseExpiresAt = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentHTTPResponse.expiresAt',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostAcquisitionConsentHTTPResponseOk = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentHTTPResponse.ok',
+    required: true,
+  );
+
+  static const hostAcquisitionConsentHTTPResponseStatus = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentHTTPResponse.status',
+    required: true,
+    enumValues: <String>['active', 'revoked', 'disabled'],
+  );
+
   static const hostAnalyticsCallableResponseDataQuality = CatchContractFieldConstraints(
     path: 'hostAnalyticsCallableResponse.dataQuality',
     required: true,
@@ -181558,6 +181737,35 @@ abstract final class CatchContractConstraints {
     'heartbeatEventSuccessPresenceCallableResponse.presenceState': heartbeatEventSuccessPresenceCallableResponsePresenceState,
     'heartbeatEventSuccessPresenceCallableResponse.presentWindowSeconds': heartbeatEventSuccessPresenceCallableResponsePresentWindowSeconds,
     'heartbeatEventSuccessPresenceCallableResponse.serverTimeMillis': heartbeatEventSuccessPresenceCallableResponseServerTimeMillis,
+    'hostAcquisitionConsentDocument.authority.acceptedAt': hostAcquisitionConsentDocumentAuthorityAcceptedAt,
+    'hostAcquisitionConsentDocument.authority.advertising': hostAcquisitionConsentDocumentAuthorityAdvertising,
+    'hostAcquisitionConsentDocument.authority.analytics': hostAcquisitionConsentDocumentAuthorityAnalytics,
+    'hostAcquisitionConsentDocument.authority.chosenAt': hostAcquisitionConsentDocumentAuthorityChosenAt,
+    'hostAcquisitionConsentDocument.authority.expiresAt': hostAcquisitionConsentDocumentAuthorityExpiresAt,
+    'hostAcquisitionConsentDocument.authority.purpose': hostAcquisitionConsentDocumentAuthorityPurpose,
+    'hostAcquisitionConsentDocument.authority.revokedAt': hostAcquisitionConsentDocumentAuthorityRevokedAt,
+    'hostAcquisitionConsentDocument.authority.version': hostAcquisitionConsentDocumentAuthorityVersion,
+    'hostAcquisitionConsentDocument.classification': hostAcquisitionConsentDocumentClassification,
+    'hostAcquisitionConsentDocument.consentId': hostAcquisitionConsentDocumentConsentId,
+    'hostAcquisitionConsentDocument.createdAt._nanoseconds': hostAcquisitionConsentDocumentCreatedAtNanoseconds,
+    'hostAcquisitionConsentDocument.createdAt._seconds': hostAcquisitionConsentDocumentCreatedAtSeconds,
+    'hostAcquisitionConsentDocument.expiresAt._nanoseconds': hostAcquisitionConsentDocumentExpiresAtNanoseconds,
+    'hostAcquisitionConsentDocument.expiresAt._seconds': hostAcquisitionConsentDocumentExpiresAtSeconds,
+    'hostAcquisitionConsentDocument.schemaVersion': hostAcquisitionConsentDocumentSchemaVersion,
+    'hostAcquisitionConsentDocument.status': hostAcquisitionConsentDocumentStatus,
+    'hostAcquisitionConsentDocument.updatedAt._nanoseconds': hostAcquisitionConsentDocumentUpdatedAtNanoseconds,
+    'hostAcquisitionConsentDocument.updatedAt._seconds': hostAcquisitionConsentDocumentUpdatedAtSeconds,
+    'hostAcquisitionConsentHTTPRequest.action': hostAcquisitionConsentHTTPRequestAction,
+    'hostAcquisitionConsentHTTPRequest.capability': hostAcquisitionConsentHTTPRequestCapability,
+    'hostAcquisitionConsentHTTPRequest.choice.advertising': hostAcquisitionConsentHTTPRequestChoiceAdvertising,
+    'hostAcquisitionConsentHTTPRequest.choice.analytics': hostAcquisitionConsentHTTPRequestChoiceAnalytics,
+    'hostAcquisitionConsentHTTPRequest.choice.chosenAt': hostAcquisitionConsentHTTPRequestChoiceChosenAt,
+    'hostAcquisitionConsentHTTPRequest.choice.purpose': hostAcquisitionConsentHTTPRequestChoicePurpose,
+    'hostAcquisitionConsentHTTPRequest.choice.version': hostAcquisitionConsentHTTPRequestChoiceVersion,
+    'hostAcquisitionConsentHTTPResponse.error': hostAcquisitionConsentHTTPResponseError,
+    'hostAcquisitionConsentHTTPResponse.expiresAt': hostAcquisitionConsentHTTPResponseExpiresAt,
+    'hostAcquisitionConsentHTTPResponse.ok': hostAcquisitionConsentHTTPResponseOk,
+    'hostAcquisitionConsentHTTPResponse.status': hostAcquisitionConsentHTTPResponseStatus,
     'hostAnalyticsCallableResponse.dataQuality': hostAnalyticsCallableResponseDataQuality,
     'hostAnalyticsCallableResponse.dataQuality.items.detail': hostAnalyticsCallableResponseDataQualityItemsDetail,
     'hostAnalyticsCallableResponse.dataQuality.items.id': hostAnalyticsCallableResponseDataQualityItemsId,

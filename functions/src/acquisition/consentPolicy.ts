@@ -1,4 +1,8 @@
 import {createHash} from "node:crypto";
+import type {HostAcquisitionConsentDocument} from
+  "../shared/generated/hostAcquisitionConsentDocument";
+import type {HostAcquisitionConsentHTTPRequest} from
+  "../shared/generated/hostAcquisitionConsentHttpRequest";
 
 /** A new purpose/version is intentional: old intake metadata is not permission
  * for server delivery. Operational lead intake remains independent. */
@@ -9,24 +13,10 @@ export const HOST_CHOICE_CLOCK_TOLERANCE_MS = 5 * 60 * 1000;
 export const HOST_META_DELIVERY_LIFETIME_MS = 24 * 60 * 60 * 1000;
 export const HOST_META_MAX_ATTEMPTS = 5;
 
-export interface HostConsentChoice {
-  version: 1;
-  purpose: "host_acquisition_measurement";
-  analytics: true;
-  advertising: boolean;
-  chosenAt: number;
-}
-
-export interface HostConsentAuthority {
-  version: 1;
-  purpose: "host_acquisition_measurement";
-  analytics: true;
-  advertising: boolean;
-  chosenAt: number;
-  acceptedAt: number;
-  expiresAt: number;
-  revokedAt: number | null;
-}
+export type HostConsentChoice =
+  NonNullable<HostAcquisitionConsentHTTPRequest["choice"]>;
+export type HostConsentAuthority =
+  NonNullable<HostAcquisitionConsentDocument["authority"]>;
 
 const isMillis = (value: unknown): value is number =>
   Number.isSafeInteger(value) && Number(value) > 0;

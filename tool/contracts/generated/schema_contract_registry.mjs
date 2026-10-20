@@ -43527,6 +43527,223 @@ export const salesEvidenceProposalsDocumentSchema = {
   }
 };
 
+export const hostAcquisitionConsentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_acquisition_consents.schema.json",
+  "title": "HostAcquisitionConsentDocument",
+  "description": "Private anonymous device permission, keyed by a domain-separated capability hash. Revocation tombstones cannot be reactivated; fresh permission requires a new capability.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostAcquisitionConsents",
+  "x-firestore-path": "hostAcquisitionConsents/{consentId}",
+  "x-document-id-field": "consentId",
+  "x-owner": "hostAcquisitionConsent and acquisition expiry worker",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "consentId",
+    "status",
+    "authority",
+    "createdAt",
+    "updatedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "consentId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "status": {
+      "enum": [
+        "active",
+        "revoked"
+      ]
+    },
+    "authority": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "purpose",
+            "analytics",
+            "advertising",
+            "chosenAt",
+            "acceptedAt",
+            "expiresAt",
+            "revokedAt"
+          ],
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "purpose": {
+              "const": "host_acquisition_measurement"
+            },
+            "analytics": {
+              "const": true
+            },
+            "advertising": {
+              "type": "boolean"
+            },
+            "chosenAt": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "acceptedAt": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "expiresAt": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "revokedAt": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "active"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "authority": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "version",
+              "purpose",
+              "analytics",
+              "advertising",
+              "chosenAt",
+              "acceptedAt",
+              "expiresAt",
+              "revokedAt"
+            ],
+            "properties": {
+              "version": {
+                "const": 1
+              },
+              "purpose": {
+                "const": "host_acquisition_measurement"
+              },
+              "analytics": {
+                "const": true
+              },
+              "advertising": {
+                "type": "boolean"
+              },
+              "chosenAt": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "acceptedAt": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "expiresAt": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "revokedAt": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+};
+
 export const salesInboundIntentsDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_inbound_intents.schema.json",
@@ -323196,6 +323413,163 @@ export const adminSetCrossPathsShowcaseEligibilityCallableResponseSchema = {
       "format": "date-time"
     }
   }
+};
+
+export const hostAcquisitionConsentHTTPRequestSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/http/host_acquisition_consent_request.schema.json",
+  "title": "HostAcquisitionConsentHTTPRequest",
+  "description": "Anonymous device-specific grant or withdrawal. Capability is 32 random bytes and must never be logged. Old intake analytics is not this permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "action",
+    "capability"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "grant",
+        "revoke"
+      ]
+    },
+    "capability": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "purpose",
+        "analytics",
+        "advertising",
+        "chosenAt"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "host_acquisition_measurement"
+        },
+        "analytics": {
+          "const": true
+        },
+        "advertising": {
+          "type": "boolean"
+        },
+        "chosenAt": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "grant"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "choice"
+        ]
+      },
+      "else": {
+        "properties": {
+          "choice": false
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "purpose",
+        "analytics",
+        "advertising",
+        "chosenAt"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "host_acquisition_measurement"
+        },
+        "analytics": {
+          "const": true
+        },
+        "advertising": {
+          "type": "boolean"
+        },
+        "chosenAt": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+};
+
+export const hostAcquisitionConsentHTTPResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/http/host_acquisition_consent_response.schema.json",
+  "title": "HostAcquisitionConsentHTTPResponse",
+  "description": "Permission handshake result. Disabled or revoked status never authorizes delivery.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ok",
+        "status",
+        "expiresAt"
+      ],
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "status": {
+          "enum": [
+            "active",
+            "revoked",
+            "disabled"
+          ]
+        },
+        "expiresAt": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "error"
+      ],
+      "properties": {
+        "error": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      }
+    }
+  ]
 };
 
 export const joinWaitlistHTTPRequestSchema = {
