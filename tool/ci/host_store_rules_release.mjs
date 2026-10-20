@@ -18,6 +18,15 @@ export const RELEASE = Object.freeze({
   project: "catch-dating-app-64e51",
 });
 export const hash = value => createHash("sha256").update(value).digest("hex");
+export function rulesRequestHeaders(token, quotaProject) {
+  assert.ok(token && !/[\r\n]/.test(token));
+  // Service-account requests use their own project by default. Forcing the
+  // user-project header additionally requires serviceusage.services.use.
+  // Local user credentials can opt in without changing the production identity.
+  if (quotaProject !== undefined) assert.equal(quotaProject, RELEASE.project);
+  return {Authorization: `Bearer ${token}`,
+    ...(quotaProject ? {"X-Goog-User-Project": quotaProject} : {})};
+}
 export function verifyAuthority(run, artifact) {
   assert.equal(run.id, RELEASE.runId);
   assert.equal(run.run_attempt, 1);
@@ -83,11 +92,14 @@ async function snapshot() {
   assert.ok(token && !/[\r\n]/.test(token));
   const get = async suffix => {
     const response = await fetch(`https://firebaserules.googleapis.com/v1/${suffix}`, {
-      headers: {Authorization: `Bearer ${token}`, "X-Goog-User-Project": RELEASE.project},
+      headers: rulesRequestHeaders(token, process.env.CATCH_RULES_QUOTA_PROJECT),
       signal: AbortSignal.timeout(30000),
     });
-    assert.ok(response.ok, `Rules metadata HTTP ${response.status}`);
-    return response.json();
+    const body = await response.json();
+    const reasons = (body.error?.details ?? []).map(detail => detail.reason)
+      .filter(reason => typeof reason === "string" && /^[A-Z_]+$/.test(reason));
+    assert.ok(response.ok, `Rules metadata HTTP ${response.status}: ${reasons.join(",")}`);
+    return body;
   };
   const prefix = `projects/${RELEASE.project}`;
   const releases = [];
