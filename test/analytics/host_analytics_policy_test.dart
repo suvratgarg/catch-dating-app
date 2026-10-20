@@ -109,6 +109,34 @@ void main() {
     },
   );
 
+  test('operation completion does not replay across consent changes', () async {
+    final reporter = _Reporter();
+    final analytics = AppAnalytics(
+      reporter: reporter,
+      shouldCollect: true,
+      hostRole: true,
+      hostChoiceStore: HostAnalyticsChoiceStore(
+        read: () async => null,
+        write: (_) async => true,
+      ),
+    );
+    await analytics.initialize();
+    final beforeConsent = analytics.hostEventCompletion('host_event_created');
+    await analytics.setHostAnalyticsPermission(true);
+    beforeConsent();
+    expect(reporter.events, isEmpty);
+    final beforeWithdrawal = analytics.hostEventCompletion(
+      'host_event_published',
+    );
+    await analytics.setHostAnalyticsPermission(false);
+    await analytics.setHostAnalyticsPermission(true);
+    beforeWithdrawal();
+    expect(reporter.events, isEmpty);
+    analytics.hostEventCompletion('host_event_created')();
+    expect(reporter.events.single['name'], 'host_event_created');
+    await analytics.setHostAnalyticsPermission(false);
+  });
+
   test('unknown auth methods and client activation claims are excluded', () {
     expect(
       hostAnalyticsParameters('auth_completed', {

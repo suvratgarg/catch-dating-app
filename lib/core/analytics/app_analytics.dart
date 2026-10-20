@@ -190,6 +190,20 @@ class AppAnalytics {
     );
   }
 
+  /// Capture permission when a Host operation starts. Completion never replays
+  /// activity begun before consent or across a withdrawal/re-consent cycle.
+  VoidCallback hostEventCompletion(String name) {
+    final permitted = hostAnalyticsAllowed;
+    final revision = _hostChoiceRevision;
+    return () {
+      if (permitted &&
+          revision == _hostChoiceRevision &&
+          hostAnalyticsAllowed) {
+        logEvent(name);
+      }
+    };
+  }
+
   void setUserId(String? userId) {
     if (!_shouldCollect || _hostRole) return;
     unawaited(_reporter.setUserId(userId));
@@ -351,6 +365,7 @@ abstract final class AnalyticsEvents {
   static const matchCreated = 'match_created';
   static const hostClubCreated = 'host_club_created';
   static const hostEventCreated = 'host_event_created';
+  static const hostEventPublished = 'host_event_published';
   static const swipeSent = 'swipe_sent';
   static const matchViewed = 'match_viewed';
   static const chatMessageSent = 'chat_message_sent';
