@@ -3033,10 +3033,7 @@
       "description": "Checks Firestore contract metadata against rules, schemas, and Functions exports.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": [
-          "node",
-          "functions-npm"
-        ]
+        "setup": ["node", "functions-npm"]
       },
       "impactPaths": [
         "tool/contracts/check_firestore_contract.test.mjs",
@@ -6753,9 +6750,7 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
+        "setup": ["node"]
       },
       "command": "node tool/design/check_screen_gutters.mjs --summary",
       "safety": "local",
@@ -6878,9 +6873,7 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
+        "setup": ["node"]
       },
       "command": "node tool/design/check_rail_contracts.mjs --summary",
       "safety": "local",
@@ -7888,9 +7881,7 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
+        "setup": ["node"]
       },
       "command": "node tool/design/check_terminal_padding.mjs --check",
       "safety": "local",
