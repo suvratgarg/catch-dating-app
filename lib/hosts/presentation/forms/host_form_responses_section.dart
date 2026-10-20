@@ -48,6 +48,7 @@ class HostFormResponsesSection extends ConsumerStatefulWidget {
     this.showFormContext = true,
     this.queryCapability,
     this.accountId,
+    this.accountGeneration = 0,
     this.requireAccount = false,
   });
 
@@ -65,6 +66,7 @@ class HostFormResponsesSection extends ConsumerStatefulWidget {
   /// Production routes bind this panel to the current manager. A new actor
   /// must fetch legacy responses again before any cached rows can render.
   final String? accountId;
+  final int accountGeneration;
   final bool requireAccount;
 
   @override
@@ -77,6 +79,7 @@ class _HostFormResponsesSectionState
   HostResponseQueryController? _queryController;
   JournalHostResponseExportGateway? _exportGateway;
   String? _queryAccountId;
+  ProviderSubscription<AsyncValue<HostFormResponsesState>>? _legacyFreshRead;
   String? _legacyLoadedAccountId;
   bool _legacyAccountRefreshScheduled = false;
   Object? _legacyRefreshError;
@@ -106,6 +109,7 @@ class _HostFormResponsesSectionState
 
   @override
   void dispose() {
+    _legacyFreshRead?.close();
     _queryController?.dispose();
     super.dispose();
   }
@@ -124,7 +128,10 @@ class _HostFormResponsesSectionState
     }
     if (oldWidget.formId != widget.formId ||
         oldWidget.organizerId != widget.organizerId ||
-        oldWidget.accountId != widget.accountId) {
+        oldWidget.accountId != widget.accountId ||
+        oldWidget.accountGeneration != widget.accountGeneration) {
+      _legacyFreshRead?.close();
+      _legacyFreshRead = null;
       _answerWorkspaceOpen = false;
       _answerFilters.clear();
       _filterOptions = const [];
@@ -157,10 +164,6 @@ class _HostFormResponsesSectionState
         return const CatchStateViewport.sliverLoading();
       }
       if (capability == null && _legacyLoadedAccountId != routeAccountId) {
-        // Keep the fresh read alive without exposing the cached account rows.
-        ref.watch(
-          hostFormResponsesControllerProvider(_responseRequest(widget.formId)),
-        );
         if (_legacyRefreshError case final error?) {
           return CatchLocalizedSliverErrorState(
             error,
@@ -173,13 +176,20 @@ class _HostFormResponsesSectionState
           final generation = ++_legacyRefreshGeneration;
           WidgetsBinding.instance.addPostFrameCallback((_) async {
             if (!_currentLegacyAccount(routeAccountId, generation)) return;
+            final provider = hostFormResponsesControllerProvider(
+              _responseRequest(widget.formId),
+            );
+            _legacyFreshRead?.close();
+            // A loading actor/generation family is already this scope's read.
+            // Refresh settled cache when the same account remounts.
+            final loading = ref.read(provider).isLoading;
+            final subscription = ref.listenManual(provider, (_, _) {});
+            _legacyFreshRead = subscription;
             try {
-              final refresh = ref.refresh(
-                hostFormResponsesControllerProvider(
-                  _responseRequest(widget.formId),
-                ).future,
-              );
-              await refresh;
+              final freshRead = loading
+                  ? ref.read(provider.future)
+                  : ref.refresh(provider.future);
+              await freshRead;
               if (!_currentLegacyAccount(routeAccountId, generation)) return;
               setState(() {
                 _legacyLoadedAccountId = routeAccountId;
@@ -190,6 +200,13 @@ class _HostFormResponsesSectionState
               setState(() {
                 _legacyRefreshError = error;
                 _legacyAccountRefreshScheduled = false;
+              });
+            } finally {
+              // Keep the family alive until the settled build watches it.
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!identical(_legacyFreshRead, subscription)) return;
+                _legacyFreshRead = null;
+                subscription.close();
               });
             }
           });
@@ -641,6 +658,8 @@ class _HostFormResponsesSectionState
   HostFormResponseListRequest _responseRequest(String? formId) =>
       HostFormResponseListRequest(
         organizerId: widget.organizerId,
+        accountUid: widget.accountId,
+        accountGeneration: widget.accountGeneration,
         formId: formId,
         versionId: formId == widget.formId ? _versionId : null,
         includeApplications: true,

@@ -146,7 +146,6 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
   @override
   void dispose() {
     _searchDebounce?.cancel();
-
     super.dispose();
   }
 
@@ -306,6 +305,8 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
           hostFormResponsesControllerProvider(
             HostFormResponseListRequest(
               organizerId: selectedClub.id,
+              accountUid: uid,
+              accountGeneration: _accountGeneration,
               formId: _responseFormId,
               includeApplications: true,
             ),
@@ -320,7 +321,6 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
     final searchPlaceholder = activeSearchIsForms
         ? context.l10n.hostFormsSearch
         : context.l10n.hostFormResponsesSearch;
-
     return CatchRootScreenScaffold.withPrimaryRail(
       header: CatchRootScreenHeader.custom(
         HostAudienceHeader(
@@ -445,6 +445,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
                       ),
                       organizerId: selectedClub.id,
                       accountId: uid,
+                      accountGeneration: _accountGeneration,
                       requireAccount: true,
                       queryCapability: responseVersionId == null
                           ? null

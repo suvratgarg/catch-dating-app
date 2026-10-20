@@ -1,5 +1,5 @@
-// CAT-83 temporary current-source diagnostics. These assertions record observed
-// behavior; duplicate counts are evidence, not a proposed desired contract.
+// CAT-83 regression: count actual repository reads through the shipped
+// controller while keeping account, version, and stale-result fences intact.
 import 'dart:async';
 import 'dart:convert';
 
@@ -59,30 +59,25 @@ void main() {
     },
   );
 
-  testWidgets(
-    'real cold Responses mount starts two identical unresolved reads',
-    (tester) async {
-      final h = await _Harness.mount(tester);
-      expect(h.repo.calls, hasLength(2));
-      expect(h.repo.calls[0].request, h.repo.calls[1].request);
-      expect(h.repo.calls.every((c) => !c.result.isCompleted), isTrue);
-      h.repo.complete(0, 'superseded-first-read');
-      await _frames(tester);
-      expect(find.text('superseded-first-read'), findsNothing);
-      h.repo.complete(1, 'current-read');
-      await _frames(tester);
-      expect(find.text('current-read'), findsOneWidget);
-      expect(h.repo.calls, hasLength(2));
-      h.repo.report('cold-unfiltered');
-      expect(tester.takeException(), isNull);
-    },
-  );
+  testWidgets('real cold Responses mount starts one unresolved read', (
+    tester,
+  ) async {
+    final h = await _Harness.mount(tester);
+    expect(h.repo.calls, hasLength(1));
+    expect(h.repo.calls.every((c) => !c.result.isCompleted), isTrue);
+    h.repo.complete(0, 'current-read');
+    await _frames(tester);
+    expect(find.text('current-read'), findsOneWidget);
+    expect(h.repo.calls, hasLength(1));
+    h.repo.report('cold-unfiltered');
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets(
     'same account rebuild is stable; warm remount forces one fresh read',
     (tester) async {
       final h = await _Harness.mount(tester, automatic: true);
-      expect(h.repo.calls, hasLength(2));
+      expect(h.repo.calls, hasLength(1));
       final count = h.repo.calls.length;
       h.rebuild();
       h.actors.add('A');
@@ -110,7 +105,7 @@ void main() {
       'unresolved account A-B-A rejects old results; failure=$failOld',
       (tester) async {
         final h = await _Harness.mount(tester);
-        expect(h.repo.calls.map((c) => c.actor), ['A', 'A']);
+        expect(h.repo.calls.map((c) => c.actor), ['A']);
         h.switchActor('B');
         await _frames(tester);
         final bCalls = h.repo.calls.where((c) => c.actor == 'B').toList();
@@ -120,6 +115,8 @@ void main() {
         await _frames(tester);
         expect(h.repo.calls.length, greaterThan(beforeReturn));
         expect(h.repo.calls.last.actor, 'A');
+        expect(h.repo.calls.map((c) => c.request.accountUid), ['A', 'B', 'A']);
+        expect(h.repo.calls.map((c) => c.request.accountGeneration), [0, 1, 2]);
         final current = h.repo.calls.length - 1;
         for (var i = 0; i < current; i++) {
           if (failOld) {
@@ -169,7 +166,7 @@ void main() {
     },
   );
 
-  testWidgets('selected form cold mount resolves version with three reads', (
+  testWidgets('selected form cold mount resolves version with two reads', (
     tester,
   ) async {
     final h = await _Harness.mount(
@@ -178,13 +175,10 @@ void main() {
       automatic: true,
       versions: true,
     );
-    expect(h.repo.calls.map((c) => c.request.formId), ['form', 'form', 'form']);
-    expect(h.repo.calls.map((c) => c.request.versionId), [
-      null,
-      null,
-      'form_v2',
-    ]);
-    expect(h.repo.calls[0].request, h.repo.calls[1].request);
+    expect(h.repo.calls.map((c) => c.request.formId), ['form', 'form']);
+    expect(h.repo.calls.map((c) => c.request.versionId), [null, 'form_v2']);
+    expect(h.repo.calls.map((c) => c.request.accountUid), ['A', 'A']);
+    expect(h.repo.calls.map((c) => c.request.accountGeneration), [0, 0]);
     h.repo.report('cold-selected-form');
     expect(tester.takeException(), isNull);
   });
@@ -199,11 +193,7 @@ void main() {
         automatic: true,
         versions: true,
       );
-      expect(h.repo.calls.map((c) => c.request.versionId), [
-        null,
-        null,
-        'form_v2',
-      ]);
+      expect(h.repo.calls.map((c) => c.request.versionId), [null, 'form_v2']);
       final beforeForm = h.repo.calls.length;
       h.formId = 'other';
       h.rebuild();
@@ -211,10 +201,8 @@ void main() {
       expect(h.repo.calls.skip(beforeForm).map((c) => c.request.formId), [
         'other',
         'other',
-        'other',
       ]);
       expect(h.repo.calls.skip(beforeForm).map((c) => c.request.versionId), [
-        null,
         null,
         'other_v2',
       ]);
@@ -451,7 +439,7 @@ class _Repository extends Fake implements HostFormsRepository {
       'CAT83 ${jsonEncode({
         'scenario': scenario,
         'count': calls.length,
-        'requests': calls.map((c) => {'actor': c.actor, 'organizer': c.request.organizerId, 'form': c.request.formId, 'version': c.request.versionId, 'cursor': c.request.cursor, 'includeApplications': c.request.includeApplications, 'label': c.label}).toList(),
+        'requests': calls.map((c) => {'actor': c.actor, 'accountUid': c.request.accountUid, 'accountGeneration': c.request.accountGeneration, 'organizer': c.request.organizerId, 'form': c.request.formId, 'version': c.request.versionId, 'cursor': c.request.cursor, 'includeApplications': c.request.includeApplications, 'label': c.label}).toList(),
       })}',
     );
   }

@@ -26,6 +26,8 @@ enum HostFormDataOrigin {
 class HostFormResponseListRequest {
   const HostFormResponseListRequest({
     required this.organizerId,
+    this.accountUid,
+    this.accountGeneration = 0,
     this.formId,
     this.contactId,
     this.includeApplications = false,
@@ -44,6 +46,10 @@ class HostFormResponseListRequest {
   });
 
   final String organizerId;
+
+  /// Client-side family identity only; the callable uses the signed-in actor.
+  final String? accountUid;
+  final int accountGeneration;
   final String? formId;
   final String? contactId;
   final bool includeApplications;
@@ -63,6 +69,8 @@ class HostFormResponseListRequest {
   HostFormResponseListRequest copyWith({String? cursor}) =>
       HostFormResponseListRequest(
         organizerId: organizerId,
+        accountUid: accountUid,
+        accountGeneration: accountGeneration,
         formId: formId,
         contactId: contactId,
         includeApplications: includeApplications,
@@ -84,6 +92,8 @@ class HostFormResponseListRequest {
   bool operator ==(Object other) =>
       other is HostFormResponseListRequest &&
       organizerId == other.organizerId &&
+      accountUid == other.accountUid &&
+      accountGeneration == other.accountGeneration &&
       formId == other.formId &&
       contactId == other.contactId &&
       includeApplications == other.includeApplications &&
@@ -109,6 +119,8 @@ class HostFormResponseListRequest {
   @override
   int get hashCode => Object.hash(
     organizerId,
+    accountUid,
+    accountGeneration,
     formId,
     contactId,
     includeApplications,
