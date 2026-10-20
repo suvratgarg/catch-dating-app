@@ -8,6 +8,8 @@ import 'package:catch_dating_app/event_success/presentation/event_success_host_w
 import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_live_workspace_tab_bar.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +17,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart' show buildEvent;
+import '../test_pump_helpers.dart';
+import '../ui_captures/catalog/screen_capture_catalog.dart'
+    show findScreenCapture;
 
 void main() {
   testWidgets(
@@ -510,4 +515,66 @@ void main() {
     ]);
     expect(tester.takeException(), isNull);
   });
+  testWidgets(
+    'real Host room fixture forwards spatial callbacks through its shell',
+    (tester) async {
+      tester.view.physicalSize = const Size(430, 2400);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final fixture = findScreenCapture('host_live_room_workspace');
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [...fixture.providerOverrides],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: Builder(builder: fixture.builder)),
+          ),
+        ),
+      );
+      await pumpUntilFound(
+        tester,
+        find.byType(EventSuccessHostWorkspacePageBody),
+      );
+      final shell = tester.widget<HostEventManageScreen>(
+        find.byType(HostEventManageScreen),
+      );
+      final workspace = tester.widget<EventSuccessHostWorkspacePageBody>(
+        find.byType(EventSuccessHostWorkspacePageBody),
+      );
+      expect(
+        workspace.initialSpatialSelectionUid,
+        shell.initialSpatialSelectionUid,
+      );
+      expect(workspace.onPreviewSpatial, same(shell.onPreviewSpatial));
+      expect(workspace.onReassignSpatial, same(shell.onReassignSpatial));
+      expect(workspace.onConfirmSpatial, same(shell.onConfirmSpatial));
+      expect(workspace.onReleaseSpatial, same(shell.onReleaseSpatial));
+      await tester.tap(find.text('Room'));
+      await pumpUntilFound(tester, find.byType(EventSuccessRoomMap));
+      await tester.pump();
+      final map = tester.widget<EventSuccessRoomMap>(
+        find.byType(EventSuccessRoomMap),
+      );
+      expect(map.initialSelectedUid, shell.initialSpatialSelectionUid);
+      final guest = map.assignments.singleWhere(
+        (a) => a.uid == map.initialSelectedUid,
+      );
+      final destinations = await map.onPreview!(guest);
+      expect(destinations.where((d) => d.valid).map((d) => d.unitId), [
+        'round-4',
+        'round-5',
+        'round-6',
+      ]);
+      expect(
+        destinations.first.reason,
+        EventSuccessSpatialDestinationReason.declaredConstraint,
+      );
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await fixture.cleanup?.call(tester);
+    },
+  );
 }
