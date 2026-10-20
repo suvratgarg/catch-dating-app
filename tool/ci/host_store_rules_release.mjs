@@ -145,11 +145,17 @@ export async function runCli([command, ...args]) {
     fs.mkdirSync("build/host-rules-only", {recursive: false});
     fs.copyFileSync(`${args[1]}/firestore.rules`, "build/host-rules-only/firestore.rules");
     fs.writeFileSync("build/host-rules-only/firebase.json", JSON.stringify(config));
+    // --config makes this directory Firebase CLI's project root. Bind the
+    // wrapper's prod alias here rather than relying on the parent checkout.
+    fs.writeFileSync("build/host-rules-only/.firebaserc",
+      JSON.stringify({projects: {prod: RELEASE.project}}), {flag: "wx"});
   } else if (command === "verify-rules") {
     assert.equal(args.length, 1);
     const rules = fs.readFileSync("build/host-rules-only/firestore.rules", "utf8");
     assert.equal(hash(rules), RELEASE.rulesHash);
     assert.deepEqual(read("build/host-rules-only/firebase.json"), {firestore: {rules: "firestore.rules"}});
+    assert.deepEqual(read("build/host-rules-only/.firebaserc"),
+      {projects: {prod: RELEASE.project}}, "Isolated Firebase project binding changed.");
     verifyCurrentRules(rules, fs.readFileSync(args[0], "utf8"));
   } else if (command === "before") {
     assert.equal(args.length, 1);
