@@ -541,6 +541,41 @@
       }
     },
     {
+      "id": "ci:host-store-rules-release",
+      "category": "ci",
+      "path": "tool/ci/host_store_rules_release.mjs",
+      "command": "node --test tool/ci/host_store_rules_release.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/host_store_rules_release.test.mjs",
+        ".github/workflows/host-store-rules-release.yml",
+        "tool/ci/delivery_core.mjs",
+        "tool/firebase/check_rules_deployment_drift.mjs",
+        "firestore.rules"
+      ],
+      "description": "Verifies fixed PR592 Host rules recovery, immutable successful CI authority, human production approval, and live predecessor preservation.",
+      "checks": [
+        "node --check tool/ci/host_store_rules_release.mjs",
+        "node --test tool/ci/host_store_rules_release.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/host_store_rules_release.test.mjs",
+        "contains": [
+          "fixed authority rejects foreign, failed, rerun, expired or substituted artifacts",
+          "live drift and changes to unselected releases fail closed"
+        ]
+      }
+    },
+    {
       "id": "ci:cat151-receipt-release",
       "category": "ci",
       "path": "tool/ci/cat151_receipt_release.mjs",
