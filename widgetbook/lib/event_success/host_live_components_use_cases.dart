@@ -119,7 +119,6 @@ Widget eventSuccessStrictLiveTab(BuildContext context) =>
           onResetReveal: () async {},
           outcomeActionState: const EventSuccessOutcomeActionState(),
           onRecordOutcomes: null,
-          fixtureActions: null,
           exclusionAlertThreshold: const Duration(minutes: 5),
           exclusionReferenceNow: EventSuccessCompanionFixtures.now,
           embedded: true,
