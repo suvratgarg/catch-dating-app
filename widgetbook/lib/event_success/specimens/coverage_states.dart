@@ -19,19 +19,6 @@ class HostCoverageStates extends StatelessWidget {
     final roster = EventParticipationRoster.fromParticipations([
       EventSuccessCompanionFixtures.attendedParticipation(),
     ]);
-    final actions = EventSuccessHostFixtureActions(
-      onSaveSetup: () {},
-      onPreviousStep: () {},
-      onNextStep: () {},
-      onCompletePlan: () {},
-      onGenerateMicroPods: () {},
-      onGenerateGuidedRotations: () {},
-      onOverrideGroupAssignments: (_) {},
-      onOverrideGuidedRotations: (_) {},
-      onStartRevealCountdown: (_, _) {},
-      onRevealRound: (_) {},
-      onResetReveal: () {},
-    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -57,7 +44,16 @@ class HostCoverageStates extends StatelessWidget {
             wingmanProfiles: const [EventSuccessCompanionFixtures.peer],
             initialTab: tab,
             showTabs: false,
-            fixtureActions: actions,
+            onSaveSetup: (_) async {},
+            onSetLiveStep: (_) async {},
+            onCompleteLiveGuide: (_) async {},
+            onGenerateMicroPods: () async {},
+            onGenerateGuidedRotations: () async {},
+            onOverrideGroupAssignments: (_) async {},
+            onOverrideGuidedRotations: (_) async {},
+            onStartRevealCountdown: (_, _) async {},
+            onRevealRound: (_) async {},
+            onResetReveal: () async {},
           ),
           if (tab != EventSuccessHostTab.values.last) gapH16,
         ],
