@@ -145,11 +145,30 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final signOutMutation = ref.watch(AuthSessionController.signOutMutation);
+    final deletionMutation = ref.watch(
+      SettingsController.requestAccountDeletionMutation,
+    );
+    final accountOperationPending =
+        signOutMutation.isPending || deletionMutation.isPending;
     final signOutAction = CatchIconAction.toolbar(
       key: const ValueKey<String>('host-organizer-sign-out'),
       tooltip: context.l10n.hostsHostClubTeamScreenTitleSignOut,
       icon: CatchIcons.logoutRounded,
-      onPressed: signOutMutation.isPending ? null : () => unawaited(_signOut()),
+      onPressed: accountOperationPending ? null : () => unawaited(_signOut()),
+    );
+    final accountMenu = CatchActionMenu<String>(
+      key: const ValueKey<String>('host-account-menu'),
+      tooltip: context.l10n.safetySettingsScreenTitleAccount,
+      enabled: !accountOperationPending,
+      items: [
+        CatchActionMenuItem(
+          value: 'delete',
+          label: context.l10n.safetySettingsScreenTitleDeleteAccount658588,
+          icon: CatchIcons.deleteOutline,
+          isDestructive: true,
+        ),
+      ],
+      onSelected: (_) => unawaited(_deleteAccount()),
     );
     final selectedOrganizerId = ref.watch(
       hostOrganizerSelectionProvider(widget.currentUid),
@@ -165,13 +184,16 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
       listenToCatchMutationErrors(
         context,
         ref,
-        mutations: [AuthSessionController.signOutMutation],
+        mutations: [
+          AuthSessionController.signOutMutation,
+          SettingsController.requestAccountDeletionMutation,
+        ],
         errorContext: AppErrorContext.auth,
       );
       return HostOrganizerStateScaffold(
         selectedTab: _selectedTab,
         scrollKey: const PageStorageKey<String>('host-organizer-empty-state'),
-        actions: [signOutAction],
+        actions: [accountMenu, signOutAction],
         slivers: [
           CatchSliverEmptyState(
             icon: CatchIcons.groupsOutlined,
@@ -196,13 +218,16 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
     listenToCatchMutationErrors(
       context,
       ref,
-      mutations: [AuthSessionController.signOutMutation],
+      mutations: [
+        AuthSessionController.signOutMutation,
+        SettingsController.requestAccountDeletionMutation,
+      ],
       errorContext: AppErrorContext.auth,
     );
     final indexPane = CatchRootScreenScaffold.withPrimaryRail(
       header: CatchRootScreenHeader.title(
         title: selectedClub.name,
-        actions: [signOutAction],
+        actions: [accountMenu, signOutAction],
       ),
       actions: CatchPageTabBar<HostClubTab>.controlled(
         controller: _tabController,
@@ -314,6 +339,32 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
       );
     } catch (_) {
       // listenToCatchMutationErrors owns user-facing error display.
+      return;
+    }
+    if (mounted) context.go(Routes.startScreen.path);
+  }
+
+  Future<void> _deleteAccount() async {
+    if (ref.read(SettingsController.requestAccountDeletionMutation).isPending ||
+        ref.read(AuthSessionController.signOutMutation).isPending) {
+      return;
+    }
+    final confirmed = await showConfirmDangerDialog(
+      context: context,
+      title: context.l10n.safetySettingsScreenTitleDeleteAccount,
+      message: context.l10n.hostAccountDeletionConfirmation,
+      confirmLabel: context.l10n.sharedActionDelete,
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await SettingsController.requestAccountDeletionMutation.run(
+        ref,
+        (tx) async => tx
+            .get(settingsControllerProvider.notifier)
+            .requestAccountDeletion(),
+      );
+    } catch (_) {
+      // The shared mutation listener presents the failure and enables retry.
       return;
     }
     if (mounted) context.go(Routes.startScreen.path);

@@ -31973,5 +31973,12 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.event_management.widgets.event_guest_details_section"
+  },
+  "hostAccountDeletionConfirmation": "Permanently delete your Catch account and Host profile? You’ll lose organizer access. Shared business records and required safety/payment records remain. Transfer organizer ownership first if needed.",
+  "@hostAccountDeletionConfirmation": {
+    "description": "Confirmation before a Host deletes their Catch account; explains shared business records and ownership.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
   }
 }
