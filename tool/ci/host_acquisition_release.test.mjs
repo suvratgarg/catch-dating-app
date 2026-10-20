@@ -99,6 +99,7 @@ test('Host acquisition CLI rejects target overrides, recovery and unknown enviro
 });
 test('Host acquisition source compatibility is pinned and rejects non-SHA input',()=>{
  assert.throws(()=>checkSource('HEAD'));assert.equal(checkSource(RELEASE.sourceSha).sourceSha,RELEASE.sourceSha);
+ assert.equal(checkSource('e9555315e4f26e160f6ea7c1e6c208817f1e6d76').sourceSha,RELEASE.sourceSha);
 });
 function jobText(source,name) {
  const start=source.indexOf(`\n  ${name}:\n`);assert.ok(start>=0);const part=source.slice(start+1);const end=part.search(/\n  [A-Za-z_][A-Za-z0-9_-]*:\n/);return end<0?part:part.slice(0,end);

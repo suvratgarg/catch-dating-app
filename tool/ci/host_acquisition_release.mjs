@@ -73,7 +73,11 @@ export function checkSource(currentSha,cwd=process.cwd()) {
  assert.match(currentSha,/^[0-9a-f]{40}$/);
  const git=args=>{const r=spawnSync("git",args,{cwd,encoding:"utf8",timeout:10000});assert.equal(r.status,0,"Source ancestry unavailable");return r.stdout;};
  git(["merge-base","--is-ancestor",RELEASE.sourceSha,currentSha]);
- const unrelated = {};
+ // #720 only adds the two outgoing deletion-query indexes. This release never
+ // deploys indexes; it preserves their live metadata before/after joinWaitlist.
+ const unrelated = {
+   "firestore.indexes.json": "97adc2e609fa82013c91fdcdb03a6a84d8143e68",
+ };
  const changed=git(["diff","--name-only",RELEASE.sourceSha,currentSha,"--","functions","firebase.json",".firebaserc","firestore.rules","firestore.indexes.json","storage.rules"]).trim().split("\n").filter(Boolean);
  for(const file of changed){assert.ok(Object.hasOwn(unrelated,file),"Backend drift requires a new reviewed release");assert.equal(git(["rev-parse",`${currentSha}:${file}`]).trim(),unrelated[file],"Reviewed unrelated source changed");}
  return {sourceSha:RELEASE.sourceSha,currentSha};
