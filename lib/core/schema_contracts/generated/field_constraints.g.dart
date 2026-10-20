@@ -14117,6 +14117,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const adminUpdateEventDetailsCallablePayloadFieldsHostPilotReviewExpectedRevision = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.hostPilotReview.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminUpdateEventDetailsCallablePayloadFieldsHostPilotReviewRealEvent = CatchContractFieldConstraints(
+    path: 'adminUpdateEventDetailsCallablePayload.fields.hostPilotReview.realEvent',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const adminUpdateEventDetailsCallablePayloadFieldsPace = CatchContractFieldConstraints(
     path: 'adminUpdateEventDetailsCallablePayload.fields.pace',
     valueTypes: <String>['string'],
@@ -90269,6 +90282,62 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const hostOrganizerActivationDocumentActivatedAt = CatchContractFieldConstraints(
+    path: 'hostOrganizerActivationDocument.activatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostOrganizerActivationDocumentClassification = CatchContractFieldConstraints(
+    path: 'hostOrganizerActivationDocument.classification',
+    required: true,
+  );
+
+  static const hostOrganizerActivationDocumentEventId = CatchContractFieldConstraints(
+    path: 'hostOrganizerActivationDocument.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const hostOrganizerActivationDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'hostOrganizerActivationDocument.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const hostOrganizerActivationDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'hostOrganizerActivationDocument.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^host_activation_[a-f0-9-]{36}\$',
+  );
+
+  static const hostOrganizerActivationDocumentRecordedAt = CatchContractFieldConstraints(
+    path: 'hostOrganizerActivationDocument.recordedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostOrganizerActivationDocumentReviewRevision = CatchContractFieldConstraints(
+    path: 'hostOrganizerActivationDocument.reviewRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostOrganizerActivationDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'hostOrganizerActivationDocument.schemaVersion',
+    required: true,
+  );
+
   static const hostPaymentAccountDocumentChargesEnabled = CatchContractFieldConstraints(
     path: 'hostPaymentAccountDocument.chargesEnabled',
     required: true,
@@ -90439,6 +90508,63 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const hostPilotEventReviewDocumentClassification = CatchContractFieldConstraints(
+    path: 'hostPilotEventReviewDocument.classification',
+    required: true,
+  );
+
+  static const hostPilotEventReviewDocumentEventId = CatchContractFieldConstraints(
+    path: 'hostPilotEventReviewDocument.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const hostPilotEventReviewDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'hostPilotEventReviewDocument.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const hostPilotEventReviewDocumentRealEvent = CatchContractFieldConstraints(
+    path: 'hostPilotEventReviewDocument.realEvent',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const hostPilotEventReviewDocumentReviewedAt = CatchContractFieldConstraints(
+    path: 'hostPilotEventReviewDocument.reviewedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostPilotEventReviewDocumentReviewedBy = CatchContractFieldConstraints(
+    path: 'hostPilotEventReviewDocument.reviewedBy',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const hostPilotEventReviewDocumentRevision = CatchContractFieldConstraints(
+    path: 'hostPilotEventReviewDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostPilotEventReviewDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'hostPilotEventReviewDocument.schemaVersion',
+    required: true,
   );
 
   static const hostProfileDocumentAvatarUrl = CatchContractFieldConstraints(
@@ -172028,6 +172154,8 @@ abstract final class CatchContractConstraints {
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.eventSuccessPrimitives.unitOutcome': adminUpdateEventDetailsCallablePayloadFieldsEventFormatEventSuccessPrimitivesUnitOutcome,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.interactionModel': adminUpdateEventDetailsCallablePayloadFieldsEventFormatInteractionModel,
     'adminUpdateEventDetailsCallablePayload.fields.eventFormat.version': adminUpdateEventDetailsCallablePayloadFieldsEventFormatVersion,
+    'adminUpdateEventDetailsCallablePayload.fields.hostPilotReview.expectedRevision': adminUpdateEventDetailsCallablePayloadFieldsHostPilotReviewExpectedRevision,
+    'adminUpdateEventDetailsCallablePayload.fields.hostPilotReview.realEvent': adminUpdateEventDetailsCallablePayloadFieldsHostPilotReviewRealEvent,
     'adminUpdateEventDetailsCallablePayload.fields.pace': adminUpdateEventDetailsCallablePayloadFieldsPace,
     'adminUpdateEventDetailsCallablePayload.fields.photoUrl': adminUpdateEventDetailsCallablePayloadFieldsPhotoUrl,
     'adminUpdateEventDetailsCallablePayload.reviewNote': adminUpdateEventDetailsCallablePayloadReviewNote,
@@ -182271,6 +182399,14 @@ abstract final class CatchContractConstraints {
     'hostGroupSummaryDocument.status': hostGroupSummaryDocumentStatus,
     'hostGroupSummaryDocument.updatedAtMillis': hostGroupSummaryDocumentUpdatedAtMillis,
     'hostGroupSummaryDocument.version': hostGroupSummaryDocumentVersion,
+    'hostOrganizerActivationDocument.activatedAt': hostOrganizerActivationDocumentActivatedAt,
+    'hostOrganizerActivationDocument.classification': hostOrganizerActivationDocumentClassification,
+    'hostOrganizerActivationDocument.eventId': hostOrganizerActivationDocumentEventId,
+    'hostOrganizerActivationDocument.organizerId': hostOrganizerActivationDocumentOrganizerId,
+    'hostOrganizerActivationDocument.receiptId': hostOrganizerActivationDocumentReceiptId,
+    'hostOrganizerActivationDocument.recordedAt': hostOrganizerActivationDocumentRecordedAt,
+    'hostOrganizerActivationDocument.reviewRevision': hostOrganizerActivationDocumentReviewRevision,
+    'hostOrganizerActivationDocument.schemaVersion': hostOrganizerActivationDocumentSchemaVersion,
     'hostPaymentAccountDocument.chargesEnabled': hostPaymentAccountDocumentChargesEnabled,
     'hostPaymentAccountDocument.country': hostPaymentAccountDocumentCountry,
     'hostPaymentAccountDocument.createdAt._nanoseconds': hostPaymentAccountDocumentCreatedAtNanoseconds,
@@ -182295,6 +182431,14 @@ abstract final class CatchContractConstraints {
     'hostPaymentAccountDocument.updatedAt._nanoseconds': hostPaymentAccountDocumentUpdatedAtNanoseconds,
     'hostPaymentAccountDocument.updatedAt._seconds': hostPaymentAccountDocumentUpdatedAtSeconds,
     'hostPaymentAccountDocument.userId': hostPaymentAccountDocumentUserId,
+    'hostPilotEventReviewDocument.classification': hostPilotEventReviewDocumentClassification,
+    'hostPilotEventReviewDocument.eventId': hostPilotEventReviewDocumentEventId,
+    'hostPilotEventReviewDocument.organizerId': hostPilotEventReviewDocumentOrganizerId,
+    'hostPilotEventReviewDocument.realEvent': hostPilotEventReviewDocumentRealEvent,
+    'hostPilotEventReviewDocument.reviewedAt': hostPilotEventReviewDocumentReviewedAt,
+    'hostPilotEventReviewDocument.reviewedBy': hostPilotEventReviewDocumentReviewedBy,
+    'hostPilotEventReviewDocument.revision': hostPilotEventReviewDocumentRevision,
+    'hostPilotEventReviewDocument.schemaVersion': hostPilotEventReviewDocumentSchemaVersion,
     'hostProfileDocument.avatarUrl': hostProfileDocumentAvatarUrl,
     'hostProfileDocument.bio': hostProfileDocumentBio,
     'hostProfileDocument.createdAt._nanoseconds': hostProfileDocumentCreatedAtNanoseconds,

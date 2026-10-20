@@ -400,6 +400,7 @@ enter previews.
 | Function | File | Purpose |
 |----------|------|---------|
 | `joinWaitlist` | `src/waitlist/` | Public marketing waitlist endpoint |
+| `onHostPilotCheckIn` | `src/acquisition/` | Canonical roster check-in creates one private organiser activation after staff real-event review; no vendor export |
 | `hostAcquisitionConsent` | `src/acquisition/` | Default-disabled versioned Host measurement grant and capability withdrawal |
 | `expireHostAcquisitionConsent` | `src/acquisition/` | Bounded transactional expiry of private grants and withdrawal tombstones |
 | `ingestEventRosterWebhook` | `src/events/eventRosterHandoffs.ts` | Receive one HMAC-verified, provider-authenticated roster attachment through a capability-bound email or WhatsApp handoff |

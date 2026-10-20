@@ -928,3 +928,5 @@ export {onEventApplicationApprovalNotification,
   "./events/approvalNotifications/triggers";
 
 export {manageWebsiteAccount} from "./profiles/websiteAccount";
+
+export {onHostPilotCheckIn} from "./acquisition/pilotActivation";

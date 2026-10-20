@@ -249,6 +249,8 @@ Do not edit it by hand.
 | SalesDemoSessionsDocument | `firestore/sales_demo_sessions.schema.json` | `functions/src/shared/generated/salesDemoSessionsDocument.ts` |
 | SalesEvidenceProposalsDocument | `firestore/sales_evidence_proposals.schema.json` | `functions/src/shared/generated/salesEvidenceProposalsDocument.ts` |
 | HostAcquisitionConsentDocument | `firestore/host_acquisition_consents.schema.json` | `functions/src/shared/generated/hostAcquisitionConsentDocument.ts` |
+| HostPilotEventReviewDocument | `firestore/host_pilot_event_reviews.schema.json` | `functions/src/shared/generated/hostPilotEventReviewDocument.ts` |
+| HostOrganizerActivationDocument | `firestore/host_organizer_activations.schema.json` | `functions/src/shared/generated/hostOrganizerActivationDocument.ts` |
 | HostAcquisitionDeliveryDocument | `firestore/host_acquisition_deliveries.schema.json` | `functions/src/shared/generated/hostAcquisitionDeliveryDocument.ts` |
 | SalesInboundIntentsDocument | `firestore/sales_inbound_intents.schema.json` | `functions/src/shared/generated/salesInboundIntentsDocument.ts` |
 | SalesIntelligenceAssessmentDocument | `firestore/sales_intelligence_assessments.schema.json` | `functions/src/shared/generated/salesIntelligenceAssessmentsDocument.ts` |
@@ -1497,6 +1499,8 @@ Do not edit it by hand.
 | `schemaSalesDemoSessionsDocumentSchema` | SalesDemoSessionsDocument | `firestore/sales_demo_sessions.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_sessions_document.g.dart` |
 | `schemaSalesEvidenceProposalsDocumentSchema` | SalesEvidenceProposalsDocument | `firestore/sales_evidence_proposals.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_evidence_proposals_document.g.dart` |
 | `schemaHostAcquisitionConsentDocumentSchema` | HostAcquisitionConsentDocument | `firestore/host_acquisition_consents.schema.json` | `lib/core/schema_contracts/generated/schemas/host_acquisition_consent_document.g.dart` |
+| `schemaHostPilotEventReviewDocumentSchema` | HostPilotEventReviewDocument | `firestore/host_pilot_event_reviews.schema.json` | `lib/core/schema_contracts/generated/schemas/host_pilot_event_review_document.g.dart` |
+| `schemaHostOrganizerActivationDocumentSchema` | HostOrganizerActivationDocument | `firestore/host_organizer_activations.schema.json` | `lib/core/schema_contracts/generated/schemas/host_organizer_activation_document.g.dart` |
 | `schemaHostAcquisitionDeliveryDocumentSchema` | HostAcquisitionDeliveryDocument | `firestore/host_acquisition_deliveries.schema.json` | `lib/core/schema_contracts/generated/schemas/host_acquisition_delivery_document.g.dart` |
 | `schemaSalesInboundIntentsDocumentSchema` | SalesInboundIntentsDocument | `firestore/sales_inbound_intents.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_inbound_intents_document.g.dart` |
 | `schemaSalesIntelligenceAssessmentDocumentSchema` | SalesIntelligenceAssessmentDocument | `firestore/sales_intelligence_assessments.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_assessment_document.g.dart` |

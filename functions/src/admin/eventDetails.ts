@@ -43,6 +43,11 @@ import {
   crossPathsPilotMinimumEventLeadMillis,
 } from "../crossPaths/pilotPolicy";
 
+import {HOST_PILOT_REVIEWS, HOST_ACTIVATIONS, nextPilotReview} from
+  "../acquisition/pilotActivation";
+import type {HostPilotEventReviewDocument} from
+  "../shared/generated/hostPilotEventReviewDocument";
+
 const eventDetailsRoles = ["admin", "adminOwner", "support"] as const;
 type EventListTimeWindow = "upcoming" | "past" | "all";
 
@@ -86,6 +91,9 @@ function requireAdminRichEvent(event: EventDocument): AdminRichEventDocument {
 }
 
 export interface AdminEventDetailsSnapshot {
+  hostActivation?: {activatedAt: number; eventId: string} | null;
+  hostPilotReview?: {realEvent: boolean; revision: number;
+    reviewedAt: number} | null;
   eventId: string;
   clubId: string;
   organizerId: string;
@@ -262,8 +270,17 @@ export async function adminGetEventDetailsHandler(
   const event = requireAdminRichEvent(
     requireDoc<EventDocument>(eventSnap, "EventDocument"));
   const club = await loadClub(db, event.organizerId ?? event.clubId);
+  const review = (await db.collection(HOST_PILOT_REVIEWS)
+    .doc(data.eventId).get()).data() as
+      HostPilotEventReviewDocument | undefined;
+  const activation = (await db.collection(HOST_ACTIVATIONS)
+    .doc(event.organizerId ?? event.clubId).get()).data();
   return {
-    event: publicEventDetails(data.eventId, event, club?.name ?? null),
+    event: {...publicEventDetails(data.eventId, event, club?.name ?? null),
+      hostActivation: activation ? {activatedAt: activation.activatedAt,
+        eventId: activation.eventId} : null,
+      hostPilotReview: review ? {realEvent: review.realEvent,
+        revision: review.revision, reviewedAt: review.reviewedAt} : null},
   };
 }
 
@@ -285,7 +302,14 @@ export async function adminUpdateEventDetailsHandler(
       normalizeAdminUpdateEventDetailsPayload
     );
   const rawPatch = buildFirestorePatch(data.fields);
-  const editableFieldCount = Object.keys(rawPatch).length;
+  const pilotReview = data.fields.hostPilotReview;
+  const editableFieldCount = Object.keys(rawPatch).length +
+    (pilotReview ? 1 : 0);
+  if (pilotReview && !adminContext.roles.some((role) =>
+    role === "admin" || role === "adminOwner")) {
+    throw new HttpsError("permission-denied",
+      "Admin or Admin Owner access is required to review a real pilot event.");
+  }
   if (editableFieldCount === 0) {
     throw new HttpsError("invalid-argument", "No editable fields supplied.");
   }
@@ -343,6 +367,24 @@ export async function adminUpdateEventDetailsHandler(
         nowMillis: (deps.now?.() ?? new Date()).getTime(),
       });
     }
+    const reviewRef = db.collection(HOST_PILOT_REVIEWS).doc(data.eventId);
+    const previousReview = pilotReview ? await tx.get(reviewRef) : null;
+    let reviewed: HostPilotEventReviewDocument | undefined;
+    if (pilotReview) {
+      try {
+        reviewed = nextPilotReview({eventId: data.eventId,
+          organizerId: before.organizerId ?? before.clubId,
+          realEvent: pilotReview.realEvent,
+          expectedRevision: pilotReview.expectedRevision,
+          current: previousReview?.data() as
+            HostPilotEventReviewDocument | undefined,
+          actorUid: adminContext.uid,
+          now: (deps.now?.() ?? new Date()).getTime()});
+      } catch {
+        throw new HttpsError("failed-precondition",
+          "Pilot review changed. Reload the event before reviewing.");
+      }
+    }
     const patch = mergeEventDetailsPatch(before, rawPatch);
     const nextEvent = eventWithAdminFieldsForSearch(before, patch);
     const fullPatch: Record<string, unknown> = {
@@ -360,7 +402,8 @@ export async function adminUpdateEventDetailsHandler(
         "adminUpdateEventDetails"
       ),
     };
-    tx.update(eventRef, fullPatch);
+    if (reviewed) tx.set(reviewRef, reviewed);
+    if (Object.keys(rawPatch).length > 0) tx.update(eventRef, fullPatch);
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "adminUpdateEventDetails",
       targetPath: eventRef.path,
@@ -370,7 +413,9 @@ export async function adminUpdateEventDetailsHandler(
       },
       after: {
         eventId: data.eventId,
-        updatedFields: Object.keys(fullPatch).sort(),
+        updatedFields: Object.keys(rawPatch).sort(),
+        ...(reviewed ? {hostPilotReview: {realEvent: reviewed.realEvent,
+          revision: reviewed.revision}} : {}),
       },
       note: data.reviewNote,
       serverTimestamp: deps.serverTimestamp,

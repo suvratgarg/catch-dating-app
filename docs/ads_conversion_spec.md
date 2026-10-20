@@ -78,8 +78,15 @@ advertising-ID collection are disabled.
 Only coarse sign-in, onboarding and Host setup events are allowed. Event
 creation is not organiser activation. Creation and publication diagnostics follow successful server responses;
 replayed publications and operations spanning a consent change are excluded.
-The authoritative first-real-check-in milestone, native upgrade/network acceptance
-and app-store privacy declarations still require completion before activation.
+The private first-real-check-in milestone is prepared in `pilotActivation.ts`.
+Admin or Admin Owner confirms a real event through the audited event editor,
+with revision checks rejecting stale saves. The canonical roster trigger checks
+current review, published event, organiser and check-in together before creating
+one private organiser receipt. Check-ins before review, cancelled/private events,
+replayed roster updates and undone check-ins are excluded. This operational
+receipt does not grant advertising permission or export guest data. Its deployed
+trigger, live acceptance, native upgrade/network checks and app-store privacy
+declarations still require completion before measurement activation.
 
 ### Catch Host pilot destination configuration
 

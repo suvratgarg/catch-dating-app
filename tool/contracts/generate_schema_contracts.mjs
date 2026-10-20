@@ -306,6 +306,8 @@ const schemaSpecs = [
   {"name": "SalesDemoSessionsDocument", "source": "firestore/sales_demo_sessions.schema.json", "typeOutput": "functions/src/shared/generated/salesDemoSessionsDocument.ts"},
   {"name": "SalesEvidenceProposalsDocument", "source": "firestore/sales_evidence_proposals.schema.json", "typeOutput": "functions/src/shared/generated/salesEvidenceProposalsDocument.ts"},
   {"name": "HostAcquisitionConsentDocument", "source": "firestore/host_acquisition_consents.schema.json", "typeOutput": "functions/src/shared/generated/hostAcquisitionConsentDocument.ts"},
+  {"name": "HostPilotEventReviewDocument", "source": "firestore/host_pilot_event_reviews.schema.json", "typeOutput": "functions/src/shared/generated/hostPilotEventReviewDocument.ts"},
+  {"name": "HostOrganizerActivationDocument", "source": "firestore/host_organizer_activations.schema.json", "typeOutput": "functions/src/shared/generated/hostOrganizerActivationDocument.ts"},
   {"name": "HostAcquisitionDeliveryDocument", "source": "firestore/host_acquisition_deliveries.schema.json", "typeOutput": "functions/src/shared/generated/hostAcquisitionDeliveryDocument.ts"},
   {"name": "SalesInboundIntentsDocument", "source": "firestore/sales_inbound_intents.schema.json", "typeOutput": "functions/src/shared/generated/salesInboundIntentsDocument.ts"},
   {"name": "SalesIntelligenceAssessmentDocument", "source": "firestore/sales_intelligence_assessments.schema.json", "typeOutput": "functions/src/shared/generated/salesIntelligenceAssessmentsDocument.ts"},
