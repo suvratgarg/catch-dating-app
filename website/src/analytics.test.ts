@@ -76,10 +76,10 @@ test.each(["/events/social-event/", "/organizers/dating-host/", "/f/private-form
 
 test("invalid consent flags fail closed and delete previous attribution", () => {
   setMarketingConsent("analytics");
-  localStorage.setItem("catch_marketing_consent_v2", JSON.stringify({version: 2, choice: "essential", analytics: true, marketing: true, updatedAt: new Date().toISOString()}));
+  localStorage.setItem("catch_marketing_consent_v3", JSON.stringify({version: 3, choice: "essential", analytics: true, marketing: true, updatedAt: new Date().toISOString()}));
   expect(getMarketingConsent()).toBeNull();
   expect(sessionStorage.getItem(ephemeralKey)).toBeNull();
-  localStorage.setItem("catch_marketing_consent_v2", JSON.stringify({version: 2, choice: "unknown", analytics: true, marketing: true, updatedAt: "bad"}));
+  localStorage.setItem("catch_marketing_consent_v3", JSON.stringify({version: 3, choice: "unknown", analytics: true, marketing: true, updatedAt: "bad"}));
   expect(getMarketingConsent()).toBeNull();
 });
 
@@ -112,11 +112,11 @@ test("an environment GTM ID cannot load a script or call an external global gtag
 
 test("legacy analytics-only UI choices cannot authorize marketing and request a fresh versioned choice", () => {
   localStorage.setItem("catch_marketing_consent_v1", JSON.stringify({choice: "accepted", analytics: true,
-    marketing: true, version: 2, updatedAt: new Date().toISOString()}));
+    marketing: true, version: 3, updatedAt: new Date().toISOString()}));
   expect(getMarketingConsent()).toMatchObject({version: 1, choice: "analytics", analytics: true, marketing: false});
   expect(shouldShowMarketingConsentBanner()).toBe(true);
   setMarketingConsent("accepted");
-  expect(getMarketingConsent()).toMatchObject({version: 2, analytics: true, marketing: true});
+  expect(getMarketingConsent()).toMatchObject({version: 3, analytics: true, marketing: true});
   expect(shouldShowMarketingConsentBanner()).toBe(false);
   expect(localStorage.getItem("catch_marketing_consent_v1")).toBeNull();
 });
@@ -165,4 +165,23 @@ test("SPA views deduplicate a lifecycle render and count a real return visit wit
   window.history.replaceState(null, "", "/host/"); initializeMarketingAnalytics(); trackPageView("host", "visit-b");
   window.history.replaceState(null, "", "/"); initializeMarketingAnalytics(); trackPageView("home", "visit-c");
   expect(window.dataLayer?.filter((entry) => entry.event === "page_view")).toHaveLength(3);
+});
+
+
+test("the disabled-provider notice cannot authorise a later live transport", () => {
+  localStorage.setItem("catch_marketing_consent_v3", JSON.stringify({version: 3,
+    measurementMode: "google-live-v1", choice: "accepted", analytics: true, marketing: true,
+    updatedAt: new Date().toISOString()}));
+  expect(getMarketingConsent()).toMatchObject({version: 2, marketing: false});
+  expect(shouldShowMarketingConsentBanner()).toBe(true);
+});
+
+test("version two choices require fresh consent and cannot inherit marketing permission", () => {
+  localStorage.setItem("catch_marketing_consent_v2", JSON.stringify({version: 2,
+    choice: "accepted", analytics: true, marketing: true, updatedAt: new Date().toISOString()}));
+  expect(getMarketingConsent()).toMatchObject({version: 2, choice: "analytics", marketing: false});
+  expect(shouldShowMarketingConsentBanner()).toBe(true);
+  setMarketingConsent("accepted");
+  expect(localStorage.getItem("catch_marketing_consent_v2")).toBeNull();
+  expect(getMarketingConsent()).toMatchObject({version: 3, measurementMode: "disabled"});
 });

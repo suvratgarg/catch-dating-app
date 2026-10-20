@@ -1,6 +1,6 @@
 ---
 doc_id: ads_conversion_spec
-version: 0.3.0
+version: 0.4.0
 updated: 2026-10-20
 owner: marketing_website
 status: active
@@ -28,15 +28,29 @@ The runtime is a separate opaque-origin iframe with only `allow-scripts` and
 `no-referrer`. It cannot read the parent DOM, storage or diagnostic bus.
 Lifecycle destruction removes the frame and cancels its bounded initial-load
 queue. It supplies explicit canonical page context, disables automatic views,
-Google signals, personalization and URL passthrough, and denies all storage.
+Google signals, personalization and URL passthrough. A fresh version-3 consent
+receipt may supply a random tab-limited client/session identifier; the opaque
+frame still cannot read or write parent cookies/storage. Google ad storage and
+personalisation remain denied; analytics storage permission follows the explicit
+analytics choice and ad-user-data permission follows the marketing choice.
 Only the four currently wired events are supported; only accepted organiser
 leads with marketing permission emit the Ads destination. Meta has no configured
 live transport or dataset yet.
 
-This preparation does **not** solve cookie/click-ID campaign attribution. The
-current contract intentionally discards click IDs. Do not enable automated
-conversion bidding or claim campaign-level conversion proof from a successful
-form submission or a synthetic network test. Before changing the `enabled`
+The exact isolated Next preview origin is allowed to exercise GA4 with
+`debug_mode: true` and `traffic_type: internal`; Ads conversion sends are hard
+blocked on that origin. Production stays disabled. No arbitrary preview host,
+localhost or query flag can activate the transport.
+
+The prepared browser context is tab-scoped for at most 24 hours and is created
+only when that transport is enabled and a fresh version-3 choice permits analytics.
+Marketing permission additionally permits validated gclid/gbraid/wbraid/fbclid.
+Google receives only Google click identifiers, rebuilt into the canonical page
+location; Meta identifiers are not forwarded by this transport. GA4 campaign
+labels also map to its documented campaign_source/medium/name/content fields.
+Source preparation does **not** establish provider receipt or ad-click attribution.
+Do not enable automated conversion bidding or claim campaign-level conversion
+proof from a successful form submission or a synthetic network test. Before changing the `enabled`
 gate, validate actual provider receipt and isolation, revise consent copy (which
 currently says integrations are disabled), require a fresh consent receipt,
 and review an explicit attribution design. A production deployment and ad
@@ -68,7 +82,7 @@ signals are not optimization outcomes.
 
 | Contract event | GA4 name | Meta name | Google Ads selected outcome | Current authoritative source |
 | --- | --- | --- | --- | --- |
-| `page_view` | `page_view` | `PageView` | No | Allowlisted acquisition SPA visit; one per lifecycle visit, no replay on consent. |
+| `page_view` | `page_view` | `PageView` | No | Allowlisted acquisition SPA visit; one per lifecycle visit; first consent starts the current visit without replaying earlier pages. |
 | `cta_click` | `cta_click` | `CatchCtaClick` | No | Existing shared CTA helper; only a same-origin, allowlisted destination. Label and raw URL stay local. |
 | `acquisition_start` | `acquisition_start` | `CatchAcquisitionStart` | No | First form interaction in member waitlist, host lead or host operating application; first explicit claim lookup/selection, role-step interaction or sign-in initiation in the canonical claim controller. |
 | `lead_accepted` | `generate_lead` | `Lead` | Yes, organizer only | Validated successful `/api/join-waitlist` response with `ok: true`, `alreadyJoined: false`, and unchanged submission-time permission. |
@@ -93,12 +107,15 @@ were planning proposals and are not an approved advertising export.
 
 ## Consent and lifecycle
 
-The persistent `catch_marketing_consent_v2` receipt records version 2, choice,
-analytics/marketing booleans and update time. The banner offers essential only,
+The persistent `catch_marketing_consent_v3` receipt records version 3, choice,
+analytics/marketing booleans, update time and the measurement mode (disabled,
+Google preview or Google live). A mode change requires a fresh choice; permission
+chosen while integrations were disabled cannot silently activate providers. The banner offers essential only,
 analytics, and explicit analytics plus marketing, with a persistent Privacy choices
 control for withdrawal. Advertising remains disabled regardless of the choice.
-Legacy version-1 choices, including `accepted`, can retain analytics permission
-but never become marketing permission; the banner requires a fresh choice.
+Legacy version-1 and version-2 choices, including `accepted`, can retain local
+analytics permission but never authorize the live transport or marketing;
+the banner requires a fresh choice.
 Malformed or unknown versioned receipts fail closed.
 
 Unset/essential permission starts no measurement session. Analytics alone allows
@@ -107,7 +124,7 @@ synthetic organizer Google Ads and Meta events. Revocation/downgrade destroys
 sessions immediately. Sibling-tab receipt changes refresh the banner and controller.
 Every SPA lifecycle update runs the shutdown check, including entry into private
 routes; returns to an acquisition route create a new visit without replaying old
-views. Events before consent and failed delivery are dropped, not queued.
+views. First analytics consent starts a current-page view, not historical replay. Events before consent and failed delivery are dropped, not queued.
 
 An accepted lead uses the permission captured when that request began. Accepting
 mid-request cannot convert earlier activity; revoke/reaccept invalidates the old
@@ -138,10 +155,16 @@ only for the settled organizer authority.
 
 Campaign retention is tab-scoped, expires after 24 hours and clears on denial or
 entry into an unapproved route. Only the closed, reviewed source/medium/campaign/
-content vocabularies in `approvedCampaignLabels` persist; unknown labels, search
-terms and click IDs are discarded. Host-to-`/claim` retains the approved touch.
-New campaigns require a reviewed vocabulary change. There is no click-ID,
-URL-passthrough, customer-matching or cross-device attribution implementation.
+content vocabularies in `approvedCampaignLabels` persist in the existing HTTP
+attribution payload; unknown labels and search terms are discarded. Separately,
+`catchMeasurement.ts` owns the browser-only identifier context under a fresh
+version-3 choice. Click identifiers are excluded for analytics-only choices,
+clear on a changed consent revision/private route, and never enter the diagnostic
+bus or existing lead HTTP payload. Storage failures drop the context. Host-to-`/claim` retains the approved touch.
+New campaigns require a reviewed vocabulary change. There is no URL-passthrough,
+customer-matching or cross-device implementation, Meta live delivery, or versioned
+server advertising handoff. The preview and deterministic tests are acceptance
+steps, not proof of a paid click being attributed.
 
 ## Outcome deduplication
 
@@ -181,3 +204,12 @@ Missing server/app handoffs: organizer creation receipt, approved claim receipt,
 first publication/activation receipt, settled organizer purchase receipt, and
 versioned server marketing permission. Wire only those authorities when supplied;
 do not infer them from login, pending claims, form success or a purchase page.
+
+## GA4 organiser key event
+
+Property 559735544 defines `host_lead_accepted` from `generate_lead` with
+`audience = organizer`, copying the source parameters. It counts once per event,
+without a default monetary value. The source already suppresses duplicate/already
+joined submissions. This Analytics key event is not imported as a second Ads
+conversion: the prepared direct Ads action remains the sole candidate to avoid
+double-counting. Sales qualification and pilot activation are later outcomes.

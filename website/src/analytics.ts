@@ -1,6 +1,7 @@
 import {acquisitionRoute, approvedCampaignLabels, createCatchMeasurementController,
   type CatchAcquisitionEvent, type AcquisitionForm, type MeasurementConsent} from "./analytics/catchMeasurement.ts";
-import {configuredCatchTransport} from "./analytics/catchLiveTransport.ts";
+import {browserAttribution, catchAttributionKey} from "./analytics/catchMeasurement.ts";
+import {catchMeasurementMode, type CatchMeasurementMode, configuredCatchTransport} from "./analytics/catchLiveTransport.ts";
 export type {CatchProviderSession, SafeAcquisitionEvent} from "./analytics/catchMeasurement.ts";
 
 type ConsentChoice = "accepted" | "analytics" | "essential";
@@ -9,7 +10,8 @@ type FormVariant = "member" | "host";
 export const marketingContentVersion = "website_copy_v2" as const;
 
 export interface MarketingConsent extends MeasurementConsent {
-  version: 1 | 2;
+  version: 1 | 2 | 3;
+  measurementMode?: CatchMeasurementMode;
   choice: ConsentChoice;
   analytics: boolean;
   marketing: boolean;
@@ -53,7 +55,8 @@ const attributionStorageKey = "catch_marketing_attribution_v2";
 const attributionMaxAgeMs = 24 * 60 * 60 * 1000;
 export const marketingConsentChangedEvent = "catch:marketing-consent-changed";
 const legacyConsentStorageKey = "catch_marketing_consent_v1";
-const consentStorageKey = "catch_marketing_consent_v2";
+const previousConsentStorageKey = "catch_marketing_consent_v2";
+const consentStorageKey = "catch_marketing_consent_v3";
 const measurement = createCatchMeasurementController(configuredCatchTransport);
 let lastPageKey: string | null = null;
 let consentRevisionMs = 0;
@@ -98,9 +101,19 @@ export function trackClientErrorSignal(errorSource: "window_error" | "unhandled_
 export function getMarketingConsent(): MarketingConsent | null {
   const stored = readJson<MarketingConsent>(consentStorageKey);
   if (stored) {
-    if (stored.version !== 2 || !validConsent(stored)) { clearAttribution(); return null; }
+    if (stored.version !== 3 || !validConsent(stored)) { clearAttribution(); return null; }
+    if (stored.measurementMode !== catchMeasurementMode()) {
+      clearAttribution();
+      return {...stored, version: 2, choice: stored.analytics ? "analytics" : "essential", marketing: false};
+    }
     if (!stored.analytics) clearAttribution();
     return stored;
+  }
+  const previous = readJson<MarketingConsent>(previousConsentStorageKey);
+  if (previous) {
+    clearAttribution();
+    if (previous.version !== 2 || !validConsent(previous)) return null;
+    return {...previous, choice: previous.analytics ? "analytics" : "essential", marketing: false};
   }
   const legacy = readJson<Omit<MarketingConsent, "version">>(legacyConsentStorageKey);
   if (!legacy || !validConsent(legacy)) { clearAttribution(); return null; }
@@ -118,23 +131,30 @@ function validConsent(stored: Omit<MarketingConsent, "version">) {
 }
 
 export function shouldShowMarketingConsentBanner(consent = getMarketingConsent()) {
-  return consent?.version !== 2;
+  return consent?.version !== 3;
 }
 
 export function setMarketingConsent(choice: ConsentChoice) {
+  const previous = getMarketingConsent();
   // A new revision cancels in-flight conversion permission, including same-ms revoke/accept.
   consentRevisionMs = Math.max(Date.now(), consentRevisionMs + 1);
   const consent: MarketingConsent = {
-    version: 2, choice,
+    version: 3, choice,
+    measurementMode: catchMeasurementMode(),
     analytics: choice === "analytics" || choice === "accepted",
     marketing: choice === "accepted",
     updatedAt: new Date(consentRevisionMs).toISOString(),
   };
   writeJson(consentStorageKey, consent);
-  try { window.localStorage.removeItem(legacyConsentStorageKey); } catch { /* Optional storage. */ }
+  try { window.localStorage.removeItem(legacyConsentStorageKey); window.localStorage.removeItem(previousConsentStorageKey); } catch { /* Optional storage. */ }
   updateConsentMode(consent);
   captureAttribution();
   refreshMeasurementContext();
+  // Begin a current-page visit after first permission; never replay earlier pages
+  // or produce another view for an analytics-to-marketing upgrade.
+  if (consent.analytics && (previous?.version !== 3 || !previous.analytics)) {
+    measurement.track({name: "page_view", visitId: createMarketingEventId("catch")});
+  }
   trackMarketingEvent("consent_updated", {
     analytics_consent: consent.analytics, marketing_consent: consent.marketing,
   });
@@ -157,8 +177,14 @@ export function trackPageView(pageName: string, visitKey?: string) {
 }
 
 function refreshMeasurementContext() {
+  let attribution = null;
+  try {
+    attribution = browserAttribution({enabled: catchMeasurementMode() !== "disabled",
+      path: window.location.pathname, search: window.location.search, consent: getMarketingConsent(),
+      storage: window.sessionStorage, now: Date.now(), random: () => crypto.getRandomValues(new Uint32Array(1))[0]});
+  } catch { /* Storage/crypto restrictions cannot block the application. */ }
   measurement.update({path: window.location.pathname, consent: getMarketingConsent(),
-    campaign: readAttribution()?.lastTouch.values});
+    campaign: readAttribution()?.lastTouch.values, attribution});
 }
 
 export function trackCatchAcquisitionEvent(event: CatchAcquisitionEvent) {
@@ -169,8 +195,8 @@ export function trackCatchAcquisitionEvent(event: CatchAcquisitionEvent) {
 export function trackAcceptedMarketingLead(eventId: string | undefined,
   form: Exclude<AcquisitionForm, "claim">, alreadyJoined: boolean, submissionConsent: MarketingConsent | null) {
   const current = getMarketingConsent();
-  if (!eventId || submissionConsent?.version !== 2 || !submissionConsent.analytics ||
-      current?.version !== 2 || current.updatedAt !== submissionConsent.updatedAt || alreadyJoined) return false;
+  if (!eventId || submissionConsent?.version !== 3 || !submissionConsent.analytics ||
+      current?.version !== 3 || current.updatedAt !== submissionConsent.updatedAt || alreadyJoined) return false;
   return trackCatchAcquisitionEvent({name: "lead_accepted", eventId, form,
     receipt: {ok: true, alreadyJoined: false}});
 }
@@ -273,7 +299,7 @@ function installClientErrorMonitoring() {
   if (clientErrorMonitoringInstalled) return;
   clientErrorMonitoringInstalled = true;
   window.addEventListener("storage", (event) => {
-    if (event.key === consentStorageKey || event.key === legacyConsentStorageKey || event.key === null) {
+    if (event.key === consentStorageKey || event.key === legacyConsentStorageKey || event.key === previousConsentStorageKey || event.key === null) {
       captureAttribution(); refreshMeasurementContext();
       window.dispatchEvent(new Event(marketingConsentChangedEvent));
     }
@@ -296,7 +322,7 @@ function clearLegacyAttribution() {
 
 function clearAttribution() {
   clearLegacyAttribution();
-  try { window.sessionStorage?.removeItem(attributionStorageKey); } catch { /* Optional storage. */ }
+  try { window.sessionStorage?.removeItem(attributionStorageKey); window.sessionStorage?.removeItem(catchAttributionKey); } catch { /* Optional storage. */ }
 }
 
 function captureAttribution() {
