@@ -504,7 +504,8 @@ function createOperatorRuntime({home = process.env.CATCH_WHATSAPP_OPERATOR_HOME,
           recipientAuthState = current.disabled === false && current.endpointHash === plan.scope.endpointHash &&
             current.creationTimeMillis === plan.recipientCreationTimeMillis &&
             user.uid === plan.scope.recipientUid && user.disabled === false &&
-            setupHash(user.customClaims ?? {}) === plan.recipientClaimsSha256 &&
+            setupHash(user.customClaims ?? {}) === (plan.scope.actorUid === plan.scope.recipientUid ?
+              plan.desiredClaimsSha256 : plan.recipientClaimsSha256) &&
             current.tokensValidAfterMillis === plan.recipientTokensValidAfterMillis ? "current-observed" : "drift-observed";
         } catch {recipientAuthState = "unavailable";}
       }

@@ -86,12 +86,12 @@ test("live commands and caller facts fail without echoing private input", () => 
   } finally {fs.rmSync(directory, {recursive: true, force: true});}
 });
 
-function runtimeFixture() {
+function runtimeFixture(consolidated = false) {
   const home = fs.mkdtempSync(path.join(os.tmpdir(), "catch-protected-operator-"));
   const records = new Map();
   let now = 1800000000000;
   let authTime = now / 1000 - 1;
-  let claims = {tenantLabel: "synthetic", nested: {flag: true}};
+  let claims = consolidated ? {admin: true} : {tenantLabel: "synthetic", nested: {flag: true}};
   let recipientClaims = {};
   let recipientCreation = "1001";
   let recipientPhone = "+15555550123";
@@ -110,9 +110,13 @@ function runtimeFixture() {
   const binding = () => ({sourceSha: "d".repeat(40), executionSha256: execution});
   const scope = {projectId: "demo-catch-setup", actorUid: "operator",
     actorEmailSha256: operatorEmailHash("operator@example.invalid"),
-    recipientUid: "recipient", endpointHash: catchEndpointHash("+15555550123"),
+    recipientUid: consolidated ? "operator" : "recipient", endpointHash: catchEndpointHash("+15555550123"),
     appId: "10001", wabaId: "10002", phoneNumberId: "10003",
     credentialVersionSha256: ""};
+  if (consolidated) records.set("adminRoleAssignments/operator", {
+    targetUid: "operator", roles: ["admin"], status: "active", disabled: false,
+    email: "operator@example.invalid", displayName: "Preserved operator",
+  });
   const credentialVersionName = "projects/demo-catch-setup/secrets/CATCH_WHATSAPP_ACCESS_TOKEN/versions/7";
   scope.credentialVersionSha256 = createHash("sha256").update(credentialVersionName).digest("hex");
   const profile = {schemaVersion: 1, scope, ...binding(), credentialVersionName,
@@ -160,7 +164,7 @@ function runtimeFixture() {
     }};
   const auth = {app: {options: {projectId: scope.projectId}},
     getUser: async (uid) => {
-      if (uid === "recipient" && recipientDeleted) throw new Error("private recipient deleted");
+      if (uid === scope.recipientUid && recipientDeleted) throw new Error("private recipient deleted");
       return {uid, disabled: false, customClaims: structuredClone(uid === "operator" ? claims : recipientClaims),
         ...(uid === "operator" ? {email: "operator@example.invalid", emailVerified: true,
           providerData: [{providerId: "google.com", uid: "synthetic-google-subject"}]} : {})};
@@ -186,10 +190,10 @@ function runtimeFixture() {
   const transport = {getProjectId: async () => scope.projectId,
     lookup: async ({body}) => {
       const uid = body.localId[0];
-      if (uid === "recipient" && recipientDeleted) return {users: []};
-      return {users: [{localId: uid, createdAt: uid === "recipient" ? recipientCreation : "1001", validSince: "0", disabled: false,
+      if (uid === scope.recipientUid && recipientDeleted) return {users: []};
+      return {users: [{localId: uid, createdAt: uid === scope.recipientUid ? recipientCreation : "1001", validSince: "0", disabled: false,
         customAttributes: JSON.stringify(uid === "operator" ? restClaims ?? claims : recipientClaims),
-        ...(uid === "recipient" ? {phoneNumber: recipientPhone} : {})}]};
+        ...(uid === scope.recipientUid ? {phoneNumber: recipientPhone} : {})}]};
     }};
   const secrets = {getSecretVersion: async ({name}) => {
     metadataReads++; assert.equal(name, credentialVersionName);
@@ -522,8 +526,9 @@ async function completedBootstrap(h) {
   return {receipt, ...saved};
 }
 
-test("concrete readiness path plans, admits exact ingress, publishes and separately reviews before ready", async () => {
-  const h = runtimeFixture();
+for (const consolidated of [false, true]) {
+test(`concrete ${consolidated ? "consolidated" : "separate"} readiness plans, admits ingress, publishes and reviews before ready`, async () => {
+  const h = runtimeFixture(consolidated);
   try {
     const saved = await completedBootstrap(h);
     h.expire(); // Readiness never renews the original expired bootstrap plan.
@@ -573,9 +578,9 @@ test("concrete readiness path plans, admits exact ingress, publishes and separat
     h.records.set(stopPath, {syntheticStop: true});
     assert.equal((await h.runtime().reconcile(saved.plan.planId)).readinessVerified, false);
     h.records.delete(stopPath);
-    h.records.set("deletedUsers/recipient", {syntheticDeletion: true});
+    h.records.set("deletedUsers/" + saved.plan.scope.recipientUid, {syntheticDeletion: true});
     assert.equal((await h.runtime().reconcile(saved.plan.planId)).readinessVerified, false);
-    h.records.delete("deletedUsers/recipient");
+    h.records.delete("deletedUsers/" + saved.plan.scope.recipientUid);
     const ingressPath = "catchWhatsappReadinessIngress/" + input.ingress.document.ingressId;
     h.records.set(ingressPath, {...input.ingress.document, state: "revoked"});
     assert.equal((await h.runtime().reconcile(saved.plan.planId)).readinessVerified, false);
@@ -594,6 +599,8 @@ test("concrete readiness path plans, admits exact ingress, publishes and separat
     assert.equal(h.counts().metadataReads, before.metadataReads);
   } finally {h.close();}
 });
+
+}
 
 test("admitted ingress conflicts and readiness expiry cannot replace or reactivate source records", async () => {
   const h = runtimeFixture();
@@ -1184,3 +1191,45 @@ test("reentrant different-plan apply cannot replace the in-flight final approval
     assert.equal(h.counts().setters, 0, "same exact replay keeps the consumed dispatch receipt");
   } finally {h.close();}
 });
+
+
+test("consolidated runtime preserves projection and reconciles one authority", async () => {
+  const h = runtimeFixture(true);
+  try {
+    const receipt = await h.runtime().plan();
+    const saved = h.review(receipt);
+    assert.ok(saved.plan.actorAssignmentSha256);
+    assert.equal((await h.runtime().apply(receipt.planId)).state, "fresh-sign-in-required");
+    assert.equal((await h.runtime().reconcile(receipt.planId)).state, "fresh-sign-in-required");
+    h.signIn();
+    assert.equal((await h.runtime().apply(receipt.planId)).state, "complete");
+    assert.equal((await h.runtime().reconcile(receipt.planId)).state, "bootstrap-complete");
+    assert.deepEqual(h.claims(), {admin: true, adminOwner: true});
+    const assignment = h.records.get("adminRoleAssignments/operator");
+    assert.equal(assignment.displayName, "Preserved operator");
+    assert.deepEqual(assignment.roles, ["admin", "adminOwner"]);
+    assert.equal([...h.records.keys()].filter(key => key.startsWith("catchWhatsappAppAuthorities/")).length, 1);
+    assert.equal(h.counts().setters, 1);
+    h.changeRecipientPhone();
+    assert.equal((await h.runtime().reconcile(receipt.planId)).state, "reconciliation-required");
+  } finally { h.close(); }
+});
+for (const lostPhase of ["prepared", "complete"]) {
+  test(`consolidated lost ${lostPhase} receipt resumes without duplicate effects`, async () => {
+    const h = runtimeFixture(true);
+    try {
+      const receipt = await h.runtime().plan(); h.review(receipt);
+      await h.runtime().apply(receipt.planId); h.signIn();
+      h.onCommit(writes => {
+        if (writes.get("catchWhatsappOperatorSetupOperations/demo-catch-setup")?.phase === lostPhase) {
+          throw new Error("synthetic lost committed response");
+        }
+      });
+      assert.equal((await h.runtime().apply(receipt.planId)).state, "reconciliation-required");
+      h.onCommit(undefined);
+      assert.equal((await h.runtime().apply(receipt.planId)).state, "complete");
+      assert.equal((await h.runtime().reconcile(receipt.planId)).state, "bootstrap-complete");
+      assert.equal(h.counts().setters, 1);
+    } finally { h.close(); }
+  });
+}

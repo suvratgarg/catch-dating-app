@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.11.0
+version: 2.12.0
 updated: 2026-10-20
 owner: recursive_audit_loop
 status: active
@@ -1539,7 +1539,19 @@ approval and are rechecked before bootstrap mutations and during reconciliation.
 claims or strips existing general Admin access; that legacy claim supplies no
 Catch review/reply authority. Receive still requires its separate endpoint-bound
 Catch authority. Any claim drift or broader privileged recipient shape fails
-closed. The Google actor's broad `adminOwner` grant still needs separate approval.
+closed. The Google actor's broad `adminOwner` grant remains part of the exact reviewed
+bootstrap approval.
+
+A consolidated Google-and-phone Admin may be both actor and recipient. Use that
+single verified UID in both profile fields; do not create another account for
+testing. This mode requires exact existing `{admin: true}` claims and an active,
+enabled `admin`-only role assignment. Planning binds the entire assignment hash;
+concurrent changes reject dispatch or seed. Bootstrap preserves profile/history
+and assignment metadata, adds `adminOwner` alongside `admin`, and creates one
+endpoint-bound authority with `review`, `reply`, and `receive`. The broader role
+consequence still applies. A fresh Google sign-in after seed is required. The
+normal readiness/history/publication and send approvals remain mandatory; a
+consolidated profile or successful login does not activate production messaging.
 
 After the seed receipt, `fresh-sign-in-required` means a new Google sign-in after
 the seed's next-second cutoff; refreshing the old token is insufficient. Replace

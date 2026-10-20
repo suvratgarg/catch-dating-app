@@ -12,7 +12,7 @@ import {CATCH_APP_AUTHORITIES, CatchAppAuthorityStore,
   withCatchFreshAuthContext} from
   "./whatsappAppAuthorityStore";
 import {assertPlannedSetupIdentity, desiredOperatorClaims, setupExact,
-  setupHash, setupUnavailable,
+  setupHash, setupUnavailable, setupAssignmentMatches,
   validateSetupScope, validateSetupPlan, validateSetupRequest} from
   "./whatsappOperatorSetup";
 import type {OperatorSetupPlan, OperatorSetupScope,
@@ -156,7 +156,9 @@ export function createProtectedOperatorSetupSources(options: {
       claims: structuredClone(recipientUser.customClaims ?? {})},
     existingOwnerUids: [...owners].sort(), authorityExists: !authority.empty,
     bootstrapExists: slot.exists,
-    actorAssignmentExists: actorAssignment.exists};
+    actorAssignmentExists: actorAssignment.exists,
+    ...(actorAssignment.exists ?
+      {actorAssignment: actorAssignment.data()} : {})};
   });
   return {scope, sourceSha: options.sourceSha, now, snapshot, actor,
     loadReviewedPlan: async (id) => structuredClone(plans.get(id) ?? null),
@@ -180,7 +182,7 @@ export function createProtectedOperatorSetupSources(options: {
       assertPlannedSetupIdentity(plan, latest, now());
       if (setupHash(latest.actor.claims) !== plan.beforeClaimsSha256 ||
           latest.existingOwnerUids.length || latest.authorityExists ||
-          latest.actorAssignmentExists ||
+          !setupAssignmentMatches(plan, latest) ||
           setupHash(claims) !== setupHash(desiredOperatorClaims(
             latest.actor.claims))) {
         setupUnavailable();
@@ -201,7 +203,8 @@ export function createProtectedOperatorSetupSources(options: {
         assertPlannedSetupIdentity(plan, current, now());
         if (setupHash(current.actor.claims) !== plan.beforeClaimsSha256 ||
             current.existingOwnerUids.length || current.authorityExists ||
-            current.actorAssignmentExists || now() >= plan.expiresAtMillis) {
+            !setupAssignmentMatches(plan, current) ||
+            now() >= plan.expiresAtMillis) {
           setupUnavailable();
         }
         const audit = {schemaVersion: 1,
@@ -224,7 +227,7 @@ export function createProtectedOperatorSetupSources(options: {
       if (setupHash(beforeDispatch.actor.claims) !== plan.beforeClaimsSha256 ||
           beforeDispatch.existingOwnerUids.length ||
           beforeDispatch.authorityExists ||
-          beforeDispatch.actorAssignmentExists ||
+          !setupAssignmentMatches(plan, beforeDispatch) ||
           now() >= plan.expiresAtMillis) setupUnavailable();
       // Firebase replaces the full claim object: preserve the exact reviewed
       // unrelated claims. No atomic CAS exists against external Auth writers.
@@ -338,7 +341,7 @@ export function createOperatorReadinessAdapters(options: {
       const revoking = approvalId === plan.revokeReviewRef;
       return withCatchFreshAuthContext(store.deps.firebase, {
         projectId, uids: revoking ? [plan.scope.actorUid] :
-          [plan.scope.actorUid, plan.scope.recipientUid],
+          [...new Set([plan.scope.actorUid, plan.scope.recipientUid])],
         actorUid: plan.scope.actorUid,
         actorIdToken: await options.actorIdToken(),
       }, async (context) => callback({...context, approvalId,
