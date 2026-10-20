@@ -9,7 +9,10 @@ import {validateHostAcquisitionConsentDocument} from
 import {validateHostAcquisitionConsentHTTPResponse} from
   "../shared/generated/validators/hostAcquisitionConsentHttpResponse";
 import {HOST_CONSENT_COLLECTION, recordHostConsent} from "./consentStore";
-import {expireHostMetaDeliveries} from "./metaDelivery";
+import {
+  expireHostMetaDeliveries, stopHostMetaDeliveriesForConsent,
+} from "./metaDelivery";
+import {hostConsentKey} from "./consentPolicy";
 
 // Activation is a separate reviewed source change after end-to-end acceptance.
 export const hostServerMeasurementEnabled = false;
@@ -76,6 +79,10 @@ export const hostAcquisitionConsent = onRequest(
       });
       if (!validateHostAcquisitionConsentHTTPResponse(result)) {
         throw new Error("Invalid privacy response.");
+      }
+      if ("ok" in result && result.status === "revoked") {
+        await stopHostMetaDeliveriesForConsent(admin.firestore(),
+          hostConsentKey(request.body.capability)!);
       }
       response.status(200).json(result);
     } catch (error) {

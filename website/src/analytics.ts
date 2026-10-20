@@ -2,6 +2,8 @@ import {acquisitionRoute, approvedCampaignLabels, createCatchMeasurementControll
   type CatchAcquisitionEvent, type AcquisitionForm, type MeasurementConsent} from "./analytics/catchMeasurement.ts";
 import {browserAttribution, catchAttributionKey} from "./analytics/catchMeasurement.ts";
 import {catchMeasurementMode, type CatchMeasurementMode, configuredCatchTransport} from "./analytics/catchLiveTransport.ts";
+import {createHostServerConsent, postHostServerConsent} from "./analytics/hostServerConsent.ts";
+import type {JoinWaitlistHTTPRequest} from "./shared/contracts/generated/joinWaitlistHttpRequest";
 export type {CatchProviderSession, SafeAcquisitionEvent} from "./analytics/catchMeasurement.ts";
 
 type ConsentChoice = "accepted" | "analytics" | "essential";
@@ -32,6 +34,7 @@ interface StoredAttribution {
 }
 
 export interface WaitlistAnalyticsPayload {
+  hostMeasurement?: JoinWaitlistHTTPRequest["hostMeasurement"];
   attribution: StoredAttribution | null;
   analytics: {
     consent: Omit<MarketingConsent, "version"> | null;
@@ -61,6 +64,17 @@ const measurement = createCatchMeasurementController(configuredCatchTransport);
 let lastPageKey: string | null = null;
 let consentRevisionMs = 0;
 let clientErrorMonitoringInstalled = false;
+let serverConsent: ReturnType<typeof createHostServerConsent> | null = null;
+let attributionContext: ReturnType<typeof browserAttribution> = null;
+
+function serverConsentOwner() {
+  if (!serverConsent) serverConsent = createHostServerConsent({
+    storage: window.localStorage, request: postHostServerConsent, now: Date.now,
+    randomCapability: () => Array.from(crypto.getRandomValues(new Uint8Array(32)),
+      byte => byte.toString(16).padStart(2, "0")).join(""),
+  });
+  return serverConsent;
+}
 
 const attributionKeys = [
   "utm_source",
@@ -185,6 +199,11 @@ function refreshMeasurementContext() {
   } catch { /* Storage/crypto restrictions cannot block the application. */ }
   measurement.update({path: window.location.pathname, consent: getMarketingConsent(),
     campaign: readAttribution()?.lastTouch.values, attribution});
+  attributionContext = attribution;
+  try {
+    void serverConsentOwner().sync({enabled: catchMeasurementMode() === "host-server-live-v1",
+      path: window.location.pathname, consent: getMarketingConsent()});
+  } catch { /* Optional permission storage must not block the application. */ }
 }
 
 export function trackCatchAcquisitionEvent(event: CatchAcquisitionEvent) {
@@ -257,7 +276,9 @@ export function waitlistAnalyticsPayload(
   eventId: string,
   formVariant: FormVariant
 ): WaitlistAnalyticsPayload {
+  const hostMeasurement = formVariant === "host" ? hostMeasurementPayload() : undefined;
   return {
+    ...(hostMeasurement ? {hostMeasurement} : {}),
     attribution: readAttribution(),
     analytics: {
       consent: submissionWireConsent(),
@@ -268,6 +289,19 @@ export function waitlistAnalyticsPayload(
       submittedAt: new Date().toISOString(),
     },
   };
+}
+
+function hostMeasurementPayload(): JoinWaitlistHTTPRequest["hostMeasurement"] | undefined {
+  if (catchMeasurementMode() !== "host-server-live-v1") return undefined;
+  refreshMeasurementContext();
+  const consent = getMarketingConsent();
+  if (consent?.version !== 4 || !consent.analytics || !consent.marketing || !attributionContext) return undefined;
+  const capability = serverConsent?.snapshot(consent.updatedAt);
+  if (!capability) return undefined;
+  const {clientId, fbclid, fbclidCapturedAt} = attributionContext;
+  return {capability, clientId,
+    ...(fbclid && fbclidCapturedAt && fbclidCapturedAt <= Date.now() ?
+      {fbclid, clickCapturedAt: fbclidCapturedAt} : {})};
 }
 
 function submissionWireConsent(): WaitlistAnalyticsPayload["analytics"]["consent"] {

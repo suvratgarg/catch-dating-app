@@ -35,6 +35,13 @@ it("requires a matching server acknowledgement and current stored permission", a
   localStorage.removeItem(hostServerConsentStorageKey);
   expect(owner.snapshot(consent.updatedAt)).toBeNull();
 });
+it("does not resend or invalidate permission on repeated page events", async () => {
+  const {owner, request} = fixture();
+  await Promise.all([owner.sync(input), owner.sync(input)]);
+  await owner.sync({...input, path: "/host/"});
+  expect(request).toHaveBeenCalledOnce();
+  expect(owner.snapshot(consent.updatedAt)).toBe("a".repeat(64));
+});
 it("immediately stops locally and persists a failed withdrawal for reload retry", async () => {
   const {owner, request} = fixture();
   await owner.sync(input);

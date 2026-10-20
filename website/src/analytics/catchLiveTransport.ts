@@ -4,15 +4,17 @@ import type {CatchProviderSession, SafeAcquisitionEvent} from "../analytics.ts";
  * acceptance and refreshed consent copy; merely configuring an account is not activation. */
 export const catchLiveDestinations = Object.freeze({
   enabled: false,
+  serverConsentEnabled: false,
   previewOrigin: "https://catch-dating-app-64e51--next-candidate-tnpxnhes.web.app",
   googleMeasurementId: "G-HZFG0DL2DK",
   googleAdsLeadDestination: "AW-18526407471/dUL7CNKBn6MdEK-WioJF",
 });
 
-export type CatchMeasurementMode = "disabled" | "google-preview-v1" | "google-live-v1";
+export type CatchMeasurementMode = "disabled" | "google-preview-v1" | "google-live-v1" | "host-server-live-v1";
 export function catchMeasurementMode(origin = typeof window === "undefined" ? "" : window.location.origin): CatchMeasurementMode {
   if (origin === catchLiveDestinations.previewOrigin) return "google-preview-v1";
-  return catchLiveDestinations.enabled && origin === "https://catchdates.com" ? "google-live-v1" : "disabled";
+  return catchLiveDestinations.enabled && origin === "https://catchdates.com" ?
+    catchLiveDestinations.serverConsentEnabled ? "host-server-live-v1" : "google-live-v1" : "disabled";
 }
 
 type RuntimePort = Pick<HTMLIFrameElement, "contentWindow" | "remove" | "addEventListener" | "removeEventListener">;

@@ -5,6 +5,7 @@ import {newHostConsentAuthority} from "./consentPolicy";
 import {
   deliverHostMetaLead, expireHostMetaDeliveries,
   HOST_DELIVERY_COLLECTION, prepareHostMetaDelivery,
+  stopHostMetaDeliveriesForConsent,
 } from "./metaDelivery";
 
 const now = 1792512000000;
@@ -26,6 +27,34 @@ const input = {enabled: true, isNew: true, eventId, intentId, consentId,
 const deliveryPath = `${HOST_DELIVERY_COLLECTION}/${eventId}`;
 const consentPath = `hostAcquisitionConsents/${consentId}`;
 const intentPath = `salesInboundIntents/${intentId}`;
+
+test("withdrawal erases only the matching capability's retained context",
+  async () => {
+    const store = database();
+    const originalCollection = store.db.collection.bind(store.db);
+    const db = {
+      runTransaction: store.db.runTransaction.bind(store.db),
+      collection: (name: string) => ({
+        ...originalCollection(name),
+        where: (field: string, operator: string, value: string) => {
+          assert.equal(name, HOST_DELIVERY_COLLECTION);
+          assert.equal(field, "consentId");
+          assert.equal(operator, "==");
+          assert.equal(value, consentId);
+          return {limit: (limit: number) => {
+            assert.equal(limit, 500);
+            return {get: async () => ({docs: [{
+              id: eventId, ref: {path: deliveryPath},
+            }]})};
+          }};
+        },
+      }),
+    } as unknown as Firestore;
+    await stopHostMetaDeliveriesForConsent(db, consentId);
+    assert.equal(store.rows.get(deliveryPath)?.context, null);
+    assert.equal(store.rows.get(deliveryPath)?.status, "stopped");
+    assert.deepEqual(store.rows.get(consentPath)?.authority, authority);
+  });
 
 function database() {
   const row = prepareHostMetaDelivery(input)!;

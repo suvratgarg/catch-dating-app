@@ -18,6 +18,27 @@ import {
 export const HOST_DELIVERY_COLLECTION = "hostAcquisitionDeliveries";
 type Delivery = HostAcquisitionDeliveryDocument;
 
+/** Withdrawal erases retained browser context as well as stopping delivery.
+ * The accepting transaction reads the same permission row, so a later intake
+ * cannot create another authorised queue entry for the revoked capability. */
+export async function stopHostMetaDeliveriesForConsent(db: Firestore,
+  consentId: string): Promise<void> {
+  if (!/^[a-f0-9]{64}$/u.test(consentId)) return;
+  const rows = await db.collection(HOST_DELIVERY_COLLECTION)
+    .where("consentId", "==", consentId).limit(500).get();
+  for (const row of rows.docs) {
+    await db.runTransaction(async (tx) => {
+      const current = await tx.get(row.ref);
+      const data = current.data();
+      if (!validateHostAcquisitionDeliveryDocument(data) ||
+          data.consentId !== consentId || data.eventId !== row.id) return;
+      tx.update(row.ref, {context: null,
+        ...(data.status === "pending" || data.status === "sending" ?
+          {status: "stopped"} : {})});
+    });
+  }
+}
+
 /** Context and receipts expire together, including stopped/uncertain rows.
  * This is independent of the delivery gate and requires no remote TTL setup. */
 export async function expireHostMetaDeliveries(db: Firestore,

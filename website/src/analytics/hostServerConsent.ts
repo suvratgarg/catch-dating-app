@@ -1,5 +1,5 @@
 import type {HostAcquisitionConsentHTTPRequest} from "../shared/contracts/generated/hostAcquisitionConsentHttpRequest";
-import {acquisitionRoute, type MeasurementConsent} from "./catchMeasurement";
+import {acquisitionRoute, type MeasurementConsent} from "./catchMeasurement.ts";
 
 export const hostServerConsentStorageKey = "catch_host_server_consent_v1";
 const lifetimeMs = 30 * 24 * 60 * 60 * 1000;
@@ -43,6 +43,8 @@ export function createHostServerConsent(port: ConsentPort) {
   let revision = 0;
   let acknowledged: {capability: string; revision: string; expiresAt: number} | null = null;
   let work: Promise<void> = Promise.resolve();
+  let pendingKey: string | null = null;
+  let acknowledgedKey: string | null = null;
 
   function eligible(input: HostConsentInput) {
     return input.enabled && input.path !== "/" && acquisitionRoute(input.path) !== null &&
@@ -70,8 +72,14 @@ export function createHostServerConsent(port: ConsentPort) {
     return true;
   }
   function sync(input: HostConsentInput): Promise<void> {
+    const key = JSON.stringify([eligible(input), input.consent]);
+    if (pendingKey === key) return work;
+    if (acknowledgedKey === key && eligible(input) && input.consent &&
+        snapshot(input.consent.updatedAt)) return work;
     const call = ++revision;
+    pendingKey = key;
     acknowledged = null; // Immediate local shutdown, before waiting on I/O.
+    acknowledgedKey = null;
     const desired = input.consent ? {...input.consent} : null;
     work = work.catch(() => undefined).then(async () => {
       let grant = readGrant(port.storage);
@@ -107,8 +115,11 @@ export function createHostServerConsent(port: ConsentPort) {
           result.expiresAt === grant.choice.chosenAt + lifetimeMs && port.now() < result.expiresAt) {
         acknowledged = {capability: grant.capability, revision: grant.revision,
           expiresAt: result.expiresAt};
+        acknowledgedKey = key;
       }
-    }).catch(() => { acknowledged = null; });
+    }).catch(() => { acknowledged = null; }).finally(() => {
+      if (call === revision) pendingKey = null;
+    });
     return work;
   }
   function snapshot(consentRevision: string): string | null {
