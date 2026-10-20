@@ -8,7 +8,7 @@ import {catchLiveDestinations, catchMeasurementMode, configuredCatchTransport, c
 const channel = "00000000-0000-4000-8000-000000000000";
 const lead = safeAcquisitionEvent({name: "lead_accepted", form: "host_application",
   eventId: `catch_1792486200000_${channel}`, receipt: {ok: true, alreadyJoined: false}},
-{path: "/host/apply/", consent: {version: 3, analytics: true, marketing: true, updatedAt: "2026-10-20T00:00:00Z"}})!;
+{path: "/host/apply/", consent: {version: 4, analytics: true, marketing: true, updatedAt: "2026-10-20T00:00:00Z"}})!;
 
 describe("Catch controlled Google transport", () => {
   it("keeps production disabled and does not create frames for either provider", () => {

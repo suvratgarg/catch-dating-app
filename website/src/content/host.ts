@@ -13,7 +13,7 @@ export const hostPageCopy = {
     title: "Keep your booking platform. Run a better event.",
     body:
       "Import your guest list, share one QR code, and give every checked-in guest the live Catch experience—no app download required.",
-    primaryAction: "Apply for beta access",
+    primaryAction: "Apply for a supported pilot",
     secondaryAction: "See how it works",
     compatibility:
       "Bring a CSV from Luma, Eventbrite, Partiful, POSH, Airbnb, BookMyShow—or anywhere else.",
@@ -60,7 +60,7 @@ export const hostPageCopy = {
       "Useful now does not depend on these. They deepen the system when you choose to adopt them.",
   },
   apply: {
-    title: "Apply for beta access.",
+    title: "Apply for a supported pilot.",
     body:
       "We are approving a small group of hosts whose next event can teach us something. Apply with a real event; selected hosts get hands-on onboarding and free beta access.",
   },
@@ -334,7 +334,17 @@ export const hostApplicationCopy = {
     event: {label: "Next event", body: "The real event we can learn from."},
     setup: {label: "Current setup", body: "Booking tool and guest-list size."},
     success: {label: "Live tools", body: "Where Catch could help most."},
-    review: {label: "Review", body: "Confirm the beta application."},
+    review: {label: "Review", body: "Confirm the pilot application."},
+  },
+  eventPricing: {
+    label: "Will guests pay to attend?",
+    placeholder: "Choose an option",
+    options: [
+      {value: "paid", label: "Paid tickets"},
+      {value: "free", label: "Free entry"},
+      {value: "mixed", label: "Both paid and free tickets"},
+      {value: "undecided", label: "Not decided yet"},
+    ],
   },
   setup: {
     bookingPlatformLabel: "Current booking or RSVP platform",
@@ -379,7 +389,7 @@ export const hostApplicationCopy = {
     guestsLabel: "Guests",
     noteTitle: "What happens after you apply",
     noteBody:
-      "Catch reviews the event, guest-list setup, and selected live tools before confirming beta access. Selected hosts get a guided import check and a run-through before doors open.",
+      "We aim to respond within one business day. Catch reviews the event, guest-list setup, and selected live tools before confirming a supported pilot. Selected hosts get a guided import check and a run-through before doors open.",
   },
 } as const;
 

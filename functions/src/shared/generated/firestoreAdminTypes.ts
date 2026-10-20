@@ -3674,6 +3674,7 @@ export interface SalesInboundIntentsDocument {
     eventSuccessModules?: string[];
     hostGoals?: string | null;
     operatingNotes?: string | null;
+    eventPricing?: ("paid" | "free" | "mixed" | "undecided") | null;
   } | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
@@ -3681,6 +3682,10 @@ export interface SalesInboundIntentsDocument {
   linkedBy?: string;
   linkRequestId?: string;
   partnerUid?: string;
+  hostLead?: {
+    eventId: string;
+    isNew: boolean;
+  };
 }
 
 /**

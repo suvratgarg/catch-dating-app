@@ -49,7 +49,8 @@
     const event = data.event;
     if (!event || !Object.hasOwn(names, event.name) || event.consent?.analytics !== true) return;
     const p = event.parameters;
-    if (!p || typeof p.page_path !== "string" ||
+    if (!p || typeof p.page_path !== "string" || p.page_path === "/" ||
+        p.audience !== "organizer" || p.form === "member_waitlist" ||
         !/^\/(?:|host\/|host\/(?:overview|platform|planners|clubs|directory|claim|apply|stack|workflows)\/|claim\/)$/u.test(p.page_path)) return;
     const context = event.attribution;
     const hasIdentity = context && typeof context.clientId === "string" &&
@@ -61,7 +62,7 @@
     if (hasIdentity) {
       params.client_id = context.clientId;
       params.session_id = context.sessionId;
-      // The parent owns the consented tab-limited identifier. This sandbox still
+      // The parent owns the consented, time-limited identifier. This sandbox still
       // cannot set/read Catch cookies or see any other parent storage.
       window.gtag("consent", "update", {analytics_storage: "granted", ad_storage: "denied",
         ad_user_data: event.consent.marketing === true ? "granted" : "denied",
@@ -93,6 +94,7 @@
       if (!/^((waitlist|host_lead|catch)_[0-9]{13}_([a-f0-9-]{36}|[a-z0-9]{8,24}))$/u.test(p.event_id ?? "") ||
           observed.has(p.event_id) || observed.size >= 4096) return;
       observed.add(p.event_id);
+      params.event_id = p.event_id;
     }
     window.gtag("event", names[event.name], {...params, send_to: session.measurementId});
     if (!session.preview && event.name === "lead_accepted" && event.consent.marketing === true &&

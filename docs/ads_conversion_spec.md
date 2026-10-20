@@ -28,23 +28,24 @@ The runtime is a separate opaque-origin iframe with only `allow-scripts` and
 `no-referrer`. It cannot read the parent DOM, storage or diagnostic bus.
 Lifecycle destruction removes the frame and cancels its bounded initial-load
 queue. It supplies explicit canonical page context, disables automatic views,
-Google signals, personalization and URL passthrough. A fresh version-3 consent
-receipt may supply a random tab-limited client/session identifier; the opaque
+Google signals, personalization and URL passthrough. A fresh version-4 consent
+receipt may supply a random client identifier with a 30-day maximum lifetime and an inactivity-bound session identifier; the opaque
 frame still cannot read or write parent cookies/storage. Google ad storage and
 personalisation remain denied; analytics storage permission follows the explicit
 analytics choice and ad-user-data permission follows the marketing choice.
 Only the four currently wired events are supported; only accepted organiser
-leads with marketing permission emit the Ads destination. Meta has no configured
-live transport or dataset yet.
+leads with marketing permission emit the Ads destination. Meta's Catch Acquisition
+dataset exists, but this source has no configured live Meta transport yet.
 
 The exact isolated Next preview origin is allowed to exercise GA4 with
 `debug_mode: true` and `traffic_type: internal`; Ads conversion sends are hard
 blocked on that origin. Production stays disabled. No arbitrary preview host,
 localhost or query flag can activate the transport.
 
-The prepared browser context is tab-scoped for at most 24 hours and is created
-only when that transport is enabled and a fresh version-3 choice permits analytics.
-Marketing permission additionally permits validated gclid/gbraid/wbraid/fbclid.
+The prepared browser context is Host-scoped in first-party storage for at most 30 days and is created
+only when that transport is enabled and a fresh version-4 choice permits analytics.
+The random analytics session ID rotates after 30 minutes of inactivity while the
+client and attribution context have a fixed 30-day lifetime. Marketing permission additionally permits validated gclid/gbraid/wbraid/fbclid.
 Google receives only Google click identifiers, rebuilt into the canonical page
 location; Meta identifiers are not forwarded by this transport. GA4 campaign
 labels also map to its documented campaign_source/medium/name/content fields.
@@ -85,10 +86,10 @@ signals are not optimization outcomes.
 | `page_view` | `page_view` | `PageView` | No | Allowlisted acquisition SPA visit; one per lifecycle visit; first consent starts the current visit without replaying earlier pages. |
 | `cta_click` | `cta_click` | `CatchCtaClick` | No | Existing shared CTA helper; only a same-origin, allowlisted destination. Label and raw URL stay local. |
 | `acquisition_start` | `acquisition_start` | `CatchAcquisitionStart` | No | First form interaction in member waitlist, host lead or host operating application; first explicit claim lookup/selection, role-step interaction or sign-in initiation in the canonical claim controller. |
-| `lead_accepted` | `generate_lead` | `Lead` | Yes, organizer only | Validated successful `/api/join-waitlist` response with `ok: true`, `alreadyJoined: false`, and unchanged submission-time permission. |
+| `lead_accepted` | `generate_lead` | `Lead` | Yes, organizer only | Validated successful `/api/join-waitlist` response with `ok: true`, authoritative `hostLead.isNew: true` with a stable server event ID, and unchanged submission-time permission. Member waitlist compatibility still uses `alreadyJoined: false`. |
 | `organizer_signup` | `sign_up` | `CompleteRegistration` | Yes | Unwired: organizer-account-created authority with `isNewAccount: true`; ordinary sign-in/OTP is rejected. |
 | `claim_approved` | `claim_approved` | `CatchClaimApproved` | Yes | Unwired: canonical claim decision with `status: approved`; pending submission is rejected. |
-| `organizer_activated` | `organizer_activated` | `CatchOrganizerActivated` | No initially | Unwired: first public event publication authority; a draft/event-created click is rejected. |
+| `organizer_activated` | `organizer_activated` | `CatchOrganizerActivated` | No initially | Unwired: first published non-test event with a successful real check-in; a draft/event-created click is rejected. |
 | `purchase` | `purchase` | `Purchase` | Yes | Unwired: settled Catch organizer payment authority, positive INR amount and opaque stable transaction ID; click/redirect/pending/free outcomes are rejected. |
 
 The eight events support four candidate advertising outcomes: accepted organizer
@@ -98,7 +99,8 @@ activation is a quality signal initially. Current wiring supplies three diagnost
 events (including claim start) and accepted leads; the remaining four outcomes are contract seams, not
 claims that providers already receive them.
 
-`member_waitlist` is tagged `audience: attendee` and sent to synthetic GA4 only.
+The current Host-only scope rejects `member_waitlist` and the consumer homepage
+at the measurement boundary; neither is sent to the acquisition property.
 `host_lead`, `host_application` and `claim` belong to organizer acquisition.
 Attendee booking and consumer paid conversion remain separate follow-ons.
 No app profile, matching, singles/dating interest, or attendance data enters this
@@ -107,13 +109,13 @@ were planning proposals and are not an approved advertising export.
 
 ## Consent and lifecycle
 
-The persistent `catch_marketing_consent_v3` receipt records version 3, choice,
+The persistent `catch_marketing_consent_v4` receipt records version 4, choice,
 analytics/marketing booleans, update time and the measurement mode (disabled,
 Google preview or Google live). A mode change requires a fresh choice; permission
 chosen while integrations were disabled cannot silently activate providers. The banner offers essential only,
 analytics, and explicit analytics plus marketing, with a persistent Privacy choices
 control for withdrawal. Advertising remains disabled regardless of the choice.
-Legacy version-1 and version-2 choices, including `accepted`, can retain local
+Legacy version-1, version-2 and version-3 choices, including `accepted`, can retain local
 analytics permission but never authorize the live transport or marketing;
 the banner requires a fresh choice.
 Malformed or unknown versioned receipts fail closed.
@@ -153,12 +155,12 @@ attributes are never outbound parameters. Receipt IDs must be opaque generated
 measurement IDs, not business identifiers. Purchase amount/currency are accepted
 only for the settled organizer authority.
 
-Campaign retention is tab-scoped, expires after 24 hours and clears on denial or
+Campaign retention uses first-party local storage, expires after 30 days and clears on denial or
 entry into an unapproved route. Only the closed, reviewed source/medium/campaign/
 content vocabularies in `approvedCampaignLabels` persist in the existing HTTP
 attribution payload; unknown labels and search terms are discarded. Separately,
 `catchMeasurement.ts` owns the browser-only identifier context under a fresh
-version-3 choice. Click identifiers are excluded for analytics-only choices,
+version-4 choice. Click identifiers are excluded for analytics-only choices,
 clear on a changed consent revision/private route, and never enter the diagnostic
 bus or existing lead HTTP payload. Storage failures drop the context. Host-to-`/claim` retains the approved touch.
 New campaigns require a reviewed vocabulary change. There is no URL-passthrough,
@@ -171,8 +173,13 @@ steps, not proof of a paid click being attributed.
 Waitlist and host application controllers call `trackAcceptedMarketingLead` only
 after a parsed HTTP success. Local form-specific successes and `generate_lead`
 remain compatible but cannot enter the outbound adapters. The outbound contract
-maps one `lead_accepted` to one `generate_lead` per destination. Refreshed/already
-joined records are not new acquisition conversions. Host application retries
+maps one `lead_accepted` to one `generate_lead` per destination. Host acquisition uses the backend `hostLead` receipt independently of the email-level
+`alreadyJoined` flag: a prior attendee may make their first Host enquiry. The receipt
+is written atomically with the private Sales intent and retained on the waitlist
+record; exact request retries return the same receipt, while later submissions
+retain the ID with `isNew: false`. Existing Host roles and legacy Host intents are
+not reclassified as new acquisition. A legacy response without a receipt cannot
+authorise a Host conversion. Host application retries
 retain their request event ID and submission permission.
 The waitlist controller also suppresses success measurements when its submitted
 honeypot is populated: the server deliberately returns an opaque success without
@@ -205,7 +212,7 @@ the existing bus wholesale. CAPI and customer matching are later steps. Organize
 pixels require their own publication and policy approval and stay disabled.
 
 Missing server/app handoffs: organizer creation receipt, approved claim receipt,
-first publication/activation receipt, settled organizer purchase receipt, and
+first real event check-in/activation receipt, settled organizer purchase receipt, and
 versioned server marketing permission. Wire only those authorities when supplied;
 do not infer them from login, pending claims, form success or a purchase page.
 
@@ -213,7 +220,6 @@ do not infer them from login, pending claims, form success or a purchase page.
 
 Property 559735544 defines `host_lead_accepted` from `generate_lead` with
 `audience = organizer`, copying the source parameters. It counts once per event,
-without a default monetary value. The source already suppresses duplicate/already
-joined submissions. This Analytics key event is not imported as a second Ads
+without a default monetary value. The source suppresses repeated Host acquisitions using server receipts. This Analytics key event is not imported as a second Ads
 conversion: the prepared direct Ads action remains the sole candidate to avoid
 double-counting. Sales qualification and pilot activation are later outcomes.
