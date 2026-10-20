@@ -162,7 +162,7 @@ test('Host deletion snapshot rejects incomplete or cyclic Function inventories',
  await assert.rejects(readSnapshot('prod',deps({functions:[],nextPageToken:'repeat'})));
 });
 test('Host deletion binds real materializer bytes and rejects changed values under an unchanged marker',t=>{
- const directory=fs.mkdtempSync(path.join(os.tmpdir(),'cat151-params-'));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ const directory=fs.mkdtempSync(path.join(os.tmpdir(),'host-deletion-params-'));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
  fs.writeFileSync(path.join(directory,'package.json'),'{}');
  const environment={ALGOLIA_APPLICATION_ID:'ABCDEFGHIJ',RAZORPAY_PUBLIC_KEY_ID:'rzp_test_synthetic'},projectId=projects.prod,sourceSha=RELEASE.sourceSha;
  const provenance=functionsParamsProvenance({environment,projectId,sourceSha});

@@ -1,4 +1,4 @@
-name: Protected Host deletion receipt-only promotion
+name: Protected Host account-deletion promotion
 on:
   workflow_call:
     inputs:
@@ -31,7 +31,7 @@ permissions:
   id-token: write
 jobs:
   promote-host-deletion:
-    name: Host deletion order receipt ${{ inputs.environment }} promotion
+    name: Host account deletion ${{ inputs.environment }} promotion
     runs-on: ubuntu-latest
     timeout-minutes: 90
     environment: ${{ inputs.environment }}
@@ -43,7 +43,7 @@ jobs:
       artifact_id: ${{ steps.host-deletion.outputs.artifact-id }}
       artifact_digest: ${{ steps.host-deletion.outputs.artifact-digest }}
     steps:
-      - name: Validate the fixed receipt caller and reject unexpected scope
+      - name: Validate the fixed account-deletion caller and reject unexpected scope
         env:
           INPUTS: ${{ toJSON(inputs) }}
         run: |
