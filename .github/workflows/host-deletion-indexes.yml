@@ -96,7 +96,7 @@ jobs:
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
       - name: Read this run's completed DEV proof
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v7
         with:
           name: host-deletion-indexes-dev-${{ github.run_id }}-${{ github.run_attempt }}
           path: build/host-deletion-indexes/dev
