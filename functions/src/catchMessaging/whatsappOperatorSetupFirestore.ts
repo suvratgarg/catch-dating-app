@@ -12,7 +12,9 @@ import {CATCH_APP_AUTHORITIES, CatchAppAuthorityStore} from
 import type {CatchAuditedAuthFence, CatchFreshAuthContext} from
   "./whatsappAppAuthorityStore";
 import {assertPlannedSetupIdentity, setupExact, setupHash, setupUnavailable,
-  validateSetupPlan, validateSetupRequest} from "./whatsappOperatorSetup";
+  validateSetupPlan, validateSetupRequest, isConsolidatedOperator,
+  setupAssignmentMatches, operatorRootCapabilities} from
+  "./whatsappOperatorSetup";
 import type {OperatorSetupJournal, OperatorSetupOperation, OperatorSetupPhase,
   OperatorSetupPlan, OperatorSetupRequest, OperatorSetupSources} from
   "./whatsappOperatorSetup";
@@ -92,7 +94,10 @@ export function operatorBoundAuthorityStore(store: CatchAppAuthorityStore,
         const actor = await sources.actor();
         if (record.revision !== 2 || record.state !== "active" ||
             record.grantedBy !== null ||
-            setupHash(record.capabilities) !== setupHash(["reply", "review"]) ||
+            (isConsolidatedOperator(plan.scope) &&
+              record.endpointHash !== plan.scope.endpointHash) ||
+            setupHash(record.capabilities) !==
+              setupHash(operatorRootCapabilities(plan.scope)) ||
             record.incarnation !== setupHash(["catch.firebase-creation/v1",
               plan.scope.projectId, plan.scope.actorUid,
               plan.actorCreationTimeMillis]) ||
@@ -191,7 +196,9 @@ export class FirestoreOperatorSetupJournal implements OperatorSetupJournal {
       ]);
       const current = await this.sources.snapshot();
       assertPlannedSetupIdentity(plan, current, this.sources.now());
-      if (!authorities.empty || !assignments.empty || actorAssignment.exists ||
+      if (!authorities.empty || !assignments.empty ||
+          !setupAssignmentMatches(plan, {actorAssignmentExists:
+            actorAssignment.exists, actorAssignment: actorAssignment.data()}) ||
           current.existingOwnerUids.length || current.authorityExists ||
           setupHash(current.actor.claims) !== plan.beforeClaimsSha256 ||
           this.sources.now() >= plan.expiresAtMillis) setupUnavailable();
@@ -237,7 +244,9 @@ export class FirestoreOperatorSetupJournal implements OperatorSetupJournal {
         tx.get(actorRef), tx.get(recipientRef), tx.get(assignmentRef),
         tx.get(this.db.collection(CATCH_APP_AUTHORITIES).limit(1)),
       ]);
-      if (actor.exists || recipient.exists || assignment.exists ||
+      if (actor.exists || recipient.exists ||
+          !setupAssignmentMatches(plan, {actorAssignmentExists:
+            assignment.exists, actorAssignment: assignment.data()}) ||
         !owners.empty) {
         setupUnavailable();
       }
@@ -246,11 +255,19 @@ export class FirestoreOperatorSetupJournal implements OperatorSetupJournal {
       const seed = (uid: string) => denyCatchAppAuthority(null,
         {projectId: plan.scope.projectId, uid}, 0, at);
       tx.create(actorRef, {...seed(plan.scope.actorUid)});
-      tx.create(recipientRef, {...seed(plan.scope.recipientUid)});
-      tx.create(assignmentRef, {targetUid: plan.scope.actorUid, email: null,
-        displayName: null, disabled: false, roles: ["adminOwner"],
-        status: "active", updatedAt: Timestamp.fromMillis(at),
-        updatedByUid: plan.scope.actorUid});
+      if (!isConsolidatedOperator(plan.scope)) {
+        tx.create(recipientRef, {...seed(plan.scope.recipientUid)});
+      }
+      if (isConsolidatedOperator(plan.scope)) {
+        tx.update(assignmentRef, {roles: ["admin", "adminOwner"],
+          updatedAt: Timestamp.fromMillis(at),
+          updatedByUid: plan.scope.actorUid});
+      } else {
+        tx.create(assignmentRef, {targetUid: plan.scope.actorUid, email: null,
+          displayName: null, disabled: false, roles: ["adminOwner"],
+          status: "active", updatedAt: Timestamp.fromMillis(at),
+          updatedByUid: plan.scope.actorUid});
+      }
       tx.create(this.db.collection("adminAuditLogs")
         .doc(`catch_operator_bootstrap_${plan.scope.projectId}`), {
         actorUid: plan.scope.actorUid, actorRoles: ["adminOwner"],
@@ -293,11 +310,21 @@ export class FirestoreOperatorSetupJournal implements OperatorSetupJournal {
         incarnation: setupHash(["catch.firebase-creation/v1",
           plan.scope.projectId, plan.scope.actorUid,
           plan.actorCreationTimeMillis]), updatedAtMillis: this.sources.now(),
-        capabilities: ["review", "reply"]};
+        capabilities: isConsolidatedOperator(plan.scope) ?
+          operatorRootCapabilities(plan.scope) : ["review", "reply"],
+        endpointHash: isConsolidatedOperator(plan.scope) ?
+          plan.scope.endpointHash : null};
       for (const capability of ["review", "reply"] as const) {
         authorizeCatchAppCapability({record: root, auth: current.actor.auth,
           session: current.actor.session}, capability, this.sources.now(),
         {projectId: plan.scope.projectId, uid: plan.scope.actorUid});
+      }
+      if (isConsolidatedOperator(plan.scope)) {
+        authorizeCatchAppCapability({record: root,
+          auth: current.recipient.auth},
+        "receive", this.sources.now(), {projectId: plan.scope.projectId,
+          uid: plan.scope.recipientUid,
+          endpointHash: plan.scope.endpointHash});
       }
       tx.update(actorRef, {...root});
       this.write(tx, plan, before, this.next(before, "root-active"),
@@ -335,7 +362,35 @@ export class FirestoreOperatorSetupJournal implements OperatorSetupJournal {
     }, actor);
     return bound;
   }
+  /** Self-receive is activated with the root, never by granting to oneself.
+   * Retain the phase chain and exact effect hashes, with current authority and
+   * each receipt committed in the same transaction. */
+  private async confirmConsolidatedReceive(plan: OperatorSetupPlan,
+    request: OperatorSetupRequest, from: "prepare-intent" | "finalize-intent",
+    to: "prepared" | "complete") {
+    await this.fenced(plan, async (tx, fence) => {
+      const before = readOperatorSetupOperation(
+        (await tx.get(this.ref(plan))).data(), plan, request);
+      if (before.phase !== from) setupUnavailable();
+      const root = await tx.get(this.db.collection(CATCH_APP_AUTHORITIES)
+        .doc(plan.scope.actorUid));
+      const bound = operatorBoundAuthorityStore(this.store, this.sources,
+        plan, 3);
+      await bound.readinessBindings(tx, fence, {
+        reviewerUid: plan.scope.actorUid,
+        recipientUid: plan.scope.recipientUid,
+        endpointHash: plan.scope.endpointHash});
+      await this.current(plan, fence);
+      this.write(tx, plan, before, this.next(before, to),
+        setupHash(root.data()));
+    });
+  }
   async prepareReceive(plan: OperatorSetupPlan, request: OperatorSetupRequest) {
+    if (isConsolidatedOperator(plan.scope)) {
+      await this.confirmConsolidatedReceive(plan, request,
+        "prepare-intent", "prepared");
+      return;
+    }
     const store = await this.grantStore(plan, request, "prepare-intent",
       "prepared");
     await store.prepare(plan.scope.actorUid, await this.actorIdToken(),
@@ -345,6 +400,11 @@ export class FirestoreOperatorSetupJournal implements OperatorSetupJournal {
   }
   async finalizeReceive(plan: OperatorSetupPlan,
     request: OperatorSetupRequest) {
+    if (isConsolidatedOperator(plan.scope)) {
+      await this.confirmConsolidatedReceive(plan, request,
+        "finalize-intent", "complete");
+      return;
+    }
     const store = await this.grantStore(plan, request, "finalize-intent",
       "complete");
     await store.finalize(plan.scope.actorUid, await this.actorIdToken(),
@@ -357,7 +417,8 @@ export class FirestoreOperatorSetupJournal implements OperatorSetupJournal {
       const root = readCatchAppAuthority(actor.record);
       const current = await this.sources.actor();
       if (root.revision !== 2 || root.grantedBy !== null ||
-          setupHash(root.capabilities) !== setupHash(["reply", "review"]) ||
+          setupHash(root.capabilities) !==
+            setupHash(operatorRootCapabilities(plan.scope)) ||
           current.emailSha256 !== plan.scope.actorEmailSha256 ||
           current.googleSubjectSha256 !== plan.googleSubjectSha256 ||
           setupHash(current.claims) !== plan.desiredClaimsSha256) {
@@ -370,9 +431,11 @@ export class FirestoreOperatorSetupJournal implements OperatorSetupJournal {
         const recipient = await this.store.principal(tx, fence,
           plan.scope.recipientUid, "none");
         const target = readCatchAppAuthority(recipient.record);
-        if (target.revision !== 3 ||
+        if (isConsolidatedOperator(plan.scope) ?
+          setupHash(target) !== setupHash(root) :
+          (target.revision !== 3 ||
             setupHash(target.capabilities) !== setupHash(["receive"]) ||
-            setupHash(target.grantedBy) !== setupHash(binding)) {
+            setupHash(target.grantedBy) !== setupHash(binding))) {
           setupUnavailable();
         }
         authorizeCatchAppCapability(recipient, "receive", this.sources.now(),
