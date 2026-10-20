@@ -1,5 +1,7 @@
 import {acquisitionRoute, approvedCampaignLabels, createCatchMeasurementController,
   type CatchAcquisitionEvent, type AcquisitionForm, type MeasurementConsent} from "./analytics/catchMeasurement.ts";
+import {configuredCatchTransport} from "./analytics/catchLiveTransport.ts";
+export type {CatchProviderSession, SafeAcquisitionEvent} from "./analytics/catchMeasurement.ts";
 
 type ConsentChoice = "accepted" | "analytics" | "essential";
 type FormVariant = "member" | "host";
@@ -52,7 +54,7 @@ const attributionMaxAgeMs = 24 * 60 * 60 * 1000;
 export const marketingConsentChangedEvent = "catch:marketing-consent-changed";
 const legacyConsentStorageKey = "catch_marketing_consent_v1";
 const consentStorageKey = "catch_marketing_consent_v2";
-const measurement = createCatchMeasurementController();
+const measurement = createCatchMeasurementController(configuredCatchTransport);
 let lastPageKey: string | null = null;
 let consentRevisionMs = 0;
 let clientErrorMonitoringInstalled = false;

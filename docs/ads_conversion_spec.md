@@ -1,7 +1,7 @@
 ---
 doc_id: ads_conversion_spec
-version: 0.2.0
-updated: 2026-10-02
+version: 0.3.0
+updated: 2026-10-20
 owner: marketing_website
 status: active
 ---
@@ -12,8 +12,35 @@ Catch acquisition uses one typed contract in
 `website/src/analytics/catchMeasurement.ts`, integrated through the existing
 `website/src/analytics.ts` consent and lifecycle owner. The fixed Google and Meta
 adapters in `website/src/shared/analytics/catchProviders.ts` accept synthetic destinations only. The production
-controller has no transport; no provider, credentials, tag, customer list, spend,
-policy change, or backend deployment is enabled by this implementation.
+controller has a disabled configured transport; no provider, credentials, tag,
+customer list, spend, policy change, or backend deployment is enabled by default.
+
+### Catch Host pilot destination configuration
+
+`analytics/catchLiveTransport.ts` owns the prepared, default-disabled Google
+transport. Its fixed destinations are GA4 `G-HZFG0DL2DK` (property
+`559735544`) and Ads `AW-18526407471/dUL7CNKBn6MdEK-WioJF` (customer
+`1016806229`, conversion action `7858536658`, accepted organiser lead).
+The Ads action is secondary, counts one conversion per click, and has no
+assigned monetary lead value. Account configuration is not proof of event receipt.
+
+The runtime is a separate opaque-origin iframe with only `allow-scripts` and
+`no-referrer`. It cannot read the parent DOM, storage or diagnostic bus.
+Lifecycle destruction removes the frame and cancels its bounded initial-load
+queue. It supplies explicit canonical page context, disables automatic views,
+Google signals, personalization and URL passthrough, and denies all storage.
+Only the four currently wired events are supported; only accepted organiser
+leads with marketing permission emit the Ads destination. Meta has no configured
+live transport or dataset yet.
+
+This preparation does **not** solve cookie/click-ID campaign attribution. The
+current contract intentionally discards click IDs. Do not enable automated
+conversion bidding or claim campaign-level conversion proof from a successful
+form submission or a synthetic network test. Before changing the `enabled`
+gate, validate actual provider receipt and isolation, revise consent copy (which
+currently says integrations are disabled), require a fresh consent receipt,
+and review an explicit attribution design. A production deployment and ad
+launch remain separate steps.
 
 ## Boundary and current delivery
 

@@ -1,8 +1,18 @@
 {
   "version": 1,
-  "updated": "2026-07-12",
+  "updated": "2026-10-20",
   "description": "Permanent, narrowly justified website copy ownership exceptions. Keep this near-empty.",
   "entries": [
+    {
+      "file": "website/src/analytics/catchLiveTransport.ts",
+      "text": "G-HZFG0DL2DK",
+      "reason": "Public GA4 destination identifier in default-disabled transport configuration, not visible marketing copy or a credential."
+    },
+    {
+      "file": "website/src/analytics/catchLiveTransport.ts",
+      "text": "AW-18526407471/dUL7CNKBn6MdEK-WioJF",
+      "reason": "Public Google Ads conversion destination in default-disabled transport configuration, not visible marketing copy or a credential."
+    },
     {
       "file": "website/src/shared/site/SiteFooter.tsx",
       "text": "Catch home",
