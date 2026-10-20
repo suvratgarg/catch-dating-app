@@ -337,6 +337,22 @@ export const salesInboundIntentsDocumentSchema: Record<string, unknown> = {
                   "type": "null"
                 }
               ]
+            },
+            "eventPricing": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "paid",
+                    "free",
+                    "mixed",
+                    "undecided"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },

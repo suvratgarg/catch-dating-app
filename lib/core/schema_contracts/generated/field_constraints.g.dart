@@ -92934,6 +92934,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const joinWaitlistHTTPRequestHostApplicationEventPricing = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.eventPricing',
+    valueTypes: <String>['string'],
+    enumValues: <String>['paid', 'free', 'mixed', 'undecided'],
+  );
+
   static const joinWaitlistHTTPRequestHostApplicationEventSuccessModules = CatchContractFieldConstraints(
     path: 'joinWaitlistHTTPRequest.hostApplication.eventSuccessModules',
     valueTypes: <String>['array'],
@@ -149146,6 +149152,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const salesInboundIntentsDocumentHostApplicationEventPricing = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.hostApplication.eventPricing',
+    valueTypes: <String>['string'],
+    enumValues: <String>['paid', 'free', 'mixed', 'undecided'],
+  );
+
   static const salesInboundIntentsDocumentHostApplicationEventSuccessModules = CatchContractFieldConstraints(
     path: 'salesInboundIntentsDocument.hostApplication.eventSuccessModules',
     valueTypes: <String>['array'],
@@ -182304,6 +182316,7 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPRequest.hostApplication.communityLink': joinWaitlistHTTPRequestHostApplicationCommunityLink,
     'joinWaitlistHTTPRequest.hostApplication.eventCadence': joinWaitlistHTTPRequestHostApplicationEventCadence,
     'joinWaitlistHTTPRequest.hostApplication.eventLocation': joinWaitlistHTTPRequestHostApplicationEventLocation,
+    'joinWaitlistHTTPRequest.hostApplication.eventPricing': joinWaitlistHTTPRequestHostApplicationEventPricing,
     'joinWaitlistHTTPRequest.hostApplication.eventSuccessModules': joinWaitlistHTTPRequestHostApplicationEventSuccessModules,
     'joinWaitlistHTTPRequest.hostApplication.eventSuccessModules.items': joinWaitlistHTTPRequestHostApplicationEventSuccessModulesItems,
     'joinWaitlistHTTPRequest.hostApplication.expectedCapacity': joinWaitlistHTTPRequestHostApplicationExpectedCapacity,
@@ -190062,6 +190075,7 @@ abstract final class CatchContractConstraints {
     'salesInboundIntentsDocument.hostApplication.communityLink': salesInboundIntentsDocumentHostApplicationCommunityLink,
     'salesInboundIntentsDocument.hostApplication.eventCadence': salesInboundIntentsDocumentHostApplicationEventCadence,
     'salesInboundIntentsDocument.hostApplication.eventLocation': salesInboundIntentsDocumentHostApplicationEventLocation,
+    'salesInboundIntentsDocument.hostApplication.eventPricing': salesInboundIntentsDocumentHostApplicationEventPricing,
     'salesInboundIntentsDocument.hostApplication.eventSuccessModules': salesInboundIntentsDocumentHostApplicationEventSuccessModules,
     'salesInboundIntentsDocument.hostApplication.eventSuccessModules.items': salesInboundIntentsDocumentHostApplicationEventSuccessModulesItems,
     'salesInboundIntentsDocument.hostApplication.expectedCapacity': salesInboundIntentsDocumentHostApplicationExpectedCapacity,

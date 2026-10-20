@@ -57,6 +57,7 @@ describe("useHostApplicationController", () => {
       result.current.updateDraft("email", "host@example.com");
       result.current.updateDraft("organizationName", "Sunday Club");
       result.current.updateDraft("communityLink", "https://example.com");
+      result.current.updateDraft("eventPricing", "paid");
       result.current.updateDraft("nextEventName", "Sunday Dinner");
       result.current.updateDraft("eventLocation", "Delhi");
       result.current.updateDraft("hostGoals", "Create thoughtful introductions");
@@ -75,6 +76,7 @@ describe("useHostApplicationController", () => {
       hostApplication: {
         organizationName: "Sunday Club",
         nextEventName: "Sunday Dinner",
+        eventPricing: "paid",
         bookingPlatform: "Luma",
         guestListFormat: "CSV",
       },
@@ -90,6 +92,7 @@ describe("useHostApplicationController", () => {
       result.current.updateDraft("email", "host@example.test");
       result.current.updateDraft("organizationName", "Example Club");
       result.current.updateDraft("communityLink", "https://example.test");
+      result.current.updateDraft("eventPricing", "paid");
       result.current.updateDraft("nextEventName", "Example Dinner");
       result.current.updateDraft("eventLocation", "Example City");
       result.current.updateDraft("hostGoals", "Review applications");
@@ -127,6 +130,7 @@ describe("useHostApplicationController", () => {
       result.current.updateDraft("email", "host@example.com");
       result.current.updateDraft("organizationName", "Sunday Club");
       result.current.updateDraft("communityLink", "https://example.com");
+      result.current.updateDraft("eventPricing", "paid");
       result.current.updateDraft("nextEventName", "Sunday Dinner");
       result.current.updateDraft("eventLocation", "Delhi");
       result.current.updateDraft("hostGoals", "Create thoughtful introductions");

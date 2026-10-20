@@ -29,13 +29,13 @@ The runtime is a separate opaque-origin iframe with only `allow-scripts` and
 Lifecycle destruction removes the frame and cancels its bounded initial-load
 queue. It supplies explicit canonical page context, disables automatic views,
 Google signals, personalization and URL passthrough. A fresh version-4 consent
-receipt may supply a random tab-limited client/session identifier; the opaque
+receipt may supply a random client identifier with a 30-day maximum lifetime and an inactivity-bound session identifier; the opaque
 frame still cannot read or write parent cookies/storage. Google ad storage and
 personalisation remain denied; analytics storage permission follows the explicit
 analytics choice and ad-user-data permission follows the marketing choice.
 Only the four currently wired events are supported; only accepted organiser
-leads with marketing permission emit the Ads destination. Meta has no configured
-live transport or dataset yet.
+leads with marketing permission emit the Ads destination. Meta's Catch Acquisition
+dataset exists, but this source has no configured live Meta transport yet.
 
 The exact isolated Next preview origin is allowed to exercise GA4 with
 `debug_mode: true` and `traffic_type: internal`; Ads conversion sends are hard
@@ -115,7 +115,7 @@ Google preview or Google live). A mode change requires a fresh choice; permissio
 chosen while integrations were disabled cannot silently activate providers. The banner offers essential only,
 analytics, and explicit analytics plus marketing, with a persistent Privacy choices
 control for withdrawal. Advertising remains disabled regardless of the choice.
-Legacy version-1, version-2 and version-4 choices, including `accepted`, can retain local
+Legacy version-1, version-2 and version-3 choices, including `accepted`, can retain local
 analytics permission but never authorize the live transport or marketing;
 the banner requires a fresh choice.
 Malformed or unknown versioned receipts fail closed.

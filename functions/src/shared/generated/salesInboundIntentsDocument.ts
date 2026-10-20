@@ -50,6 +50,7 @@ export type SalesInboundIntentsDocument = {
     eventSuccessModules?: string[];
     hostGoals?: string | null;
     operatingNotes?: string | null;
+    eventPricing?: ("paid" | "free" | "mixed" | "undecided") | null;
   } | null;
   /**
    * Serialized Firestore Timestamp fixture shape.

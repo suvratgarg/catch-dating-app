@@ -82,7 +82,7 @@ export function safeAcquisitionEvent(input: CatchAcquisitionEvent, context: Meas
     page_location: `https://catchdates.com${path}`,
     page_title: "Catch",
     page_name: routes[path],
-    audience: path === "/" ? "brand" : "organizer",
+    audience: "organizer",
     ...approvedCampaignLabels(context.campaign ?? {}),
   };
   switch (input.name) {
@@ -96,14 +96,14 @@ export function safeAcquisitionEvent(input: CatchAcquisitionEvent, context: Meas
     case "acquisition_start":
       if (!forms.includes(input.form) || input.form === "member_waitlist") return null;
       parameters.form = input.form;
-      parameters.audience = input.form === "member_waitlist" ? "attendee" : "organizer";
+      parameters.audience = "organizer";
       break;
     case "lead_accepted":
       if (!opaqueId(input.eventId) || !forms.includes(input.form) || input.form === "member_waitlist" || (input.form as string) === "claim" ||
           input.receipt?.ok !== true || input.receipt.alreadyJoined !== false) return null;
       parameters.event_id = input.eventId;
       parameters.form = input.form;
-      parameters.audience = input.form === "member_waitlist" ? "attendee" : "organizer";
+      parameters.audience = "organizer";
       break;
     case "organizer_signup":
       if (!opaqueId(input.eventId) || input.receipt?.authority !== "organizer_account_created" ||

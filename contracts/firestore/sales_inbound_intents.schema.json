@@ -333,6 +333,22 @@
                   "type": "null"
                 }
               ]
+            },
+            "eventPricing": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "paid",
+                    "free",
+                    "mixed",
+                    "undecided"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },

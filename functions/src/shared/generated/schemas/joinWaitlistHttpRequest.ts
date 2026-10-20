@@ -137,6 +137,15 @@ export const joinWaitlistHTTPRequestSchema: Record<string, unknown> = {
         "operatingNotes": {
           "type": "string",
           "maxLength": 1000
+        },
+        "eventPricing": {
+          "type": "string",
+          "enum": [
+            "paid",
+            "free",
+            "mixed",
+            "undecided"
+          ]
         }
       }
     },
@@ -515,6 +524,15 @@ export const joinWaitlistHTTPRequestSchema: Record<string, unknown> = {
         "operatingNotes": {
           "type": "string",
           "maxLength": 1000
+        },
+        "eventPricing": {
+          "type": "string",
+          "enum": [
+            "paid",
+            "free",
+            "mixed",
+            "undecided"
+          ]
         }
       }
     },

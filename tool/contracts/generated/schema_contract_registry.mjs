@@ -43862,6 +43862,22 @@ export const salesInboundIntentsDocumentSchema = {
                   "type": "null"
                 }
               ]
+            },
+            "eventPricing": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "paid",
+                    "free",
+                    "mixed",
+                    "undecided"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },
@@ -323317,6 +323333,15 @@ export const joinWaitlistHTTPRequestSchema = {
         "operatingNotes": {
           "type": "string",
           "maxLength": 1000
+        },
+        "eventPricing": {
+          "type": "string",
+          "enum": [
+            "paid",
+            "free",
+            "mixed",
+            "undecided"
+          ]
         }
       }
     },
@@ -323695,6 +323720,15 @@ export const joinWaitlistHTTPRequestSchema = {
         "operatingNotes": {
           "type": "string",
           "maxLength": 1000
+        },
+        "eventPricing": {
+          "type": "string",
+          "enum": [
+            "paid",
+            "free",
+            "mixed",
+            "undecided"
+          ]
         }
       }
     },

@@ -38,6 +38,7 @@ export interface JoinWaitlistHTTPRequest {
     eventSuccessModules?: string[];
     hostGoals?: string;
     operatingNotes?: string;
+    eventPricing?: "paid" | "free" | "mixed" | "undecided";
   };
   attribution?: {
     firstTouch: {

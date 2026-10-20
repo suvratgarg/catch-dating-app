@@ -340,6 +340,22 @@ const schemaSalesInboundIntentsDocumentSchema = <String, Object?>{
                 },
               ],
             },
+            'eventPricing': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'paid',
+                    'free',
+                    'mixed',
+                    'undecided',
+                  ],
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
           },
         },
         <String, Object?>{

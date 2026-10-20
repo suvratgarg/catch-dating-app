@@ -119,6 +119,7 @@ export function useHostApplicationController() {
       return;
     }
 
+    if (!draft.eventPricing) return;
     const operatingPacket = {
       fullName: draft.fullName.trim(),
       email: draft.email.trim(),
@@ -135,6 +136,7 @@ export function useHostApplicationController() {
         eventCadence: draft.eventCadence,
         nextEventName: draft.nextEventName.trim(),
         nextEventDate: draft.nextEventDate,
+        eventPricing: draft.eventPricing,
         eventLocation: draft.eventLocation.trim(),
         expectedCapacity: draft.expectedCapacity,
         bookingPlatform: draft.bookingPlatform,
