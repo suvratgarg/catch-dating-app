@@ -47,7 +47,7 @@ describe("useHostApplicationController", () => {
   it("submits a complete operating packet and reports success", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ok: true, alreadyJoined: false}),
+      json: async () => ({ok: true, alreadyJoined: true, hostLead: {isNew: true, eventId: "host_lead_1792486200000_00000000-0000-4000-8000-000000000000"}}),
     });
     vi.stubGlobal("fetch", fetchMock);
     const {result} = renderHook(() => useHostApplicationController(), {wrapper: wrapper()});
@@ -67,7 +67,7 @@ describe("useHostApplicationController", () => {
     await waitFor(() => expect(result.current.submitted).toBe(true));
     expect(result.current.status.tone).toBe("is-success");
     expect(trackAcceptedMarketingLead).toHaveBeenCalledExactlyOnceWith("host_lead_event-1", "host_application",
-      false, getMarketingConsent());
+      true, getMarketingConsent(), {isNew: true, eventId: "host_lead_1792486200000_00000000-0000-4000-8000-000000000000"});
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({
       fullName: "A Host",
       email: "host@example.com",

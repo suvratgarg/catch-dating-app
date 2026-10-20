@@ -93069,6 +93069,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const joinWaitlistHTTPResponseHostLeadEventId = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPResponse.hostLead.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^host_lead_[0-9]{13}_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\$',
+  );
+
+  static const joinWaitlistHTTPResponseHostLeadIsNew = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPResponse.hostLead.isNew',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const joinWaitlistHTTPResponseOk = CatchContractFieldConstraints(
     path: 'joinWaitlistHTTPResponse.ok',
     required: true,
@@ -149235,6 +149248,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const salesInboundIntentsDocumentHostLeadEventId = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.hostLead.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^host_lead_[0-9]{13}_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\$',
+  );
+
+  static const salesInboundIntentsDocumentHostLeadIsNew = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.hostLead.isNew',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const salesInboundIntentsDocumentIntentId = CatchContractFieldConstraints(
     path: 'salesInboundIntentsDocument.intentId',
     required: true,
@@ -182299,6 +182325,8 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPRequest.website': joinWaitlistHTTPRequestWebsite,
     'joinWaitlistHTTPResponse.alreadyJoined': joinWaitlistHTTPResponseAlreadyJoined,
     'joinWaitlistHTTPResponse.error': joinWaitlistHTTPResponseError,
+    'joinWaitlistHTTPResponse.hostLead.eventId': joinWaitlistHTTPResponseHostLeadEventId,
+    'joinWaitlistHTTPResponse.hostLead.isNew': joinWaitlistHTTPResponseHostLeadIsNew,
     'joinWaitlistHTTPResponse.ok': joinWaitlistHTTPResponseOk,
     'legacyPaymentRefundIntent.attempts': legacyPaymentRefundIntentAttempts,
     'legacyPaymentRefundIntent.attempts.items.amountMinor': legacyPaymentRefundIntentAttemptsItemsAmountMinor,
@@ -190050,6 +190078,8 @@ abstract final class CatchContractConstraints {
     'salesInboundIntentsDocument.hostApplication.paymentReadiness': salesInboundIntentsDocumentHostApplicationPaymentReadiness,
     'salesInboundIntentsDocument.hostApplication.priceRange': salesInboundIntentsDocumentHostApplicationPriceRange,
     'salesInboundIntentsDocument.hostApplication.waitlistPlan': salesInboundIntentsDocumentHostApplicationWaitlistPlan,
+    'salesInboundIntentsDocument.hostLead.eventId': salesInboundIntentsDocumentHostLeadEventId,
+    'salesInboundIntentsDocument.hostLead.isNew': salesInboundIntentsDocumentHostLeadIsNew,
     'salesInboundIntentsDocument.intentId': salesInboundIntentsDocumentIntentId,
     'salesInboundIntentsDocument.linkedAt._nanoseconds': salesInboundIntentsDocumentLinkedAtNanoseconds,
     'salesInboundIntentsDocument.linkedAt._seconds': salesInboundIntentsDocumentLinkedAtSeconds,

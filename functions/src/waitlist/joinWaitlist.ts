@@ -1,3 +1,4 @@
+import {randomUUID} from "node:crypto";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {HttpsError, onRequest} from "firebase-functions/v2/https";
@@ -551,19 +552,37 @@ export const joinWaitlist = onRequest(
     const intentRef = intent ? admin.firestore()
       .collection("salesInboundIntents").doc(intent.intentId) : null;
     let alreadyJoined = false;
+    let hostLead: {eventId: string; isNew: boolean} | undefined;
+    // Generate outside the transaction so Firestore retries keep one identity.
+    const proposedHostEventId = `host_lead_${Date.now()}_${randomUUID()}`;
 
     try {
       await admin.firestore().runTransaction(async (transaction) => {
         const existing = await transaction.get(waitlistRef);
         const priorIntent = intentRef ? await transaction.get(intentRef) : null;
+        const priorLead = existing.data()?.hostLead as
+          {eventId: string; isNew: boolean} | undefined;
+        // Legacy Host enquiries predate receipts. Do not turn them into new
+        // acquisitions, even if a later member submission changed their role.
+        const legacyHost = intent && existing.exists && !priorLead ?
+          await transaction.get(admin.firestore()
+            .collection("salesInboundIntents")
+            .where("waitlistId", "==", waitlistRef.id).limit(1)) : null;
         if (intent && intentRef) {
           const replay = hostSalesIntentReplay(priorIntent?.data(), intent);
           if (replay !== null) {
             alreadyJoined = replay;
+            hostLead = priorIntent?.data()?.hostLead;
             return;
           }
+          hostLead = {
+            eventId: priorLead?.eventId ?? proposedHostEventId,
+            isNew: !priorLead && !legacyHost?.size &&
+              !["host", "both"].includes(existing.data()?.role),
+          };
           transaction.create(intentRef, {
             ...intent,
+            hostLead,
             alreadyJoined: existing.exists,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -581,6 +600,7 @@ export const joinWaitlist = onRequest(
           hostApplication,
           marketingAnalytics,
           marketingAttribution,
+          ...(hostLead ? {hostLead} : {}),
         };
 
         if (existing.exists) {
@@ -638,6 +658,7 @@ export const joinWaitlist = onRequest(
     sendWaitlistJson(response, 200, {
       ok: true,
       alreadyJoined,
+      ...(hostLead ? {hostLead} : {}),
     });
   }
 );

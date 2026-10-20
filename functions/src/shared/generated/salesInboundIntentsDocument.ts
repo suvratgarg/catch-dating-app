@@ -75,4 +75,8 @@ export type SalesInboundIntentsDocument = {
   linkedBy?: string;
   linkRequestId?: string;
   partnerUid?: string;
+  hostLead?: {
+    eventId: string;
+    isNew: boolean;
+  };
 };

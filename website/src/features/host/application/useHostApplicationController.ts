@@ -183,7 +183,7 @@ export function useHostApplicationController() {
         format_count: draft.formats.length,
         module_count: draft.eventSuccessModules.length,
       });
-      trackAcceptedMarketingLead(eventId, "host_application", data.alreadyJoined, submissionConsent);
+      trackAcceptedMarketingLead(eventId, "host_application", data.alreadyJoined, submissionConsent, data.hostLead);
       trackMarketingEvent("generate_lead", {
         city: body.city,
         event_id: eventId,

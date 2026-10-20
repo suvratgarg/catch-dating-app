@@ -43944,6 +43944,23 @@ export const salesInboundIntentsDocumentSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 128
+    },
+    "hostLead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "isNew"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "pattern": "^host_lead_[0-9]{13}_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
+        },
+        "isNew": {
+          "type": "boolean"
+        }
+      }
     }
   },
   "allOf": [
@@ -324106,6 +324123,23 @@ export const joinWaitlistHTTPResponseSchema = {
         },
         "alreadyJoined": {
           "type": "boolean"
+        },
+        "hostLead": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "isNew"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "pattern": "^host_lead_[0-9]{13}_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
+            },
+            "isNew": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },

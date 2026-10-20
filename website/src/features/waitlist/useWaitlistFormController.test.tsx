@@ -82,7 +82,7 @@ describe("useWaitlistFormController", () => {
 
     await waitFor(() => expect(result.current.status.tone).toBe("is-success"));
     expect(trackAcceptedMarketingLead).toHaveBeenCalledExactlyOnceWith("waitlist_event-1", "member_waitlist",
-      false, getMarketingConsent());
+      false, getMarketingConsent(), undefined);
     const request = fetchMock.mock.calls[0][1];
     expect(JSON.parse(request.body)).toMatchObject({
       fullName: "Member Name",
