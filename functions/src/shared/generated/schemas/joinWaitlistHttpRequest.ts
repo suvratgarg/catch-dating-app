@@ -16,6 +16,32 @@ export const joinWaitlistHTTPRequestSchema: Record<string, unknown> = {
     "role"
   ],
   "properties": {
+    "hostMeasurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capability",
+        "clientId"
+      ],
+      "properties": {
+        "capability": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "clientId": {
+          "type": "string",
+          "pattern": "^[0-9]{1,10}\\.[0-9]{10}$"
+        },
+        "fbclid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{10,512}$"
+        },
+        "clickCapturedAt": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
     "fullName": {
       "type": "string",
       "minLength": 2,

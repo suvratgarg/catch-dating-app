@@ -14,6 +14,14 @@ import {
 } from "../shared/generated/validators/joinWaitlistHttpResponse";
 
 import {hostSalesIntentReplay, prepareHostSalesIntent} from "./hostSalesIntent";
+import {hostConsentKey} from "../acquisition/consentPolicy";
+import {HOST_CONSENT_COLLECTION} from "../acquisition/consentStore";
+import {
+  hostConsentAllowedOrigin, hostServerMeasurementEnabled,
+} from "../acquisition/consentHttp";
+import {
+  HOST_DELIVERY_COLLECTION, prepareHostMetaDelivery,
+} from "../acquisition/metaDelivery";
 
 interface NormalizedMarketingAnalytics {
   consent: Record<string, unknown> | null;
@@ -560,6 +568,14 @@ export const joinWaitlist = onRequest(
     let hostLead: {eventId: string; isNew: boolean} | undefined;
     // Generate outside the transaction so Firestore retries keep one identity.
     const proposedHostEventId = `host_lead_${Date.now()}_${randomUUID()}`;
+    // Old analytics metadata never grants server advertising permission.
+    // Do not retain the raw capability in intake, Sales or diagnostics.
+    const measurement = hostServerMeasurementEnabled && intent &&
+      hostConsentAllowedOrigin(request.get("origin"),
+        process.env.GCLOUD_PROJECT ?? process.env.GCP_PROJECT ?? "") ?
+      body.hostMeasurement : undefined;
+    const consentId = measurement ?
+      hostConsentKey(measurement.capability) : null;
 
     try {
       await admin.firestore().runTransaction(async (transaction) => {
@@ -573,6 +589,8 @@ export const joinWaitlist = onRequest(
           await transaction.get(admin.firestore()
             .collection("salesInboundIntents")
             .where("waitlistId", "==", waitlistRef.id).limit(1)) : null;
+        const permission = consentId ? await transaction.get(admin.firestore()
+          .collection(HOST_CONSENT_COLLECTION).doc(consentId)) : null;
         if (intent && intentRef) {
           const replay = hostSalesIntentReplay(priorIntent?.data(), intent);
           if (replay !== null) {
@@ -585,6 +603,22 @@ export const joinWaitlist = onRequest(
             isNew: !priorLead && !legacyHost?.size &&
               !["host", "both"].includes(existing.data()?.role),
           };
+          const delivery = measurement && consentId ?
+            prepareHostMetaDelivery({
+              enabled: hostServerMeasurementEnabled,
+              ...hostLead, intentId: intent.intentId, consentId,
+              consentDocument: permission?.data(),
+              context: {clientId: measurement.clientId, userAgent,
+                ...(measurement.fbclid ? {fbclid: measurement.fbclid} : {}),
+                ...(measurement.clickCapturedAt ?
+                  {clickCapturedAt: measurement.clickCapturedAt} : {})},
+              now: Date.now(),
+            }) : null;
+          if (delivery) {
+            transaction.create(admin.firestore()
+              .collection(HOST_DELIVERY_COLLECTION).doc(delivery.eventId),
+            delivery);
+          }
           transaction.create(intentRef, {
             ...intent,
             hostLead,

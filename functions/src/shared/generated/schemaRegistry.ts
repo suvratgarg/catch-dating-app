@@ -242,6 +242,7 @@ export {salesDemoSetupCallableResponseSchema} from "./schemas/salesDemoSetupOutp
 export {salesDemoSessionsDocumentSchema} from "./schemas/salesDemoSessionsDocument";
 export {salesEvidenceProposalsDocumentSchema} from "./schemas/salesEvidenceProposalsDocument";
 export {hostAcquisitionConsentDocumentSchema} from "./schemas/hostAcquisitionConsentDocument";
+export {hostAcquisitionDeliveryDocumentSchema} from "./schemas/hostAcquisitionDeliveryDocument";
 export {salesInboundIntentsDocumentSchema} from "./schemas/salesInboundIntentsDocument";
 export {salesIntelligenceAssessmentDocumentSchema} from "./schemas/salesIntelligenceAssessmentsDocument";
 export {salesIntelligenceClauseDocumentSchema} from "./schemas/salesIntelligenceClausesDocument";

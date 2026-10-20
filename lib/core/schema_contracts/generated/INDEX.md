@@ -249,6 +249,7 @@ Do not edit it by hand.
 | SalesDemoSessionsDocument | `firestore/sales_demo_sessions.schema.json` | `functions/src/shared/generated/salesDemoSessionsDocument.ts` |
 | SalesEvidenceProposalsDocument | `firestore/sales_evidence_proposals.schema.json` | `functions/src/shared/generated/salesEvidenceProposalsDocument.ts` |
 | HostAcquisitionConsentDocument | `firestore/host_acquisition_consents.schema.json` | `functions/src/shared/generated/hostAcquisitionConsentDocument.ts` |
+| HostAcquisitionDeliveryDocument | `firestore/host_acquisition_deliveries.schema.json` | `functions/src/shared/generated/hostAcquisitionDeliveryDocument.ts` |
 | SalesInboundIntentsDocument | `firestore/sales_inbound_intents.schema.json` | `functions/src/shared/generated/salesInboundIntentsDocument.ts` |
 | SalesIntelligenceAssessmentDocument | `firestore/sales_intelligence_assessments.schema.json` | `functions/src/shared/generated/salesIntelligenceAssessmentsDocument.ts` |
 | SalesIntelligenceClauseDocument | `firestore/sales_intelligence_clauses.schema.json` | `functions/src/shared/generated/salesIntelligenceClausesDocument.ts` |
@@ -1496,6 +1497,7 @@ Do not edit it by hand.
 | `schemaSalesDemoSessionsDocumentSchema` | SalesDemoSessionsDocument | `firestore/sales_demo_sessions.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_sessions_document.g.dart` |
 | `schemaSalesEvidenceProposalsDocumentSchema` | SalesEvidenceProposalsDocument | `firestore/sales_evidence_proposals.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_evidence_proposals_document.g.dart` |
 | `schemaHostAcquisitionConsentDocumentSchema` | HostAcquisitionConsentDocument | `firestore/host_acquisition_consents.schema.json` | `lib/core/schema_contracts/generated/schemas/host_acquisition_consent_document.g.dart` |
+| `schemaHostAcquisitionDeliveryDocumentSchema` | HostAcquisitionDeliveryDocument | `firestore/host_acquisition_deliveries.schema.json` | `lib/core/schema_contracts/generated/schemas/host_acquisition_delivery_document.g.dart` |
 | `schemaSalesInboundIntentsDocumentSchema` | SalesInboundIntentsDocument | `firestore/sales_inbound_intents.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_inbound_intents_document.g.dart` |
 | `schemaSalesIntelligenceAssessmentDocumentSchema` | SalesIntelligenceAssessmentDocument | `firestore/sales_intelligence_assessments.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_assessment_document.g.dart` |
 | `schemaSalesIntelligenceClauseDocumentSchema` | SalesIntelligenceClauseDocument | `firestore/sales_intelligence_clauses.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_clause_document.g.dart` |

@@ -623,6 +623,7 @@ export 'heartbeat_event_success_presence_callable_response.g.dart';
 export 'host_acquisition_consent_document.g.dart';
 export 'host_acquisition_consent_http_request.g.dart';
 export 'host_acquisition_consent_http_response.g.dart';
+export 'host_acquisition_delivery_document.g.dart';
 export 'host_analytics_callable_response.g.dart';
 export 'host_analytics_event.g.dart';
 export 'host_analytics_query_callable_payload.g.dart';

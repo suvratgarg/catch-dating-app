@@ -306,6 +306,7 @@ const schemaSpecs = [
   {"name": "SalesDemoSessionsDocument", "source": "firestore/sales_demo_sessions.schema.json", "typeOutput": "functions/src/shared/generated/salesDemoSessionsDocument.ts"},
   {"name": "SalesEvidenceProposalsDocument", "source": "firestore/sales_evidence_proposals.schema.json", "typeOutput": "functions/src/shared/generated/salesEvidenceProposalsDocument.ts"},
   {"name": "HostAcquisitionConsentDocument", "source": "firestore/host_acquisition_consents.schema.json", "typeOutput": "functions/src/shared/generated/hostAcquisitionConsentDocument.ts"},
+  {"name": "HostAcquisitionDeliveryDocument", "source": "firestore/host_acquisition_deliveries.schema.json", "typeOutput": "functions/src/shared/generated/hostAcquisitionDeliveryDocument.ts"},
   {"name": "SalesInboundIntentsDocument", "source": "firestore/sales_inbound_intents.schema.json", "typeOutput": "functions/src/shared/generated/salesInboundIntentsDocument.ts"},
   {"name": "SalesIntelligenceAssessmentDocument", "source": "firestore/sales_intelligence_assessments.schema.json", "typeOutput": "functions/src/shared/generated/salesIntelligenceAssessmentsDocument.ts"},
   {"name": "SalesIntelligenceClauseDocument", "source": "firestore/sales_intelligence_clauses.schema.json", "typeOutput": "functions/src/shared/generated/salesIntelligenceClausesDocument.ts"},

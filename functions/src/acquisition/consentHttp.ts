@@ -9,6 +9,7 @@ import {validateHostAcquisitionConsentDocument} from
 import {validateHostAcquisitionConsentHTTPResponse} from
   "../shared/generated/validators/hostAcquisitionConsentHttpResponse";
 import {HOST_CONSENT_COLLECTION, recordHostConsent} from "./consentStore";
+import {expireHostMetaDeliveries} from "./metaDelivery";
 
 // Activation is a separate reviewed source change after end-to-end acceptance.
 export const hostServerMeasurementEnabled = false;
@@ -119,5 +120,6 @@ export const expireHostAcquisitionConsent = onSchedule({
   schedule: "every 15 minutes", region: "asia-south1", maxInstances: 1,
   timeoutSeconds: 300,
 }, async () => {
+  await expireHostMetaDeliveries(admin.firestore());
   await expireHostConsentRecords(admin.firestore());
 });

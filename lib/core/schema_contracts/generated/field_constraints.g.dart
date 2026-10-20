@@ -87654,6 +87654,121 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['active', 'revoked', 'disabled'],
   );
 
+  static const hostAcquisitionDeliveryDocumentAcceptedAt = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.acceptedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostAcquisitionDeliveryDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.attemptId',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9-]{36}\$',
+  );
+
+  static const hostAcquisitionDeliveryDocumentAttempts = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.attempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 5,
+  );
+
+  static const hostAcquisitionDeliveryDocumentClassification = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.classification',
+    required: true,
+  );
+
+  static const hostAcquisitionDeliveryDocumentConsentId = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.consentId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const hostAcquisitionDeliveryDocumentContextClickCapturedAt = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.context.clickCapturedAt',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostAcquisitionDeliveryDocumentContextClientId = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.context.clientId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,10}\\.[0-9]{10}\$',
+  );
+
+  static const hostAcquisitionDeliveryDocumentContextFbclid = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.context.fbclid',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{10,512}\$',
+  );
+
+  static const hostAcquisitionDeliveryDocumentContextUserAgent = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.context.userAgent',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^\\u0000-\\u001f\\u007f]+\$',
+  );
+
+  static const hostAcquisitionDeliveryDocumentEventId = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^host_lead_[0-9]{13}_[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}\$',
+  );
+
+  static const hostAcquisitionDeliveryDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const hostAcquisitionDeliveryDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const hostAcquisitionDeliveryDocumentIntentId = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.intentId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const hostAcquisitionDeliveryDocumentLastAttemptAt = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.lastAttemptAt',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostAcquisitionDeliveryDocumentNextAttemptAt = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.nextAttemptAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostAcquisitionDeliveryDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.schemaVersion',
+    required: true,
+  );
+
+  static const hostAcquisitionDeliveryDocumentStatus = CatchContractFieldConstraints(
+    path: 'hostAcquisitionDeliveryDocument.status',
+    required: true,
+    enumValues: <String>['pending', 'sending', 'accepted', 'unknown', 'stopped'],
+  );
+
   static const hostAnalyticsCallableResponseDataQuality = CatchContractFieldConstraints(
     path: 'hostAnalyticsCallableResponse.dataQuality',
     required: true,
@@ -93219,6 +93334,32 @@ abstract final class CatchContractConstraints {
     path: 'joinWaitlistHTTPRequest.hostApplication.waitlistPlan',
     maxLength: 80,
     valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestHostMeasurementCapability = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostMeasurement.capability',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const joinWaitlistHTTPRequestHostMeasurementClickCapturedAt = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostMeasurement.clickCapturedAt',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const joinWaitlistHTTPRequestHostMeasurementClientId = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostMeasurement.clientId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{1,10}\\.[0-9]{10}\$',
+  );
+
+  static const joinWaitlistHTTPRequestHostMeasurementFbclid = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostMeasurement.fbclid',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{10,512}\$',
   );
 
   static const joinWaitlistHTTPRequestInstagram = CatchContractFieldConstraints(
@@ -181766,6 +181907,23 @@ abstract final class CatchContractConstraints {
     'hostAcquisitionConsentHTTPResponse.expiresAt': hostAcquisitionConsentHTTPResponseExpiresAt,
     'hostAcquisitionConsentHTTPResponse.ok': hostAcquisitionConsentHTTPResponseOk,
     'hostAcquisitionConsentHTTPResponse.status': hostAcquisitionConsentHTTPResponseStatus,
+    'hostAcquisitionDeliveryDocument.acceptedAt': hostAcquisitionDeliveryDocumentAcceptedAt,
+    'hostAcquisitionDeliveryDocument.attemptId': hostAcquisitionDeliveryDocumentAttemptId,
+    'hostAcquisitionDeliveryDocument.attempts': hostAcquisitionDeliveryDocumentAttempts,
+    'hostAcquisitionDeliveryDocument.classification': hostAcquisitionDeliveryDocumentClassification,
+    'hostAcquisitionDeliveryDocument.consentId': hostAcquisitionDeliveryDocumentConsentId,
+    'hostAcquisitionDeliveryDocument.context.clickCapturedAt': hostAcquisitionDeliveryDocumentContextClickCapturedAt,
+    'hostAcquisitionDeliveryDocument.context.clientId': hostAcquisitionDeliveryDocumentContextClientId,
+    'hostAcquisitionDeliveryDocument.context.fbclid': hostAcquisitionDeliveryDocumentContextFbclid,
+    'hostAcquisitionDeliveryDocument.context.userAgent': hostAcquisitionDeliveryDocumentContextUserAgent,
+    'hostAcquisitionDeliveryDocument.eventId': hostAcquisitionDeliveryDocumentEventId,
+    'hostAcquisitionDeliveryDocument.expiresAt._nanoseconds': hostAcquisitionDeliveryDocumentExpiresAtNanoseconds,
+    'hostAcquisitionDeliveryDocument.expiresAt._seconds': hostAcquisitionDeliveryDocumentExpiresAtSeconds,
+    'hostAcquisitionDeliveryDocument.intentId': hostAcquisitionDeliveryDocumentIntentId,
+    'hostAcquisitionDeliveryDocument.lastAttemptAt': hostAcquisitionDeliveryDocumentLastAttemptAt,
+    'hostAcquisitionDeliveryDocument.nextAttemptAt': hostAcquisitionDeliveryDocumentNextAttemptAt,
+    'hostAcquisitionDeliveryDocument.schemaVersion': hostAcquisitionDeliveryDocumentSchemaVersion,
+    'hostAcquisitionDeliveryDocument.status': hostAcquisitionDeliveryDocumentStatus,
     'hostAnalyticsCallableResponse.dataQuality': hostAnalyticsCallableResponseDataQuality,
     'hostAnalyticsCallableResponse.dataQuality.items.detail': hostAnalyticsCallableResponseDataQualityItemsDetail,
     'hostAnalyticsCallableResponse.dataQuality.items.id': hostAnalyticsCallableResponseDataQualityItemsId,
@@ -182541,6 +182699,10 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPRequest.hostApplication.paymentReadiness': joinWaitlistHTTPRequestHostApplicationPaymentReadiness,
     'joinWaitlistHTTPRequest.hostApplication.priceRange': joinWaitlistHTTPRequestHostApplicationPriceRange,
     'joinWaitlistHTTPRequest.hostApplication.waitlistPlan': joinWaitlistHTTPRequestHostApplicationWaitlistPlan,
+    'joinWaitlistHTTPRequest.hostMeasurement.capability': joinWaitlistHTTPRequestHostMeasurementCapability,
+    'joinWaitlistHTTPRequest.hostMeasurement.clickCapturedAt': joinWaitlistHTTPRequestHostMeasurementClickCapturedAt,
+    'joinWaitlistHTTPRequest.hostMeasurement.clientId': joinWaitlistHTTPRequestHostMeasurementClientId,
+    'joinWaitlistHTTPRequest.hostMeasurement.fbclid': joinWaitlistHTTPRequestHostMeasurementFbclid,
     'joinWaitlistHTTPRequest.instagram': joinWaitlistHTTPRequestInstagram,
     'joinWaitlistHTTPRequest.role': joinWaitlistHTTPRequestRole,
     'joinWaitlistHTTPRequest.website': joinWaitlistHTTPRequestWebsite,

@@ -34,8 +34,21 @@ agent and an optional real consented click. Contact details, answers, account
 identifiers and guest information are excluded. Dispatch requires current
 permission, at most five attempts and an age below 24 hours. Uncertain provider
 outcomes are held for reconciliation. An HTTP 200 alone does not confirm receipt.
-Browser handshake wiring, the durable delivery worker, production credentials
-and destination acceptance remain separate from these source preparations.
+The accepting intake transaction can prepare a private delivery only for a new
+Host receipt and current server advertising permission; the source gate remains
+off. The worker reserves one attempt, rechecks the original Sales intent and
+current permission immediately before dispatch, and clears browser context on
+terminal outcomes. Withdrawal or deletion cannot retract a request already
+sent to the provider. Explicit throttling may retry with backoff, up to five
+attempts within 24 hours; timeouts and interrupted sends remain uncertain.
+The expiry worker removes at most 500 expired delivery records per run.
+
+The browser permission owner immediately stops local use on a changed choice,
+persists pending withdrawal across reload, and will not grant fresh permission
+until that withdrawal is acknowledged. It never queues conversion events.
+Connecting that owner to the refreshed notice and submission lifecycle, the
+fixed provider sender/worker schedule, production credentials, and destination
+acceptance remain separate from these default-disabled preparations.
 
 ### Catch Host pilot destination configuration
 

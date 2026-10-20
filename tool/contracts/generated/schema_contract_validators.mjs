@@ -240,6 +240,7 @@ import {
   salesDemoSessionsDocumentSchema,
   salesEvidenceProposalsDocumentSchema,
   hostAcquisitionConsentDocumentSchema,
+  hostAcquisitionDeliveryDocumentSchema,
   salesInboundIntentsDocumentSchema,
   salesIntelligenceAssessmentDocumentSchema,
   salesIntelligenceClauseDocumentSchema,
@@ -1506,6 +1507,7 @@ export const validateSalesDemoSetupCallableResponse = ajv.compile(salesDemoSetup
 export const validateSalesDemoSessionsDocument = ajv.compile(salesDemoSessionsDocumentSchema);
 export const validateSalesEvidenceProposalsDocument = ajv.compile(salesEvidenceProposalsDocumentSchema);
 export const validateHostAcquisitionConsentDocument = ajv.compile(hostAcquisitionConsentDocumentSchema);
+export const validateHostAcquisitionDeliveryDocument = ajv.compile(hostAcquisitionDeliveryDocumentSchema);
 export const validateSalesInboundIntentsDocument = ajv.compile(salesInboundIntentsDocumentSchema);
 export const validateSalesIntelligenceAssessmentDocument = ajv.compile(salesIntelligenceAssessmentDocumentSchema);
 export const validateSalesIntelligenceClauseDocument = ajv.compile(salesIntelligenceClauseDocumentSchema);
