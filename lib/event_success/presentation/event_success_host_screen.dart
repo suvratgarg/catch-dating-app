@@ -24,12 +24,13 @@ import 'package:catch_dating_app/event_success/presentation/event_assistance_liv
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_settings_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_sweep_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_fixture_actions.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_state_adapter.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card_state.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart'
+    show EventSuccessSpatialPreview, EventSuccessSpatialReassign;
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_resource_error_state.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_assignment_features_section.dart';
@@ -49,7 +50,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-export 'package:catch_dating_app/event_success/presentation/event_success_host_fixture_actions.dart';
 export 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 part 'event_success_host_actions.dart';
 
@@ -69,7 +69,10 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
     this.operationalRosterSummary,
     this.onOpenGuests,
     this.guestsWorkspaceSemanticLabel,
-    this.fixtureActions,
+    this.onPreviewSpatial,
+    this.onReassignSpatial,
+    this.onConfirmSpatial,
+    this.onReleaseSpatial,
     this.referenceNow,
     this.exclusionAlertThreshold = defaultEventSuccessExclusionAlertThreshold,
   }) : assert(exclusionAlertThreshold > Duration.zero);
@@ -83,7 +86,12 @@ class EventSuccessHostSection extends ConsumerStatefulWidget {
   final EventSuccessOperationalRosterSummary? operationalRosterSummary;
   final VoidCallback? onOpenGuests;
   final String? guestsWorkspaceSemanticLabel;
-  final EventSuccessHostFixtureActions? fixtureActions;
+  final EventSuccessSpatialPreview? onPreviewSpatial;
+  final EventSuccessSpatialReassign? onReassignSpatial;
+  final Future<void> Function(EventSuccessAssignment assignment)?
+  onConfirmSpatial;
+  final Future<void> Function(EventSuccessAssignment assignment)?
+  onReleaseSpatial;
   final DateTime? referenceNow;
   final Duration exclusionAlertThreshold;
 
@@ -101,7 +109,6 @@ class _EventSuccessHostSectionState
     final compactLiveControls = widget.compactLiveControls;
     final operationalRosterSummary = widget.operationalRosterSummary;
     final onOpenGuests = widget.onOpenGuests;
-    final fixtureActions = widget.fixtureActions;
     final referenceNow = widget.referenceNow ?? DateTime.now();
     final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
     final planState = catchAsyncStateFromAsyncValue(planAsync);
@@ -404,13 +411,10 @@ class _EventSuccessHostSectionState
       sourceFormsAsync,
     );
     final sourceFormsState = sourceFormsAsync.when(
-      data: (value) => CatchAsyncState<List<HostFormSummary>>.data(
-        value.forms,
-      ),
+      data: (value) => CatchAsyncState<List<HostFormSummary>>.data(value.forms),
       loading: () => const CatchAsyncState<List<HostFormSummary>>.loading(),
-      error: (error, stack) => CatchAsyncState<List<HostFormSummary>>.error(
-        error, stack,
-      ),
+      error: (error, stack) =>
+          CatchAsyncState<List<HostFormSummary>>.error(error, stack),
     );
     final uidState = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
     final viewerUid = uidState.isSettledData ? uidState.value : null;
@@ -464,39 +468,53 @@ class _EventSuccessHostSectionState
         key: ValueKey('matching:${event.id}:$viewerUid'),
         eventId: event.id,
         viewerUid: viewerUid,
-        enabled: state.planIsPersisted &&
+        enabled:
+            state.planIsPersisted &&
             state.plan.status == EventSuccessPlanStatus.setup &&
             state.plan.frozenAt == null,
-        sequenceUnsupported: state.plan.structureConfig.topology ==
+        sequenceUnsupported:
+            state.plan.structureConfig.topology ==
             EventSuccessTopology.sequence,
         formsState: sourceFormsState,
-        onLoadMoreForms: sourceFormsDirectoryState.isSettledData &&
+        onLoadMoreForms:
+            sourceFormsDirectoryState.isSettledData &&
                 sourceFormsDirectoryState.value?.canLoadMore == true
-            ? () => unawaited(ref.read(
-                hostFormsDirectoryControllerProvider(sourceFormsRequest)
-                    .notifier,
-              ).loadMore())
+            ? () => unawaited(
+                ref
+                    .read(
+                      hostFormsDirectoryControllerProvider(
+                        sourceFormsRequest,
+                      ).notifier,
+                    )
+                    .loadMore(),
+              )
             : null,
-        onPreview: ({required eventId, required rules,
-            required sourceFormIds}) => ref
-            .read(eventSuccessControllerProvider.notifier)
-            .previewAssignmentFeatures(
-              eventId: eventId,
-              rules: rules,
-              sourceFormIds: sourceFormIds,
-            ),
-        onSave: ({required eventId, required expectedRevision,
-            required requestId, required rules}) =>
-            EventSuccessController.configureAssignmentFeaturesMutation.run(
-              ref,
-              (tx) => tx.get(eventSuccessControllerProvider.notifier)
-                  .configureAssignmentFeatures(
-                    eventId: eventId,
-                    expectedRevision: expectedRevision,
-                    requestId: requestId,
-                    rules: rules,
-                  ),
-            ),
+        onPreview:
+            ({required eventId, required rules, required sourceFormIds}) => ref
+                .read(eventSuccessControllerProvider.notifier)
+                .previewAssignmentFeatures(
+                  eventId: eventId,
+                  rules: rules,
+                  sourceFormIds: sourceFormIds,
+                ),
+        onSave:
+            ({
+              required eventId,
+              required expectedRevision,
+              required requestId,
+              required rules,
+            }) =>
+                EventSuccessController.configureAssignmentFeaturesMutation.run(
+                  ref,
+                  (tx) => tx
+                      .get(eventSuccessControllerProvider.notifier)
+                      .configureAssignmentFeatures(
+                        eventId: eventId,
+                        expectedRevision: expectedRevision,
+                        requestId: requestId,
+                        rules: rules,
+                      ),
+                ),
       ),
       deliverySection: EventAssistanceLiveDeliverySection(
         organizerId: event.clubId,
@@ -630,14 +648,17 @@ class _EventSuccessHostSectionState
             expectedRevision: state.plan.liveControlRevision,
             rounds: rounds,
           ),
-      onPreviewSpatial: (assignment) => _controlEventSuccessSpatial(
-        eventId: event.id,
-        expectedRevision: state.plan.liveControlRevision,
-        action: EventSuccessSpatialAction.previewReassignment,
-        assignment: assignment,
-      ).then((result) => result.destinations),
-      onReassignSpatial: (assignment, destinationUnitId, scope) =>
-          _controlEventSuccessSpatial(
+      onPreviewSpatial:
+          widget.onPreviewSpatial ??
+          (assignment) => _controlEventSuccessSpatial(
+            eventId: event.id,
+            expectedRevision: state.plan.liveControlRevision,
+            action: EventSuccessSpatialAction.previewReassignment,
+            assignment: assignment,
+          ).then((result) => result.destinations),
+      onReassignSpatial:
+          widget.onReassignSpatial ??
+          (assignment, destinationUnitId, scope) => _controlEventSuccessSpatial(
             eventId: event.id,
             expectedRevision: state.plan.liveControlRevision,
             action: EventSuccessSpatialAction.reassign,
@@ -645,18 +666,22 @@ class _EventSuccessHostSectionState
             destinationUnitId: destinationUnitId,
             scope: scope,
           ),
-      onConfirmSpatial: (assignment) => _controlEventSuccessSpatial(
-        eventId: event.id,
-        expectedRevision: state.plan.liveControlRevision,
-        action: EventSuccessSpatialAction.confirmPosition,
-        assignment: assignment,
-      ),
-      onReleaseSpatial: (assignment) => _controlEventSuccessSpatial(
-        eventId: event.id,
-        expectedRevision: state.plan.liveControlRevision,
-        action: EventSuccessSpatialAction.releasePinned,
-        assignment: assignment,
-      ),
+      onConfirmSpatial:
+          widget.onConfirmSpatial ??
+          (assignment) => _controlEventSuccessSpatial(
+            eventId: event.id,
+            expectedRevision: state.plan.liveControlRevision,
+            action: EventSuccessSpatialAction.confirmPosition,
+            assignment: assignment,
+          ),
+      onReleaseSpatial:
+          widget.onReleaseSpatial ??
+          (assignment) => _controlEventSuccessSpatial(
+            eventId: event.id,
+            expectedRevision: state.plan.liveControlRevision,
+            action: EventSuccessSpatialAction.releasePinned,
+            assignment: assignment,
+          ),
       revealActionState: EventSuccessRevealActionState.resolve(
         startPending: startRevealCountdownMutation.isPending,
         revealPending: revealRoundMutation.isPending,
@@ -704,7 +729,6 @@ class _EventSuccessHostSectionState
             roundIndex: roundIndex,
             entries: entries,
           ),
-      fixtureActions: fixtureActions,
       exclusionAlertThreshold: widget.exclusionAlertThreshold,
       referenceNow: referenceNow,
     );
