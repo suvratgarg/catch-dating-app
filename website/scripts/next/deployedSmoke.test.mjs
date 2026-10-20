@@ -23,7 +23,7 @@ function responder(base, change = () => {}) {
   };
 }
 test("deployed acceptance covers public, dynamic, private, missing and native-link routes", async () => {
-  for (const base of [preview, "https://catchdates.com"]) {
+  for (const base of [preview, preview.replace("next-release", "next-candidate"), "https://catchdates.com"]) {
     const result = await verifyDeployedWebsite(base, sourceSha, {fetchImpl: responder(base)});
     for (const path of ["/organizers/mumbai/club/", "/events/event/", "/f/next-release-private-marker/", "/not-a-real-next-release-route/", "/.well-known/apple-app-site-association"]) {
       assert.ok(result.checks.some(check => check.path === path));

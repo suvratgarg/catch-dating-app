@@ -103,14 +103,16 @@ jobs:
           cd build/next-preview/verified
           firebase hosting:channel:deploy next-release --expires 3d --project catch-dating-app-64e51 \
             --only marketing --config firebase.production.json --non-interactive --json > ../../next-promote/candidate.json
-          url="$(jq -er '.result.marketing.url' ../../next-promote/candidate.json)"
+          node "$GITHUB_WORKSPACE/website/scripts/next/channelState.mjs" record next-release catch-website-next ../../next-promote/candidate-channel.json
+          url="$(jq -er .url ../../next-promote/candidate-channel.json)"
           node "$GITHUB_WORKSPACE/website/scripts/next/deployedSmoke.mjs" "$url" > ../../next-promote/candidate-checks.json
       - name: Promote only the exact tested Hosting version
         run: |
           set -euo pipefail
           node website/scripts/next/promoteRelease.mjs recheck
           node website/scripts/next/hostingState.mjs assert-current
-          version="$(jq -er '.result.marketing.version' build/next-promote/candidate.json)"
+          node website/scripts/next/channelState.mjs verify next-release catch-website-next build/next-promote/candidate-channel.json
+          version="$(jq -er .version build/next-promote/candidate-channel.json)"
           [[ "$version" =~ ^[a-z0-9]+$ ]]
           firebase hosting:clone "catch-dating-app-64e51@$version" catch-dating-app-64e51:live \
             --project catch-dating-app-64e51 --non-interactive --json > build/next-promote/promotion.json
@@ -128,6 +130,7 @@ jobs:
             build/next-promote/production-service.json
             build/next-promote/rollback.json
             build/next-promote/candidate.json
+            build/next-promote/candidate-channel.json
             build/next-promote/candidate-checks.json
             build/next-promote/promotion.json
             build/next-promote/production-hosting.json

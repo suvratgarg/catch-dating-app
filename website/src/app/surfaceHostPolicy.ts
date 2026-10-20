@@ -13,7 +13,7 @@ export function isCatchWebsiteHost(hostname: string): boolean {
 
 /** Parse only a Host authority. Never trust Next's listen-host URL or forwarded input. */
 export function requestHostname(authority: string | null): string | null {
-  if (!authority || /[\s/@?#\\]/.test(authority)) return null;
+  if (!authority || /[\s,/@?#\\]/.test(authority)) return null;
   try {
     const url = new URL(`http://${authority}`);
     return url.hostname.toLowerCase();
@@ -23,4 +23,24 @@ export function requestHostname(authority: string | null): string | null {
 /** Only canonical production domains may be indexed, even on a production image. */
 export function isCatchIndexingHost(hostname: string | null): boolean {
   return hostname === "catchdates.com" || hostname === "www.catchdates.com";
+}
+
+/**
+ * Hosting replaces Host with its Cloud Run target and supplies the original
+ * authority in X-Forwarded-Host. This is a public routing hint, never an Auth,
+ * tenant-ownership or publication grant. Private routes retain their shell and
+ * every public document still passes the independent publication projection.
+ * Ignore forwarding on local servers, custom hosts and unrelated runtimes.
+ */
+export function websiteRequestHostname(headers: Pick<Headers, "get">, service?: string): string | null {
+  const host = requestHostname(headers.get("host"));
+  if (!host || !["catch-website-next", "catch-website-next-preview"].includes(service ?? "")) return host;
+  const backend = new RegExp(`^(?:[a-z0-9-]+---)?${service}-[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.run\\.app$`, "u");
+  if (!backend.test(host)) return host;
+  const forwarded = requestHostname(headers.get("x-forwarded-host"));
+  // Only deployed public site hosts qualify; never forward localhost or a
+  // customer domain into the public server surface.
+  return forwarded && isCatchWebsiteHost(forwarded) &&
+    (forwarded.endsWith(".web.app") || forwarded.endsWith(".firebaseapp.com") || isCatchIndexingHost(forwarded))
+    ? forwarded : host;
 }

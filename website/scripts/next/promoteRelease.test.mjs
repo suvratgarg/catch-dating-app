@@ -75,6 +75,10 @@ test("production workflow preserves credentials boundary, tested bytes, shared l
   assert.match(workflow, /--min-instances 0 --max-instances 3/u);
   assert.match(workflow, /hostingState.mjs assert-current/u);
   assert.match(workflow, /EXPECTED_HOSTING_VERSION="\$version"/u);
+  assert.match(workflow, /channelState.mjs" record next-release/u);
+  assert.ok(workflow.indexOf("channelState.mjs verify") < workflow.indexOf("firebase hosting:clone"));
+  assert.ok(workflow.includes("jq -er .version build/next-promote/candidate-channel.json"));
+  assert.doesNotMatch(workflow, /result.marketing.version/u);
   const legacy = fs.readFileSync(new URL("../../../.github/workflows/_web-hosting-promote.yml", import.meta.url), "utf8");
   assert.ok(legacy.indexOf("hostingState.mjs legacy-guard") < legacy.indexOf("prod deploy"));
   assert.match(legacy, /if: \$\{\{ steps.legacy-runtime.outputs.retired != 'true' \}\}/u);
