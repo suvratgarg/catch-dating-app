@@ -51,6 +51,52 @@ mixin EventRepositoryActions {
     ),
   );
 
+  /// Media-only recovery for an already committed legacy create. Request ID
+  /// and reviewed media identity survive ambiguous responses unchanged.
+  Future<Map<Object?, Object?>> attachEventPhotos({
+    required Event event,
+    required String requestId,
+    required String expectedMediaHash,
+  }) => withBackendErrorContext(
+    () async {
+      Map<String, int> stamp(DateTime value) => {
+        '_seconds': value.microsecondsSinceEpoch ~/ 1000000,
+        '_nanoseconds': value.microsecondsSinceEpoch.remainder(1000000) * 1000,
+      };
+      final fields = <String, Object?>{
+        'photoUrl': event.eventPhotos.first.url,
+        'eventPhotos': [
+          for (final photo in event.eventPhotos)
+            {
+              ...photo.toJson(),
+              'createdAt': stamp(photo.createdAt),
+              'updatedAt': stamp(photo.updatedAt),
+            },
+        ],
+      };
+      final payload =
+          UpdateEventCallableRequest(eventId: event.id, fields: fields).toJson()
+            ..['mediaRecovery'] = {
+              'organizerId': event.organizerId,
+              'requestId': requestId,
+              'expectedMediaHash': expectedMediaHash,
+            };
+      final result = await _functions
+          .httpsCallable('updateEvent')
+          .call<Object?>(payload);
+      final data = result.data;
+      if (data is! Map || data['updated'] != true || data['receipt'] is! Map) {
+        throw const FormatException('Invalid event photo attachment response');
+      }
+      return Map<Object?, Object?>.from(data['receipt'] as Map);
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'attach saved event photos',
+      resource: _collectionPath,
+    ),
+  );
+
   Future<void> configurePublicRegistration({
     required Event event,
     required EventPublicRegistrationMode mode,

@@ -307,6 +307,17 @@ class EventPhotoRecovery {
 /// the same ordered value before constructing a revision-fenced media request.
 String eventPhotoRecoveryHash(Object? value) => sha256Digest(jsonEncode(value));
 
+String eventPhotoMediaHash(
+  String? cover,
+  Iterable<EventPhotoRecoveryUpload> photos,
+) => eventPhotoRecoveryHash([
+  cover,
+  [
+    for (final photo in photos)
+      [photo.mediaId, photo.url, photo.storagePath, photo.position],
+  ],
+]);
+
 final _documentId = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$');
 final _mediaId = RegExp(r'^[A-Za-z0-9][A-Za-z0-9_-]{7,119}$');
 final _hash = RegExp(r'^[a-f0-9]{64}$');

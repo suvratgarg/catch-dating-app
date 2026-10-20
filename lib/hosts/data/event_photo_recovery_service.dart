@@ -24,8 +24,15 @@ class EventPhotoAttachmentReceipt {
 
 String eventPhotoAttachmentHash(EventPhotoRecovery command) =>
     eventPhotoRecoveryHash([
-      command.intentJson,
-      [for (final photo in command.uploads) photo.toJson()],
+      command.scope.accountId,
+      command.scope.organizerId,
+      command.scope.eventId,
+      command.requestId,
+      command.expectedMediaHash,
+      [
+        for (final photo in command.uploads)
+          [photo.mediaId, photo.url, photo.storagePath, photo.position],
+      ],
     ]);
 
 class EventPhotoRecoveryResult {

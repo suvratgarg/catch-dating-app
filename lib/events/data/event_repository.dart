@@ -21,7 +21,8 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         RecordEventInviteLinkOpenCallableRequest,
         RecordEventShareIntentCallableRequest,
         SendEventBroadcastCallableRequest,
-        SelfCheckInAttendanceCallableRequest;
+        SelfCheckInAttendanceCallableRequest,
+        UpdateEventCallableRequest;
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_callable_adapters.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
