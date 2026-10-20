@@ -140,6 +140,15 @@ const schemaJoinWaitlistHTTPRequestSchema = <String, Object?>{
           'type': 'string',
           'maxLength': 1000,
         },
+        'eventPricing': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'paid',
+            'free',
+            'mixed',
+            'undecided',
+          ],
+        },
       },
     },
     'attribution': <String, Object?>{
@@ -517,6 +526,15 @@ const schemaJoinWaitlistHTTPRequestSchema = <String, Object?>{
         'operatingNotes': <String, Object?>{
           'type': 'string',
           'maxLength': 1000,
+        },
+        'eventPricing': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'paid',
+            'free',
+            'mixed',
+            'undecided',
+          ],
         },
       },
     },

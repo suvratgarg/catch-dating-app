@@ -33,7 +33,7 @@ test("marketing listeners stop emitting after navigation to a private demo", () 
 });
 
 const legacyKey = "catch_marketing_attribution_v1";
-const ephemeralKey = "catch_marketing_attribution_v2";
+const ephemeralKey = "catch_marketing_attribution_v3";
 
 function attribution() { return waitlistAnalyticsPayload("test", "host").attribution; }
 
@@ -42,18 +42,18 @@ test("unset and essential consent clear obsolete raw attribution without storing
   localStorage.setItem(legacyKey, JSON.stringify({firstTouch: {landingUrl: location.href}}));
   initializeMarketingAnalytics();
   expect(localStorage.getItem(legacyKey)).toBeNull();
-  expect(sessionStorage.getItem(ephemeralKey)).toBeNull();
+  expect(localStorage.getItem(ephemeralKey)).toBeNull();
   expect(attribution()).toBeNull();
   setMarketingConsent("essential");
   expect(attribution()).toBeNull();
 });
 
-test("analytics consent captures only campaign labels in ephemeral public marketing touches", () => {
+test("analytics consent captures only campaign labels in 30-day public marketing touches", () => {
   window.history.replaceState(null, "", "/host/?utm_source=newsletter&utm_medium=email&utm_campaign=launch_2026&utm_content=person%40example.com&utm_term=private%20answer&gclid=ad-secret&fbclid=ad-secret&email=private%40example.com#private-token");
   setMarketingConsent("analytics");
   expect(attribution()?.firstTouch).toMatchObject({landingPath: "/host/", referrer: null,
     values: {utm_source: "newsletter", utm_medium: "email", utm_campaign: "launch_2026"}});
-  const stored = sessionStorage.getItem(ephemeralKey)!;
+  const stored = localStorage.getItem(ephemeralKey)!;
   expect(stored).not.toMatch(/private|person|gclid|fbclid|ad-secret|[?#]/u);
   expect(localStorage.getItem(legacyKey)).toBeNull();
   window.history.replaceState(null, "", "/host/planners/?utm_campaign=planner_launch");
@@ -61,7 +61,7 @@ test("analytics consent captures only campaign labels in ephemeral public market
   expect(attribution()?.firstTouch.landingPath).toBe("/host/");
   expect(attribution()?.lastTouch.values).toEqual({utm_campaign: "planner_launch"});
   setMarketingConsent("essential");
-  expect(sessionStorage.getItem(ephemeralKey)).toBeNull();
+  expect(localStorage.getItem(ephemeralKey)).toBeNull();
   expect(attribution()).toBeNull();
 });
 
@@ -71,15 +71,15 @@ test.each(["/events/social-event/", "/organizers/dating-host/", "/f/private-form
     window.history.replaceState(null, "", `${path}?utm_campaign=private_campaign#secret`);
     initializeMarketingAnalytics();
     expect(attribution()).toBeNull();
-    expect(sessionStorage.getItem(ephemeralKey)).toBeNull();
+    expect(localStorage.getItem(ephemeralKey)).toBeNull();
   });
 
 test("invalid consent flags fail closed and delete previous attribution", () => {
   setMarketingConsent("analytics");
-  localStorage.setItem("catch_marketing_consent_v3", JSON.stringify({version: 3, choice: "essential", analytics: true, marketing: true, updatedAt: new Date().toISOString()}));
+  localStorage.setItem("catch_marketing_consent_v4", JSON.stringify({version: 4, choice: "essential", analytics: true, marketing: true, updatedAt: new Date().toISOString()}));
   expect(getMarketingConsent()).toBeNull();
-  expect(sessionStorage.getItem(ephemeralKey)).toBeNull();
-  localStorage.setItem("catch_marketing_consent_v3", JSON.stringify({version: 3, choice: "unknown", analytics: true, marketing: true, updatedAt: "bad"}));
+  expect(localStorage.getItem(ephemeralKey)).toBeNull();
+  localStorage.setItem("catch_marketing_consent_v4", JSON.stringify({version: 4, choice: "unknown", analytics: true, marketing: true, updatedAt: "bad"}));
   expect(getMarketingConsent()).toBeNull();
 });
 
@@ -90,9 +90,9 @@ test("legacy raw attribution is discarded, expired touches are not reused", () =
   expect(attribution()?.firstTouch.values).toEqual({utm_campaign: "synthetic_launch"});
   expect(localStorage.getItem(legacyKey)).toBeNull();
   const touch = {...attribution()!.firstTouch, capturedAt: "2020-01-01T00:00:00Z"};
-  sessionStorage.setItem(ephemeralKey, JSON.stringify({firstTouch: touch, lastTouch: touch}));
+  localStorage.setItem(ephemeralKey, JSON.stringify({firstTouch: touch, lastTouch: touch}));
   expect(attribution()).toBeNull();
-  expect(sessionStorage.getItem(ephemeralKey)).toBeNull();
+  expect(localStorage.getItem(ephemeralKey)).toBeNull();
 });
 
 test("an environment GTM ID cannot load a script or call an external global gtag", () => {
@@ -112,11 +112,11 @@ test("an environment GTM ID cannot load a script or call an external global gtag
 
 test("legacy analytics-only UI choices cannot authorize marketing and request a fresh versioned choice", () => {
   localStorage.setItem("catch_marketing_consent_v1", JSON.stringify({choice: "accepted", analytics: true,
-    marketing: true, version: 3, updatedAt: new Date().toISOString()}));
+    marketing: true, version: 4, updatedAt: new Date().toISOString()}));
   expect(getMarketingConsent()).toMatchObject({version: 1, choice: "analytics", analytics: true, marketing: false});
   expect(shouldShowMarketingConsentBanner()).toBe(true);
   setMarketingConsent("accepted");
-  expect(getMarketingConsent()).toMatchObject({version: 3, analytics: true, marketing: true});
+  expect(getMarketingConsent()).toMatchObject({version: 4, analytics: true, marketing: true});
   expect(shouldShowMarketingConsentBanner()).toBe(false);
   expect(localStorage.getItem("catch_marketing_consent_v1")).toBeNull();
 });
@@ -135,6 +135,7 @@ test.each(["/claim", "/claim/"])("approved labels survive host to actual CTA %s"
 });
 
 test("lead success requires submission-time permission with no mid-request accept/revoke replay", () => {
+  window.history.replaceState(null, "", "/host/apply/");
   const id = createMarketingEventId("host_lead");
   expect(trackAcceptedMarketingLead(id, "host_application", false, null)).toBe(false);
   const permission = setMarketingConsent("accepted");
@@ -143,8 +144,10 @@ test("lead success requires submission-time permission with no mid-request accep
   setMarketingConsent("accepted");
   expect(trackAcceptedMarketingLead(id, "host_application", false, permission)).toBe(false);
   const current = getMarketingConsent();
-  expect(trackAcceptedMarketingLead(id, "host_application", false, current)).toBe(true);
-  expect(trackAcceptedMarketingLead(id, "host_lead", false, current)).toBe(false);
+  expect(trackAcceptedMarketingLead(id, "host_application", false, current)).toBe(false);
+  expect(trackAcceptedMarketingLead(id, "host_application", true, current, {eventId: id, isNew: false})).toBe(false);
+  expect(trackAcceptedMarketingLead(id, "host_application", true, current, {eventId: id, isNew: true})).toBe(true);
+  expect(trackAcceptedMarketingLead(id, "host_lead", false, current, {eventId: id, isNew: true})).toBe(false);
 });
 
 test("closed HTTP consent stays analytics-only until a versioned server handoff exists", () => {
@@ -169,7 +172,7 @@ test("SPA views deduplicate a lifecycle render and count a real return visit wit
 
 
 test("the disabled-provider notice cannot authorise a later live transport", () => {
-  localStorage.setItem("catch_marketing_consent_v3", JSON.stringify({version: 3,
+  localStorage.setItem("catch_marketing_consent_v4", JSON.stringify({version: 4,
     measurementMode: "google-live-v1", choice: "accepted", analytics: true, marketing: true,
     updatedAt: new Date().toISOString()}));
   expect(getMarketingConsent()).toMatchObject({version: 2, marketing: false});
@@ -183,5 +186,17 @@ test("version two choices require fresh consent and cannot inherit marketing per
   expect(shouldShowMarketingConsentBanner()).toBe(true);
   setMarketingConsent("accepted");
   expect(localStorage.getItem("catch_marketing_consent_v2")).toBeNull();
-  expect(getMarketingConsent()).toMatchObject({version: 3, measurementMode: "disabled"});
+  expect(getMarketingConsent()).toMatchObject({version: 4, measurementMode: "disabled"});
+});
+
+
+test("previous 24-hour consent cannot authorise 30-day retention", () => {
+  window.history.replaceState(null, "", "/host/?utm_campaign=host_acquisition_2026");
+  localStorage.setItem("catch_marketing_consent_v3", JSON.stringify({version: 3,
+    measurementMode: "disabled", choice: "accepted", analytics: true,
+    marketing: true, updatedAt: new Date().toISOString()}));
+  initializeMarketingAnalytics();
+  expect(shouldShowMarketingConsentBanner()).toBe(true);
+  expect(attribution()).toBeNull();
+  expect(localStorage.getItem(ephemeralKey)).toBeNull();
 });

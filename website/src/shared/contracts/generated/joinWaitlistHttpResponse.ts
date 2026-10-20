@@ -9,6 +9,10 @@ export type JoinWaitlistHTTPResponse =
   | {
       ok: true;
       alreadyJoined: boolean;
+      hostLead?: {
+        eventId: string;
+        isNew: boolean;
+      };
     }
   | {
       error: string;

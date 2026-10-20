@@ -181,6 +181,9 @@ test("normalizeMarketingAnalytics keeps consent and event metadata", () => {
 });
 
 test("normalizeHostApplication keeps bounded operating fields", () => {
+  assert.equal(Object.hasOwn(normalizeHostApplication({
+    organizationName: "Existing enquiry",
+  })!, "eventPricing"), false, "legacy packets retain their replay hash");
   assert.deepEqual(
     normalizeHostApplication({
       organizationName: "  Sunday Table  ",
@@ -189,6 +192,7 @@ test("normalizeHostApplication keeps bounded operating fields", () => {
       communityLink: "https://example.com/events",
       formats: ["Dinner", "Dinner", "Singles mixer"],
       eventCadence: "Monthly",
+      eventPricing: "paid",
       nextEventName: "Long table no. 1",
       nextEventDate: "2026-06-21",
       eventLocation: "Bandra",
@@ -214,6 +218,7 @@ test("normalizeHostApplication keeps bounded operating fields", () => {
       communityLink: "https://example.com/events",
       formats: ["Dinner", "Singles mixer"],
       eventCadence: "Monthly",
+      eventPricing: "paid",
       nextEventName: "Long table no. 1",
       nextEventDate: "2026-06-21",
       eventLocation: "Bandra",
@@ -251,9 +256,19 @@ test("host intents preserve changes and exact retries", async (context) => {
     async (run: TransactionRunner) => {
       const writes: Array<{path: string; value: Record<string, unknown>}> = [];
       const tx = {
-        get: async (ref: {path: string}) => ({
-          exists: records.has(ref.path), data: () => records.get(ref.path),
-        }),
+        get: async (ref: {
+          path?: string; isEqual?: (q: unknown) => boolean;
+        }) => {
+          if (!ref.path) {
+            const size = [...records.entries()].filter(([path, row]) =>
+              path.startsWith("salesInboundIntents/") && ref.isEqual?.(
+                database.collection("salesInboundIntents")
+                  .where("waitlistId", "==", row.waitlistId).limit(1))).length;
+            return {size};
+          }
+          return {exists: records.has(ref.path),
+            data: () => records.get(ref.path!)};
+        },
         create: (ref: {path: string}, value: Record<string, unknown>) => {
           assert.equal(records.has(ref.path), false);
           writes.push({path: ref.path, value});
@@ -297,8 +312,13 @@ test("host intents preserve changes and exact retries", async (context) => {
     return {status, result};
   };
   const first = await submit(body);
-  assert.deepEqual(
-    first, {status: 200, result: {ok: true, alreadyJoined: false}});
+  const firstReceipt = (first.result as {
+    hostLead: {eventId: string; isNew: boolean};
+  }).hostLead;
+  assert.match(firstReceipt.eventId, /^host_lead_[0-9]{13}_[a-f0-9-]{36}$/);
+  assert.equal(firstReceipt.isNew, true);
+  assert.deepEqual(first, {status: 200,
+    result: {ok: true, alreadyJoined: false, hostLead: firstReceipt}});
   const count = committedWrites;
   assert.deepEqual(await submit(body), first);
   assert.equal(committedWrites, count);
@@ -309,7 +329,8 @@ test("host intents preserve changes and exact retries", async (context) => {
     analytics: {...analytics,
       eventId: "distinct-submission"}};
   assert.deepEqual(
-    await submit(next), {status: 200, result: {ok: true, alreadyJoined: true}});
+    await submit(next), {status: 200, result: {ok: true, alreadyJoined: true,
+      hostLead: {...firstReceipt, isNew: false}}});
   assert.equal(
     [...records.keys()].filter(
       (key) => key.startsWith("salesInboundIntents/")).length,
@@ -325,4 +346,27 @@ test("host intents preserve changes and exact retries", async (context) => {
       (row) => row.classification === "sales_private");
   assert.deepEqual(
     captured.map((row) => row.city), [body.city, "Different City"]);
+
+  // An existing attendee is still a new Host acquisition.
+  const attendeeEmail = "prior-attendee@example.test";
+  const attendeeId = Buffer.from(attendeeEmail).toString("base64url");
+  records.set(`launchWaitlist/${attendeeId}`, {role: "member"});
+  const hostResult = await submit({...body, email: attendeeEmail});
+  const accepted = hostResult.result as {alreadyJoined: boolean;
+    hostLead: {isNew: boolean; eventId: string}};
+  assert.equal(accepted.alreadyJoined, true);
+  assert.equal(accepted.hostLead.isNew, true);
+  assert.notEqual(accepted.hostLead.eventId, firstReceipt.eventId);
+
+  // Historic Host intent survives a later member-role overwrite.
+  delete records.get(`launchWaitlist/${attendeeId}`)!.hostLead;
+  records.get(`launchWaitlist/${attendeeId}`)!.role = "member";
+  const legacy = await submit({...body, email: attendeeEmail,
+    analytics: {...analytics, eventId: "legacy-host-revisit"}});
+  assert.equal((legacy.result as typeof accepted).hostLead.isNew, false);
+
+  const beforeTrap = committedWrites;
+  const trap = await submit({...body, website: "bot"});
+  assert.deepEqual(trap.result, {ok: true, alreadyJoined: false});
+  assert.equal(committedWrites, beforeTrap);
 });

@@ -92934,6 +92934,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const joinWaitlistHTTPRequestHostApplicationEventPricing = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.hostApplication.eventPricing',
+    valueTypes: <String>['string'],
+    enumValues: <String>['paid', 'free', 'mixed', 'undecided'],
+  );
+
   static const joinWaitlistHTTPRequestHostApplicationEventSuccessModules = CatchContractFieldConstraints(
     path: 'joinWaitlistHTTPRequest.hostApplication.eventSuccessModules',
     valueTypes: <String>['array'],
@@ -93067,6 +93073,19 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPResponseHostLeadEventId = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPResponse.hostLead.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^host_lead_[0-9]{13}_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\$',
+  );
+
+  static const joinWaitlistHTTPResponseHostLeadIsNew = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPResponse.hostLead.isNew',
+    required: true,
+    valueTypes: <String>['boolean'],
   );
 
   static const joinWaitlistHTTPResponseOk = CatchContractFieldConstraints(
@@ -149133,6 +149152,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const salesInboundIntentsDocumentHostApplicationEventPricing = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.hostApplication.eventPricing',
+    valueTypes: <String>['string'],
+    enumValues: <String>['paid', 'free', 'mixed', 'undecided'],
+  );
+
   static const salesInboundIntentsDocumentHostApplicationEventSuccessModules = CatchContractFieldConstraints(
     path: 'salesInboundIntentsDocument.hostApplication.eventSuccessModules',
     valueTypes: <String>['array'],
@@ -149233,6 +149258,19 @@ abstract final class CatchContractConstraints {
     path: 'salesInboundIntentsDocument.hostApplication.waitlistPlan',
     maxLength: 80,
     valueTypes: <String>['string'],
+  );
+
+  static const salesInboundIntentsDocumentHostLeadEventId = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.hostLead.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^host_lead_[0-9]{13}_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\$',
+  );
+
+  static const salesInboundIntentsDocumentHostLeadIsNew = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.hostLead.isNew',
+    required: true,
+    valueTypes: <String>['boolean'],
   );
 
   static const salesInboundIntentsDocumentIntentId = CatchContractFieldConstraints(
@@ -182278,6 +182316,7 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPRequest.hostApplication.communityLink': joinWaitlistHTTPRequestHostApplicationCommunityLink,
     'joinWaitlistHTTPRequest.hostApplication.eventCadence': joinWaitlistHTTPRequestHostApplicationEventCadence,
     'joinWaitlistHTTPRequest.hostApplication.eventLocation': joinWaitlistHTTPRequestHostApplicationEventLocation,
+    'joinWaitlistHTTPRequest.hostApplication.eventPricing': joinWaitlistHTTPRequestHostApplicationEventPricing,
     'joinWaitlistHTTPRequest.hostApplication.eventSuccessModules': joinWaitlistHTTPRequestHostApplicationEventSuccessModules,
     'joinWaitlistHTTPRequest.hostApplication.eventSuccessModules.items': joinWaitlistHTTPRequestHostApplicationEventSuccessModulesItems,
     'joinWaitlistHTTPRequest.hostApplication.expectedCapacity': joinWaitlistHTTPRequestHostApplicationExpectedCapacity,
@@ -182299,6 +182338,8 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPRequest.website': joinWaitlistHTTPRequestWebsite,
     'joinWaitlistHTTPResponse.alreadyJoined': joinWaitlistHTTPResponseAlreadyJoined,
     'joinWaitlistHTTPResponse.error': joinWaitlistHTTPResponseError,
+    'joinWaitlistHTTPResponse.hostLead.eventId': joinWaitlistHTTPResponseHostLeadEventId,
+    'joinWaitlistHTTPResponse.hostLead.isNew': joinWaitlistHTTPResponseHostLeadIsNew,
     'joinWaitlistHTTPResponse.ok': joinWaitlistHTTPResponseOk,
     'legacyPaymentRefundIntent.attempts': legacyPaymentRefundIntentAttempts,
     'legacyPaymentRefundIntent.attempts.items.amountMinor': legacyPaymentRefundIntentAttemptsItemsAmountMinor,
@@ -190034,6 +190075,7 @@ abstract final class CatchContractConstraints {
     'salesInboundIntentsDocument.hostApplication.communityLink': salesInboundIntentsDocumentHostApplicationCommunityLink,
     'salesInboundIntentsDocument.hostApplication.eventCadence': salesInboundIntentsDocumentHostApplicationEventCadence,
     'salesInboundIntentsDocument.hostApplication.eventLocation': salesInboundIntentsDocumentHostApplicationEventLocation,
+    'salesInboundIntentsDocument.hostApplication.eventPricing': salesInboundIntentsDocumentHostApplicationEventPricing,
     'salesInboundIntentsDocument.hostApplication.eventSuccessModules': salesInboundIntentsDocumentHostApplicationEventSuccessModules,
     'salesInboundIntentsDocument.hostApplication.eventSuccessModules.items': salesInboundIntentsDocumentHostApplicationEventSuccessModulesItems,
     'salesInboundIntentsDocument.hostApplication.expectedCapacity': salesInboundIntentsDocumentHostApplicationExpectedCapacity,
@@ -190050,6 +190092,8 @@ abstract final class CatchContractConstraints {
     'salesInboundIntentsDocument.hostApplication.paymentReadiness': salesInboundIntentsDocumentHostApplicationPaymentReadiness,
     'salesInboundIntentsDocument.hostApplication.priceRange': salesInboundIntentsDocumentHostApplicationPriceRange,
     'salesInboundIntentsDocument.hostApplication.waitlistPlan': salesInboundIntentsDocumentHostApplicationWaitlistPlan,
+    'salesInboundIntentsDocument.hostLead.eventId': salesInboundIntentsDocumentHostLeadEventId,
+    'salesInboundIntentsDocument.hostLead.isNew': salesInboundIntentsDocumentHostLeadIsNew,
     'salesInboundIntentsDocument.intentId': salesInboundIntentsDocumentIntentId,
     'salesInboundIntentsDocument.linkedAt._nanoseconds': salesInboundIntentsDocumentLinkedAtNanoseconds,
     'salesInboundIntentsDocument.linkedAt._seconds': salesInboundIntentsDocumentLinkedAtSeconds,

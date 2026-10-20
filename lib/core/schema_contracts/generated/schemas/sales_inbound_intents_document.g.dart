@@ -340,6 +340,22 @@ const schemaSalesInboundIntentsDocumentSchema = <String, Object?>{
                 },
               ],
             },
+            'eventPricing': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'paid',
+                    'free',
+                    'mixed',
+                    'undecided',
+                  ],
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
           },
         },
         <String, Object?>{
@@ -421,6 +437,23 @@ const schemaSalesInboundIntentsDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 128,
+    },
+    'hostLead': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'eventId',
+        'isNew',
+      ],
+      'properties': <String, Object?>{
+        'eventId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^host_lead_[0-9]{13}_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\$',
+        },
+        'isNew': <String, Object?>{
+          'type': 'boolean',
+        },
+      },
     },
   },
   'allOf': <Object?>[

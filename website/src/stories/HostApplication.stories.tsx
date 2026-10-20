@@ -34,6 +34,7 @@ async function exerciseReviewBeforeSubmit({canvasElement}: {canvasElement: HTMLE
     await next();
     await userEvent.type(field("host-event-name"), "Local verification event");
     await userEvent.type(field("host-event-location"), "Local test venue");
+    await userEvent.selectOptions(canvasElement.querySelector<HTMLSelectElement>("#host-event-pricing")!, "paid");
     await next();
     await next();
     await userEvent.type(field("host-goals"), "Review before explicit submission.");

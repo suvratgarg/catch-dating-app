@@ -119,6 +119,7 @@ export function useHostApplicationController() {
       return;
     }
 
+    if (!draft.eventPricing) return;
     const operatingPacket = {
       fullName: draft.fullName.trim(),
       email: draft.email.trim(),
@@ -135,6 +136,7 @@ export function useHostApplicationController() {
         eventCadence: draft.eventCadence,
         nextEventName: draft.nextEventName.trim(),
         nextEventDate: draft.nextEventDate,
+        eventPricing: draft.eventPricing,
         eventLocation: draft.eventLocation.trim(),
         expectedCapacity: draft.expectedCapacity,
         bookingPlatform: draft.bookingPlatform,
@@ -183,7 +185,7 @@ export function useHostApplicationController() {
         format_count: draft.formats.length,
         module_count: draft.eventSuccessModules.length,
       });
-      trackAcceptedMarketingLead(eventId, "host_application", data.alreadyJoined, submissionConsent);
+      trackAcceptedMarketingLead(eventId, "host_application", data.alreadyJoined, submissionConsent, data.hostLead);
       trackMarketingEvent("generate_lead", {
         city: body.city,
         event_id: eventId,

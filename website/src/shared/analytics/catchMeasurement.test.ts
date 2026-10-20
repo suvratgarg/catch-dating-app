@@ -5,7 +5,7 @@ import {createGoogleAcquisitionAdapter, createMetaAcquisitionAdapter} from "./ca
 
 const id = (n = 1) => `catch_1790899200000_00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 const context = (marketing = true): MeasurementContext => ({path: "/host/", consent: {
-  version: 3, analytics: true, marketing, updatedAt: "2026-10-02T00:00:00Z",
+  version: 4, analytics: true, marketing, updatedAt: "2026-10-02T00:00:00Z",
 }});
 const lead: CatchAcquisitionEvent = {name: "lead_accepted", eventId: id(), form: "host_application",
   receipt: {ok: true, alreadyJoined: false}};
@@ -68,7 +68,7 @@ describe("Catch acquisition boundary", () => {
     expect(f.destination).not.toHaveBeenCalled();
   });
 
-  it.each(["/events/singles/", "/organizers/private/", "/f/private/", "/claim/private-id/",
+  it.each(["/", "/events/singles/", "/organizers/private/", "/f/private/", "/claim/private-id/",
     "/host/work/private/", "/join/private/", "/booking/private/", "/offer/", "/demo/private/"])(
     "allows no acquisition event on %s", (path) => {
       expect(safeAcquisitionEvent(lead, {...context(), path})).toBeNull();
@@ -102,16 +102,14 @@ describe("Catch acquisition boundary", () => {
   it("keeps attendee lead requests out of organizer advertising", () => {
     const f = fixture(); f.controller.update(context());
     f.controller.track({...lead, form: "member_waitlist"});
-    expect(f.destination).toHaveBeenCalledTimes(1);
-    expect(f.destination.mock.calls[0][0]).toMatchObject({destination: "ga4_synthetic", name: "generate_lead",
-      parameters: {audience: "attendee"}});
+    expect(f.destination).not.toHaveBeenCalled();
   });
 
   it("requires a new organizer account, approved claim, first meaningful activation and settled purchase", () => {
     const inputs = [
       {name: "organizer_signup", eventId: id(), receipt: {authority: "organizer_account_created", isNewAccount: true}},
       {name: "claim_approved", eventId: id(), receipt: {authority: "claim_decision", status: "approved"}},
-      {name: "organizer_activated", eventId: id(), receipt: {authority: "first_public_event_published", firstActivation: true}},
+      {name: "organizer_activated", eventId: id(), receipt: {authority: "first_real_event_checkin", firstActivation: true}},
       {name: "purchase", eventId: id(), transactionId: id(2), value: 100, currency: "INR",
         receipt: {authority: "catch_payment_settlement", status: "settled", audience: "organizer"}},
     ] as const;

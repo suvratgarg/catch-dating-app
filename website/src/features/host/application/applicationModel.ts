@@ -16,6 +16,7 @@ export interface HostApplicationDraft {
   eventCadence: string;
   nextEventName: string;
   nextEventDate: string;
+  eventPricing: "" | "paid" | "free" | "mixed" | "undecided";
   eventLocation: string;
   expectedCapacity: string;
   bookingPlatform: string;
@@ -82,6 +83,7 @@ export const initialHostApplicationDraft: HostApplicationDraft = {
   eventCadence: websiteCopy["applicationmodel_0187"],
   nextEventName: "",
   nextEventDate: "",
+  eventPricing: "",
   eventLocation: "",
   expectedCapacity: "20",
   bookingPlatform: hostApplicationCopy.setup.bookingPlatforms[0],
@@ -112,6 +114,7 @@ export function hostApplicationStepIsComplete(
     return Boolean(
       draft.formats.length &&
       draft.nextEventName.trim() &&
+      draft.eventPricing &&
       draft.eventLocation.trim()
     );
   }
@@ -133,7 +136,7 @@ export function hostApplicationStepError(step: HostApplicationStep) {
     case "profile":
       return "Add your identity, organizer name, city, and public link.";
     case "event":
-      return "Choose at least one format and describe the first event and location.";
+      return "Choose a format, describe the first event and location, and indicate whether guests pay.";
     case "setup":
       return hostApplicationCopy.errors.setup;
     case "success":
