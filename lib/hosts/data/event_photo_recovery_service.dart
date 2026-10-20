@@ -80,7 +80,8 @@ class EventPhotoRecoveryService {
     Object? failure;
     await journal.replay(scope, (receipt) async {
       journal.requireSession(scope, session);
-      var current = receipt;
+      var current = await _cleanupAbandoned(receipt, session);
+      if (current.phase == EventPhotoRecoveryPhase.complete) return;
       if (current.phase == EventPhotoRecoveryPhase.cleanupPending) {
         failure = await _cleanup(current, session);
         return;
@@ -123,35 +124,33 @@ class EventPhotoRecoveryService {
           );
           journal.requireSession(scope, session);
           try {
-            final uploaded = await images.uploadEventPhotoWithMetadata(
+            final uploaded = await images.uploadEventPhotoForRecovery(
               eventId: scope.eventId,
               position: position,
               mediaId: mediaId,
               image: selected![position],
             );
             journal.requireSession(scope, session);
-            current = await journal.checkpoint(
+            final settled = await journal.settleUpload(
               current,
-              current.next(
-                uploads: [
-                  ...current.uploads,
-                  EventPhotoRecoveryUpload(
-                    mediaId: mediaId,
-                    url: uploaded.url,
-                    storagePath: uploaded.storagePath,
-                    position: position,
-                  ),
-                ],
+              EventPhotoRecoveryUpload(
+                mediaId: mediaId,
+                url: uploaded.url,
+                storagePath: uploaded.storagePath,
+                position: position,
               ),
             );
             journal.requireSession(scope, session);
+            if (settled == null) return;
+            current = settled;
           } on Object catch (error) {
             // Account changes leave the write-ahead upload marker intact. A
             // new session must reconcile it; the obsolete session never cleans.
             journal.requireSession(scope, session);
             failure = error;
-            final cleanup = await _prepareCleanup(current);
+            final cleanup = await journal.settleUpload(current, null);
             journal.requireSession(scope, session);
+            if (cleanup == null) return;
             failure = await _cleanup(cleanup, session) ?? failure;
             return;
           }
@@ -221,11 +220,42 @@ class EventPhotoRecoveryService {
           phase: EventPhotoRecoveryPhase.cleanupPending,
           cleanupPaths: [
             for (final photo in current.uploads) photo.storagePath,
-            if (current.uploadingMediaId case final mediaId?)
-              current.pathFor(mediaId),
           ],
+          abandonedUploads: {
+            ...current.abandonedUploads,
+            if (current.uploadingMediaId case final mediaId?)
+              current.pathFor(mediaId): false,
+          },
         ),
       );
+
+  Future<EventPhotoRecovery> _cleanupAbandoned(
+    EventPhotoRecovery saved,
+    Object session,
+  ) async {
+    var current = saved;
+    for (final entry in saved.abandonedUploads.entries) {
+      // A 404 while an uploader is still running is not terminal evidence.
+      if (!entry.value) continue;
+      journal.requireSession(current.scope, session);
+      try {
+        await images.deleteByPathChecked(entry.key);
+        journal.requireSession(current.scope, session);
+        current = await journal.checkpoint(
+          current,
+          current.next(
+            abandonedUploads: Map.of(current.abandonedUploads)
+              ..remove(entry.key),
+            uploadingMediaId: current.uploadingMediaId,
+          ),
+        );
+      } on Object {
+        journal.requireSession(current.scope, session);
+        // Keep confirmed-terminal cleanup failures for the next replay.
+      }
+    }
+    return current;
+  }
 
   Future<Object?> _cleanup(EventPhotoRecovery saved, Object session) async {
     var current = saved;

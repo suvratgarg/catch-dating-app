@@ -194,7 +194,11 @@ void main() {
                   ),
           ]);
           expect(outcomes.whereType<EventPhotoRecovery>(), hasLength(1));
-          expect(outcomes.whereType<ValidationException>(), hasLength(1));
+          expect(outcomes.whereType<BackendOperationException>(), hasLength(1));
+          expect(
+            outcomes.whereType<BackendOperationException>().single.retryable,
+            true,
+          );
           expect((await journal.load(initial.scope))!.revision, 1);
         },
       );
@@ -253,7 +257,13 @@ void main() {
           ]);
           await expectLater(
             journal.checkpoint(cleanup, cleanup.next(cleanupPaths: [])),
-            throwsA(isA<ValidationException>()),
+            throwsA(
+              isA<BackendOperationException>().having(
+                (error) => error.retryable,
+                'retryable',
+                true,
+              ),
+            ),
           );
           final retriable = partial.next(
             phase: EventPhotoRecoveryPhase.uploadFailed,

@@ -6,7 +6,6 @@ import 'package:catch_dating_app/hosts/data/event_photo_recovery_journal.dart';
 import 'package:catch_dating_app/hosts/data/event_photo_recovery_service.dart';
 import 'package:catch_dating_app/hosts/domain/event_photo_recovery.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
-import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,18 +20,18 @@ class RecoveryImages extends Fake implements ImageUploadRepository {
   final failCleanup = <String>{};
   final lostCleanupAcknowledgement = <String>{};
   Future<void> Function()? duringUpload;
+  Future<void> Function()? beforeUpload;
 
   @override
-  Future<UploadedImage> uploadEventPhotoWithMetadata({
+  Future<UploadedImage> uploadEventPhotoForRecovery({
     required String eventId,
     required int position,
     required XFile image,
-    String? mediaId,
-    ValueChanged<ImageUploadProgress>? onProgress,
-    ImageUploadCancellationToken? cancellationToken,
+    required String mediaId,
   }) async {
     uploadedEvents.add(eventId);
-    uploadedMedia.add(mediaId!);
+    uploadedMedia.add(mediaId);
+    await beforeUpload?.call();
     if (failUpload.contains(position)) throw StateError('upload unavailable');
     final path = 'events/$eventId/media/$mediaId/original.jpg';
     if (!objects.add(path)) throw StateError('immutable object already exists');
@@ -317,7 +316,7 @@ void main() {
   );
 
   test(
-    'interrupted upload marker is reconciled before attempting any new upload',
+    'interrupted uploader keeps its cleanup obligation until terminal evidence',
     () async {
       await journal.retain(initial);
       await journal.checkpoint(
@@ -329,7 +328,10 @@ void main() {
       expect(recovered!.receipt.phase, EventPhotoRecoveryPhase.uploadFailed);
       expect(recovered.requiresPhotoReselection, true);
       expect(images.uploadedEvents, isEmpty);
-      expect(images.objects, isEmpty);
+      expect(images.objects, {initial.pathFor('photo-0001')});
+      expect(recovered.receipt.abandonedUploads, {
+        initial.pathFor('photo-0001'): false,
+      });
       expect(attachments, isEmpty);
     },
   );
@@ -379,7 +381,10 @@ void main() {
       images.duringUpload = null;
       final recovered = await reenter().resume(initial.scope);
       expect(recovered!.requiresPhotoReselection, true);
-      expect(images.objects, isEmpty);
+      expect(images.objects, {initial.pathFor('photo-0001')});
+      expect(recovered.receipt.abandonedUploads, {
+        initial.pathFor('photo-0001'): false,
+      });
     },
   );
 
@@ -410,6 +415,106 @@ void main() {
       expect(recovered!.receipt.phase, EventPhotoRecoveryPhase.complete);
       expect(attachments.map(eventPhotoAttachmentHash).toSet(), hasLength(1));
       expect(images.uploadedMedia, hasLength(2));
+    },
+  );
+
+  test(
+    'expired lease retains late upload ownership before the object exists',
+    () async {
+      await journal.retain(initial);
+      final preparing = Completer<void>();
+      final finish = Completer<void>();
+      images.beforeUpload = () async {
+        if (!preparing.isCompleted) {
+          preparing.complete();
+          await finish.future;
+        }
+      };
+      final first = service.resume(initial.scope, photos: selected(2));
+      await preparing.future;
+      final key = eventPhotoRecoveryHash([
+        'event-photo-recovery-commands',
+        initial.scope.accountId,
+      ]);
+      await storage.transact(key, (state) {
+        for (final record in state['records']! as List) {
+          (record as Map)['leaseUntil'] = 0;
+        }
+      });
+      final reclaimed = await reenter().resume(initial.scope);
+      final oldPath = initial.pathFor('photo-0001');
+      expect(images.objects, isEmpty);
+      expect(reclaimed!.receipt.abandonedUploads, {oldPath: false});
+      expect(images.deleted, isNot(contains(oldPath)));
+      final retried = await reenter().resume(
+        initial.scope,
+        photos: selected(2),
+      );
+      expect(retried!.receipt.phase, EventPhotoRecoveryPhase.complete);
+      expect(retried.receipt.isResolved, false);
+      await expectLater(
+        journal.forgetCompleted(retried.receipt),
+        throwsA(isA<ValidationException>()),
+      );
+      finish.complete();
+      final late = await first;
+      expect(late!.receipt.abandonedUploads, {oldPath: true});
+      expect(images.objects, contains(oldPath));
+      images.failCleanup.add(oldPath);
+      final failedCleanup = await reenter().resume(initial.scope);
+      expect(failedCleanup!.receipt.abandonedUploads, {oldPath: true});
+      images.failCleanup.clear();
+      final resolved = await reenter().resume(initial.scope);
+      expect(resolved!.receipt.isResolved, true);
+      expect(images.objects, hasLength(2));
+      expect(images.objects, isNot(contains(oldPath)));
+      expect(attachments, hasLength(1));
+      await journal.forgetCompleted(resolved.receipt);
+    },
+  );
+
+  test(
+    'late settlement merges while the fresh retry upload is still running',
+    () async {
+      await journal.retain(initial);
+      final oldStarted = Completer<void>();
+      final oldFinish = Completer<void>();
+      final newStarted = Completer<void>();
+      final newFinish = Completer<void>();
+      images.beforeUpload = () async {
+        if (!oldStarted.isCompleted) {
+          oldStarted.complete();
+          await oldFinish.future;
+        } else if (!newStarted.isCompleted) {
+          newStarted.complete();
+          await newFinish.future;
+        }
+      };
+      final first = service.resume(initial.scope, photos: selected(2));
+      await oldStarted.future;
+      await storage.transact(
+        eventPhotoRecoveryHash([
+          'event-photo-recovery-commands',
+          initial.scope.accountId,
+        ]),
+        (state) {
+          for (final record in state['records']! as List) {
+            (record as Map)['leaseUntil'] = 0;
+          }
+        },
+      );
+      await reenter().resume(initial.scope);
+      final retry = reenter().resume(initial.scope, photos: selected(2));
+      await newStarted.future;
+      oldFinish.complete();
+      await first;
+      newFinish.complete();
+      final completed = await retry;
+      expect(completed!.receipt.phase, EventPhotoRecoveryPhase.complete);
+      final resolved = await reenter().resume(initial.scope);
+      expect(resolved!.receipt.isResolved, true);
+      expect(images.objects, hasLength(2));
+      expect(attachments, hasLength(1));
     },
   );
 

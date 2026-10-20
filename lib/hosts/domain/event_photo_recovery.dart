@@ -94,12 +94,14 @@ class EventPhotoRecovery {
     this.phase = EventPhotoRecoveryPhase.uploading,
     Iterable<EventPhotoRecoveryUpload> uploads = const [],
     Iterable<String> cleanupPaths = const [],
+    Map<String, bool> abandonedUploads = const {},
     this.requiresReview = false,
     this.uploadingMediaId,
     this.uploadAttempt = 0,
   }) : mediaIds = List.unmodifiable(mediaIds),
        uploads = List.unmodifiable(uploads),
-       cleanupPaths = List.unmodifiable(cleanupPaths) {
+       cleanupPaths = List.unmodifiable(cleanupPaths),
+       abandonedUploads = Map.unmodifiable(abandonedUploads) {
     _validate();
   }
 
@@ -126,6 +128,8 @@ class EventPhotoRecovery {
         ],
         cleanupPaths: (json['cleanupPaths'] as List? ?? const [])
             .cast<String>(),
+        abandonedUploads: (json['abandonedUploads'] as Map? ?? const {})
+            .cast<String, bool>(),
         requiresReview: json['status'] == 'needsReview',
         uploadingMediaId: json['uploadingMediaId'] as String?,
         uploadAttempt: json['uploadAttempt'] as int? ?? 0,
@@ -140,9 +144,17 @@ class EventPhotoRecovery {
   final EventPhotoRecoveryPhase phase;
   final List<EventPhotoRecoveryUpload> uploads;
   final List<String> cleanupPaths;
+
+  /// A lost uploader may finish after its execution lease. Absence alone does
+  /// not settle these objects; only that uploader's terminal acknowledgement
+  /// permits cleanup. Unknown obligations survive successful attachment too.
+  final Map<String, bool> abandonedUploads;
   final bool requiresReview;
   final String? uploadingMediaId;
   final int uploadAttempt;
+
+  bool get isResolved =>
+      phase == EventPhotoRecoveryPhase.complete && abandonedUploads.isEmpty;
 
   // Retry bytes use fresh immutable object identities. An old compensation
   // request can finish after its lease; it must never delete a retry's bytes.
@@ -179,6 +191,7 @@ class EventPhotoRecovery {
     'phase': phase.name,
     'uploads': [for (final photo in uploads) photo.toJson()],
     'cleanupPaths': cleanupPaths,
+    'abandonedUploads': abandonedUploads,
     'uploadingMediaId': uploadingMediaId,
     'uploadAttempt': uploadAttempt,
   };
@@ -187,6 +200,7 @@ class EventPhotoRecovery {
     EventPhotoRecoveryPhase? phase,
     Iterable<EventPhotoRecoveryUpload>? uploads,
     Iterable<String>? cleanupPaths,
+    Map<String, bool>? abandonedUploads,
     String? uploadingMediaId,
     int? uploadAttempt,
   }) => EventPhotoRecovery(
@@ -199,6 +213,7 @@ class EventPhotoRecovery {
     phase: phase ?? this.phase,
     uploads: uploads ?? this.uploads,
     cleanupPaths: cleanupPaths ?? this.cleanupPaths,
+    abandonedUploads: abandonedUploads ?? this.abandonedUploads,
     uploadingMediaId: uploadingMediaId,
     uploadAttempt: uploadAttempt ?? this.uploadAttempt,
   );
@@ -222,9 +237,11 @@ class EventPhotoRecovery {
         if (mediaIds.isEmpty) EventPhotoRecoveryPhase.complete,
       },
       EventPhotoRecoveryPhase.uploadFailed => {
+        EventPhotoRecoveryPhase.uploadFailed,
         EventPhotoRecoveryPhase.uploading,
       },
       EventPhotoRecoveryPhase.awaitingAttachment => {
+        EventPhotoRecoveryPhase.awaitingAttachment,
         EventPhotoRecoveryPhase.attachmentUnknown,
         EventPhotoRecoveryPhase.cleanupPending,
       },
@@ -238,14 +255,16 @@ class EventPhotoRecovery {
         EventPhotoRecoveryPhase.complete,
       },
       EventPhotoRecoveryPhase.conflict => {
+        EventPhotoRecoveryPhase.conflict,
         EventPhotoRecoveryPhase.attachmentUnknown,
       },
-      EventPhotoRecoveryPhase.complete => <EventPhotoRecoveryPhase>{},
+      EventPhotoRecoveryPhase.complete => {EventPhotoRecoveryPhase.complete},
     };
     if (jsonEncode(intentJson) != jsonEncode(next.intentJson) ||
         next.revision != revision + 1 ||
         next.uploadAttempt !=
-            (phase == EventPhotoRecoveryPhase.uploadFailed
+            (phase == EventPhotoRecoveryPhase.uploadFailed &&
+                    next.phase == EventPhotoRecoveryPhase.uploading
                 ? uploadAttempt + 1
                 : uploadAttempt) ||
         !allowed.contains(next.phase) ||
@@ -255,7 +274,21 @@ class EventPhotoRecovery {
             next.phase != EventPhotoRecoveryPhase.uploadFailed &&
             previousUploads != nextUploads) ||
         (phase == EventPhotoRecoveryPhase.cleanupPending &&
-            !next.cleanupPaths.every(cleanupPaths.contains))) {
+            !next.cleanupPaths.every(cleanupPaths.contains)) ||
+        abandonedUploads.entries.any(
+          (entry) => entry.value
+              ? next.abandonedUploads[entry.key] == false
+              : next.abandonedUploads[entry.key] == null,
+        ) ||
+        next.abandonedUploads.keys.any(
+          (path) =>
+              !abandonedUploads.containsKey(path) &&
+              (phase != EventPhotoRecoveryPhase.uploading ||
+                  next.phase != EventPhotoRecoveryPhase.cleanupPending ||
+                  uploadingMediaId == null ||
+                  path != pathFor(uploadingMediaId!) ||
+                  next.abandonedUploads[path] != false),
+        )) {
       throw const FormatException('Invalid event photo recovery transition');
     }
   }
@@ -277,6 +310,12 @@ class EventPhotoRecovery {
         revision > 2147483647 ||
         uploadAttempt < 0 ||
         uploadAttempt > 2147483647 ||
+        abandonedUploads.keys.any(
+          (path) => !RegExp(
+            '^events/${scope.eventId}/media/'
+            r'[A-Za-z0-9][A-Za-z0-9_-]{7,119}/original\.jpg$',
+          ).hasMatch(path),
+        ) ||
         !_hash.hasMatch(expectedMediaHash) ||
         mediaIds.any((id) => !_mediaId.hasMatch(id)) ||
         mediaIds.toSet().length != mediaIds.length ||

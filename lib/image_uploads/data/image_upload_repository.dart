@@ -215,6 +215,7 @@ class ImageUploadRepository {
     Map<String, String>? customMetadata,
     ValueChanged<ImageUploadProgress>? onProgress,
     ImageUploadCancellationToken? cancellationToken,
+    bool requireJpeg = false,
   }) async {
     final context = _storageContextForPath(storagePath);
     return withBackendErrorContext(() async {
@@ -228,6 +229,12 @@ class ImageUploadRepository {
         ),
       );
       final prepared = await _prepareUpload(image: image, purpose: purpose);
+      if (requireJpeg && prepared.extension != 'jpg') {
+        throw const ValidationException(
+          'This photo could not be prepared. Select another photo.',
+          code: 'event-photo-preparation-failed',
+        );
+      }
       if (cancellationToken?.isCancellationRequested ?? false) {
         throw _cancelledUpload(context);
       }
@@ -406,6 +413,20 @@ class ImageUploadRepository {
       cancellationToken: cancellationToken,
     );
   }
+
+  /// Recovery records this immutable JPEG path before bytes may be uploaded.
+  /// A failed decoder must not silently change it to an unrecorded PNG path.
+  Future<UploadedImage> uploadEventPhotoForRecovery({
+    required String eventId,
+    required int position,
+    required XFile image,
+    required String mediaId,
+  }) => uploadWithMetadata(
+    storagePath: 'events/$eventId/media/$mediaId/original',
+    image: image,
+    purpose: ImageUploadPurpose.eventPhoto,
+    requireJpeg: true,
+  );
 
   Future<String> uploadChatImage({
     required String matchId,

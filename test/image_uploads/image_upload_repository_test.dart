@@ -144,6 +144,36 @@ class UploadCase {
 }
 
 void main() {
+  test(
+    'recovery rejects PNG decoder fallback before any Storage upload',
+    () async {
+      final storage = TestFirebaseStorage();
+      final repository = ImageUploadRepository(storage);
+      final directory = await Directory.systemTemp.createTemp('cat58-png-');
+      addTearDown(() => directory.delete(recursive: true));
+      final file = await File(
+        '${directory.path}/undecodable.png',
+      ).writeAsBytes([137, 80, 78, 71]);
+      await expectLater(
+        repository.uploadEventPhotoForRecovery(
+          eventId: 'saved-event',
+          position: 0,
+          mediaId: 'photo-0001',
+          image: XFile(file.path, mimeType: 'image/png'),
+        ),
+        throwsA(
+          isA<ValidationException>().having(
+            (error) => error.code,
+            'code',
+            'event-photo-preparation-failed',
+          ),
+        ),
+      );
+      expect(storage.putDataCallCount, 0);
+      expect(storage.refs, isEmpty);
+    },
+  );
+
   group('observable compensation', () {
     test('checked deletion confirms success and skips an empty path', () async {
       final storage = TestFirebaseStorage();

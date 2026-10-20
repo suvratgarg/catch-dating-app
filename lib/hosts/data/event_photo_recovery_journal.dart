@@ -135,7 +135,7 @@ class EventPhotoRecoveryJournal {
       for (final value in records.values)
         if (_decode(value) case final receipt
             when receipt.scope.organizerId == organizerId &&
-                receipt.phase != EventPhotoRecoveryPhase.complete)
+                !receipt.isResolved)
           receipt,
     ],
   );
@@ -148,7 +148,8 @@ class EventPhotoRecoveryJournal {
         initial.uploadAttempt != 0 ||
         initial.phase != EventPhotoRecoveryPhase.uploading ||
         initial.uploads.isNotEmpty ||
-        initial.cleanupPaths.isNotEmpty) {
+        initial.cleanupPaths.isNotEmpty ||
+        initial.abandonedUploads.isNotEmpty) {
       throw const ValidationException(
         'Photo recovery must start with its saved event.',
       );
@@ -187,10 +188,54 @@ class EventPhotoRecoveryJournal {
     if (current == null ||
         jsonEncode(_decode(current).toJson()) !=
             jsonEncode(expected.toJson())) {
-      _conflict();
+      _staleProgress();
     }
     expected.validateSuccessor(next);
     records[expected.scope.key] = _encode(next);
+    return next;
+  });
+
+  /// A terminal uploader may settle only its own abandoned object. Merge this
+  /// fact against the latest snapshot without reviving its stale progress.
+  /// A terminal result and active progress commit together, so another late
+  /// settlement cannot make this upload's acknowledgement stale. Null means
+  /// another replay abandoned the upload and only its cleanup fact was merged.
+  Future<EventPhotoRecovery?> settleUpload(
+    EventPhotoRecovery uploading,
+    EventPhotoRecoveryUpload? uploaded,
+  ) => _transact(uploading.scope, (records) {
+    final current = _decode(records[uploading.scope.key]);
+    if (current.requestId != uploading.requestId ||
+        uploading.uploadingMediaId == null) {
+      _conflict();
+    }
+    final path = uploading.pathFor(uploading.uploadingMediaId!);
+    if (current.abandonedUploads.containsKey(path)) {
+      final next = current.next(
+        abandonedUploads: {...current.abandonedUploads, path: true},
+        uploadingMediaId: current.uploadingMediaId,
+      );
+      current.validateSuccessor(next);
+      records[uploading.scope.key] = _encode(next);
+      return null;
+    }
+    if (current.phase != EventPhotoRecoveryPhase.uploading ||
+        current.uploadAttempt != uploading.uploadAttempt ||
+        current.uploadingMediaId != uploading.uploadingMediaId ||
+        jsonEncode(current.intentJson) != jsonEncode(uploading.intentJson)) {
+      _staleProgress();
+    }
+    final next = uploaded == null
+        ? current.next(
+            phase: EventPhotoRecoveryPhase.cleanupPending,
+            cleanupPaths: [
+              for (final photo in current.uploads) photo.storagePath,
+              path,
+            ],
+          )
+        : current.next(uploads: [...current.uploads, uploaded]);
+    current.validateSuccessor(next);
+    records[uploading.scope.key] = _encode(next);
     return next;
   });
 
@@ -223,13 +268,13 @@ class EventPhotoRecoveryJournal {
           if (current == null || current.requestId != command.requestId) {
             _conflict();
           }
-          if (current.phase != EventPhotoRecoveryPhase.complete) {
+          if (!current.isResolved) {
             await execute(current);
           }
           requireSession(scope, session);
           final resolved = await load(scope);
           requireSession(scope, session);
-          if (resolved?.phase != EventPhotoRecoveryPhase.complete) {
+          if (resolved?.isResolved != true) {
             throw const BackendOperationException(
               code: 'event-photo-recovery-pending',
               message:
@@ -263,8 +308,7 @@ class EventPhotoRecoveryJournal {
       scope: expected.scope.key,
     );
     requireSession(expected.scope, session);
-    if (expected.phase != EventPhotoRecoveryPhase.complete ||
-        pending.isNotEmpty) {
+    if (!expected.isResolved || pending.isNotEmpty) {
       throw const ValidationException(
         'Resolve the saved photo command before dismissing it.',
       );
@@ -284,6 +328,16 @@ class EventPhotoRecoveryJournal {
   Never _conflict() => throw const ValidationException(
     'Saved event photo recovery changed. Reopen it before retrying.',
     code: 'event-photo-recovery-conflict',
+  );
+
+  Never _staleProgress() => throw const BackendOperationException(
+    code: 'event-photo-progress-changed',
+    message: 'Saved photo recovery changed. Retry its latest progress.',
+    context: BackendErrorContext(
+      service: BackendService.local,
+      action: 'recover event photos',
+    ),
+    retryable: true,
   );
 }
 
