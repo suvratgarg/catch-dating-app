@@ -94,11 +94,86 @@ void main() {
       h.rebuild();
       await _frames(tester);
       expect(h.repo.calls, hasLength(count + 1));
+      expect(
+        identical(
+          h.repo.calls.first.request.accountMountKey,
+          h.repo.calls.last.request.accountMountKey,
+        ),
+        isFalse,
+      );
       keeper.close();
       h.repo.report('same-account-rebuild-and-warm-remount');
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('same-account remount refreshes a retained unresolved request', (
+    tester,
+  ) async {
+    final h = await _Harness.mount(tester);
+    expect(h.repo.calls, hasLength(1));
+    final keeper = h.container.listen(
+      hostFormResponsesControllerProvider(h.repo.calls.single.request),
+      (_, _) {},
+    );
+    h.visible = false;
+    h.rebuild();
+    await _frames(tester);
+    h.visible = true;
+    h.rebuild();
+    await _frames(tester);
+    h.repo.report('unresolved-same-account-remount');
+    expect(h.repo.calls, hasLength(2));
+    expect(
+      identical(
+        h.repo.calls.first.request.accountMountKey,
+        h.repo.calls.last.request.accountMountKey,
+      ),
+      isFalse,
+    );
+    h.repo.complete(0, 'pre-remount-row');
+    await _frames(tester);
+    expect(find.text('pre-remount-row'), findsNothing);
+    h.repo.complete(1, 'fresh-remount-row');
+    await _frames(tester);
+    expect(find.text('fresh-remount-row'), findsOneWidget);
+    keeper.close();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('builder-style keyed A-B-A rejects retained unresolved A', (
+    tester,
+  ) async {
+    final h = await _Harness.mount(tester, fullScreen: false, formId: 'form');
+    expect(h.repo.calls.map((c) => c.actor), ['A']);
+    final keeper = h.container.listen(
+      hostFormResponsesControllerProvider(h.repo.calls.single.request),
+      (_, _) {},
+    );
+    h.switchActor('B');
+    await _frames(tester);
+    h.switchActor('A');
+    await _frames(tester);
+    h.repo.report('builder-style-retained-ABA');
+    expect(h.repo.calls.map((c) => c.actor), ['A', 'B', 'A']);
+    expect(
+      identical(
+        h.repo.calls.first.request.accountMountKey,
+        h.repo.calls.last.request.accountMountKey,
+      ),
+      isFalse,
+    );
+    h.repo.complete(0, 'obsolete-original-A');
+    h.repo.complete(1, 'obsolete-B');
+    await _frames(tester);
+    expect(find.text('obsolete-original-A'), findsNothing);
+    expect(find.text('obsolete-B'), findsNothing);
+    h.repo.complete(2, 'fresh-returned-A');
+    await _frames(tester);
+    expect(find.text('fresh-returned-A'), findsOneWidget);
+    keeper.close();
+    expect(tester.takeException(), isNull);
+  });
 
   for (final failOld in [false, true]) {
     testWidgets(
@@ -177,6 +252,13 @@ void main() {
     );
     expect(h.repo.calls.map((c) => c.request.formId), ['form', 'form']);
     expect(h.repo.calls.map((c) => c.request.versionId), [null, 'form_v2']);
+    expect(
+      identical(
+        h.repo.calls.first.request.accountMountKey,
+        h.repo.calls.last.request.accountMountKey,
+      ),
+      isTrue,
+    );
     expect(h.repo.calls.map((c) => c.request.accountUid), ['A', 'A']);
     expect(h.repo.calls.map((c) => c.request.accountGeneration), [0, 0]);
     h.repo.report('cold-selected-form');
@@ -340,6 +422,8 @@ class _Harness {
                     body: CustomScrollView(
                       slivers: [
                         HostFormResponsesSection(
+                          // HostFormBuilderScreen also keys the panel by actor.
+                          key: ValueKey('form-responses-${h.actor}'),
                           organizerId: 'org',
                           accountId: h.actor,
                           requireAccount: true,

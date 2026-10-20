@@ -28,6 +28,7 @@ class HostFormResponseListRequest {
     required this.organizerId,
     this.accountUid,
     this.accountGeneration = 0,
+    this.accountMountKey,
     this.formId,
     this.contactId,
     this.includeApplications = false,
@@ -50,6 +51,9 @@ class HostFormResponseListRequest {
   /// Client-side family identity only; the callable uses the signed-in actor.
   final String? accountUid;
   final int accountGeneration;
+
+  /// Opaque client-side family identity; a remounted workspace gets a new key.
+  final Object? accountMountKey;
   final String? formId;
   final String? contactId;
   final bool includeApplications;
@@ -71,6 +75,7 @@ class HostFormResponseListRequest {
         organizerId: organizerId,
         accountUid: accountUid,
         accountGeneration: accountGeneration,
+        accountMountKey: accountMountKey,
         formId: formId,
         contactId: contactId,
         includeApplications: includeApplications,
@@ -94,6 +99,7 @@ class HostFormResponseListRequest {
       organizerId == other.organizerId &&
       accountUid == other.accountUid &&
       accountGeneration == other.accountGeneration &&
+      identical(accountMountKey, other.accountMountKey) &&
       formId == other.formId &&
       contactId == other.contactId &&
       includeApplications == other.includeApplications &&
@@ -121,6 +127,7 @@ class HostFormResponseListRequest {
     organizerId,
     accountUid,
     accountGeneration,
+    identityHashCode(accountMountKey),
     formId,
     contactId,
     includeApplications,

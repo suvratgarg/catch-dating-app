@@ -83,9 +83,9 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
   bool _accountBound = false;
   String? _boundAccountId;
   int _accountGeneration = 0;
+  final Object _responseMountKey = Object();
   String? _boundOrganizerId;
-  // Explicit route intent survives a retained shell choice until the next
-  // organizer selection. A later shell switch must not reuse old route IDs.
+  // Retain route intent until organizer selection; never reuse old route IDs.
   String? _preferredRouteOrganizerId;
   bool _routeSyncNeeded = false;
   Object? _importOperation;
@@ -205,7 +205,6 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
         ],
       );
     }
-
     ref.listen(hostOperableClubsProvider(uid), (_, next) {
       final state = catchAsyncStateFromAsyncValue(next);
       if (state.isSettledData) {
@@ -280,9 +279,8 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
       hostFormsAccountDirectoryProvider(directoryScope),
     );
     final scopedDirectory = catchAsyncStateFromAsyncValue(accountDirectory);
-    // The account gate protects only its Forms page. Responses performs its
-    // own fresh manager read and must not wait for unrelated form metadata.
-    // Until that gate settles, never expose cached source-directory rows.
+    // Gate Forms on its directory; Responses reads independently without
+    // showing cached directory rows before the gate settles.
     final directory = scopedDirectory.isSettledData
         ? ref.watch(hostFormsDirectoryControllerProvider(request))
         : accountDirectory;
@@ -307,6 +305,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
               organizerId: selectedClub.id,
               accountUid: uid,
               accountGeneration: _accountGeneration,
+              accountMountKey: _responseMountKey,
               formId: _responseFormId,
               includeApplications: true,
             ),
@@ -446,6 +445,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
                       organizerId: selectedClub.id,
                       accountId: uid,
                       accountGeneration: _accountGeneration,
+                      accountMountKey: _responseMountKey,
                       requireAccount: true,
                       queryCapability: responseVersionId == null
                           ? null

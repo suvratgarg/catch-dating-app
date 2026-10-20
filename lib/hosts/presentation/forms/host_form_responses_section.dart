@@ -49,6 +49,7 @@ class HostFormResponsesSection extends ConsumerStatefulWidget {
     this.queryCapability,
     this.accountId,
     this.accountGeneration = 0,
+    this.accountMountKey,
     this.requireAccount = false,
   });
 
@@ -67,6 +68,7 @@ class HostFormResponsesSection extends ConsumerStatefulWidget {
   /// must fetch legacy responses again before any cached rows can render.
   final String? accountId;
   final int accountGeneration;
+  final Object? accountMountKey;
   final bool requireAccount;
 
   @override
@@ -79,6 +81,7 @@ class _HostFormResponsesSectionState
   HostResponseQueryController? _queryController;
   JournalHostResponseExportGateway? _exportGateway;
   String? _queryAccountId;
+  final Object _localAccountMountKey = Object();
   ProviderSubscription<AsyncValue<HostFormResponsesState>>? _legacyFreshRead;
   String? _legacyLoadedAccountId;
   bool _legacyAccountRefreshScheduled = false;
@@ -129,7 +132,8 @@ class _HostFormResponsesSectionState
     if (oldWidget.formId != widget.formId ||
         oldWidget.organizerId != widget.organizerId ||
         oldWidget.accountId != widget.accountId ||
-        oldWidget.accountGeneration != widget.accountGeneration) {
+        oldWidget.accountGeneration != widget.accountGeneration ||
+        !identical(oldWidget.accountMountKey, widget.accountMountKey)) {
       _legacyFreshRead?.close();
       _legacyFreshRead = null;
       _answerWorkspaceOpen = false;
@@ -660,6 +664,7 @@ class _HostFormResponsesSectionState
         organizerId: widget.organizerId,
         accountUid: widget.accountId,
         accountGeneration: widget.accountGeneration,
+        accountMountKey: widget.accountMountKey ?? _localAccountMountKey,
         formId: formId,
         versionId: formId == widget.formId ? _versionId : null,
         includeApplications: true,
