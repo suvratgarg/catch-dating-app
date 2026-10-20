@@ -181,6 +181,9 @@ test("normalizeMarketingAnalytics keeps consent and event metadata", () => {
 });
 
 test("normalizeHostApplication keeps bounded operating fields", () => {
+  assert.equal(Object.hasOwn(normalizeHostApplication({
+    organizationName: "Existing enquiry",
+  })!, "eventPricing"), false, "legacy packets retain their replay hash");
   assert.deepEqual(
     normalizeHostApplication({
       organizationName: "  Sunday Table  ",

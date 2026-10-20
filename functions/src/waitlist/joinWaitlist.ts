@@ -264,7 +264,11 @@ export function normalizeHostApplication(
     communityLink: normalizeOptionalMarketingText(raw.communityLink, 512),
     formats: normalizeMarketingStringArray(raw.formats, 10, 80),
     eventCadence: normalizeOptionalMarketingText(raw.eventCadence, 80),
-    eventPricing: normalizeOptionalMarketingText(raw.eventPricing, 20),
+    // Preserve old normalized packets (and their replay hashes) when the
+    // optional new question was absent in an older client submission.
+    ...(raw.eventPricing === undefined ? {} : {
+      eventPricing: normalizeOptionalMarketingText(raw.eventPricing, 20),
+    }),
     nextEventName: normalizeOptionalMarketingText(raw.nextEventName, 160),
     nextEventDate: normalizeOptionalMarketingText(raw.nextEventDate, 80),
     eventLocation: normalizeOptionalMarketingText(raw.eventLocation, 180),
