@@ -5,7 +5,7 @@ import {hostLandingCopy} from "../../src/content/hostLanding.ts";
 import {exploreCopy} from "../../src/content/explore.ts";
 import {organiserDirectoryCopy} from "../../src/content/organiserDirectory.ts";
 export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch} = {}) {
-  assert.match(base ?? "", /^https:\/\/(?:catchdates\.com|catch-dating-app-64e51--next-release-[a-z0-9-]+\.web\.app)$/u);
+  assert.match(base ?? "", /^https:\/\/(?:catchdates\.com|catch-dating-app-64e51--next-(?:candidate|release)-[a-z0-9-]+\.web\.app)$/u);
   assert.match(sourceSha ?? "", /^[a-f0-9]{40}$/u);
   const live = base === "https://catchdates.com";
   const evidence = [];

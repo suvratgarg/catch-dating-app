@@ -1,5 +1,5 @@
 import {productionIndexing, validatePublicRuntimeEnvironment} from "./src/server/publicEnvironment";
-import {isCatchWebsiteHost, isCatchIndexingHost, requestHostname} from "./src/app/surfaceHostPolicy";
+import {isCatchWebsiteHost, isCatchIndexingHost, websiteRequestHostname} from "./src/app/surfaceHostPolicy";
 import {resolvePublicRoute} from "./src/server/publicRoute";
 import {availabilityCopy} from "./src/content/availability";
 import {NextRequest, NextResponse} from "next/server";
@@ -12,7 +12,7 @@ async function handleRequest(request: NextRequest) {
   const asset = /^\/(_next\/|_legacy\/|assets\/|fonts\/|\.well-known\/)/.test(url.pathname) ||
     ["/favicon.png", "/form-embed-resize.js", "/organizer-tracking-runtime.js", "/organizer-tracking-runtime.html"].includes(url.pathname);
   const api = url.pathname.startsWith("/api/");
-  const hostname = requestHostname(request.headers.get("host"));
+  const hostname = websiteRequestHostname(request.headers, process.env.K_SERVICE);
   const allowedHost = hostname && (isCatchWebsiteHost(hostname) || hostname === process.env.CATCH_PREVIEW_HOST);
   if ((!allowedHost && !asset && !api) || privateFamily) {
     const shell = url.clone(); shell.pathname = "/private-shell"; shell.search = "";
@@ -26,8 +26,10 @@ async function handleRequest(request: NextRequest) {
   if (!allowedHost && api && url.pathname !== "/api/form-domain") {
     return new NextResponse(null, {status: 404, headers: {"Cache-Control": "no-store"}});
   }
+  const publicOrigin = hostname && isCatchWebsiteHost(hostname) &&
+    !["localhost", "127.0.0.1", "[::1]"].includes(hostname) ? `https://${hostname}` : url.origin;
   const destination = retiredMarketingDestination({pathname: url.pathname, search: url.search, hash: ""});
-  if (destination) return NextResponse.redirect(new URL(destination, url.origin), 301);
+  if (destination) return NextResponse.redirect(new URL(destination, publicOrigin), 301);
   if (!asset && !api && !["/robots.txt", "/sitemap.xml", "/private-shell"].includes(url.pathname)) {
     try {
       const pathname = url.pathname.replace(/\/+$/, "") + "/";
@@ -35,7 +37,7 @@ async function handleRequest(request: NextRequest) {
       const catalog = route.catalog;
       const aliases = catalog.listings.filter(listing => listing.legacyPaths?.includes(pathname));
       if (!catalog.listings.some(listing => listing.path === pathname) && aliases.length === 1) {
-        const canonical = url.clone(); canonical.pathname = aliases[0].path;
+        const canonical = new URL(url.pathname + url.search, publicOrigin); canonical.pathname = aliases[0].path;
         return NextResponse.redirect(canonical, 301);
       }
       // RSC can stream notFound() with HTTP 200. Decide the status before that
@@ -64,7 +66,7 @@ export async function proxy(request: NextRequest) {
   catch {return new NextResponse(null, {status: 503, headers: {
     "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow", "Retry-After": "30",
   }});}
-  const indexable = productionIndexing() && isCatchIndexingHost(requestHostname(request.headers.get("host")));
+  const indexable = productionIndexing() && isCatchIndexingHost(websiteRequestHostname(request.headers, process.env.K_SERVICE));
   const response = !indexable && request.nextUrl.pathname === "/robots.txt"
     ? new NextResponse("User-agent: *\nDisallow: /\n", {headers: {"Content-Type": "text/plain", "Cache-Control": "no-store"}})
     : await handleRequest(request);

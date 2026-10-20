@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.32.0
+version: 0.33.0
 updated: 2026-10-20
 owner: web_platform
 status: active
@@ -65,7 +65,14 @@ HTTP Function rewrites before any Next catch-all. The standalone HTTP gateway
 is useful for isolated previews; production should retain direct Function
 routing so existing ingress/IP enforcement is not collapsed onto one runtime.
 Unknown-host handling must be verified through the actual Hosting/Cloud Run
-request chain. Do not infer original-host forwarding from Next's normalized URL.
+request chain. Hosting rewrites replace `Host` with the tagged Cloud Run origin.
+Only on the two named website runtime services, and only for their matching
+`run.app` Host, the proxy accepts one strictly parsed `X-Forwarded-Host` matching
+an existing Catch public domain. Forwarding never authorizes authentication,
+tenant ownership or document publication; those gates remain independent.
+Local, customer and unrelated runtime hosts ignore forwarding. Missing,
+ambiguous or unknown forwarded origins retain the private shell/noindex policy.
+Do not infer the visitor origin from Next's normalized URL.
 An explicitly configured preview hostname only enables the public server surface;
 private/custom-form acceptance still needs a recognized Hosting preview origin.
 
@@ -147,6 +154,14 @@ provider activation, database mutation or IAM role grant is added. A failure
 preserves source/image/service/Hosting identities and the prior version for
 operator-reviewed recovery. Production and browser/provider acceptance remain
 unproven until those steps actually run and are inspected.
+
+Channel identity comes from the Hosting API after deployment, because the
+pinned Firebase CLI can return an empty `version` despite a successful release.
+The readback requires a finalized version on the exact expected channel, with
+the expected runtime service, region and pinned tag. Preview runs must pass the
+deployed public-route smoke check. Promotion records the production candidate
+version before smoke checks and rechecks it immediately before cloning that
+exact version; an absent, changed or unrelated release fails closed.
 
 ## Form embeds and proposed custom-host activation
 

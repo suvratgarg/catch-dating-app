@@ -186,6 +186,12 @@ jobs:
           node "$GITHUB_WORKSPACE/website/scripts/next/previewRelease.mjs" authorize
           firebase hosting:channel:deploy next-candidate --expires 3d --project catch-dating-app-64e51 \
             --only marketing --config firebase.json --non-interactive --json > ../hosting-preview.json
+      - name: Verify the actual Hosting channel and public request path
+        run: |
+          set -euo pipefail
+          node website/scripts/next/channelState.mjs record next-candidate catch-website-next-preview build/next-preview/channel.json
+          url="$(jq -er .url build/next-preview/channel.json)"
+          node website/scripts/next/deployedSmoke.mjs "$url" > build/next-preview/deployed-checks.json
       - name: Retain runtime and preview identities for acceptance
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
@@ -195,5 +201,7 @@ jobs:
             build/next-preview/service.json
             build/next-preview/image-digest.txt
             build/next-preview/hosting-preview.json
+            build/next-preview/channel.json
+            build/next-preview/deployed-checks.json
           if-no-files-found: warn
           retention-days: 30
