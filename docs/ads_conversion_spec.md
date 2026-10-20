@@ -174,6 +174,10 @@ remain compatible but cannot enter the outbound adapters. The outbound contract
 maps one `lead_accepted` to one `generate_lead` per destination. Refreshed/already
 joined records are not new acquisition conversions. Host application retries
 retain their request event ID and submission permission.
+The waitlist controller also suppresses success measurements when its submitted
+honeypot is populated: the server deliberately returns an opaque success without
+storing those submissions. The Host operating application always submits an empty
+honeypot.
 
 A receipt ID is consumed once across business event names; purchase also consumes
 its transaction ID. The tab-local bounded dedupe set is never cleared to replay

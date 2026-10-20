@@ -40,7 +40,7 @@ function form(values: Record<string, string>) {
 describe("useWaitlistFormController", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    getMarketingConsent.mockReturnValue({version: 2, analytics: true, marketing: true, updatedAt: "2026-10-02T00:00:00Z"});
+    getMarketingConsent.mockReturnValue({version: 3, analytics: true, marketing: true, updatedAt: "2026-10-02T00:00:00Z"});
     createMarketingEventId.mockReturnValue("waitlist_event-1");
     waitlistAnalyticsPayload.mockReturnValue({attribution: null, analytics: {eventId: "waitlist_event-1"}});
   });
@@ -93,6 +93,21 @@ describe("useWaitlistFormController", () => {
     expect(trackMarketingEvent).toHaveBeenCalledWith("waitlist_submitted", expect.objectContaining({
       event_id: "waitlist_event-1",
     }));
+  });
+
+  it.each(["host", "member"] as const)("does not count an acknowledged %s honeypot as a lead", async (variant) => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true, json: async () => ({ok: true, alreadyJoined: false}),
+    }));
+    const {result} = renderHook(() => useWaitlistFormController(variant), {wrapper: wrapper()});
+    const element = form({fullName: "Synthetic bot", email: "bot@example.com",
+      city: "Delhi", role: variant, website: "https://example.com"});
+    await act(async () => result.current.handleSubmit({preventDefault: vi.fn(), currentTarget: element} as never));
+    expect(result.current.status.tone).toBe("is-success");
+    expect(trackAcceptedMarketingLead).not.toHaveBeenCalled();
+    expect(trackMarketingEvent.mock.calls.map(([name]) => name)).toEqual([
+      variant === "host" ? "host_lead_submit_attempt" : "waitlist_submit_attempt",
+    ]);
   });
 
   it("keeps one immutable request active and ignores duplicate submits", async () => {
