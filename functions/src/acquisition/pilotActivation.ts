@@ -66,19 +66,22 @@ export async function recordHostPilotActivation(input: {
   const activationRef = db.collection(HOST_ACTIVATIONS).doc(after.organizerId);
   const receiptId = `host_activation_${randomUUID()}`;
   return db.runTransaction(async (tx) => {
-    const [current, eventSnap, reviewSnap, activation, organizer] =
+    const [current, eventSnap, reviewSnap, activation, organizer, restriction] =
       await Promise.all([
         tx.get(db.collection("eventAttendees").doc(input.attendeeId)),
         tx.get(db.collection("events").doc(after.eventId as string)),
         tx.get(db.collection(HOST_PILOT_REVIEWS).doc(after.eventId as string)),
         tx.get(activationRef),
         tx.get(db.collection("organizers").doc(after.organizerId as string)),
+        tx.get(db.collection("salesPrivacyRestrictions")
+          .doc(after.organizerId as string)),
       ]);
     const row = current.data();
     const event = eventSnap.data() as EventDocument | undefined;
     const review = reviewSnap.data() as
       HostPilotEventReviewDocument | undefined;
-    if (!organizer.exists || row?.status !== "checkedIn" ||
+    if (restriction.exists || !organizer.exists ||
+        row?.status !== "checkedIn" ||
         row.eventId !== after.eventId ||
         row.organizerId !== after.organizerId ||
         millis(row.checkedInAt) !== checkedInAt ||

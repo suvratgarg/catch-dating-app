@@ -7,6 +7,10 @@ const {initializeTestEnvironment, assertFails, assertSucceeds} =
 const {doc, collection, getDoc, getDocs, setDoc} = require("firebase/firestore");
 
 const privatePaths = [
+  "hostAcquisitionConsents/synthetic-private",
+  "hostAcquisitionDeliveries/synthetic-private",
+  "hostPilotEventReviews/synthetic-private",
+  "hostOrganizerActivations/synthetic-private",
   "salesPartnerMemberships/partner-one", "salesPartnerAssignments/host-one",
   "salesPrivacyRestrictions/host-one", "salesPrivacyPolicies/current",
   "salesPrivacyPlans/plan-one", "salesPrivacyBatchReceipts/receipt-one",

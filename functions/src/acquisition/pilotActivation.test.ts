@@ -61,7 +61,8 @@ test("real check-in creates one private organiser receipt", async () => {
     "recordedAt", "reviewRevision"].sort());
 });
 for (const variant of ["unreviewed", "test", "late-review", "private",
-  "cancelled", "wrong-organizer", "deleted-organizer", "undone", "stale"]) {
+  "cancelled", "wrong-organizer", "deleted-organizer", "restricted",
+  "undone", "stale"]) {
   test(`activation excludes ${variant}`, async () => {
     const h = fixture();
     if (variant === "unreviewed") h.rows.delete("hostPilotEventReviews/e");
@@ -78,6 +79,7 @@ for (const variant of ["unreviewed", "test", "late-review", "private",
     if (variant === "cancelled") event.status = "cancelled";
     if (variant === "wrong-organizer") event.organizerId = "other";
     if (variant === "deleted-organizer") h.rows.delete("organizers/o");
+    if (variant === "restricted") h.rows.set("salesPrivacyRestrictions/o", {});
     if (variant === "undone") {
       h.rows.set("eventAttendees/a",
         {...after, status: "registered"});

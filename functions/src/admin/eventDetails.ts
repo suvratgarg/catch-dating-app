@@ -371,6 +371,12 @@ export async function adminUpdateEventDetailsHandler(
     const previousReview = pilotReview ? await tx.get(reviewRef) : null;
     let reviewed: HostPilotEventReviewDocument | undefined;
     if (pilotReview) {
+      const restriction = await tx.get(db.collection("salesPrivacyRestrictions")
+        .doc(before.organizerId ?? before.clubId));
+      if (restriction.exists) {
+        throw new HttpsError("failed-precondition",
+          "This organiser is restricted for private Sales processing.");
+      }
       try {
         reviewed = nextPilotReview({eventId: data.eventId,
           organizerId: before.organizerId ?? before.clubId,

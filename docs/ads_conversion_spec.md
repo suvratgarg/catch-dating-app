@@ -87,6 +87,9 @@ replayed roster updates and undone check-ins are excluded. This operational
 receipt does not grant advertising permission or export guest data. Its deployed
 trigger, live acceptance, native upgrade/network checks and app-store privacy
 declarations still require completion before measurement activation.
+The two private pilot collections participate in the existing Sales privacy
+inventory. A permanent organiser restriction blocks both new reviews and
+activation receipts after cleanup. Direct browser reads and writes stay denied.
 
 ### Catch Host pilot destination configuration
 

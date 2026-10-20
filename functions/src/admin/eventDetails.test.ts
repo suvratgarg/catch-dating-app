@@ -955,3 +955,16 @@ test("real pilot review is private, audited and rejects stale staff decisions",
       callableRequest("staff", data, {admin: true}), h.deps),
     (error) => assertHttpsCode(error, "failed-precondition"));
   });
+
+test("pilot review cannot recreate data after a Sales privacy restriction",
+  async () => {
+    const h = harness({"organizers/afterfly": clubDoc(),
+      "events/afterfly-social-run-1": eventDoc(),
+      "salesPrivacyRestrictions/afterfly": {}});
+    await assert.rejects(adminUpdateEventDetailsHandler(
+      callableRequest("staff", {eventId: "afterfly-social-run-1",
+        reviewNote: "Synthetic restricted organiser",
+        fields: {hostPilotReview: {realEvent: true, expectedRevision: 0}}},
+      {admin: true}), h.deps),
+    (error) => assertHttpsCode(error, "failed-precondition"));
+  });
