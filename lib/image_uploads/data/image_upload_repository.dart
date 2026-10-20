@@ -446,16 +446,31 @@ class ImageUploadRepository {
   /// treated as success, and any other failure is swallowed — the caller is
   /// already handling the primary error and must not be derailed by cleanup.
   Future<void> deleteByPath(String storagePath) async {
-    if (storagePath.isEmpty) return;
     try {
-      await _storage.ref(storagePath).delete();
-    } on FirebaseException catch (error) {
-      if (error.code == 'object-not-found') return;
-      // Swallow: cleanup is best-effort and must not mask the original error.
+      await deleteByPathChecked(storagePath);
     } catch (_) {
-      // Swallow: see above.
+      // Best-effort callers already surface the primary failure. Durable media
+      // recovery uses the checked boundary and retains failed compensation.
     }
   }
+
+  /// Idempotent compensation with observable failure. A recovery journal must
+  /// retain this path until deletion succeeds or Storage confirms absence.
+  Future<void> deleteByPathChecked(String storagePath) =>
+      withBackendErrorContext(
+        () async {
+          if (storagePath.isEmpty) return;
+          try {
+            await _storage.ref(storagePath).delete();
+          } on FirebaseException catch (error) {
+            if (error.code != 'object-not-found') rethrow;
+          }
+        },
+        context: const BackendErrorContext(
+          service: BackendService.storage,
+          action: 'delete uploaded image',
+        ),
+      );
 
   // ── Internal ──────────────────────────────────────────────────────────────
 
