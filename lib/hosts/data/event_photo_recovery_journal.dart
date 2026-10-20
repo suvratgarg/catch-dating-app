@@ -31,17 +31,20 @@ class EventPhotoRecoveryJournal {
   final Object? Function() currentSession;
   final LocalCommandJournal<EventPhotoRecovery> _commands;
 
-  Object captureSession(EventPhotoRecoveryScope scope) {
+  EventPhotoRecoverySession captureSession(EventPhotoRecoveryScope scope) {
     final session = currentSession();
     if (session == null || currentAccountId() != scope.accountId) {
       throw const SignInRequiredException('recover event photos');
     }
-    return session;
+    return EventPhotoRecoverySession._(session);
   }
 
-  void requireSession(EventPhotoRecoveryScope scope, Object session) {
+  void requireSession(
+    EventPhotoRecoveryScope scope,
+    EventPhotoRecoverySession session,
+  ) {
     if (currentAccountId() != scope.accountId ||
-        !identical(currentSession(), session)) {
+        !identical(currentSession(), session._token)) {
       throw const SignInRequiredException('recover event photos');
     }
   }
@@ -59,30 +62,7 @@ class EventPhotoRecoveryJournal {
       requireSession(scope, session);
       final result = await database.transact(_key(scope.accountId), (state) {
         requireSession(scope, session);
-        if (state.isEmpty) {
-          state.addAll({'version': 1, 'records': <String, Object?>{}});
-        }
-        if (state['version'] != 1 || state['records'] is! Map) {
-          throw const FormatException('Invalid event photo checkpoint journal');
-        }
-        final records = (state['records']! as Map).cast<String, Object?>();
-        for (final entry in records.entries) {
-          final receipt = _decode(entry.value);
-          if (receipt.scope.accountId != scope.accountId ||
-              receipt.scope.key != entry.key) {
-            throw const FormatException('Event photo checkpoint scope changed');
-          }
-        }
-        final value = change(records);
-        state['records'] = records;
-        if (utf8.encode(jsonEncode(state)).length >
-            LocalCommandJournal.maxBytes) {
-          throw const ValidationException(
-            'Saved photo recovery has reached this device’s storage limit.',
-            code: 'journal-full',
-          );
-        }
-        return value;
+        return _changeRecords(state, scope, change);
       });
       requireSession(scope, session);
       return result;
@@ -99,6 +79,68 @@ class EventPhotoRecoveryJournal {
         ),
       );
     }
+  }
+
+  T _changeRecords<T>(
+    Map<String, Object?> state,
+    EventPhotoRecoveryScope scope,
+    T Function(Map<String, Object?> records) change,
+  ) {
+    if (state.isEmpty) {
+      state.addAll({'version': 1, 'records': <String, Object?>{}});
+    }
+    if (state['version'] != 1 || state['records'] is! Map) {
+      throw const FormatException('Invalid event photo checkpoint journal');
+    }
+    final records = (state['records']! as Map).cast<String, Object?>();
+    for (final entry in records.entries) {
+      final receipt = _decode(entry.value);
+      if (receipt.scope.accountId != scope.accountId ||
+          receipt.scope.key != entry.key) {
+        throw const FormatException('Event photo checkpoint scope changed');
+      }
+    }
+    final value = change(records);
+    state['records'] = records;
+    if (utf8.encode(jsonEncode(state)).length > LocalCommandJournal.maxBytes) {
+      throw const ValidationException(
+        'Saved photo recovery has reached this device’s storage limit.',
+        code: 'journal-full',
+      );
+    }
+    return value;
+  }
+
+  /// Issue before create while this account/session is current. The returned
+  /// capability may only retain this exact acknowledged identity, even if the
+  /// acknowledgement arrives after sign-out. It cannot read records, register
+  /// commands, publish UI state, upload, attach, or delete media.
+  Future<Future<void> Function()> prepareCommittedRetention(
+    EventPhotoRecovery initial,
+  ) async {
+    _validateInitial(initial);
+    final session = captureSession(initial.scope);
+    final database = await storage();
+    requireSession(initial.scope, session);
+    final key = _key(initial.scope.accountId);
+    Future<void>? writing;
+    var retained = false;
+    return () async {
+      if (retained) return;
+      if (writing case final pending?) return pending;
+      final attempt = database.transact<void>(key, (state) {
+        _changeRecords(state, initial.scope, (records) {
+          _retainRecord(records, initial);
+        });
+      });
+      writing = attempt;
+      try {
+        await attempt;
+        retained = true;
+      } finally {
+        writing = null;
+      }
+    };
   }
 
   EventPhotoRecovery _decode(Object? value) {
@@ -125,6 +167,7 @@ class EventPhotoRecoveryJournal {
   Future<List<EventPhotoRecovery>> pendingForOrganizer({
     required String accountId,
     required String organizerId,
+    bool includeResolved = false,
   }) => _transact(
     EventPhotoRecoveryScope(
       accountId: accountId,
@@ -135,7 +178,7 @@ class EventPhotoRecoveryJournal {
       for (final value in records.values)
         if (_decode(value) case final receipt
             when receipt.scope.organizerId == organizerId &&
-                !receipt.isResolved)
+                (includeResolved || !receipt.isResolved))
           receipt,
     ],
   );
@@ -144,6 +187,18 @@ class EventPhotoRecoveryJournal {
   /// registration still leaves the checkpoint discoverable on reentry.
   Future<EventPhotoRecovery> retain(EventPhotoRecovery initial) async {
     final session = captureSession(initial.scope);
+    _validateInitial(initial);
+    final receipt = await _transact(
+      initial.scope,
+      (records) => _retainRecord(records, initial),
+    );
+    requireSession(initial.scope, session);
+    await _commands.append(initial.scope.accountId, initial);
+    requireSession(initial.scope, session);
+    return receipt;
+  }
+
+  void _validateInitial(EventPhotoRecovery initial) {
     if (initial.revision != 0 ||
         initial.uploadAttempt != 0 ||
         initial.phase != EventPhotoRecoveryPhase.uploading ||
@@ -154,28 +209,28 @@ class EventPhotoRecoveryJournal {
         'Photo recovery must start with its saved event.',
       );
     }
-    final receipt = await _transact(initial.scope, (records) {
-      final value = records[initial.scope.key];
-      if (value != null) {
-        final current = _decode(value);
-        if (jsonEncode(current.intentJson) != jsonEncode(initial.intentJson)) {
-          _conflict();
-        }
-        return current;
+  }
+
+  EventPhotoRecovery _retainRecord(
+    Map<String, Object?> records,
+    EventPhotoRecovery initial,
+  ) {
+    final value = records[initial.scope.key];
+    if (value != null) {
+      final current = _decode(value);
+      if (jsonEncode(current.intentJson) != jsonEncode(initial.intentJson)) {
+        _conflict();
       }
-      if (records.length >= LocalCommandJournal.maxEntries) {
-        throw const ValidationException(
-          'Resolve saved photo recovery before adding more.',
-          code: 'journal-full',
-        );
-      }
-      records[initial.scope.key] = _encode(initial);
-      return initial;
-    });
-    requireSession(initial.scope, session);
-    await _commands.append(initial.scope.accountId, initial);
-    requireSession(initial.scope, session);
-    return receipt;
+      return current;
+    }
+    if (records.length >= LocalCommandJournal.maxEntries) {
+      throw const ValidationException(
+        'Resolve saved photo recovery before adding more.',
+        code: 'journal-full',
+      );
+    }
+    records[initial.scope.key] = _encode(initial);
+    return initial;
   }
 
   /// Compare the complete prior receipt as well as its local revision. A late
@@ -194,6 +249,63 @@ class EventPhotoRecoveryJournal {
     records[expected.scope.key] = _encode(next);
     return next;
   });
+
+  /// A different selection gets a new immutable request only after the old
+  /// request is proven unsent and every owned object is settled and cleaned.
+  /// Acknowledge its shared command first, then atomically replace the local
+  /// receipt: a crash at either boundary always retains the committed event.
+  Future<EventPhotoRecovery> replaceUnsent(
+    EventPhotoRecovery expected,
+    EventPhotoRecovery replacement,
+  ) async {
+    final session = captureSession(expected.scope);
+    _validateInitial(replacement);
+    if (expected.phase != EventPhotoRecoveryPhase.uploadFailed ||
+        expected.uploads.isNotEmpty ||
+        expected.cleanupPaths.isNotEmpty ||
+        expected.abandonedUploads.isNotEmpty ||
+        expected.scope != replacement.scope ||
+        expected.requestId == replacement.requestId ||
+        expected.expectedMediaHash != replacement.expectedMediaHash ||
+        expected.sourceDraftId != replacement.sourceDraftId) {
+      _conflict();
+    }
+    try {
+      await _commands.flush(expected.scope.accountId, expected.scope.key, (
+        command,
+      ) async {
+        try {
+          requireSession(expected.scope, session);
+          final current = await load(expected.scope);
+          requireSession(expected.scope, session);
+          if (command.requestId != expected.requestId ||
+              jsonEncode(current?.toJson()) != jsonEncode(expected.toJson())) {
+            _staleProgress();
+          }
+        } on SignInRequiredException {
+          throw const _PhotoRecoverySessionChanged();
+        }
+      });
+    } on _PhotoRecoverySessionChanged {
+      throw const SignInRequiredException('recover event photos');
+    }
+    requireSession(expected.scope, session);
+    final pending = await _commands.load(
+      expected.scope.accountId,
+      scope: expected.scope.key,
+    );
+    requireSession(expected.scope, session);
+    if (pending.isNotEmpty) _staleProgress();
+    await _transact(expected.scope, (records) {
+      if (jsonEncode(_decode(records[expected.scope.key]).toJson()) !=
+          jsonEncode(expected.toJson())) {
+        _staleProgress();
+      }
+      records[expected.scope.key] = _encode(replacement);
+    });
+    requireSession(expected.scope, session);
+    return retain(replacement);
+  }
 
   /// A terminal uploader may settle only its own abandoned object. Merge this
   /// fact against the latest snapshot without reviving its stale progress.
@@ -343,4 +455,10 @@ class EventPhotoRecoveryJournal {
 
 class _PhotoRecoverySessionChanged implements Exception {
   const _PhotoRecoverySessionChanged();
+}
+
+/// Captures one opaque session without admitting arbitrary objects as tokens.
+class EventPhotoRecoverySession {
+  const EventPhotoRecoverySession._(this._token);
+  final Object _token;
 }

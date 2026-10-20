@@ -2,8 +2,6 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
-import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
@@ -18,10 +16,13 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_service.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_photo_recovery_controller.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+export 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_photo_recovery_controller.dart';
 
 part 'create_event_controller.g.dart';
 
@@ -130,6 +131,7 @@ class CreateEventController extends _$CreateEventController {
     required DateTime endTime,
     required EventMeetingLocation meetingLocation,
     String? sourceVenueId,
+    String? sourceDraftId,
     required EventFormatSnapshot eventFormat,
     required double distanceKm,
     required PaceLevel pace,
@@ -239,66 +241,30 @@ class CreateEventController extends _$CreateEventController {
               adapterVersion: externalOrigin.adapterVersion,
             ),
     );
-    await eventRepo.createEvent(
-      event: event,
-      inviteCode: normalizedInviteCode,
-      eventSuccessDefaults: eventSuccessDefaults.enabled
-          ? eventSuccessDefaults.normalizedForFormat(
-              event.eventFormat,
-              targetAttendeeCount: event.capacityLimit,
-            )
-          : null,
-      externalOrigin: externalOrigin,
-      runtimeWalkInPolicy: runtimeWalkInPolicy,
+    final selected = List<XFile>.unmodifiable(
+      photoImages.isNotEmpty ? photoImages : [?photoImage],
     );
-    final selectedPhotoImages = photoImages.isNotEmpty
-        ? photoImages
-        : [?photoImage];
-    if (selectedPhotoImages.isEmpty) return event;
-
-    requireSignedInUid(ref, action: 'upload event photos');
-    // The event doc already exists (Storage rules require it before photo
-    // uploads). If any upload or the attach write fails, delete whatever was
-    // already uploaded so it doesn't orphan in Storage, then surface the error.
-    final imageUploadRepository = ref.read(imageUploadRepositoryProvider);
-    final uploadedPhotos = <UploadedPhoto>[];
-    try {
-      return await withBackendErrorContext(
-        () async {
-          for (final indexedImage in selectedPhotoImages.indexed) {
-            final upload = await imageUploadRepository
-                .uploadEventPhotoWithMetadata(
-                  eventId: eventId,
-                  position: indexedImage.$1,
-                  image: indexedImage.$2,
-                );
-            uploadedPhotos.add(
-              UploadedPhoto.fromUpload(
-                url: upload.url,
-                storagePath: upload.storagePath,
-                position: indexedImage.$1,
-              ),
-            );
-          }
-          final updatedEvent = event.copyWith(
-            photoUrl: uploadedPhotos.first.url,
-            eventPhotos: uploadedPhotos,
-          );
-          await eventRepo.updateEventDetails(event: updatedEvent);
-          return updatedEvent;
-        },
-        context: const BackendErrorContext(
-          service: BackendService.storage,
-          action: 'upload event photos',
-          resource: 'events',
-        ),
-      );
-    } catch (_) {
-      for (final photo in uploadedPhotos) {
-        await imageUploadRepository.deleteByPath(photo.storagePath);
-      }
-      rethrow;
-    }
+    return ref
+        .read(
+          createEventPhotoRecoveryControllerProvider(normalizedClubId).notifier,
+        )
+        .create(
+          event: event,
+          photos: selected,
+          sourceDraftId: sourceDraftId,
+          commit: () => eventRepo.createEvent(
+            event: event,
+            inviteCode: normalizedInviteCode,
+            eventSuccessDefaults: eventSuccessDefaults.enabled
+                ? eventSuccessDefaults.normalizedForFormat(
+                    event.eventFormat,
+                    targetAttendeeCount: event.capacityLimit,
+                  )
+                : null,
+            externalOrigin: externalOrigin,
+            runtimeWalkInPolicy: runtimeWalkInPolicy,
+          ),
+        );
   }
 }
 

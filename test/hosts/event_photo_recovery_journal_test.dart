@@ -43,13 +43,16 @@ class FaultStorage implements CommandJournalStorage {
   FaultStorage(this.delegate);
   final CommandJournalStorage delegate;
   bool fail = false;
+  bool Function(Map<String, Object?>)? shouldFail;
   @override
   Future<String?> readRaw(String key) => delegate.readRaw(key);
   @override
   Future<T> transact<T>(String key, T Function(Map<String, Object?>) change) =>
       delegate.transact(key, (state) {
         final result = change(state);
-        if (fail) throw StateError('private disk failure');
+        if (fail || (shouldFail?.call(state) ?? false)) {
+          throw StateError('private disk failure');
+        }
         return result;
       });
   @override
@@ -79,6 +82,146 @@ void main() {
         journal = reopen();
       });
       tearDown(() => storage.close());
+
+      test(
+        'late create acknowledgement retains metadata across sign-out and ABA',
+        () async {
+          final initial = receipt();
+          final originalSession = journal.captureSession(initial.scope);
+          final retain = await journal.prepareCommittedRetention(initial);
+          account = 'account-b';
+          session = Object();
+          await Future.wait([retain(), retain()]);
+          await retain();
+          await expectLater(
+            journal.load(initial.scope),
+            throwsA(isA<SignInRequiredException>()),
+          );
+          expect(
+            await storage.readRaw(
+              eventPhotoRecoveryHash([
+                'event-photo-recovery-commands',
+                initial.scope.accountId,
+              ]),
+            ),
+            isNull,
+          );
+          account = 'account-a';
+          session = Object();
+          expect(
+            () => journal.requireSession(initial.scope, originalSession),
+            throwsA(isA<SignInRequiredException>()),
+          );
+          expect(
+            (await reopen().load(initial.scope))!.toJson(),
+            initial.toJson(),
+          );
+        },
+      );
+
+      test(
+        'late retention preserves newer same-intent progress and conflicts',
+        () async {
+          final initial = receipt();
+          final retain = await journal.prepareCommittedRetention(initial);
+          await journal.retain(initial);
+          final progress = initial.next(uploads: [uploaded(initial, 0)]);
+          await journal.checkpoint(initial, progress);
+          await retain();
+          expect(
+            (await journal.load(initial.scope))!.toJson(),
+            progress.toJson(),
+          );
+          final conflicting = receipt(request: 'request-other');
+          final retainOther = await journal.prepareCommittedRetention(
+            conflicting,
+          );
+          await expectLater(retainOther(), throwsA(isA<ValidationException>()));
+          expect(
+            (await journal.load(initial.scope))!.toJson(),
+            progress.toJson(),
+          );
+        },
+      );
+
+      test(
+        'retention holds the opened store and can retry a failed transaction',
+        () async {
+          final initial = receipt();
+          final faulty = FaultStorage(storage);
+          var opens = 0;
+          final writer = reopen(
+            open: () async {
+              opens++;
+              return faulty;
+            },
+          );
+          final retain = await writer.prepareCommittedRetention(initial);
+          faulty.fail = true;
+          account = null;
+          session = null;
+          await expectLater(retain(), throwsStateError);
+          faulty.fail = false;
+          await retain();
+          expect(opens, 1);
+          account = 'account-a';
+          session = Object();
+          expect(
+            (await reopen().load(initial.scope))!.toJson(),
+            initial.toJson(),
+          );
+        },
+      );
+
+      test(
+        'selection replacement is limited to cleaned unsent requests',
+        () async {
+          final initial = receipt();
+          await journal.retain(initial);
+          final failed = initial
+              .next(phase: EventPhotoRecoveryPhase.cleanupPending)
+              .next(phase: EventPhotoRecoveryPhase.uploadFailed);
+          final cleanup = initial.next(
+            phase: EventPhotoRecoveryPhase.cleanupPending,
+          );
+          await journal.checkpoint(initial, cleanup);
+          await journal.checkpoint(cleanup, failed);
+          final replacement = receipt(
+            request: 'request-other',
+            ids: ['photo-other'],
+          );
+          final faulty = FaultStorage(storage)
+            ..shouldFail = (state) =>
+                state['version'] == 1 &&
+                jsonEncode(state).contains('request-other');
+          final reselector = reopen(open: () async => faulty);
+          await expectLater(
+            reselector.replaceUnsent(failed, replacement),
+            throwsA(isA<BackendOperationException>()),
+          );
+          expect(
+            (await journal.load(initial.scope))!.scope.eventId,
+            initial.scope.eventId,
+          );
+          expect(
+            (await journal.load(initial.scope))!.requestId,
+            initial.requestId,
+          );
+          faulty.shouldFail = null;
+          final replaced = await reselector.replaceUnsent(failed, replacement);
+          expect(replaced.toJson(), replacement.toJson());
+          var executions = 0;
+          await journal.replay(initial.scope, (current) async {
+            expect(current.requestId, replacement.requestId);
+            executions++;
+          });
+          expect(executions, 1);
+          await expectLater(
+            journal.replaceUnsent(replacement, initial),
+            throwsA(isA<ValidationException>()),
+          );
+        },
+      );
 
       test(
         'committed identity and metadata survive a reconstructed journal without picker bytes',

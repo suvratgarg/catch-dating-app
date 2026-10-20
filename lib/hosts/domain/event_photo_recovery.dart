@@ -90,6 +90,7 @@ class EventPhotoRecovery {
     required this.createdAtMillis,
     required this.expectedMediaHash,
     required Iterable<String> mediaIds,
+    this.sourceDraftId,
     this.revision = 0,
     this.phase = EventPhotoRecoveryPhase.uploading,
     Iterable<EventPhotoRecoveryUpload> uploads = const [],
@@ -116,6 +117,7 @@ class EventPhotoRecovery {
         createdAtMillis: json['createdAtMillis']! as int,
         expectedMediaHash: json['expectedMediaHash']! as String,
         mediaIds: (json['mediaIds']! as List).cast<String>(),
+        sourceDraftId: json['sourceDraftId'] as String?,
         revision: json['revision'] as int? ?? 0,
         phase: json['phase'] == null
             ? EventPhotoRecoveryPhase.uploading
@@ -140,6 +142,7 @@ class EventPhotoRecovery {
   final int createdAtMillis;
   final String expectedMediaHash;
   final List<String> mediaIds;
+  final String? sourceDraftId;
   final int revision;
   final EventPhotoRecoveryPhase phase;
   final List<EventPhotoRecoveryUpload> uploads;
@@ -183,6 +186,7 @@ class EventPhotoRecovery {
     'eventId': scope.eventId,
     'expectedMediaHash': expectedMediaHash,
     'mediaIds': mediaIds,
+    'sourceDraftId': sourceDraftId,
   };
 
   Map<String, Object?> toJson() => {
@@ -209,6 +213,7 @@ class EventPhotoRecovery {
     createdAtMillis: createdAtMillis,
     expectedMediaHash: expectedMediaHash,
     mediaIds: mediaIds,
+    sourceDraftId: sourceDraftId,
     revision: revision + 1,
     phase: phase ?? this.phase,
     uploads: uploads ?? this.uploads,
@@ -317,6 +322,8 @@ class EventPhotoRecovery {
           ).hasMatch(path),
         ) ||
         !_hash.hasMatch(expectedMediaHash) ||
+        (sourceDraftId != null &&
+            (sourceDraftId!.isEmpty || sourceDraftId!.length > 128)) ||
         mediaIds.any((id) => !_mediaId.hasMatch(id)) ||
         mediaIds.toSet().length != mediaIds.length ||
         uploads.length > mediaIds.length ||

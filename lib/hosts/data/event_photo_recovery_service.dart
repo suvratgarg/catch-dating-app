@@ -54,16 +54,19 @@ class EventPhotoRecoveryService {
     required this.journal,
     required this.images,
     required this.attach,
+    required this.validateAttachment,
   });
 
   final EventPhotoRecoveryJournal journal;
   final ImageUploadRepository images;
   final Future<EventPhotoAttachmentReceipt> Function(EventPhotoRecovery command)
   attach;
+  final void Function(EventPhotoRecovery command) validateAttachment;
 
   Future<EventPhotoRecoveryResult?> resume(
     EventPhotoRecoveryScope scope, {
     List<XFile>? photos,
+    String? selectedRequestId,
   }) async {
     final session = journal.captureSession(scope);
     // Snapshot the selection before waiting; replacing a UI list cannot change
@@ -72,7 +75,20 @@ class EventPhotoRecoveryService {
     final initial = await journal.load(scope);
     journal.requireSession(scope, session);
     if (initial == null) return null;
-    if (selected != null && selected.length != initial.mediaIds.length) {
+    if (selected != null && selectedRequestId != initial.requestId) {
+      return EventPhotoRecoveryResult(
+        receipt: initial,
+        failure: const ValidationException(
+          'These selected photos belong to an earlier recovery request. '
+          'Select photos again for the saved event.',
+          code: 'event-photo-selection-changed',
+        ),
+        requiresPhotoReselection: !initial.isResolved,
+      );
+    }
+    if (!initial.isResolved &&
+        selected != null &&
+        selected.length != initial.mediaIds.length) {
       throw const ValidationException(
         'Reselect the saved event photos before retrying.',
       );
@@ -80,6 +96,20 @@ class EventPhotoRecoveryService {
     Object? failure;
     await journal.replay(scope, (receipt) async {
       journal.requireSession(scope, session);
+      if (receipt.requestId != initial.requestId ||
+          eventPhotoRecoveryHash(receipt.intentJson) !=
+              eventPhotoRecoveryHash(initial.intentJson)) {
+        failure = const BackendOperationException(
+          code: 'event-photo-progress-changed',
+          message: 'Saved photo recovery changed. Reopen it before retrying.',
+          context: BackendErrorContext(
+            service: BackendService.local,
+            action: 'recover event photos',
+          ),
+          retryable: true,
+        );
+        throw failure!;
+      }
       var current = await _cleanupAbandoned(receipt, session);
       if (current.phase == EventPhotoRecoveryPhase.complete) return;
       if (current.phase == EventPhotoRecoveryPhase.cleanupPending) {
@@ -163,6 +193,19 @@ class EventPhotoRecoveryService {
       }
       if (current.phase == EventPhotoRecoveryPhase.awaitingAttachment ||
           current.phase == EventPhotoRecoveryPhase.conflict) {
+        if (current.phase == EventPhotoRecoveryPhase.awaitingAttachment) {
+          try {
+            validateAttachment(current);
+          } on Object catch (error) {
+            // No attachment was dispatched. This definitive local rejection
+            // may compensate and permit a new, smaller selection on this event.
+            failure = error;
+            final cleanup = await _prepareCleanup(current);
+            journal.requireSession(scope, session);
+            failure = await _cleanup(cleanup, session) ?? failure;
+            return;
+          }
+        }
         current = await journal.checkpoint(
           current,
           current.next(phase: EventPhotoRecoveryPhase.attachmentUnknown),
@@ -231,7 +274,7 @@ class EventPhotoRecoveryService {
 
   Future<EventPhotoRecovery> _cleanupAbandoned(
     EventPhotoRecovery saved,
-    Object session,
+    EventPhotoRecoverySession session,
   ) async {
     var current = saved;
     for (final entry in saved.abandonedUploads.entries) {
@@ -257,7 +300,10 @@ class EventPhotoRecoveryService {
     return current;
   }
 
-  Future<Object?> _cleanup(EventPhotoRecovery saved, Object session) async {
+  Future<Object?> _cleanup(
+    EventPhotoRecovery saved,
+    EventPhotoRecoverySession session,
+  ) async {
     var current = saved;
     Object? failure;
     for (final path in saved.cleanupPaths) {

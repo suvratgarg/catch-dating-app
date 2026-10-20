@@ -56,6 +56,28 @@ class RecoveryImages extends Fake implements ImageUploadRepository {
   }
 }
 
+class PausedPhotoRecoveryJournal extends EventPhotoRecoveryJournal {
+  PausedPhotoRecoveryJournal({
+    required super.storage,
+    required super.currentAccountId,
+    required super.currentSession,
+  });
+  final loaded = Completer<void>();
+  final continueLoad = Completer<void>();
+  bool pause = true;
+
+  @override
+  Future<EventPhotoRecovery?> load(EventPhotoRecoveryScope scope) async {
+    final result = await super.load(scope);
+    if (pause) {
+      pause = false;
+      loaded.complete();
+      await continueLoad.future;
+    }
+    return result;
+  }
+}
+
 void main() {
   late MemoryCommandJournalStorage storage;
   late RecoveryImages images;
@@ -77,6 +99,7 @@ void main() {
     journal: reopen(),
     images: images,
     attach: (command) => transport(command),
+    validateAttachment: (_) {},
   );
   EventPhotoAttachmentReceipt ack(EventPhotoRecovery command) =>
       EventPhotoAttachmentReceipt(
@@ -114,11 +137,70 @@ void main() {
     service = reenter();
   });
 
+  test('stale selected bytes cannot execute a replacement request', () async {
+    await journal.retain(initial);
+    final cleanup = initial.next(phase: EventPhotoRecoveryPhase.cleanupPending);
+    final failed = cleanup.next(phase: EventPhotoRecoveryPhase.uploadFailed);
+    await journal.checkpoint(initial, cleanup);
+    await journal.checkpoint(cleanup, failed);
+    final paused = PausedPhotoRecoveryJournal(
+      storage: () async => storage,
+      currentAccountId: () => account,
+      currentSession: () => session,
+    );
+    final oldAttempt =
+        EventPhotoRecoveryService(
+          journal: paused,
+          images: images,
+          attach: (command) => transport(command),
+          validateAttachment: (_) {},
+        ).resume(
+          initial.scope,
+          photos: selected(2),
+          selectedRequestId: initial.requestId,
+        );
+    await paused.loaded.future;
+    final replacement = EventPhotoRecovery(
+      scope: initial.scope,
+      requestId: 'request-replacement',
+      createdAtMillis: initial.createdAtMillis,
+      expectedMediaHash: initial.expectedMediaHash,
+      mediaIds: ['photo-replacement'],
+    );
+    await journal.replaceUnsent(failed, replacement);
+    paused.continueLoad.complete();
+    final stale = await oldAttempt;
+    expect(stale!.failure, isA<BackendOperationException>());
+    expect(stale.receipt.toJson(), replacement.toJson());
+    expect(images.uploadedEvents, isEmpty);
+    expect(images.deleted, isEmpty);
+    expect(attachments, isEmpty);
+    final staleAgain = await reenter().resume(
+      initial.scope,
+      photos: selected(2),
+      selectedRequestId: initial.requestId,
+    );
+    expect(staleAgain!.failure, isA<ValidationException>());
+    expect(images.uploadedEvents, isEmpty);
+    final retried = await reenter().resume(
+      initial.scope,
+      photos: selected(1),
+      selectedRequestId: replacement.requestId,
+    );
+    expect(retried!.receipt.isResolved, true);
+    expect(images.uploadedMedia, ['photo-replacement']);
+    expect(attachments.single.requestId, replacement.requestId);
+  });
+
   test(
     'normal multi-photo control attaches ordered stable identities on the committed event',
     () async {
       await journal.retain(initial);
-      final result = await service.resume(initial.scope, photos: selected(2));
+      final result = await service.resume(
+        initial.scope,
+        photos: selected(2),
+        selectedRequestId: initial.requestId,
+      );
       expect(result!.receipt.phase, EventPhotoRecoveryPhase.complete);
       expect(images.uploadedEvents, ['committed-event', 'committed-event']);
       expect(images.uploadedMedia, initial.mediaIds);
@@ -156,7 +238,11 @@ void main() {
       () async {
         await journal.retain(initial);
         images.failUpload.add(failingPosition);
-        final failed = await service.resume(initial.scope, photos: selected(2));
+        final failed = await service.resume(
+          initial.scope,
+          photos: selected(2),
+          selectedRequestId: initial.requestId,
+        );
         expect(failed!.receipt.scope.eventId, 'committed-event');
         expect(failed.receipt.phase, EventPhotoRecoveryPhase.uploadFailed);
         expect(failed.failure, isNotNull);
@@ -170,6 +256,7 @@ void main() {
         final retried = await service.resume(
           initial.scope,
           photos: selected(2),
+          selectedRequestId: initial.requestId,
         );
         expect(retried!.receipt.phase, EventPhotoRecoveryPhase.complete);
         // A delayed delete from the failed attempt must not target an object
@@ -192,7 +279,11 @@ void main() {
         committed = ack(command);
         throw TimeoutException('attachment acknowledgement lost');
       };
-      final failed = await service.resume(initial.scope, photos: selected(2));
+      final failed = await service.resume(
+        initial.scope,
+        photos: selected(2),
+        selectedRequestId: initial.requestId,
+      );
       expect(failed!.receipt.phase, EventPhotoRecoveryPhase.attachmentUnknown);
       expect(images.deleted, isEmpty);
       expect(images.objects, hasLength(2));
@@ -216,7 +307,11 @@ void main() {
           code: 'event-media-conflict',
         );
       };
-      final result = await service.resume(initial.scope, photos: selected(2));
+      final result = await service.resume(
+        initial.scope,
+        photos: selected(2),
+        selectedRequestId: initial.requestId,
+      );
       expect(result!.receipt.phase, EventPhotoRecoveryPhase.conflict);
       expect(images.objects, hasLength(2));
       expect(images.deleted, isEmpty);
@@ -246,7 +341,11 @@ void main() {
               ? eventPhotoRecoveryHash('other')
               : eventPhotoAttachmentHash(command),
         );
-        final result = await service.resume(initial.scope, photos: selected(2));
+        final result = await service.resume(
+          initial.scope,
+          photos: selected(2),
+          selectedRequestId: initial.requestId,
+        );
         expect(
           result!.receipt.phase,
           EventPhotoRecoveryPhase.attachmentUnknown,
@@ -264,7 +363,11 @@ void main() {
       await journal.retain(initial);
       images.failUpload.add(1);
       images.failCleanup.add(initial.pathFor('photo-0001'));
-      final failed = await service.resume(initial.scope, photos: selected(2));
+      final failed = await service.resume(
+        initial.scope,
+        photos: selected(2),
+        selectedRequestId: initial.requestId,
+      );
       expect(failed!.receipt.phase, EventPhotoRecoveryPhase.cleanupPending);
       expect(failed.receipt.cleanupPaths, [initial.pathFor('photo-0001')]);
       expect(images.objects, {initial.pathFor('photo-0001')});
@@ -277,6 +380,7 @@ void main() {
       final retried = await reenter().resume(
         initial.scope,
         photos: selected(2),
+        selectedRequestId: initial.requestId,
       );
       expect(retried!.receipt.phase, EventPhotoRecoveryPhase.complete);
       expect(images.uploadedEvents.toSet(), {'committed-event'});
@@ -289,7 +393,11 @@ void main() {
       await journal.retain(initial);
       images.failUpload.add(1);
       images.lostCleanupAcknowledgement.add(initial.pathFor('photo-0001'));
-      final failed = await service.resume(initial.scope, photos: selected(2));
+      final failed = await service.resume(
+        initial.scope,
+        photos: selected(2),
+        selectedRequestId: initial.requestId,
+      );
       expect(failed!.receipt.cleanupPaths, [initial.pathFor('photo-0001')]);
       expect(images.objects, isEmpty);
       images.lostCleanupAcknowledgement.clear();
@@ -307,7 +415,11 @@ void main() {
     () async {
       await journal.retain(initial);
       images.lostUploadAcknowledgement.add(0);
-      final failed = await service.resume(initial.scope, photos: selected(2));
+      final failed = await service.resume(
+        initial.scope,
+        photos: selected(2),
+        selectedRequestId: initial.requestId,
+      );
       expect(failed!.receipt.phase, EventPhotoRecoveryPhase.uploadFailed);
       expect(images.deleted, [initial.pathFor('photo-0001')]);
       expect(images.objects, isEmpty);
@@ -347,12 +459,17 @@ void main() {
       expect(images.uploadedEvents, isEmpty);
       expect(attachments, isEmpty);
       await expectLater(
-        service.resume(initial.scope, photos: selected(1)),
+        service.resume(
+          initial.scope,
+          photos: selected(1),
+          selectedRequestId: initial.requestId,
+        ),
         throwsA(isA<ValidationException>()),
       );
       final retried = await reenter().resume(
         initial.scope,
         photos: selected(2),
+        selectedRequestId: initial.requestId,
       );
       expect(retried!.receipt.phase, EventPhotoRecoveryPhase.complete);
     },
@@ -369,7 +486,11 @@ void main() {
         session = Object();
       };
       await expectLater(
-        service.resume(initial.scope, photos: selected(2)),
+        service.resume(
+          initial.scope,
+          photos: selected(2),
+          selectedRequestId: initial.requestId,
+        ),
         throwsA(isA<SignInRequiredException>()),
       );
       expect(images.deleted, isEmpty);
@@ -399,7 +520,11 @@ void main() {
         return result;
       };
       await expectLater(
-        service.resume(initial.scope, photos: selected(2)),
+        service.resume(
+          initial.scope,
+          photos: selected(2),
+          selectedRequestId: initial.requestId,
+        ),
         throwsA(isA<SignInRequiredException>()),
       );
       expect(
@@ -430,7 +555,11 @@ void main() {
           await finish.future;
         }
       };
-      final first = service.resume(initial.scope, photos: selected(2));
+      final first = service.resume(
+        initial.scope,
+        photos: selected(2),
+        selectedRequestId: initial.requestId,
+      );
       await preparing.future;
       final key = eventPhotoRecoveryHash([
         'event-photo-recovery-commands',
@@ -449,6 +578,7 @@ void main() {
       final retried = await reenter().resume(
         initial.scope,
         photos: selected(2),
+        selectedRequestId: initial.requestId,
       );
       expect(retried!.receipt.phase, EventPhotoRecoveryPhase.complete);
       expect(retried.receipt.isResolved, false);
@@ -490,7 +620,11 @@ void main() {
           await newFinish.future;
         }
       };
-      final first = service.resume(initial.scope, photos: selected(2));
+      final first = service.resume(
+        initial.scope,
+        photos: selected(2),
+        selectedRequestId: initial.requestId,
+      );
       await oldStarted.future;
       await storage.transact(
         eventPhotoRecoveryHash([
@@ -504,7 +638,11 @@ void main() {
         },
       );
       await reenter().resume(initial.scope);
-      final retry = reenter().resume(initial.scope, photos: selected(2));
+      final retry = reenter().resume(
+        initial.scope,
+        photos: selected(2),
+        selectedRequestId: initial.requestId,
+      );
       await newStarted.future;
       oldFinish.complete();
       await first;
@@ -530,9 +668,17 @@ void main() {
           await finish.future;
         }
       };
-      final first = service.resume(initial.scope, photos: selected(2));
+      final first = service.resume(
+        initial.scope,
+        photos: selected(2),
+        selectedRequestId: initial.requestId,
+      );
       await started.future;
-      final second = await reenter().resume(initial.scope, photos: selected(2));
+      final second = await reenter().resume(
+        initial.scope,
+        photos: selected(2),
+        selectedRequestId: initial.requestId,
+      );
       expect(second!.receipt.phase, EventPhotoRecoveryPhase.uploading);
       expect(images.uploadedMedia, hasLength(1));
       finish.complete();
