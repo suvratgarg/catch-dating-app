@@ -49,14 +49,14 @@ final class HostAnalyticsPermissionGate {
 
   bool get allowed => _allowed;
 
-  Future<void> apply(bool granted) {
+  Future<void> apply(bool granted, {bool resetData = true}) {
     final revision = ++_revision;
     _allowed = false;
     final operation = _pending.catchError((Object _) {}).then((_) async {
       await setCollection(false);
       await clearUserId();
       await privacy.setHostAnalyticsConsent(false);
-      if (!granted) await privacy.resetHostAnalyticsData();
+      if (!granted && resetData) await privacy.resetHostAnalyticsData();
       if (revision != _revision || !granted) return;
       await privacy.setHostAnalyticsConsent(true);
       if (revision != _revision) return;

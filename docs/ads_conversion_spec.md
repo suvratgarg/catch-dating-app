@@ -1,7 +1,7 @@
 ---
 doc_id: ads_conversion_spec
-version: 0.5.0
-updated: 2026-10-20
+version: 0.6.0
+updated: 2026-10-21
 owner: marketing_website
 status: active
 ---
@@ -46,9 +46,37 @@ The expiry worker removes at most 500 expired delivery records per run.
 The browser permission owner immediately stops local use on a changed choice,
 persists pending withdrawal across reload, and will not grant fresh permission
 until that withdrawal is acknowledged. It never queues conversion events.
-Connecting that owner to the refreshed notice and submission lifecycle, the
-fixed provider sender/worker schedule, production credentials, and destination
-acceptance remain separate from these default-disabled preparations.
+The owner is connected to the browser consent and submission lifecycle. Its
+separate activation mode invalidates prior Google-only choices. Only an
+acknowledged current advertising grant can add the closed measurement packet to
+a Host submission. Attribution retains the actual first observation time of a
+Meta click; revisiting a URL does not refresh that click's timestamp.
+Withdrawal clears queued browser context in bounded transactions.
+
+`metaSender.ts` prepares a fixed Graph v26.0 Catch pixel endpoint, a ten-second
+timeout, no redirects, no automatic network retry, and a bounded response body.
+The scheduled dispatcher, server credential binding and real destination receipt
+remain unfinished; this sender is not a deployed delivery service.
+
+### Host app permission preparation
+
+The Host app denies collection by default, disables automatic screen reporting
+and advertising storage/signals, and drops generic/private events and user IDs.
+A device-local, versioned choice expires after 30 days and is separate from
+website consent. Settings provides equally available allow and off actions.
+Storage failure, old consent, expiry and withdrawal cannot grant permission;
+withdrawal immediately closes the local event boundary and resets SDK data.
+Environment and source release gates still override a granted choice. Native
+collection is deactivated in this prepared release, which also overrides prior
+persisted SDK grants before Dart starts. Activation requires a reviewed new
+binary removing that native hold and opening the Dart gate; native upgrade
+and withdrawal network acceptance must pass first. iOS vendor-ID and Android
+advertising-ID collection are disabled.
+
+Only coarse sign-in, onboarding and Host setup events are allowed. Event
+creation is not organiser activation. The event-creation/publication call sites,
+authoritative first-real-check-in milestone, native upgrade/network acceptance
+and app-store privacy declarations still require completion before activation.
 
 ### Catch Host pilot destination configuration
 
@@ -146,7 +174,7 @@ were planning proposals and are not an approved advertising export.
 
 The persistent `catch_marketing_consent_v4` receipt records version 4, choice,
 analytics/marketing booleans, update time and the measurement mode (disabled,
-Google preview or Google live). A mode change requires a fresh choice; permission
+Google preview, Google live or Host server live). A mode change requires a fresh choice; permission
 chosen while integrations were disabled cannot silently activate providers. The banner offers essential only,
 analytics, and explicit analytics plus marketing, with a persistent Privacy choices
 control for withdrawal. Advertising remains disabled regardless of the choice.
@@ -165,10 +193,10 @@ views. First analytics consent starts a current-page view, not historical replay
 
 An accepted lead uses the permission captured when that request began. Accepting
 mid-request cannot convert earlier activity; revoke/reaccept invalidates the old
-receipt even within the same millisecond. HTTP consent remains analytics-only in
-the existing closed wire schema, with no new fields or backend permissions. Its
+receipt even within the same millisecond. The historical HTTP consent remains analytics-only. Its
 historical `marketingAnalytics.consent` is not a versioned server advertising
-permission. Server forwarding requires a separately reviewed versioned handoff.
+permission. The prepared, disabled `hostMeasurement` packet uses the separate versioned
+server permission handshake described above.
 
 Consent Mode compatibility records stay local. Before any real Google transport,
 review and apply default/update semantics for `analytics_storage`, `ad_storage`,
@@ -198,9 +226,8 @@ attribution payload; unknown labels and search terms are discarded. Separately,
 version-4 choice. Click identifiers are excluded for analytics-only choices,
 clear on a changed consent revision/private route, and never enter the diagnostic
 bus or existing lead HTTP payload. Storage failures drop the context. Host-to-`/claim` retains the approved touch.
-New campaigns require a reviewed vocabulary change. There is no URL-passthrough,
-customer-matching or cross-device implementation, Meta live delivery, or versioned
-server advertising handoff. The preview and deterministic tests are acceptance
+New campaigns require a reviewed vocabulary change. There is no URL-passthrough, customer-matching, cross-device implementation or
+deployed Meta delivery. The versioned server handoff is prepared and disabled. The preview and deterministic tests are acceptance
 steps, not proof of a paid click being attributed.
 
 ## Outcome deduplication
@@ -248,7 +275,7 @@ pixels require their own publication and policy approval and stay disabled.
 
 Missing server/app handoffs: organizer creation receipt, approved claim receipt,
 first real event check-in/activation receipt, settled organizer purchase receipt, and
-versioned server marketing permission. Wire only those authorities when supplied;
+live acceptance of the prepared server marketing permission. Wire only those authorities when supplied;
 do not infer them from login, pending claims, form success or a purchase page.
 
 ## GA4 organiser key event

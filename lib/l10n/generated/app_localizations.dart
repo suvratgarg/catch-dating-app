@@ -94,6 +94,42 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en')];
 
+  /// Host device analytics privacy setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Host app analytics'**
+  String get hostAnalyticsPrivacyTitle;
+
+  /// Explicit Host product analytics disclosure before consent.
+  ///
+  /// In en, this message translates to:
+  /// **'Help improve Catch Host by sharing sign-in, onboarding and event setup activity with Google Analytics using a random app identifier. Names, contact details, guest data and event details are excluded. This choice applies to this device for 30 days. Advertising measurement stays off. You can turn analytics off here at any time.'**
+  String get hostAnalyticsPrivacyBody;
+
+  /// Decline or withdraw Host analytics permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep analytics off'**
+  String get hostAnalyticsPrivacyDeny;
+
+  /// Grant optional Host analytics permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow analytics'**
+  String get hostAnalyticsPrivacyAllow;
+
+  /// Current device has granted Host analytics permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed on this device'**
+  String get hostAnalyticsPrivacyOn;
+
+  /// Host analytics permission is absent or withdrawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get hostAnalyticsPrivacyOff;
+
   /// Current event viewer booking facts status.
   ///
   /// In en, this message translates to:

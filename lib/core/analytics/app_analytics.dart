@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/analytics/host_analytics_choice.dart';
 import 'package:catch_dating_app/core/analytics/host_analytics_policy.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -95,8 +96,10 @@ class AppAnalytics {
     AnalyticsReporter? reporter,
     bool? shouldCollect,
     bool? hostRole,
+    HostAnalyticsChoiceStore? hostChoiceStore,
   }) : _shouldCollect = shouldCollect ?? _defaultShouldCollect,
        _hostRole = hostRole ?? AppConfig.appRole.isHost,
+       _hostChoiceStore = hostChoiceStore ?? HostAnalyticsChoiceStore(),
        _reporter =
            reporter ??
            _defaultReporter(shouldCollect ?? _defaultShouldCollect) {
@@ -113,11 +116,20 @@ class AppAnalytics {
   final AnalyticsReporter _reporter;
   final bool _shouldCollect;
   final bool _hostRole;
+  final HostAnalyticsChoiceStore _hostChoiceStore;
   HostAnalyticsPermissionGate? _hostPermission;
+  DateTime? _hostPermissionExpiry;
+  Timer? _hostExpiryTimer;
+  Future<void> _hostChoiceWork = Future<void>.value();
+  int _hostChoiceRevision = 0;
   Map<String, Object> _baseParameters = const {};
 
+  // Separate source gate: a saved choice cannot activate an unaccepted release.
+  static const hostProductMeasurementEnabled = false;
+
   static bool get _defaultShouldCollect {
-    return AppConfig.shouldCollectObservability;
+    return AppConfig.shouldCollectObservability &&
+        (!AppConfig.appRole.isHost || hostProductMeasurementEnabled);
   }
 
   static AnalyticsReporter _defaultReporter(bool shouldCollect) {
@@ -130,7 +142,15 @@ class AppAnalytics {
       // Existing installations may have persisted SDK collection=true.
       // Explicitly deny/reset instead of trusting native default flags.
       await _reporter.setCollectionEnabled(false);
-      await _hostPermission?.apply(false);
+      _hostPermissionExpiry = await _hostChoiceStore.permittedUntil();
+      await _hostPermission?.apply(
+        false,
+        resetData: _hostPermissionExpiry == null,
+      );
+      if (_hostPermissionExpiry != null && _shouldCollect) {
+        await _hostPermission?.apply(true);
+        _scheduleHostExpiry();
+      }
     } else {
       await _reporter.setCollectionEnabled(_shouldCollect);
     }
@@ -156,7 +176,7 @@ class AppAnalytics {
 
   void logEvent(String name, {Map<String, Object?> parameters = const {}}) {
     if (!_shouldCollect) return;
-    if (_hostRole && _hostPermission?.allowed != true) return;
+    if (_hostRole && !hostAnalyticsAllowed) return;
     final sanitizedParameters = _hostRole
         ? hostAnalyticsParameters(name, parameters)
         : _sanitizeParameters(parameters);
@@ -177,9 +197,41 @@ class AppAnalytics {
 
   /// Called only by the versioned Host privacy-choice owner. Permission never
   /// overrides the environment/release collection gate.
-  Future<void> setHostAnalyticsPermission(bool granted) async {
-    if (!_hostRole) return;
-    await _hostPermission?.apply(granted && _shouldCollect);
+  bool get hostAnalyticsAllowed =>
+      _hostRole &&
+      _hostPermission?.allowed == true &&
+      hostAnalyticsChoiceGranted;
+
+  bool get hostAnalyticsChoiceGranted =>
+      _hostRole && _hostPermissionExpiry?.isAfter(DateTime.now()) == true;
+
+  Future<void> setHostAnalyticsPermission(bool granted) {
+    if (!_hostRole) return Future<void>.value();
+    final revision = ++_hostChoiceRevision;
+    _hostPermissionExpiry = null;
+    _hostExpiryTimer?.cancel();
+    // Start disabling synchronously, before persistence or another action.
+    final denied = _hostPermission?.apply(false) ?? Future<void>.value();
+    final operation = _hostChoiceWork.catchError((Object _) {}).then((_) async {
+      await denied;
+      final expiry = await _hostChoiceStore.save(granted);
+      if (revision != _hostChoiceRevision) return;
+      _hostPermissionExpiry = expiry;
+      await _hostPermission?.apply(granted && _shouldCollect);
+      if (revision == _hostChoiceRevision) _scheduleHostExpiry();
+    });
+    _hostChoiceWork = operation;
+    return operation;
+  }
+
+  void _scheduleHostExpiry() {
+    _hostExpiryTimer?.cancel();
+    final expiry = _hostPermissionExpiry;
+    if (expiry == null || _hostPermission?.allowed != true) return;
+    _hostExpiryTimer = Timer(expiry.difference(DateTime.now()), () {
+      _hostPermissionExpiry = null;
+      unawaited(_hostPermission?.apply(false));
+    });
   }
 
   /// Logs a normalized backend failure with non-PII operation context.

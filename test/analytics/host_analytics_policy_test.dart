@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
+import 'package:catch_dating_app/core/analytics/host_analytics_choice.dart';
 import 'package:catch_dating_app/core/analytics/host_analytics_policy.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -24,6 +25,10 @@ void main() {
         reporter: reporter,
         shouldCollect: true,
         hostRole: true,
+        hostChoiceStore: HostAnalyticsChoiceStore(
+          read: () async => null,
+          write: (_) async => true,
+        ),
       );
       await analytics.initialize();
       analytics.logEvent('host_event_created');
@@ -91,6 +96,10 @@ void main() {
         reporter: reporter,
         shouldCollect: false,
         hostRole: true,
+        hostChoiceStore: HostAnalyticsChoiceStore(
+          read: () async => null,
+          write: (_) async => true,
+        ),
       );
       await analytics.initialize();
       await analytics.setHostAnalyticsPermission(true);

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
@@ -44,6 +45,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool get _operationPending =>
       _pendingExternalLink != null ||
       ref.read(SettingsController.savePreferenceMutation).isPending ||
+      ref.read(SettingsController.saveHostAnalyticsMutation).isPending ||
       ref.read(SettingsController.requestAccountDeletionMutation).isPending ||
       ref.read(AuthSessionController.signOutMutation).isPending ||
       ref.read(SettingsController.unblockUserMutation).isPending;
@@ -101,6 +103,36 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       );
     } catch (_) {
       // listenToCatchMutationErrors owns user-facing error display.
+    }
+  }
+
+  Future<void> _chooseHostAnalytics() async {
+    if (_operationPending) return;
+    final granted = await showCatchAdaptiveDialog<bool>(
+      context: context,
+      title: context.l10n.hostAnalyticsPrivacyTitle,
+      message: context.l10n.hostAnalyticsPrivacyBody,
+      actions: [
+        CatchDialogAction(
+          label: context.l10n.hostAnalyticsPrivacyDeny,
+          value: false,
+        ),
+        CatchDialogAction(
+          label: context.l10n.hostAnalyticsPrivacyAllow,
+          value: true,
+        ),
+      ],
+    );
+    if (granted == null || !mounted || _operationPending) return;
+    try {
+      await SettingsController.saveHostAnalyticsMutation.run(
+        ref,
+        (tx) => tx
+            .get(settingsControllerProvider.notifier)
+            .saveHostAnalytics(granted),
+      );
+    } catch (_) {
+      // The mutation listener owns the localized failure message.
     }
   }
 
@@ -213,7 +245,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
     );
     final operationPending =
-        state.mutations.operationPending || _pendingExternalLink != null;
+        state.mutations.operationPending ||
+        _pendingExternalLink != null ||
+        ref.watch(SettingsController.saveHostAnalyticsMutation).isPending;
     final preferenceChangesBlocked =
         operationPending ||
         state.profile.status != SettingsProfileStatus.loaded;
@@ -232,6 +266,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         SettingsController.savePreferenceMutation,
         SettingsController.requestAccountDeletionMutation,
         SettingsController.unblockUserMutation,
+        SettingsController.saveHostAnalyticsMutation,
       ],
     );
     return PopScope(
@@ -483,6 +518,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   onUnblock: _unblockUser,
                 ),
                 children: [
+                  if (AppConfig.appRole.isHost)
+                    CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
+                      key: const ValueKey('host-analytics-privacy'),
+                      title: context.l10n.hostAnalyticsPrivacyTitle,
+                      valueText:
+                          ref
+                              .read(appAnalyticsProvider)
+                              .hostAnalyticsChoiceGranted
+                          ? context.l10n.hostAnalyticsPrivacyOn
+                          : context.l10n.hostAnalyticsPrivacyOff,
+                      onTap: operationPending ? null : _chooseHostAnalytics,
+                    ),
                   CatchField.toggle(
                     copy: catchFieldCopy(context.l10n),
                     key: SettingsKeys.showInCrossPathsSwitch,
