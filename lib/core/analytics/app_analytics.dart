@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/analytics/host_analytics_policy.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -20,10 +21,22 @@ abstract interface class AnalyticsReporter {
   Future<void> setUserId(String? userId);
 }
 
-final class FirebaseAnalyticsReporter implements AnalyticsReporter {
+final class FirebaseAnalyticsReporter
+    implements AnalyticsReporter, HostAnalyticsPrivacyReporter {
   FirebaseAnalyticsReporter(this._analytics);
 
   final FirebaseAnalytics _analytics;
+
+  @override
+  Future<void> setHostAnalyticsConsent(bool granted) => _analytics.setConsent(
+    analyticsStorageConsentGranted: granted,
+    adStorageConsentGranted: false,
+    adUserDataConsentGranted: false,
+    adPersonalizationSignalsConsentGranted: false,
+  );
+
+  @override
+  Future<void> resetHostAnalyticsData() => _analytics.resetAnalyticsData();
 
   @override
   Future<void> setCollectionEnabled(bool enabled) {
@@ -78,13 +91,29 @@ AppAnalytics appAnalytics(Ref ref) => AppAnalytics();
 
 /// Vendor-neutral analytics facade for product and navigation events.
 class AppAnalytics {
-  AppAnalytics({AnalyticsReporter? reporter, bool? shouldCollect})
-    : _shouldCollect = shouldCollect ?? _defaultShouldCollect,
-      _reporter =
-          reporter ?? _defaultReporter(shouldCollect ?? _defaultShouldCollect);
+  AppAnalytics({
+    AnalyticsReporter? reporter,
+    bool? shouldCollect,
+    bool? hostRole,
+  }) : _shouldCollect = shouldCollect ?? _defaultShouldCollect,
+       _hostRole = hostRole ?? AppConfig.appRole.isHost,
+       _reporter =
+           reporter ??
+           _defaultReporter(shouldCollect ?? _defaultShouldCollect) {
+    final reporter = _reporter;
+    if (_hostRole && reporter is HostAnalyticsPrivacyReporter) {
+      _hostPermission = HostAnalyticsPermissionGate(
+        setCollection: reporter.setCollectionEnabled,
+        clearUserId: () => reporter.setUserId(null),
+        privacy: reporter as HostAnalyticsPrivacyReporter,
+      );
+    }
+  }
 
   final AnalyticsReporter _reporter;
   final bool _shouldCollect;
+  final bool _hostRole;
+  HostAnalyticsPermissionGate? _hostPermission;
   Map<String, Object> _baseParameters = const {};
 
   static bool get _defaultShouldCollect {
@@ -97,7 +126,14 @@ class AppAnalytics {
   }
 
   Future<void> initialize() async {
-    await _reporter.setCollectionEnabled(_shouldCollect);
+    if (_hostRole) {
+      // Existing installations may have persisted SDK collection=true.
+      // Explicitly deny/reset instead of trusting native default flags.
+      await _reporter.setCollectionEnabled(false);
+      await _hostPermission?.apply(false);
+    } else {
+      await _reporter.setCollectionEnabled(_shouldCollect);
+    }
     if (!_shouldCollect) return;
 
     final packageInfo = await PackageInfo.fromPlatform();
@@ -110,7 +146,9 @@ class AppAnalytics {
   }
 
   void logScreenView(String screenName) {
-    if (!_shouldCollect) return;
+    // Shared route names can contain private route context. Host uses only
+    // the closed product event contract, never generic screen reporting.
+    if (!_shouldCollect || _hostRole) return;
     unawaited(
       _reporter.logScreenView(screenName: screenName, screenClass: 'GoRouter'),
     );
@@ -118,7 +156,11 @@ class AppAnalytics {
 
   void logEvent(String name, {Map<String, Object?> parameters = const {}}) {
     if (!_shouldCollect) return;
-    final sanitizedParameters = _sanitizeParameters(parameters);
+    if (_hostRole && _hostPermission?.allowed != true) return;
+    final sanitizedParameters = _hostRole
+        ? hostAnalyticsParameters(name, parameters)
+        : _sanitizeParameters(parameters);
+    if (sanitizedParameters == null) return;
 
     unawaited(
       _reporter.logEvent(
@@ -129,8 +171,15 @@ class AppAnalytics {
   }
 
   void setUserId(String? userId) {
-    if (!_shouldCollect) return;
+    if (!_shouldCollect || _hostRole) return;
     unawaited(_reporter.setUserId(userId));
+  }
+
+  /// Called only by the versioned Host privacy-choice owner. Permission never
+  /// overrides the environment/release collection gate.
+  Future<void> setHostAnalyticsPermission(bool granted) async {
+    if (!_hostRole) return;
+    await _hostPermission?.apply(granted && _shouldCollect);
   }
 
   /// Logs a normalized backend failure with non-PII operation context.
