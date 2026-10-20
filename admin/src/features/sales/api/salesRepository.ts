@@ -24,9 +24,14 @@ import type {
 
 type MutationReceipt = {requestId: string; revision: number};
 
-function call<Request, Response>(name: string, payload: Request): Promise<Response> {
-  validateAdminCallableRequest(name, payload);
-  return httpsCallable<Request, Response>(functions, name)(payload).then(
+function call<Request extends object, Response>(name: string, payload: Request): Promise<Response> {
+  // Firebase encodes undefined object fields as null. Optional request fields
+  // must remain absent; explicit null values still represent intentional clears.
+  const request = Object.fromEntries(
+    Object.entries(payload).filter(([, value]) => value !== undefined)
+  ) as Request;
+  validateAdminCallableRequest(name, request);
+  return httpsCallable<Request, Response>(functions, name)(request).then(
     (result) => {
       validateAdminCallableResponse(name, result.data);
       return result.data;
