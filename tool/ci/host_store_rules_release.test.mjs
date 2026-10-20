@@ -3,7 +3,19 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import {execFileSync} from "node:child_process";
 import {RELEASE, verifyAuthority, verifyApproval, verifyPlan, verifyLive,
-  verifyCurrentRules} from "./host_store_rules_release.mjs";
+  verifyCurrentRules, rulesRequestHeaders} from "./host_store_rules_release.mjs";
+
+test("service identity uses its default quota project; local user opt-in is fixed", () => {
+  assert.deepEqual(rulesRequestHeaders("synthetic-token"), {
+    Authorization: "Bearer synthetic-token",
+  });
+  assert.deepEqual(rulesRequestHeaders("synthetic-token", RELEASE.project), {
+    Authorization: "Bearer synthetic-token", "X-Goog-User-Project": RELEASE.project,
+  });
+  assert.throws(() => rulesRequestHeaders("synthetic-token", "another-project"));
+  assert.throws(() => rulesRequestHeaders("synthetic-token", ""));
+  assert.throws(() => rulesRequestHeaders("bad\r\ntoken"));
+});
 
 const source = () => execFileSync("git", ["show", `${RELEASE.sourceSha}:firestore.rules`]);
 const run = () => ({id: RELEASE.runId, run_attempt: 1, workflow_id: 320377139,
