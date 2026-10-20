@@ -166,8 +166,16 @@
       "path": "/help/",
       "eyebrow": "Support",
       "title": "Help and safety",
-      "summary": "Get account, privacy, listing, event, safety, or website help from Catch.",
+      "summary": "Request Catch or Catch Host account deletion, or get privacy, listing, event, safety, and website help.",
       "sections": [
+        {
+          "heading": "Delete your Catch or Catch Host account",
+          "paragraphs": [
+            "You can request deletion of your Catch or Catch Host account and associated personal data without installing or signing in to the app. Email suvrat@catchdates.com with the subject Account deletion and the phone number or email address associated with your account. Torana operates both apps and handles these requests.",
+            "We will verify that the account belongs to you before deleting it. Never send your password or a one-time sign-in code. You may also use Delete account in account settings where available. If you manage an organizer, arrange any necessary ownership transfer before requesting deletion.",
+            "Deletion removes your sign-in account, personal profile and profile photos, and personal Host access and profile details. Shared organizer, event, guest and business records may remain for other authorized users. Limited payment, safety, fraud-prevention, legal, dispute and backup records may also remain for the period necessary for those purposes. Contact us about the records and retention that apply to your request; deleting an app from your device does not delete your account."
+          ]
+        },
         {
           "heading": "Contact support",
           "paragraphs": [
