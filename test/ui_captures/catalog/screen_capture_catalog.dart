@@ -7417,50 +7417,6 @@ final _hostLiveRoomRoster = EventParticipationRoster(
       profile.uid: _hostLiveRoomReferenceEvent.startTime,
   },
 );
-final _hostLiveRoomFixtureActions = EventSuccessHostFixtureActions(
-  initialSpatialSelectionUid: _hostLiveReferenceProfiles.first.uid,
-  onPreviewSpatial: (_) async => const [
-    EventSuccessSpatialDestination(
-      unitId: 'round-1',
-      valid: false,
-      reason: EventSuccessSpatialDestinationReason.declaredConstraint,
-      recommendedScope: null,
-    ),
-    EventSuccessSpatialDestination(
-      unitId: 'round-2',
-      valid: false,
-      reason: EventSuccessSpatialDestinationReason.capacity,
-      recommendedScope: null,
-    ),
-    EventSuccessSpatialDestination(
-      unitId: 'round-3',
-      valid: false,
-      reason: EventSuccessSpatialDestinationReason.capacity,
-      recommendedScope: null,
-    ),
-    EventSuccessSpatialDestination(
-      unitId: 'round-4',
-      valid: true,
-      reason: null,
-      recommendedScope: EventSuccessSpatialScope.thisRound,
-    ),
-    EventSuccessSpatialDestination(
-      unitId: 'round-5',
-      valid: true,
-      reason: null,
-      recommendedScope: EventSuccessSpatialScope.pinned,
-    ),
-    EventSuccessSpatialDestination(
-      unitId: 'round-6',
-      valid: true,
-      reason: null,
-      recommendedScope: EventSuccessSpatialScope.thisRound,
-    ),
-  ],
-  onReassignSpatial: (_, _, _) async {},
-  onConfirmSpatial: (_) async {},
-  onReleaseSpatial: (_) async {},
-);
 final _hostLiveWindowPlan =
     EventSuccessPlan.defaultForEvent(
       _hostLiveWindowEvent,
@@ -13975,7 +13931,48 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       event: _hostLiveRoomReferenceEvent,
       onBackToSuccess: () {},
       initialSection: HostEventManageSection.live,
-      eventSuccessFixtureActions: _hostLiveRoomFixtureActions,
+      initialSpatialSelectionUid: _hostLiveReferenceProfiles.first.uid,
+      onPreviewSpatial: (_) async => const [
+        EventSuccessSpatialDestination(
+          unitId: 'round-1',
+          valid: false,
+          reason: EventSuccessSpatialDestinationReason.declaredConstraint,
+          recommendedScope: null,
+        ),
+        EventSuccessSpatialDestination(
+          unitId: 'round-2',
+          valid: false,
+          reason: EventSuccessSpatialDestinationReason.capacity,
+          recommendedScope: null,
+        ),
+        EventSuccessSpatialDestination(
+          unitId: 'round-3',
+          valid: false,
+          reason: EventSuccessSpatialDestinationReason.capacity,
+          recommendedScope: null,
+        ),
+        EventSuccessSpatialDestination(
+          unitId: 'round-4',
+          valid: true,
+          reason: null,
+          recommendedScope: EventSuccessSpatialScope.thisRound,
+        ),
+        EventSuccessSpatialDestination(
+          unitId: 'round-5',
+          valid: true,
+          reason: null,
+          recommendedScope: EventSuccessSpatialScope.pinned,
+        ),
+        EventSuccessSpatialDestination(
+          unitId: 'round-6',
+          valid: true,
+          reason: null,
+          recommendedScope: EventSuccessSpatialScope.thisRound,
+        ),
+      ],
+      onReassignSpatial: (_, _, _) async {},
+      onConfirmSpatial: (_) async {},
+      onReleaseSpatial: (_) async {},
       referenceNow: _hostLiveRoomReferenceEvent.startTime.add(
         const Duration(minutes: 55),
       ),

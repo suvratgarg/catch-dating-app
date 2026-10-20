@@ -576,6 +576,45 @@
       }
     },
     {
+      "id": "ci:host-deletion-release",
+      "category": "ci",
+      "path": "tool/ci/host_deletion_release.mjs",
+      "command": "node --test tool/ci/host_deletion_release.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/host_deletion_release.test.mjs",
+        ".github/workflows/host-deletion-release.yml",
+        ".github/workflows/_host-deletion-promote.yml",
+        "tool/ci/delivery_core.mjs",
+        "tool/ci/firebase_functions_checkpoint.mjs",
+        "tool/firebase/prepare_functions_params_for_deploy.mjs",
+        "tool/firebase/wait_firestore_indexes_ready.mjs",
+        "tool/harness/lib/workflow_steps.mjs"
+      ],
+      "description": "Verifies the fixed Host account-deletion promotion, immutable CI package, exact DEV receipt, human PROD approval, and preservation of retained runtime and provider configuration.",
+      "checks": [
+        "node --check tool/ci/host_deletion_release.mjs",
+        "node --test tool/ci/host_deletion_release.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/host_deletion_release.test.mjs",
+        "contains": [
+          "Host deletion artifact metadata rejects wrong producer, source, archive and expired evidence",
+          "Host deletion completion and DEV admission reject cross-environment or partial deployment evidence",
+          "Host deletion caller scope predicate rejects mixed profiles and missing DEV evidence"
+        ]
+      }
+    },
+    {
       "id": "ci:cat151-receipt-release",
       "category": "ci",
       "path": "tool/ci/cat151_receipt_release.mjs",

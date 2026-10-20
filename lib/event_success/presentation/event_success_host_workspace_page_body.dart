@@ -9,7 +9,6 @@ import 'package:catch_dating_app/event_success/domain/event_success_preference.d
 import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_fixture_actions.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card_state.dart';
@@ -107,7 +106,6 @@ class EventSuccessHostWorkspacePageBody extends StatefulWidget {
     this.onResetReveal,
     this.outcomeActionState = const EventSuccessOutcomeActionState(),
     this.onRecordOutcomes,
-    this.fixtureActions,
     this.exclusionAlertThreshold = defaultEventSuccessExclusionAlertThreshold,
     this.exclusionReferenceNow,
     this.referenceNow,
@@ -205,7 +203,6 @@ class EventSuccessHostWorkspacePageBody extends StatefulWidget {
     required List<EventSuccessUnitOutcomeEntryInput> entries,
   })?
   onRecordOutcomes;
-  final EventSuccessHostFixtureActions? fixtureActions;
   final Duration exclusionAlertThreshold;
   final DateTime? exclusionReferenceNow;
   final DateTime? referenceNow;
@@ -250,7 +247,7 @@ class _EventSuccessHostWorkspacePageBodyState
         layoutSaveError: widget.layoutSaveError,
         onSaveLayout: widget.onSaveLayout,
         actionState: widget.setupActionState,
-        onSaveSetup: _setupSaveCallback(),
+        onSaveSetup: widget.onSaveSetup,
         referenceNow: widget.referenceNow,
         embedded: widget.embedded,
       ),
@@ -300,42 +297,28 @@ class _EventSuccessHostWorkspacePageBodyState
           stepError: widget.liveActionState.stepError,
           completeError: widget.liveActionState.completeError,
         ),
-        onPreviousStep: _liveStepCallback(
-          widget.fixtureActions?.onPreviousStep,
-        ),
-        onNextStep: _liveStepCallback(widget.fixtureActions?.onNextStep),
+        onPreviousStep: _liveStepCallback(),
+        onNextStep: _liveStepCallback(),
         onCompleteGuide: _liveCompleteCallback(),
         onResolveAccountability: widget.onResolveAccountability,
         microPodsGenerationState: widget.microPodsGenerationState,
         rotationsGenerationState: widget.rotationsGenerationState,
-        onGenerateMicroPods: _voidFixtureCallback(
-          widget.fixtureActions?.onGenerateMicroPods,
-          widget.onGenerateMicroPods,
-        ),
-        onGenerateGuidedRotations: _voidFixtureCallback(
-          widget.fixtureActions?.onGenerateGuidedRotations,
-          widget.onGenerateGuidedRotations,
-        ),
+        onGenerateMicroPods: widget.onGenerateMicroPods,
+        onGenerateGuidedRotations: widget.onGenerateGuidedRotations,
         onResolveLateArrival: widget.onResolveLateArrival,
         onPublishGuidedRotationRound: widget.onPublishGuidedRotationRound,
-        onOverrideGroupAssignments: _groupOverrideCallback(),
-        onOverrideGuidedRotations: _rotationOverrideCallback(),
-        onPreviewSpatial:
-            widget.fixtureActions?.onPreviewSpatial ?? widget.onPreviewSpatial,
-        onReassignSpatial:
-            widget.fixtureActions?.onReassignSpatial ??
-            widget.onReassignSpatial,
-        onConfirmSpatial:
-            widget.fixtureActions?.onConfirmSpatial ?? widget.onConfirmSpatial,
-        onReleaseSpatial:
-            widget.fixtureActions?.onReleaseSpatial ?? widget.onReleaseSpatial,
+        onOverrideGroupAssignments: widget.onOverrideGroupAssignments,
+        onOverrideGuidedRotations: widget.onOverrideGuidedRotations,
+        onPreviewSpatial: widget.onPreviewSpatial,
+        onReassignSpatial: widget.onReassignSpatial,
+        onConfirmSpatial: widget.onConfirmSpatial,
+        onReleaseSpatial: widget.onReleaseSpatial,
         revealActionState: widget.revealActionState,
         onStartRevealCountdown: _startRevealCountdownCallback(),
         onRevealRound: _revealRoundCallback(),
         onResetReveal: _resetRevealCallback(),
         outcomeActionState: widget.outcomeActionState,
         onRecordOutcomes: widget.onRecordOutcomes,
-        fixtureActions: widget.fixtureActions,
         exclusionAlertThreshold: widget.exclusionAlertThreshold,
         exclusionReferenceNow: widget.exclusionReferenceNow,
         referenceNow: widget.referenceNow,
@@ -410,56 +393,20 @@ class _EventSuccessHostWorkspacePageBodyState
     );
   }
 
-  Future<void> Function(EventSuccessSetupSaveRequest request)?
-  _setupSaveCallback() {
-    final fixtureAction = widget.fixtureActions?.onSaveSetup;
-    if (fixtureAction != null) {
-      return (_) async => fixtureAction();
-    }
-    return widget.onSaveSetup;
-  }
-
-  Future<void> Function(int stepIndex)? _liveStepCallback(
-    VoidCallback? fixtureAction,
-  ) {
-    if (fixtureAction != null) {
-      return (stepIndex) => _runLiveAction(
-        key: 'step:$stepIndex',
-        action: () async {
-          await widget.onPlayLiveEffect?.call(
-            EventSuccessLiveEffectKind.stepChange,
-          );
-          fixtureAction();
-        },
-      );
-    }
-    final productionAction = widget.onSetLiveStep;
-    if (productionAction == null) return null;
-    return (stepIndex) => _runLiveAction(
-      key: 'step:$stepIndex',
-      action: () => productionAction(stepIndex),
-    );
+  Future<void> Function(int stepIndex)? _liveStepCallback() {
+    final action = widget.onSetLiveStep;
+    if (action == null) return null;
+    return (stepIndex) =>
+        _runLiveAction(key: 'step:$stepIndex', action: () => action(stepIndex));
   }
 
   Future<void> Function(bool accountabilityAcknowledged)?
   _liveCompleteCallback() {
-    final fixtureAction = widget.fixtureActions?.onCompletePlan;
-    if (fixtureAction != null) {
-      return (_) => _runLiveAction(
-        key: 'complete',
-        action: () async {
-          await widget.onPlayLiveEffect?.call(
-            EventSuccessLiveEffectKind.guideComplete,
-          );
-          fixtureAction();
-        },
-      );
-    }
-    final productionAction = widget.onCompleteLiveGuide;
-    if (productionAction == null) return null;
+    final action = widget.onCompleteLiveGuide;
+    if (action == null) return null;
     return (accountabilityAcknowledged) => _runLiveAction(
       key: 'complete',
-      action: () => productionAction(accountabilityAcknowledged),
+      action: () => action(accountabilityAcknowledged),
     );
   }
 
@@ -485,90 +432,37 @@ class _EventSuccessHostWorkspacePageBodyState
     }
   }
 
-  Future<void> Function()? _voidFixtureCallback(
-    VoidCallback? fixtureAction,
-    Future<void> Function()? productionAction,
-  ) {
-    if (fixtureAction != null) {
-      return () async => fixtureAction();
-    }
-    return productionAction;
-  }
-
-  Future<void> Function(List<EventSuccessGroupOverrideRound> rounds)?
-  _groupOverrideCallback() {
-    final fixtureAction = widget.fixtureActions?.onOverrideGroupAssignments;
-    final productionAction = widget.onOverrideGroupAssignments;
-    if (fixtureAction == null && productionAction == null) return null;
-    return (rounds) async {
-      if (fixtureAction != null) {
-        fixtureAction(rounds);
-        return;
-      }
-      await productionAction?.call(rounds);
-    };
-  }
-
-  Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
-  _rotationOverrideCallback() {
-    final fixtureAction = widget.fixtureActions?.onOverrideGuidedRotations;
-    final productionAction = widget.onOverrideGuidedRotations;
-    if (fixtureAction == null && productionAction == null) return null;
-    return (rounds) async {
-      if (fixtureAction != null) {
-        fixtureAction(rounds);
-        return;
-      }
-      await productionAction?.call(rounds);
-    };
-  }
-
   Future<void> Function(int roundIndex, int countdownSeconds)?
   _startRevealCountdownCallback() {
-    final fixtureAction = widget.fixtureActions?.onStartRevealCountdown;
-    final productionAction = widget.onStartRevealCountdown;
-    if (fixtureAction == null && productionAction == null) return null;
+    final action = widget.onStartRevealCountdown;
+    if (action == null) return null;
     return (roundIndex, countdownSeconds) async {
       await widget.onPlayLiveEffect?.call(
         EventSuccessLiveEffectKind.countdownStart,
       );
-      if (fixtureAction != null) {
-        fixtureAction(roundIndex, countdownSeconds);
-        return;
-      }
-      await productionAction?.call(roundIndex, countdownSeconds);
+      await action(roundIndex, countdownSeconds);
     };
   }
 
   Future<void> Function(int roundIndex)? _revealRoundCallback() {
-    final fixtureAction = widget.fixtureActions?.onRevealRound;
-    final productionAction = widget.onRevealRound;
-    if (fixtureAction == null && productionAction == null) return null;
+    final action = widget.onRevealRound;
+    if (action == null) return null;
     return (roundIndex) async {
       await widget.onPlayLiveEffect?.call(
         EventSuccessLiveEffectKind.assignmentRevealed,
       );
-      if (fixtureAction != null) {
-        fixtureAction(roundIndex);
-        return;
-      }
-      await productionAction?.call(roundIndex);
+      await action(roundIndex);
     };
   }
 
   Future<void> Function()? _resetRevealCallback() {
-    final fixtureAction = widget.fixtureActions?.onResetReveal;
-    final productionAction = widget.onResetReveal;
-    if (fixtureAction == null && productionAction == null) return null;
+    final action = widget.onResetReveal;
+    if (action == null) return null;
     return () async {
       await widget.onPlayLiveEffect?.call(
         EventSuccessLiveEffectKind.revealReset,
       );
-      if (fixtureAction != null) {
-        fixtureAction();
-        return;
-      }
-      await productionAction?.call();
+      await action();
     };
   }
 }
