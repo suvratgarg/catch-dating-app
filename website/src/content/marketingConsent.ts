@@ -1,5 +1,5 @@
 export const marketingConsentPreferencesCopy = {
-  body: "Choose essential only, site analytics, or analytics and marketing measurement for Catch. Marketing measurement helps us understand organizer enquiries and advertising results. Advertising integrations are currently disabled. You can change or withdraw your choice at any time.",
+  body: "Choose essential only, site analytics, or analytics and marketing measurement for Catch. Site analytics can share page visits and application events with Google Analytics using a random, tab-limited identifier. Marketing measurement can also share ad-click identifiers and accepted organiser enquiries with Google Ads and Meta. Names, contact details and application answers are excluded. Advertising integrations are currently disabled. You can change or withdraw your choice at any time.",
   allowAnalytics: "Allow analytics",
   allowMarketing: "Allow analytics and marketing",
   preferences: "Privacy choices",

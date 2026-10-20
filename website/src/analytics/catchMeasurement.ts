@@ -58,11 +58,13 @@ export interface SafeAcquisitionEvent {
   name: CatchAcquisitionEvent["name"];
   consent: Readonly<{analytics: true; marketing: boolean}>;
   parameters: Readonly<Record<string, string | number>>;
+  attribution?: Readonly<CatchBrowserAttribution>;
 }
 export interface MeasurementContext {
   path: string;
   consent: MeasurementConsent | null;
   campaign?: Record<string, unknown>;
+  attribution?: CatchBrowserAttribution | null;
 }
 const forms: readonly AcquisitionForm[] = ["member_waitlist", "host_lead", "host_application", "claim"];
 const opaqueId = (id: unknown): id is string =>
@@ -72,7 +74,7 @@ const opaqueId = (id: unknown): id is string =>
 export function safeAcquisitionEvent(input: CatchAcquisitionEvent, context: MeasurementContext): SafeAcquisitionEvent | null {
   if (!input || typeof input !== "object") return null;
   const path = acquisitionRoute(context.path);
-  if (!path || context.consent?.version !== 2 || context.consent.analytics !== true) return null;
+  if (!path || context.consent?.version !== 3 || context.consent.analytics !== true) return null;
   const parameters: Record<string, string | number> = {
     contract_version: catchMeasurementVersion,
     page_path: path,
@@ -135,18 +137,20 @@ export function safeAcquisitionEvent(input: CatchAcquisitionEvent, context: Meas
     default: return null;
   }
   return {name: input.name, consent: Object.freeze({analytics: true, marketing: context.consent.marketing === true}),
-    parameters: Object.freeze(parameters)};
+    parameters: Object.freeze(parameters),
+    ...(safeBrowserAttribution(context.attribution, context.consent.marketing) ?
+      {attribution: Object.freeze(safeBrowserAttribution(context.attribution, context.consent.marketing)!)} : {})};
 }
 
 export interface CatchProviderSession {
   send(event: SafeAcquisitionEvent): void;
   destroy(): void;
 }
-export type SyntheticProviderTransport = (provider: "google" | "meta") => CatchProviderSession;
+export type CatchProviderTransport = (provider: "google" | "meta") => CatchProviderSession;
 export const catchProviderDefaults = Object.freeze({google: false, meta: false});
 
-/** Only injected synthetic transports can run. No env IDs, globals, scripts or queue. */
-export function createCatchMeasurementController(transport?: SyntheticProviderTransport) {
+/** Only injected controlled transports can run. No diagnostic bus, arbitrary globals or replay queue. */
+export function createCatchMeasurementController(transport?: CatchProviderTransport) {
   const sessions = new Map<"google" | "meta", CatchProviderSession>();
   const observed = new Set<string>();
   let context: MeasurementContext = {path: "", consent: null};
@@ -160,7 +164,7 @@ export function createCatchMeasurementController(transport?: SyntheticProviderTr
     const previous = context;
     context = next;
     if (previous.path !== next.path || previous.consent?.updatedAt !== next.consent?.updatedAt) destroy();
-    const allowed = acquisitionRoute(next.path) && next.consent?.version === 2;
+    const allowed = acquisitionRoute(next.path) && next.consent?.version === 3;
     for (const provider of ["google", "meta"] as const) {
       const permitted = allowed && next.consent?.analytics === true &&
         (provider === "google" || next.consent.marketing === true);
@@ -188,4 +192,73 @@ export function createCatchMeasurementController(transport?: SyntheticProviderTr
     return true;
   }
   return {update, track, destroy};
+}
+
+
+/** Browser-only measurement context. Never include this in the diagnostic bus or
+ * existing lead HTTP payload: that endpoint has no server marketing permission. */
+export interface CatchBrowserAttribution {
+  clientId: string;
+  sessionId: number;
+  gclid?: string;
+  gbraid?: string;
+  wbraid?: string;
+  fbclid?: string;
+}
+interface StoredContext extends CatchBrowserAttribution {
+  createdAt: number;
+  consentRevision: string;
+}
+export const catchAttributionKey = "catch_acquisition_context_v1";
+export const catchAttributionMaxAgeMs = 24 * 60 * 60 * 1000;
+const clickKeys = ["gclid", "gbraid", "wbraid", "fbclid"] as const;
+const clickId = (value: unknown): value is string => typeof value === "string" &&
+  /^[A-Za-z0-9_-]{10,512}$/u.test(value);
+
+/** Rebuild stored/message values; no arbitrary query keys, URLs or identifiers. */
+export function safeBrowserAttribution(value: unknown, marketing: boolean): CatchBrowserAttribution | null {
+  if (!value || typeof value !== "object") return null;
+  const input = value as Record<string, unknown>;
+  if (typeof input.clientId !== "string" || !/^\d{1,10}\.\d{10}$/u.test(input.clientId) ||
+      !Number.isSafeInteger(input.sessionId) || Number(input.sessionId) < 1_000_000_000 ||
+      Number(input.sessionId) > 9_999_999_999) return null;
+  const result: CatchBrowserAttribution = {clientId: input.clientId, sessionId: Number(input.sessionId)};
+  if (marketing) for (const key of clickKeys) if (clickId(input[key])) result[key] = input[key];
+  return result;
+}
+
+export function browserAttribution(input: {
+  enabled: boolean; path: string; search: string; consent: MeasurementConsent | null;
+  storage: Pick<Storage, "getItem" | "setItem" | "removeItem">;
+  now: number; random: () => number;
+}): CatchBrowserAttribution | null {
+  const {storage, consent, now} = input;
+  const clear = () => { try { storage.removeItem(catchAttributionKey); } catch { /* Optional storage. */ } };
+  // No collection before the reviewed transport is activated, or under old copy.
+  if (!input.enabled || !acquisitionRoute(input.path) || consent?.version !== 3 || !consent.analytics) {
+    clear(); return null;
+  }
+  try {
+    const stored = JSON.parse(storage.getItem(catchAttributionKey) ?? "null") as StoredContext | null;
+    const age = stored ? now - stored.createdAt : NaN;
+    const valid = stored && stored.consentRevision === consent.updatedAt && Number.isFinite(age) &&
+      age >= 0 && age < catchAttributionMaxAgeMs ? safeBrowserAttribution(stored, consent.marketing) : null;
+    const context: StoredContext = valid ? {...valid, createdAt: stored!.createdAt, consentRevision: consent.updatedAt} : {
+      clientId: `${input.random() >>> 0}.${Math.floor(now / 1000)}`,
+      sessionId: Math.floor(now / 1000), createdAt: now, consentRevision: consent.updatedAt,
+    };
+    // Read identifiers only after explicit marketing permission. New Google ad
+    // touches replace the previous Google touch; Meta is retained independently.
+    if (consent.marketing) {
+      const params = new URLSearchParams(input.search);
+      const google = clickKeys.filter(key => key !== "fbclid" && clickId(params.get(key)));
+      if (google.length) {
+        delete context.gclid; delete context.gbraid; delete context.wbraid;
+        for (const key of google) context[key] = params.get(key)!;
+      }
+      if (clickId(params.get("fbclid"))) context.fbclid = params.get("fbclid")!;
+    }
+    storage.setItem(catchAttributionKey, JSON.stringify(context));
+    return safeBrowserAttribution(context, consent.marketing);
+  } catch { clear(); return null; }
 }
