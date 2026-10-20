@@ -12,14 +12,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../test_pump_helpers.dart';
+
 class _DeletionController extends SettingsController {
-  int requests = 0;
-  final completion = Completer<void>();
+  int _requests = 0;
+  final _completion = Completer<void>();
 
   @override
   Future<void> requestAccountDeletion() {
-    requests++;
-    return completion.future;
+    _requests++;
+    return _completion.future;
   }
 }
 
@@ -53,14 +55,14 @@ Future<void> _pump(WidgetTester tester, _DeletionController controller) async {
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  await pumpFeatureUi(tester);
 }
 
 Future<void> _openDeletion(WidgetTester tester) async {
   await tester.tap(find.byKey(const ValueKey('host-account-menu')));
-  await tester.pumpAndSettle();
+  await pumpFeatureUi(tester);
   await tester.tap(find.text('Delete account'));
-  await tester.pumpAndSettle();
+  await pumpFeatureUi(tester);
 }
 
 void main() {
@@ -72,8 +74,8 @@ void main() {
     await _openDeletion(tester);
     expect(find.textContaining('Shared business records'), findsOneWidget);
     await tester.tap(find.text('Cancel'));
-    await tester.pumpAndSettle();
-    expect(controller.requests, 0);
+    await pumpFeatureUi(tester);
+    expect(controller._requests, 0);
     expect(find.byKey(const ValueKey('host-account-menu')), findsOneWidget);
   });
 
@@ -83,10 +85,10 @@ void main() {
       final controller = _DeletionController();
       await _pump(tester, controller);
       await _openDeletion(tester);
-      expect(controller.requests, 0);
+      expect(controller._requests, 0);
       await tester.tap(find.text('Delete'));
-      await tester.pumpAndSettle();
-      expect(controller.requests, 1);
+      await pumpFeatureUi(tester);
+      expect(controller._requests, 1);
       expect(
         tester
             .widget<CatchActionMenu<String>>(
@@ -103,8 +105,8 @@ void main() {
             .onPressed,
         isNull,
       );
-      controller.completion.complete();
-      await tester.pumpAndSettle();
+      controller._completion.complete();
+      await pumpFeatureUi(tester);
       expect(find.text('Signed out after deletion'), findsOneWidget);
     },
   );
@@ -116,9 +118,9 @@ void main() {
     await _pump(tester, controller);
     await _openDeletion(tester);
     await tester.tap(find.text('Delete'));
-    await tester.pumpAndSettle();
-    controller.completion.completeError(StateError('Deletion unavailable'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
+    controller._completion.completeError(StateError('Deletion unavailable'));
+    await pumpFeatureUi(tester);
     expect(find.text('Signed out after deletion'), findsNothing);
     expect(
       tester
