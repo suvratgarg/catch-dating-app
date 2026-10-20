@@ -20,6 +20,8 @@ interface ConsentPort {
   request: (request: HostAcquisitionConsentHTTPRequest) => Promise<unknown>;
   randomCapability: () => string;
   now: () => number;
+  withLock: (run: () => Promise<void>) => Promise<void>;
+  isCurrentChoice: (consent: MeasurementConsent | null) => boolean;
 }
 
 const capabilityPattern = /^[a-f0-9]{64}$/u;
@@ -81,7 +83,8 @@ export function createHostServerConsent(port: ConsentPort) {
     acknowledged = null; // Immediate local shutdown, before waiting on I/O.
     acknowledgedKey = null;
     const desired = input.consent ? {...input.consent} : null;
-    work = work.catch(() => undefined).then(async () => {
+    work = work.catch(() => undefined).then(() => port.withLock(async () => {
+      if (call !== revision || !port.isCurrentChoice(desired)) return;
       let grant = readGrant(port.storage);
       const allowed = eligible({...input, consent: desired});
       if (grant && (grant.withdrawing || !allowed || grant.revision !== desired?.updatedAt ||
@@ -105,7 +108,7 @@ export function createHostServerConsent(port: ConsentPort) {
       }
       const response = await port.request({action: "grant",
         capability: grant.capability, choice: grant.choice});
-      if (call !== revision) {
+      if (call !== revision || !port.isCurrentChoice(desired)) {
         await withdraw(grant);
         return;
       }
@@ -117,7 +120,7 @@ export function createHostServerConsent(port: ConsentPort) {
           expiresAt: result.expiresAt};
         acknowledgedKey = key;
       }
-    }).catch(() => { acknowledged = null; }).finally(() => {
+    })).catch(() => { acknowledged = null; }).finally(() => {
       if (call === revision) pendingKey = null;
     });
     return work;

@@ -70,6 +70,13 @@ let attributionContext: ReturnType<typeof browserAttribution> = null;
 function serverConsentOwner() {
   if (!serverConsent) serverConsent = createHostServerConsent({
     storage: window.localStorage, request: postHostServerConsent, now: Date.now,
+    withLock: run => navigator.locks.request("catch-host-server-consent-v1", run),
+    isCurrentChoice: choice => {
+      const current = getMarketingConsent();
+      return current?.version === choice?.version &&
+        current?.updatedAt === choice?.updatedAt && current?.analytics === choice?.analytics &&
+        current?.marketing === choice?.marketing;
+    },
     randomCapability: () => Array.from(crypto.getRandomValues(new Uint8Array(32)),
       byte => byte.toString(16).padStart(2, "0")).join(""),
   });

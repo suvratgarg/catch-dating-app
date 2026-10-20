@@ -9,6 +9,7 @@ const active = {ok: true, status: "active", expiresAt};
 beforeEach(() => localStorage.clear());
 function fixture(request = vi.fn(async (_request: unknown): Promise<unknown> => active)) {
   const owner = createHostServerConsent({storage: localStorage, now: () => now,
+    withLock: run => run(), isCurrentChoice: () => true,
     randomCapability: () => "a".repeat(64), request});
   return {owner, request};
 }
@@ -89,7 +90,29 @@ it("fails closed for unavailable storage and invalid or disabled acknowledgement
   const request = vi.fn();
   const owner = createHostServerConsent({storage: {
     getItem() { throw new Error("storage denied"); }, setItem() {}, removeItem() {},
-  }, now: () => now, randomCapability: () => "a".repeat(64), request});
+  }, withLock: run => run(), isCurrentChoice: () => true, now: () => now, randomCapability: () => "a".repeat(64), request});
   await owner.sync(input);
   expect(request).not.toHaveBeenCalled();
+});
+
+it("serializes sibling-tab capabilities and prevents a stale tab from restoring an old choice", async () => {
+  let work = Promise.resolve();
+  const withLock = (run: () => Promise<void>) => { work = work.then(run); return work; };
+  let current = consent;
+  let sequence = 0;
+  const request = vi.fn(async (r: {action: string}) => r.action === "grant" ? active : {ok: true, status: "revoked"});
+  const port = {storage: localStorage, now: () => now, request, withLock,
+    randomCapability: () => (++sequence).toString(16).padStart(64, "0"),
+    isCurrentChoice: (choice: typeof consent | null) => choice?.updatedAt === current.updatedAt};
+  const first = createHostServerConsent(port);
+  const second = createHostServerConsent(port);
+  await Promise.all([first.sync(input), second.sync(input)]);
+  expect(sequence).toBe(1);
+  expect(first.snapshot(consent.updatedAt)).toBe(second.snapshot(consent.updatedAt));
+  current = {...consent, updatedAt: new Date(now + 1).toISOString(), analytics: false, marketing: false};
+  await second.sync({...input, consent: current});
+  await first.sync(input);
+  expect(localStorage.getItem(hostServerConsentStorageKey)).toBeNull();
+  expect(request.mock.calls.filter(([r]) => r.action === "grant")).toHaveLength(2);
+  expect(first.snapshot(consent.updatedAt)).toBeNull();
 });
