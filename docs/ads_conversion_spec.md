@@ -55,8 +55,10 @@ Withdrawal clears queued browser context in bounded transactions.
 
 `metaSender.ts` prepares a fixed Graph v26.0 Catch pixel endpoint, a ten-second
 timeout, no redirects, no automatic network retry, and a bounded response body.
-The scheduled dispatcher, server credential binding and real destination receipt
-remain unfinished; this sender is not a deployed delivery service.
+The disabled scheduled dispatcher examines at most 20 due entries per minute,
+with current authority rechecked for each row. Its due-work index, exported
+deployment binding, approved server credential and real destination receipt
+remain unfinished; this is not a deployed delivery service.
 
 ### Host app permission preparation
 
@@ -74,8 +76,9 @@ and withdrawal network acceptance must pass first. iOS vendor-ID and Android
 advertising-ID collection are disabled.
 
 Only coarse sign-in, onboarding and Host setup events are allowed. Event
-creation is not organiser activation. The event-creation/publication call sites,
-authoritative first-real-check-in milestone, native upgrade/network acceptance
+creation is not organiser activation. Creation and publication diagnostics follow successful server responses;
+replayed publications and operations spanning a consent change are excluded.
+The authoritative first-real-check-in milestone, native upgrade/network acceptance
 and app-store privacy declarations still require completion before activation.
 
 ### Catch Host pilot destination configuration

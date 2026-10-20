@@ -1,5 +1,6 @@
 import {randomUUID} from "node:crypto";
 import * as admin from "firebase-admin";
+import type {Request, Response} from "express";
 import * as logger from "firebase-functions/logger";
 import {HttpsError, onRequest} from "firebase-functions/v2/https";
 import {checkIpRateLimit} from "../shared/rateLimit";
@@ -449,9 +450,10 @@ function setCorsHeaders(request: {
 /**
  * Stores a waitlist submission for catchdates.com launch access.
  */
-export const joinWaitlist = onRequest(
-  {region: "asia-south1"},
-  async (request, response) => {
+export function createJoinWaitlistHandler(options: {
+  measurementEnabled: boolean;
+}) {
+  return async (request: Request, response: Response): Promise<void> => {
     if (!setCorsHeaders(request, response)) {
       sendWaitlistJson(response, 403, {error: "Origin not allowed."});
       return;
@@ -570,7 +572,7 @@ export const joinWaitlist = onRequest(
     const proposedHostEventId = `host_lead_${Date.now()}_${randomUUID()}`;
     // Old analytics metadata never grants server advertising permission.
     // Do not retain the raw capability in intake, Sales or diagnostics.
-    const measurement = hostServerMeasurementEnabled && intent &&
+    const measurement = options.measurementEnabled && intent &&
       hostConsentAllowedOrigin(request.get("origin"),
         process.env.GCLOUD_PROJECT ?? process.env.GCP_PROJECT ?? "") ?
       body.hostMeasurement : undefined;
@@ -605,7 +607,7 @@ export const joinWaitlist = onRequest(
           };
           const delivery = measurement && consentId ?
             prepareHostMetaDelivery({
-              enabled: hostServerMeasurementEnabled,
+              enabled: options.measurementEnabled,
               ...hostLead, intentId: intent.intentId, consentId,
               consentDocument: permission?.data(),
               context: {clientId: measurement.clientId, userAgent,
@@ -699,5 +701,10 @@ export const joinWaitlist = onRequest(
       alreadyJoined,
       ...(hostLead ? {hostLead} : {}),
     });
-  }
-);
+  };
+}
+
+export const joinWaitlist = onRequest({region: "asia-south1"},
+  createJoinWaitlistHandler({
+    measurementEnabled: hostServerMeasurementEnabled,
+  }));

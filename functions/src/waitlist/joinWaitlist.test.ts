@@ -4,7 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import * as admin from "firebase-admin";
 import {
-  joinWaitlist,
+  joinWaitlist, createJoinWaitlistHandler,
   normalizeHostApplication,
   normalizeMarketingAnalytics,
   normalizeMarketingAttribution,
@@ -12,6 +12,8 @@ import {
   resolveWaitlistCorsOrigin,
   waitlistAllowedOrigins,
 } from "./joinWaitlist";
+import {hostConsentKey, newHostConsentAuthority} from
+  "../acquisition/consentPolicy";
 import {
   validateJoinWaitlistHTTPRequest,
   validateJoinWaitlistHTTPResponse,
@@ -370,3 +372,101 @@ test("host intents preserve changes and exact retries", async (context) => {
   assert.deepEqual(trap.result, {ok: true, alreadyJoined: false});
   assert.equal(committedWrites, beforeTrap);
 });
+
+
+test("enabled intake binds one queue row to a new consented Host receipt",
+  async (context) => {
+    if (!admin.apps.length) {
+      admin.initializeApp({projectId: "demo-sales-intent"});
+    }
+    const database = admin.firestore();
+    const priorProject = process.env.GCLOUD_PROJECT;
+    process.env.GCLOUD_PROJECT = "catch-dating-app-64e51";
+    context.after(() => {
+      if (priorProject === undefined) delete process.env.GCLOUD_PROJECT;
+      else process.env.GCLOUD_PROJECT = priorProject;
+    });
+    const capability = "c".repeat(64);
+    const consentId = hostConsentKey(capability)!;
+    const now = Date.now();
+    const authority = newHostConsentAuthority({version: 1,
+      purpose: "host_acquisition_measurement", analytics: true,
+      advertising: true, chosenAt: now}, now);
+    const stamp = admin.firestore.Timestamp.fromMillis(now);
+    const records = new Map<string, Record<string, unknown>>([
+      [`hostAcquisitionConsents/${consentId}`, {schemaVersion: 1,
+        classification: "sales_private", consentId, status: "active",
+        authority, createdAt: stamp, updatedAt: stamp,
+        expiresAt: admin.firestore.Timestamp.fromMillis(authority.expiresAt)}],
+    ]);
+    context.mock.method(database, "runTransaction",
+      async (run: (tx: unknown) => Promise<unknown>) => {
+        const writes = new Map<string, Record<string, unknown>>();
+        await run({
+          get: async (ref: {path?: string}) => {
+            assert.equal(writes.size, 0,
+              "every authority read precedes writes");
+            return ref.path ? {exists: records.has(ref.path),
+              data: () => records.get(ref.path!)} : {size: 0};
+          },
+          create: (ref: {path: string}, value: Record<string, unknown>) => {
+            assert.equal(records.has(ref.path), false);
+            writes.set(ref.path, value);
+          },
+          set: (ref: {path: string}, value: Record<string, unknown>) => {
+            writes.set(ref.path, value);
+          },
+          update: (ref: {path: string}, value: Record<string, unknown>) => {
+            writes.set(ref.path, {...records.get(ref.path), ...value});
+          },
+        });
+        for (const [key, value] of writes) records.set(key, value);
+      });
+    const handler = createJoinWaitlistHandler({measurementEnabled: true});
+    const original = readFixture(
+      "fixtures/valid/join_waitlist_request_host.json") as
+      Record<string, unknown>;
+    const body = {...original, email: "synthetic-measured-host@example.test",
+      hostMeasurement: {capability, clientId: "123.1792512000"}};
+    let calls = 0;
+    const submit = async (payload: unknown) => {
+      let status = 0;
+      let result: {hostLead?: {eventId: string; isNew: boolean}} = {};
+      const response = {set: () => undefined,
+        status: (value: number) => {
+          status = value; return response;
+        },
+        json: (value: typeof result) => {
+          result = value;
+        }, send: () => undefined};
+      await handler({method: "POST", body: payload,
+        ip: `synthetic-measurement-${++calls}`,
+        get: (key: string) => key === "origin" ? "https://catchdates.com" :
+          key === "user-agent" ? "Synthetic Host browser" : undefined,
+      } as never, response as never);
+      assert.equal(status, 200);
+      return result;
+    };
+    const first = await submit(body);
+    const queuePath = `hostAcquisitionDeliveries/${first.hostLead!.eventId}`;
+    const queued = records.get(queuePath)!;
+    assert.ok(queued);
+    assert.equal(queued.consentId, consentId);
+    assert.deepEqual(queued.context,
+      {clientId: "123.1792512000", userAgent: "Synthetic Host browser"});
+    const intent = records.get(`salesInboundIntents/${queued.intentId}`)!;
+    assert.deepEqual(intent.hostLead, first.hostLead);
+    const privateQueue = JSON.stringify(queued);
+    assert.equal(privateQueue.includes(capability), false);
+    assert.equal(privateQueue.includes(String(body.email)), false);
+    const size = records.size;
+    assert.deepEqual(await submit(body), first);
+    assert.equal(records.size, size, "exact replay never queues twice");
+    records.get(`hostAcquisitionConsents/${consentId}`)!.status = "revoked";
+    const denied = await submit({...body,
+      email: "synthetic-revoked-host@example.test"});
+    assert.equal(denied.hostLead?.isNew, true,
+      "revocation never blocks operational intake");
+    assert.equal(records.has(
+      `hostAcquisitionDeliveries/${denied.hostLead!.eventId}`), false);
+  });
