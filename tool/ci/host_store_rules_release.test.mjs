@@ -1,9 +1,24 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {execFileSync} from "node:child_process";
 import {RELEASE, verifyAuthority, verifyApproval, verifyPlan, verifyLive,
-  verifyCurrentRules} from "./host_store_rules_release.mjs";
+  verifyCurrentRules, rulesRequestHeaders} from "./host_store_rules_release.mjs";
+
+test("service identity uses its default quota project; local user opt-in is fixed", () => {
+  assert.deepEqual(rulesRequestHeaders("synthetic-token"), {
+    Authorization: "Bearer synthetic-token",
+  });
+  assert.deepEqual(rulesRequestHeaders("synthetic-token", RELEASE.project), {
+    Authorization: "Bearer synthetic-token", "X-Goog-User-Project": RELEASE.project,
+  });
+  assert.throws(() => rulesRequestHeaders("synthetic-token", "another-project"));
+  assert.throws(() => rulesRequestHeaders("synthetic-token", ""));
+  assert.throws(() => rulesRequestHeaders("bad\r\ntoken"));
+});
 
 const source = () => execFileSync("git", ["show", `${RELEASE.sourceSha}:firestore.rules`]);
 const run = () => ({id: RELEASE.runId, run_attempt: 1, workflow_id: 320377139,
@@ -47,6 +62,31 @@ test("package narrowing preserves exact rules bytes and cannot authorize any oth
     {targets: ["functions:unrelated", "firestore"]}]) {
     assert.throws(() => verifyPlan({...plan(), ...patch}, source()));
   }
+});
+test("isolated deploy root binds prod to the fixed project and rejects alias drift", t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "host-rules-project-"));
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(root, "build"));
+  const packageRoot = path.join(root, "package");
+  fs.mkdirSync(packageRoot);
+  fs.writeFileSync(path.join(packageRoot, "firestore.rules"), source());
+  const planPath = path.join(packageRoot, "plan.json");
+  fs.writeFileSync(planPath, JSON.stringify(plan()));
+  const helper = fileURLToPath(new URL("./host_store_rules_release.mjs", import.meta.url));
+  const invoke = args => execFileSync(process.execPath, [helper, ...args],
+    {cwd: root, stdio: "pipe"});
+  invoke(["prepare", planPath, packageRoot]);
+  const deployRoot = path.join(root, "build/host-rules-only");
+  const rcPath = path.join(deployRoot, ".firebaserc");
+  assert.deepEqual(JSON.parse(fs.readFileSync(rcPath, "utf8")),
+    {projects: {prod: "catch-dating-app-64e51"}});
+  assert.deepEqual(fs.readdirSync(deployRoot).sort(),
+    [".firebaserc", "firebase.json", "firestore.rules"]);
+  invoke(["verify-rules", path.resolve("firestore.rules")]);
+  fs.writeFileSync(rcPath, JSON.stringify({projects: {prod: "wrong-project"}}));
+  assert.throws(() => invoke(["verify-rules", path.resolve("firestore.rules")]));
+  fs.unlinkSync(rcPath);
+  assert.throws(() => invoke(["verify-rules", path.resolve("firestore.rules")]));
 });
 test("current Host policy must still match the historical reviewed block", () => {
   const current = fs.readFileSync("firestore.rules", "utf8");
