@@ -13,7 +13,7 @@ import {RELEASE,TARGETS,PREDECESSORS,prepare,verifyManifest,verifyArtifact,verif
 const hash=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const projects={dev:'catchdates-dev',prod:'catch-dating-app-64e51'};
 const manifest=()=>({schema:'catch.delivery-provenance/v2',sourceSha:RELEASE.sourceSha,
- sourceCiRunId:RELEASE.sourceCiRunId,sourceCiRunAttempt:'1',artifact:{name:'firebase-backend.tar.gz',sizeBytes:8317451,sha256:RELEASE.packageSha256},stages:['functions']});
+ sourceCiRunId:RELEASE.sourceCiRunId,sourceCiRunAttempt:'1',artifact:{name:'firebase-backend.tar.gz',sizeBytes:8522569,sha256:RELEASE.packageSha256},stages:['functions']});
 const plan=()=>({schema:'catch.firebase-delivery-plan/v2',sourceSha:RELEASE.sourceSha,baseSha:RELEASE.baseSha,
  sourceCiRunId:RELEASE.sourceCiRunId,sourceCiRunAttempt:'1',stages:['functions'],deployGroups:['functions'],targets:[[...TARGETS,'functions:retained'].sort().join(',')]});
 const providerKeys=['RAZORPAY_PUBLIC_KEY_ID','RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION','EVENT_VENUE_SESSION_TTL_SECONDS','EVENT_VENUE_SESSION_REFRESH_SECONDS','STRIPE_APPLICATION_FEE_BPS'];
@@ -50,10 +50,10 @@ test('Host deletion selects only the account deletion callable from the immutabl
   const p=plan();mutate(p);assert.throws(()=>prepare({manifest:manifest(),packagePlan:p}));
  }
 });
-test('Host deletion uses the packaged delivery baseline rather than the source parent',()=>{
- // Binding read from artifactPENDING_ARTIFACT_ID delivery-plan.json; independent of RELEASE.
- const packaged={...plan(),sourceSha:'PENDING_SOURCE_SHA',
-  baseSha:'PENDING_BASE_SHA',sourceCiRunId:'PENDING_CI_RUN',sourceCiRunAttempt:'1'};
+test('Host deletion uses the independently recorded packaged delivery baseline',()=>{
+ // Binding read from artifact 12278103855 delivery-plan.json; independent of RELEASE.
+ const packaged={...plan(),sourceSha:'171c1cb07e5b8b405904ad8e3504b6e1ea93607b',
+  baseSha:'329f9bf7eabc126ca34a3882939ad318a72953ef',sourceCiRunId:'39447727509',sourceCiRunAttempt:'1'};
  assert.deepEqual(prepare({manifest:manifest(),packagePlan:packaged}).targets,['functions:requestAccountDeletion']);
  assert.throws(()=>prepare({manifest:manifest(),packagePlan:{...packaged,baseSha:'2f3d78db47343a0a363e619ee7dddc9cf8ad1199'}}));
  const workflow=fs.readFileSync('.github/workflows/_host-deletion-promote.yml','utf8');

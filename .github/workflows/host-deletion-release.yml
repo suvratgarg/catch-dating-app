@@ -42,7 +42,7 @@ jobs:
           test "$GITHUB_RUN_ATTEMPT" = 1
           jq -e '
             (keys | sort) == (["source_sha", "reason", "confirm_account_deletion"] | sort) and
-            .source_sha == "PENDING_SOURCE_SHA" and .confirm_account_deletion == true and
+            .source_sha == "171c1cb07e5b8b405904ad8e3504b6e1ea93607b" and .confirm_account_deletion == true and
             (.reason | type) == "string" and (.reason | length) >= 12 and (.reason | length) <= 240 and
             (.reason | test("[\\r\\n]") | not) and (.reason | test("[^\\s]"))
           ' <<< "$INPUTS" > /dev/null
@@ -50,10 +50,10 @@ jobs:
           git fetch origin refs/heads/main:refs/remotes/origin/main --no-tags
           test "$(git rev-parse origin/main)" = "$GITHUB_SHA"
           node tool/ci/host_deletion_release.mjs source --current-main "$GITHUB_SHA" --source-root .
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs/PENDING_CI_RUN/attempts/1" | jq -e '
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/39447727509/attempts/1" | jq -e '
             .status == "completed" and .conclusion == "success" and .event == "push" and .head_branch == "main" and
-            .head_sha == "PENDING_SOURCE_SHA" and .run_attempt == 1 and .workflow_id == 320377139' > /dev/null
-          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/PENDING_ARTIFACT_ID" > /tmp/host-deletion-artifact.json
+            .head_sha == "171c1cb07e5b8b405904ad8e3504b6e1ea93607b" and .run_attempt == 1 and .workflow_id == 320377139' > /dev/null
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/12278103855" > /tmp/host-deletion-artifact.json
           node tool/ci/host_deletion_release.mjs artifact --metadata /tmp/host-deletion-artifact.json
   dev:
     needs: authorize

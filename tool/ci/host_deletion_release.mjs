@@ -11,11 +11,11 @@ import {gcloudIndexList} from "../firebase/wait_firestore_indexes_ready.mjs";
 // Fixed, executable release admission. Never a general target selector or cursor.
 // Preparation only: pending immutable main-CI pins deliberately reject execution.
 export const RELEASE = Object.freeze({
- sourceSha: "PENDING_SOURCE_SHA",
- baseSha: "PENDING_BASE_SHA",
- sourceCiRunId: "PENDING_CI_RUN", sourceCiRunAttempt: "1", artifactId: 0,
- artifactSha256: "PENDING_ARTIFACT_HASH",
- packageSha256: "PENDING_PACKAGE_HASH",
+ sourceSha: "171c1cb07e5b8b405904ad8e3504b6e1ea93607b",
+ baseSha: "329f9bf7eabc126ca34a3882939ad318a72953ef",
+ sourceCiRunId: "39447727509", sourceCiRunAttempt: "1", artifactId: 12278103855,
+ artifactSha256: "4a7373a14f1cbde96065edec98f0c1f9deae86f6671d42bf92645b7ecc635965",
+ packageSha256: "30391293bc92336473d49fb3ada5705dfb131143db6ee52cdda0964ebc19a75c",
 });
 export const TARGETS = Object.freeze(["functions:requestAccountDeletion"]);
 const PROJECTS = Object.freeze({dev: "catchdates-dev", prod: "catch-dating-app-64e51"});
