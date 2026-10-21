@@ -13,10 +13,10 @@ export type PublicContactDocument = Readonly<{
 }>;
 
 // Deliberately narrower than all RFC mailboxes: these bytes are safe in mailto hrefs.
-const emailPattern = /^[a-z0-9][a-z0-9._%+-]*@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/u;
+const emailPattern = /^[a-z0-9][a-z0-9._+-]*@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/u;
 
 export function validPublicContactEmail(value: unknown): value is string {
-  return typeof value === "string" && value.length <= 254 && emailPattern.test(value);
+  return typeof value === "string" && value.length <= 254 && !value.includes("..") && emailPattern.test(value);
 }
 
 export function parsePublicContactDocument(value: unknown): PublicContactDocument | null {

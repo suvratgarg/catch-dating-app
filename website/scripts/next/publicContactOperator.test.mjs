@@ -30,4 +30,5 @@ test("rejects malformed existing data and unsafe destinations", () => {
   assert.throws(() => planPublicContactChange({secret: true}, "absent", "suvrat.garg@gmail.com"), /malformed/u);
   assert.throws(() => planPublicContactChange(null, "absent", "a@example.org?subject=bad"), /Invalid/u);
   assert.throws(() => planPublicContactChange(null, "absent", "a@example.org\r\nBcc:bad"), /Invalid/u);
+  assert.throws(() => planPublicContactChange(null, "absent", "a%0d%0a@example.org"), /Invalid/u);
 });

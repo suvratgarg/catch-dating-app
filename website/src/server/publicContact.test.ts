@@ -19,6 +19,7 @@ it("projects only the allowed public email and observes a new document on the ne
 it.each([
   null, {}, doc(0, "support@example.org"), doc(1, "Bad Name <support@example.org>"),
   doc(1, "support@example.org?subject=bad"), doc(1, "SUPPORT@example.org"),
+  doc(1, "support%0d%0a@example.org"), doc(1, "support..team@example.org"),
   {...doc(1, "support@example.org"), privateKey: "secret"},
 ])("uses the source-controlled Gmail address for missing or malformed config: %j", async value => {
   expect(parsePublicContactDocument(value)).toBeNull();
