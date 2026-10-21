@@ -42,6 +42,9 @@ export async function dispatchDueHostMetaLeads(input: {
 
 export const dispatchHostAcquisitionMeta = onSchedule({
   schedule: "every 1 minutes", region: "asia-south1", maxInstances: 1,
+  // Dedicated identity is provisioned only by a separately approved release.
+  // Never attach this credential to the shared Functions runtime account.
+  serviceAccount: "catch-host-meta-delivery@",
   timeoutSeconds: 300, retryCount: 0, secrets: [metaToken],
 }, async () => {
   if (!hostServerMeasurementEnabled || !hostMetaDeliveryEnabled) return;

@@ -30,6 +30,8 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
   assert.equal(result.enabled, false);
   assert.equal(path.basename(result.outputPath), ".env.catchdates-dev");
   assert.equal(fs.readFileSync(result.outputPath, "utf8"), [
+    'CATCH_HOST_OPERATOR_ALERTS_ENABLED="false"',
+    'CATCH_HOST_OPERATOR_ALERTS_SINCE=" "',
     'ALGOLIA_APPLICATION_ID="CATCHDEV01"',
     'RAZORPAY_PUBLIC_KEY_ID="rzp_test_example123"',
     'FORM_RAZORPAY_PARTNER_CONFIG_VERSION=" "',
@@ -79,6 +81,8 @@ test("empty GitHub repository variables default Meta to disabled", () => {
   });
   assert.equal(result.enabled, false);
   assert.equal(fs.readFileSync(result.outputPath, "utf8"), [
+    'CATCH_HOST_OPERATOR_ALERTS_ENABLED="false"',
+    'CATCH_HOST_OPERATOR_ALERTS_SINCE=" "',
     'ALGOLIA_APPLICATION_ID="CATCHDEV01"',
     'RAZORPAY_PUBLIC_KEY_ID="rzp_test_example123"',
     'FORM_RAZORPAY_PARTNER_CONFIG_VERSION=" "',
@@ -659,4 +663,13 @@ test("verified materialization alone owns the canonical deployment digest marker
     for (const marker of ["", "c".repeat(64)]) assert.throws(() => prepareFunctionsParamsForDeploy({functionsDir, projectId,
       environment: {...publicIds, CATCH_DEPLOY_CONFIG_SHA256: marker}}), /reserved/);
   } finally { fs.rmSync(functionsDir, {recursive: true, force: true}); }
+});
+
+test("ordinary deployment cannot activate Host operator alerts", () => {
+  for (const config of [{CATCH_HOST_OPERATOR_ALERTS_ENABLED: "true"},
+    {CATCH_HOST_OPERATOR_ALERTS_SINCE: "2026-10-21T00:00:00Z"}]) {
+    assert.throws(() => prepareFunctionsParamsForDeploy({functionsDir: fixture(),
+      projectId: "catchdates-dev", environment: {...publicIds, ...config}}),
+    /separately reviewed runtime activation/);
+  }
 });
