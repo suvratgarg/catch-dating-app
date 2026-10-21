@@ -226,7 +226,7 @@ class AppAnalytics {
     _hostExpiryTimer?.cancel();
     // Start disabling synchronously, before persistence or another action.
     final denied = _hostPermission?.apply(false) ?? Future<void>.value();
-    final operation = _hostChoiceWork.catchError((Object _) {}).then((_) async {
+    final operation = _hostChoiceWork.then((_) async {
       await denied;
       final expiry = await _hostChoiceStore.save(granted);
       if (revision != _hostChoiceRevision) return;
@@ -234,8 +234,14 @@ class AppAnalytics {
       await _hostPermission?.apply(granted && _shouldCollect);
       if (revision == _hostChoiceRevision) _scheduleHostExpiry();
     });
-    _hostChoiceWork = operation;
-    return operation;
+    final completion = Completer<void>();
+    _hostChoiceWork = operation.then<void>(completion.complete).catchError((
+      Object error,
+      StackTrace stack,
+    ) {
+      completion.completeError(error, stack);
+    });
+    return completion.future;
   }
 
   void _scheduleHostExpiry() {

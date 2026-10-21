@@ -11,7 +11,6 @@ import {deliverHostMetaLead, prepareHostMetaDelivery,
 import {nextPilotReview, recordHostPilotActivation} from "./pilotActivation";
 
 const enabled = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
-const options = {skip: !enabled};
 const now = 1792512000000;
 let app: App;
 let db: Firestore;
@@ -32,7 +31,7 @@ const grant = (capability: string) => ({
 });
 
 test("real transactions converge to revoked despite concurrent grants",
-  options, async () => {
+  {skip: !enabled}, async () => {
     const capability = randomBytes(32).toString("hex");
     const run = (action: "grant" | "revoke") => recordHostConsent({db,
       enabled: true, now: () => now, request: action === "grant" ?
@@ -48,7 +47,7 @@ test("real transactions converge to revoked despite concurrent grants",
   });
 
 test("real grant replay does not extend its 30-day lifetime",
-  options, async () => {
+  {skip: !enabled}, async () => {
     const capability = randomBytes(32).toString("hex");
     const input = {db, enabled: true, request: grant(capability)};
     const first = await recordHostConsent({...input, now: () => now});
@@ -82,7 +81,7 @@ async function queuedLead() {
 }
 
 test("concurrent real Firestore workers submit once and erase browser context",
-  options, async () => {
+  {skip: !enabled}, async () => {
     const f = await queuedLead();
     let calls = 0;
     const run = () => deliverHostMetaLead({db, eventId: f.eventId,
@@ -99,7 +98,7 @@ test("concurrent real Firestore workers submit once and erase browser context",
   });
 
 test("withdrawal stops queued delivery and clears retained context",
-  options, async () => {
+  {skip: !enabled}, async () => {
     const f = await queuedLead();
     await recordHostConsent({db, enabled: false,
       request: {action: "revoke", capability: f.capability}, now: () => now});
@@ -114,7 +113,7 @@ test("withdrawal stops queued delivery and clears retained context",
   });
 
 test("ambiguous transport outcome is durable and never automatically retried",
-  options, async () => {
+  {skip: !enabled}, async () => {
     const f = await queuedLead();
     let calls = 0;
     const run = () => deliverHostMetaLead({db, eventId: f.eventId,
@@ -129,7 +128,7 @@ test("ambiguous transport outcome is durable and never automatically retried",
   });
 
 test("competing reviewed check-ins create one private activation receipt",
-  options, async () => {
+  {skip: !enabled}, async () => {
     const organizerId = randomUUID();
     const eventId = randomUUID();
     await db.doc(`organizers/${organizerId}`).set({});

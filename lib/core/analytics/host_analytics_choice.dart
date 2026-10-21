@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/core/app_error_context.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// A device-local choice, separate from notification preferences, account
@@ -19,11 +21,36 @@ final class HostAnalyticsChoiceStore {
   final Future<bool> Function(String) _write;
   final DateTime Function() _now;
 
-  static Future<String?> _readPreferences() async =>
-      (await SharedPreferences.getInstance()).getString(storageKey);
+  static Future<String?> _readPreferences() => withAppErrorContext(
+    () async => (await SharedPreferences.getInstance()).getString(storageKey),
+    context: const AppErrorContext(
+      operation: AppOperation.localPersistence,
+      action: 'read Host analytics choice',
+      resource: 'shared_preferences',
+    ),
+    mapper: _storageError,
+  );
 
-  static Future<bool> _writePreferences(String value) async =>
-      (await SharedPreferences.getInstance()).setString(storageKey, value);
+  static Future<bool> _writePreferences(String value) => withAppErrorContext(
+    () async =>
+        (await SharedPreferences.getInstance()).setString(storageKey, value),
+    context: const AppErrorContext(
+      operation: AppOperation.localPersistence,
+      action: 'save Host analytics choice',
+      resource: 'shared_preferences',
+    ),
+    mapper: _storageError,
+  );
+
+  static AppException _storageError(
+    Object error,
+    StackTrace stack,
+    BackendErrorContext context,
+  ) => BackendOperationException(
+    code: 'host-analytics-choice-unavailable',
+    message: 'Your analytics choice could not be read or saved.',
+    context: context,
+  );
 
   /// Legacy, expired, malformed and unavailable storage all mean denied.
   Future<DateTime?> permittedUntil() async {

@@ -71,13 +71,14 @@ void main() {
       final reporter = _Reporter();
       final pendingGrant = Completer<void>();
       reporter.pendingGrant = pendingGrant.future;
+      reporter.grantStarted = Completer<void>();
       final gate = HostAnalyticsPermissionGate(
         setCollection: reporter.setCollectionEnabled,
         clearUserId: () => reporter.setUserId(null),
         privacy: reporter,
       );
       final grant = gate.apply(true);
-      await Future<void>.delayed(Duration.zero);
+      await reporter.grantStarted!.future;
       final withdrawal = gate.apply(false);
       expect(gate.allowed, isFalse);
       pendingGrant.complete();
@@ -108,6 +109,56 @@ void main() {
       expect(reporter.events, isEmpty);
     },
   );
+
+  test(
+    'SDK grant failure reaches its caller and withdrawal still runs',
+    () async {
+      final reporter = _Reporter();
+      final pendingGrant = Completer<void>();
+      reporter.pendingGrant = pendingGrant.future;
+      final started = Completer<void>();
+      reporter.grantStarted = started;
+      final gate = HostAnalyticsPermissionGate(
+        setCollection: reporter.setCollectionEnabled,
+        clearUserId: () => reporter.setUserId(null),
+        privacy: reporter,
+      );
+      final grant = gate.apply(true);
+      final failure = expectLater(grant, throwsStateError);
+      await started.future;
+      pendingGrant.completeError(StateError('Synthetic SDK failure'));
+      await failure;
+      expect(gate.allowed, isFalse);
+      await gate.apply(false);
+      expect(reporter.enabled, isFalse);
+      expect(reporter.granted, isFalse);
+    },
+  );
+
+  test('failed choice persistence cannot block a later withdrawal', () async {
+    final reporter = _Reporter();
+    var writes = 0;
+    final analytics = AppAnalytics(
+      reporter: reporter,
+      shouldCollect: true,
+      hostRole: true,
+      hostChoiceStore: HostAnalyticsChoiceStore(
+        read: () async => null,
+        write: (_) async => ++writes > 1,
+      ),
+    );
+    await analytics.initialize();
+    await expectLater(
+      analytics.setHostAnalyticsPermission(true),
+      throwsStateError,
+    );
+    expect(analytics.hostAnalyticsAllowed, isFalse);
+    await analytics.setHostAnalyticsPermission(false);
+    expect(writes, 2);
+    expect(analytics.hostAnalyticsChoiceGranted, isFalse);
+    expect(reporter.enabled, isFalse);
+    expect(reporter.granted, isFalse);
+  });
 
   test('operation completion does not replay across consent changes', () async {
     final reporter = _Reporter();
@@ -161,6 +212,7 @@ final class _Reporter
   bool granted = true;
   int resets = 0;
   Future<void>? pendingGrant;
+  Completer<void>? grantStarted;
   final events = <Map<String, Object>>[];
   final screens = <String>[];
   final userIds = <String?>[];
@@ -169,7 +221,11 @@ final class _Reporter
   Future<void> setCollectionEnabled(bool value) async => enabled = value;
   @override
   Future<void> setHostAnalyticsConsent(bool value) async {
-    if (value) await pendingGrant;
+    if (value) {
+      grantStarted?.complete();
+      grantStarted = null;
+      await pendingGrant;
+    }
     granted = value;
   }
 

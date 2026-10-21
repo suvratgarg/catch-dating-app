@@ -1,3 +1,5 @@
+import 'dart:async';
+
 /// Catch Host product diagnostics only. These events are not advertising
 /// conversions, and event creation never proves first real event activation.
 const _hostEvents = {
@@ -52,7 +54,7 @@ final class HostAnalyticsPermissionGate {
   Future<void> apply(bool granted, {bool resetData = true}) {
     final revision = ++_revision;
     _allowed = false;
-    final operation = _pending.catchError((Object _) {}).then((_) async {
+    final operation = _pending.then((_) async {
       await setCollection(false);
       await clearUserId();
       await privacy.setHostAnalyticsConsent(false);
@@ -63,7 +65,15 @@ final class HostAnalyticsPermissionGate {
       await setCollection(true);
       if (revision == _revision) _allowed = true;
     });
-    _pending = operation;
-    return operation;
+    // Return each failure to its caller while allowing a later withdrawal to
+    // run. The sequencing tail itself must not remain failed.
+    final completion = Completer<void>();
+    _pending = operation.then<void>(completion.complete).catchError((
+      Object error,
+      StackTrace stack,
+    ) {
+      completion.completeError(error, stack);
+    });
+    return completion.future;
   }
 }
