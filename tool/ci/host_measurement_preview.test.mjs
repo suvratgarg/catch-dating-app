@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
-import {release, assertInvocation, assertCi, prepare, verifyPackage, verifyPostDeployPackage,
+import {release, digest, assertInvocation, assertCi, prepare, verifyPackage, verifyPostDeployPackage,
   assertResponse} from './host_measurement_preview.mjs';
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const source = path.join(root, 'website');
@@ -24,8 +24,10 @@ function addFirebaseCache(destination) {
   const directory = path.join(destination, '.firebase');
   fs.mkdirSync(directory);
   const names = ['catch-acquisition-runtime.html', 'catch-acquisition-runtime.js'];
-  const lines = names.map((name, index) =>
-    `${name},${fs.statSync(path.join(destination, 'measurement-runtime', name)).mtime.getTime()},${String(index + 1).repeat(64)}`);
+  const lines = names.map(name => {
+    const file = path.join(destination, 'measurement-runtime', name);
+    return `${name},${fs.statSync(file).mtime.getTime()},${digest(fs.readFileSync(file))}`;
+  });
   const file = path.join(directory, 'hosting.bWVhc3VyZW1lbnQtcnVudGltZQ.cache');
   fs.writeFileSync(file, `${lines.join('\n')}\n`);
   return {directory, file, lines};
@@ -96,6 +98,7 @@ test('post-deploy verification rejects unexpected cache paths, links, stale meta
     lines => [lines[0], lines[0]],
     lines => [lines[0].replace(/,[0-9]+,/u, ',1,'), lines[1]],
     lines => [lines[0].replace(/[a-f0-9]{64}$/u, 'wrong'), lines[1]],
+    lines => [lines[0].replace(/[a-f0-9]{64}$/u, '0'.repeat(64)), lines[1]],
   ]) {
     destination = fresh(); cache = addFirebaseCache(destination);
     fs.writeFileSync(cache.file, `${change(cache.lines).join('\n')}\n`);

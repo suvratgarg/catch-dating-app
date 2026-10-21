@@ -101,6 +101,8 @@ export function verifyPostDeployPackage(destination, sourceSha) {
     assert.equal(Number(mtime), fs.statSync(path.join(destination, 'measurement-runtime', name)).mtime.getTime(),
       `Stale Firebase cache timestamp: ${name}`);
     assert.match(hash, /^[a-f0-9]{64}$/u, 'Invalid Firebase cache hash');
+    assert.equal(hash, digest(fs.readFileSync(path.join(destination, 'measurement-runtime', name))),
+      `Stale Firebase cache hash: ${name}`);
     names.push(name);
   }
   assert.deepEqual(names.sort(), expectedNames);
