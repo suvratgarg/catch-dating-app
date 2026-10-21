@@ -1,6 +1,6 @@
 ---
 doc_id: ads_conversion_spec
-version: 0.7.1
+version: 0.7.2
 updated: 2026-10-21
 owner: marketing_website
 status: active
@@ -314,6 +314,16 @@ privacy restrictions before using a snapshot; cleanup completion is not an
 authorization signal. Cohort joins and qualification/response history remain
 separate implementation work. This capture preparation enables no collection,
 provider delivery, reporting endpoint or production measurement.
+
+The approved response calendar is Monday-Saturday, 09:00-18:00 Asia/Kolkata,
+excluding Sundays only. One business day means nine working hours from the
+accepted application receipt; outside-hours time is paused. For example, a
+Saturday 17:00 application is due Monday 17:00, and a Sunday application is due
+Monday 18:00. Public holidays are not silently excluded. The deterministic
+`hostResponseDueAt` helper calculates this deadline without using the server's
+local timezone. An automatic operator email, delivery receipt or stage change
+does not establish a human response. Authoritative response capture and report
+integration remain pending; this helper alone enables no SLA reporting or sends.
 
 ## Outcome deduplication
 
