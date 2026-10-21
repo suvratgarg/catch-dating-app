@@ -243,6 +243,15 @@ New campaigns require a reviewed vocabulary change. There is no URL-passthrough,
 deployed Meta delivery. The versioned server handoff is prepared and disabled. The preview and deterministic tests are acceptance
 steps, not proof of a paid click being attributed.
 
+The prepared dispatcher reads at most 20 pending/sending records through the
+`hostAcquisitionDeliveries` status/nextAttemptAt composite index. Deploy and
+verify this index before exporting the scheduled dispatcher. Its runtime secret,
+`CATCH_HOST_META_CONVERSIONS_TOKEN`, must belong to a dedicated Catch identity;
+shared business conversion identities are unsuitable. The dispatcher remains
+unexported and both server measurement and Meta delivery gates remain false
+until credential access, synthetic provider acceptance and activation receive
+their separate reviews. Index source alone does not establish readiness.
+
 ## Outcome deduplication
 
 Waitlist and host application controllers call `trackAcceptedMarketingLead` only

@@ -23,6 +23,9 @@ export async function dispatchDueHostMetaLeads(input: {
   const counts = {examined: 0, accepted: 0, unknown: 0};
   if (!input.enabled) return counts;
   const now = input.now ?? Date.now;
+  // The index scanner consumes this declaration as one line.
+  // eslint-disable-next-line max-len
+  // firestore-index: hostAcquisitionDeliveries (status:ASCENDING,nextAttemptAt:ASCENDING)
   const due = await input.db.collection(HOST_DELIVERY_COLLECTION)
     .where("status", "in", ["pending", "sending"])
     .where("nextAttemptAt", "<=", now())
