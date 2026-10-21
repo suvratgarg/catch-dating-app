@@ -113,8 +113,9 @@ script load and correctly queued events.
 Google script and Analytics collection endpoints, and only the reviewed preview
 parent may embed it. There are no rewrites, application APIs, credentials or
 production parent permission. No arbitrary preview host, localhost or query flag
-can activate the transport. Site creation and exact-source deployment still need
-completion; configuration in Git is not a deployed Hosting release.
+can activate the transport. The approved empty site was created and read back on
+2026-10-21. Exact-source content deployment and provider receipt remain pending;
+configuration in Git is not a deployed Hosting release.
 
 The runtime loads Google's SDK only after a validated analytics event and supplies
 canonical page context, a closed parameter projection, a random consented client
