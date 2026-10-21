@@ -6,13 +6,14 @@ export const catchLiveDestinations = Object.freeze({
   enabled: false,
   serverConsentEnabled: false,
   previewOrigin: "https://catch-dating-app-64e51--next-candidate-tnpxnhes.web.app",
+  runtimeOrigin: "https://catch-host-measurement.web.app",
   googleMeasurementId: "G-HZFG0DL2DK",
   googleAdsLeadDestination: "AW-18526407471/dUL7CNKBn6MdEK-WioJF",
 });
 
-export type CatchMeasurementMode = "disabled" | "google-preview-v1" | "google-live-v1" | "host-server-live-v1";
+export type CatchMeasurementMode = "disabled" | "google-preview-v2" | "google-live-v1" | "host-server-live-v1";
 export function catchMeasurementMode(origin = typeof window === "undefined" ? "" : window.location.origin): CatchMeasurementMode {
-  if (origin === catchLiveDestinations.previewOrigin) return "google-preview-v1";
+  if (origin === catchLiveDestinations.previewOrigin) return "google-preview-v2";
   return catchLiveDestinations.enabled && origin === "https://catchdates.com" ?
     catchLiveDestinations.serverConsentEnabled ? "host-server-live-v1" : "google-live-v1" : "disabled";
 }
@@ -28,12 +29,12 @@ function browserEnvironment(): RuntimeEnvironment {
   return {
     create() {
       const frame = document.createElement("iframe");
-      frame.setAttribute("sandbox", "allow-scripts");
+      frame.setAttribute("sandbox", "allow-scripts allow-same-origin");
       frame.referrerPolicy = "no-referrer";
       frame.hidden = true;
       frame.setAttribute("aria-hidden", "true");
       frame.title = "Catch acquisition measurement";
-      frame.src = "/catch-acquisition-runtime.html";
+      frame.src = `${catchLiveDestinations.runtimeOrigin}/catch-acquisition-runtime.html`;
       return frame;
     },
     mount(frame) { document.body.appendChild(frame as HTMLIFrameElement); },
@@ -41,8 +42,9 @@ function browserEnvironment(): RuntimeEnvironment {
   };
 }
 
-/** This factory never consumes window.dataLayer or an external gtag. An opaque
- * frame cannot read Catch's DOM/storage and is removed on every lifecycle exit.
+/** This factory never consumes window.dataLayer or an external gtag. The separate
+ * origin cannot read Catch's DOM/storage. Shutdown blocks transport and clears
+ * its own cookies before acknowledging removal, with a bounded fallback.
  * Attribution is supplied only by the consented browser context. Provider
  * receipt and real ad-click attribution still require separate live acceptance. */
 export function createCatchLiveGoogleSession(
@@ -55,13 +57,13 @@ export function createCatchLiveGoogleSession(
   const pending: SafeAcquisitionEvent[] = [];
   const post = (event: SafeAcquisitionEvent) => frame.contentWindow?.postMessage({
     type: "catch:acquisition-event", channel, event,
-  }, "*");
+  }, catchLiveDestinations.runtimeOrigin);
   const loaded = () => {
     if (destroyed) return;
     ready = true;
     frame.contentWindow?.postMessage({type: "catch:acquisition-init", channel,
       measurementId: catchLiveDestinations.googleMeasurementId,
-      leadDestination: catchLiveDestinations.googleAdsLeadDestination}, "*");
+      leadDestination: catchLiveDestinations.googleAdsLeadDestination}, catchLiveDestinations.runtimeOrigin);
     for (const event of pending.splice(0)) post(event);
   };
   frame.addEventListener("load", loaded, {once: true});
@@ -75,10 +77,24 @@ export function createCatchLiveGoogleSession(
       else if (pending.length < 20) pending.push(event);
     },
     destroy() {
+      if (destroyed) return;
       destroyed = true;
       pending.length = 0;
       frame.removeEventListener("load", loaded);
-      frame.remove();
+      if (!ready) { frame.remove(); return; }
+      let timer: ReturnType<typeof setTimeout>;
+      const remove = () => {
+        clearTimeout(timer);
+        window.removeEventListener("message", stopped);
+        frame.remove();
+      };
+      const stopped = (message: MessageEvent) => {
+        if (message.source === frame.contentWindow && message.origin === catchLiveDestinations.runtimeOrigin &&
+            message.data?.type === "catch:acquisition-stopped" && message.data.channel === channel) remove();
+      };
+      window.addEventListener("message", stopped);
+      timer = setTimeout(remove, 1000);
+      frame.contentWindow?.postMessage({type: "catch:acquisition-stop", channel}, catchLiveDestinations.runtimeOrigin);
     },
   };
 }

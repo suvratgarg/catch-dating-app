@@ -1,6 +1,6 @@
 ---
 doc_id: ads_conversion_spec
-version: 0.6.0
+version: 0.7.0
 updated: 2026-10-21
 owner: marketing_website
 status: active
@@ -100,38 +100,69 @@ transport. Its fixed destinations are GA4 `G-HZFG0DL2DK` (property
 The Ads action is secondary, counts one conversion per click, and has no
 assigned monetary lead value. Account configuration is not proof of event receipt.
 
-The runtime is a separate opaque-origin iframe with only `allow-scripts` and
-`no-referrer`. It cannot read the parent DOM, storage or diagnostic bus.
-Lifecycle destruction removes the frame and cancels its bounded initial-load
-queue. It supplies explicit canonical page context, disables automatic views,
-Google signals, personalization and URL passthrough. A fresh version-4 consent
-receipt may supply a random client identifier with a 30-day maximum lifetime and an inactivity-bound session identifier; the opaque
-frame still cannot read or write parent cookies/storage. Google ad storage and
-personalisation remain denied; analytics storage permission follows the explicit
-analytics choice and ad-user-data permission follows the marketing choice.
-Only the four currently wired events are supported; only accepted organiser
-leads with marketing permission emit the Ads destination. Meta's Catch Acquisition
-dataset exists, but this source has no configured live Meta transport yet.
+The preview runtime is hosted separately at `https://catch-host-measurement.web.app`
+with `allow-scripts allow-same-origin` and `no-referrer`. Its actual origin and
+exact preview parent are checked before initialization. Cross-origin browser
+isolation prevents parent DOM, storage and diagnostic-bus access; this runtime
+must never be served from the Catch application origin. The old opaque sandbox
+blocked Google's own cookie-access check, aborting collection despite a successful
+script load and correctly queued events.
 
-The exact isolated Next preview origin is allowed to exercise GA4 with
-`debug_mode: true` and `traffic_type: internal`; Ads conversion sends are hard
-blocked on that origin. Production stays disabled. No arbitrary preview host,
-localhost or query flag can activate the transport.
+`website/measurement-hosting.json` publishes only the two static files in
+`website/measurement-runtime/` to the dedicated site. Its CSP permits the fixed
+Google script and Analytics collection endpoints, and only the reviewed preview
+parent may embed it. There are no rewrites, application APIs, credentials or
+production parent permission. No arbitrary preview host, localhost or query flag
+can activate the transport. Site creation and exact-source deployment still need
+completion; configuration in Git is not a deployed Hosting release.
 
-The prepared browser context is Host-scoped in first-party storage for at most 30 days and is created
-only when that transport is enabled and a fresh version-4 choice permits analytics.
-The random analytics session ID rotates after 30 minutes of inactivity while the
-client and attribution context have a fixed 30-day lifetime. Marketing permission additionally permits validated gclid/gbraid/wbraid/fbclid.
-Google receives only Google click identifiers, rebuilt into the canonical page
-location; Meta identifiers are not forwarded by this transport. GA4 campaign
-labels also map to its documented campaign_source/medium/name/content fields.
-Source preparation does **not** establish provider receipt or ad-click attribution.
-Do not enable automated conversion bidding or claim campaign-level conversion
-proof from a successful form submission or a synthetic network test. Before changing the `enabled`
-gate, validate actual provider receipt and isolation, revise consent copy (which
-currently says integrations are disabled), require a fresh consent receipt,
-and review an explicit attribution design. A production deployment and ad
-launch remain separate steps.
+The runtime loads Google's SDK only after a validated analytics event and supplies
+canonical page context, a closed parameter projection, a random consented client
+ID and session ID. Automatic views, Google signals, ad personalization and URL
+passthrough are disabled. All advertising consent purposes stay denied, including
+when a caller supplies marketing permission. Preview sends no Ads conversion or
+click identifiers. GA4 events carry `debug_mode: true` and `traffic_type: internal`.
+Only the four currently wired events are accepted; accepted leads are deduplicated
+by their opaque server receipt. Account-side derived events require separate audit.
+
+Google's own `catch_host`-prefixed cookies use host-only scope, Secure and
+SameSite=None. Their maximum lifetime is the remaining portion of the original
+random client ID's 30-day lifetime, with cookie refresh disabled. They cannot read
+or write Catch-site cookies. A fresh `google-preview-v2` consent choice is required;
+v1 or disabled-mode choices cannot silently authorize this repair. Browser privacy
+settings may suppress third-party cookies or requests; do not bypass that choice.
+
+On withdrawal, downgrade or lifecycle shutdown, the parent stops accepting events
+and discards its bounded startup queue. A channel- and origin-checked stop message
+disables the destination, tightens the frame CSP to block further networking and
+clears owned cookies before acknowledging frame removal. A one-second fallback
+removes an unresponsive frame; in that exceptional case cookie deletion is not
+confirmed and the fixed expiry remains the backstop. Already sent requests cannot
+be retracted. Initialization also clears previous SDK cookies, and pagehide performs
+cleanup. Sibling frames share this dedicated cookie origin; their event identities
+remain supplied by the separate consent owner, never inferred from SDK cookies.
+
+The first-party browser context is Host-scoped for at most 30 days and is created
+only when the transport is enabled and a fresh version-4 choice permits analytics.
+The random session ID rotates after 30 minutes of inactivity; client and campaign
+context have a fixed 30-day lifetime. The prepared context can retain validated
+click identifiers with marketing permission, but this preview runtime never sends
+them. Closed GA4 campaign labels map to campaign_source/medium/name/content.
+Production Google and Meta transports remain disabled.
+
+Real Chromium testing of the replacement source with collection intercepted
+verified page views, one accepted-lead event, parent isolation, private canary
+exclusion, bounded Secure cookies and acknowledged withdrawal with zero remaining
+cookies or subsequent requests. This proves browser behavior, not Google receipt.
+A browser privacy-toggle experiment did not actually suppress cookies and is not
+blocked-cookie compatibility proof. Safari/native/browser privacy acceptance,
+real deployed preview receipt and live ad-click attribution remain open. On
+2026-10-21, the Google tag's Allow user-provided data capabilities setting was
+disabled and its saved off state independently reopened; enhanced measurement
+was also observed off. Do not enable automated bidding or claim
+campaign attribution from a form response or intercepted request. Production
+activation requires separate permission, refreshed copy and consent, exact-source
+deployment and live acceptance. Ad launch remains a separate approval.
 
 ## Boundary and current delivery
 
