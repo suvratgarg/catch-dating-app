@@ -58,7 +58,11 @@ timeout, no redirects, no automatic network retry, and a bounded response body.
 The disabled scheduled dispatcher examines at most 20 due entries per minute,
 with current authority rechecked for each row. Its due-work index, exported
 deployment binding, approved server credential and real destination receipt
-remain unfinished; this is not a deployed delivery service.
+remain unfinished; this is not a deployed delivery service. The future credential is declared
+under the explicit `host-acquisition-meta` readiness capability while the
+dispatcher is unexported. A later export must add its exact Function consumer
+to the readiness requirement and pass source-bound credential checks before
+release; ordinary current Function deployments do not request this credential.
 
 ### Host app permission preparation
 
