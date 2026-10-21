@@ -30,6 +30,17 @@ it("uses the source-controlled Gmail address if Firestore is unavailable", async
   expect(await loadPublicContact(async () => {throw new Error("unavailable");})).toEqual(fallbackPublicContact);
 });
 
+it("uses the source-controlled Gmail address when a Firestore read never resolves", async () => {
+  vi.useFakeTimers();
+  try {
+    const result = loadPublicContact(() => new Promise<never>(() => {}));
+    await vi.advanceTimersByTimeAsync(2_000);
+    expect(await result).toEqual(fallbackPublicContact);
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
 it("does not share one request's contact with another or retain it after failure", async () => {
   const first = await loadPublicContact(async () => doc(3, "first@example.org"));
   const second = await loadPublicContact(async () => doc(4, "second@example.org"));
