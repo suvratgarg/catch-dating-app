@@ -16,6 +16,7 @@ import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
+import 'package:catch_dating_app/safety/presentation/host_analytics_consent_dialog.dart';
 import 'package:catch_dating_app/safety/presentation/settings_account_state.dart';
 import 'package:catch_dating_app/safety/presentation/settings_account_view_model.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
@@ -108,21 +109,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _chooseHostAnalytics() async {
     if (_operationPending) return;
-    final granted = await showCatchAdaptiveDialog<bool>(
-      context: context,
-      title: context.l10n.hostAnalyticsPrivacyTitle,
-      message: context.l10n.hostAnalyticsPrivacyBody,
-      actions: [
-        CatchDialogAction(
-          label: context.l10n.hostAnalyticsPrivacyDeny,
-          value: false,
-        ),
-        CatchDialogAction(
-          label: context.l10n.hostAnalyticsPrivacyAllow,
-          value: true,
-        ),
-      ],
-    );
+    final granted = await showHostAnalyticsConsentDialog(context);
     if (granted == null || !mounted || _operationPending) return;
     try {
       await SettingsController.saveHostAnalyticsMutation.run(
