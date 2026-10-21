@@ -21,6 +21,9 @@ function configuration() {
 
 export const onHostApplicationAccepted = onDocumentCreated({
   document: "salesInboundIntents/{intentId}", region: "asia-south1",
+  // Firebase resolves this to the selected deployment project. Provisioning
+  // is separate; this intake identity must never receive the mailer secret.
+  serviceAccount: "catch-host-alert-intake@",
   retry: true, maxInstances: 2,
 }, async (event) => {
   const config = configuration();
@@ -31,6 +34,7 @@ export const onHostApplicationAccepted = onDocumentCreated({
 
 export const dispatchHostApplicationAlerts = onSchedule({
   schedule: "every 1 minutes", region: "asia-south1", maxInstances: 1,
+  serviceAccount: "catch-host-alert-mailer@",
   timeoutSeconds: 300, retryCount: 0, secrets: [token],
 }, async () => {
   const config = configuration();
