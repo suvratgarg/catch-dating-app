@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/analytics/host_analytics_choice.dart';
+import 'package:catch_dating_app/core/analytics/host_analytics_policy.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -20,10 +22,22 @@ abstract interface class AnalyticsReporter {
   Future<void> setUserId(String? userId);
 }
 
-final class FirebaseAnalyticsReporter implements AnalyticsReporter {
+final class FirebaseAnalyticsReporter
+    implements AnalyticsReporter, HostAnalyticsPrivacyReporter {
   FirebaseAnalyticsReporter(this._analytics);
 
   final FirebaseAnalytics _analytics;
+
+  @override
+  Future<void> setHostAnalyticsConsent(bool granted) => _analytics.setConsent(
+    analyticsStorageConsentGranted: granted,
+    adStorageConsentGranted: false,
+    adUserDataConsentGranted: false,
+    adPersonalizationSignalsConsentGranted: false,
+  );
+
+  @override
+  Future<void> resetHostAnalyticsData() => _analytics.resetAnalyticsData();
 
   @override
   Future<void> setCollectionEnabled(bool enabled) {
@@ -78,17 +92,44 @@ AppAnalytics appAnalytics(Ref ref) => AppAnalytics();
 
 /// Vendor-neutral analytics facade for product and navigation events.
 class AppAnalytics {
-  AppAnalytics({AnalyticsReporter? reporter, bool? shouldCollect})
-    : _shouldCollect = shouldCollect ?? _defaultShouldCollect,
-      _reporter =
-          reporter ?? _defaultReporter(shouldCollect ?? _defaultShouldCollect);
+  AppAnalytics({
+    AnalyticsReporter? reporter,
+    bool? shouldCollect,
+    bool? hostRole,
+    HostAnalyticsChoiceStore? hostChoiceStore,
+  }) : _shouldCollect = shouldCollect ?? _defaultShouldCollect,
+       _hostRole = hostRole ?? AppConfig.appRole.isHost,
+       _hostChoiceStore = hostChoiceStore ?? HostAnalyticsChoiceStore(),
+       _reporter =
+           reporter ??
+           _defaultReporter(shouldCollect ?? _defaultShouldCollect) {
+    final reporter = _reporter;
+    if (_hostRole && reporter is HostAnalyticsPrivacyReporter) {
+      _hostPermission = HostAnalyticsPermissionGate(
+        setCollection: reporter.setCollectionEnabled,
+        clearUserId: () => reporter.setUserId(null),
+        privacy: reporter as HostAnalyticsPrivacyReporter,
+      );
+    }
+  }
 
   final AnalyticsReporter _reporter;
   final bool _shouldCollect;
+  final bool _hostRole;
+  final HostAnalyticsChoiceStore _hostChoiceStore;
+  HostAnalyticsPermissionGate? _hostPermission;
+  DateTime? _hostPermissionExpiry;
+  Timer? _hostExpiryTimer;
+  Future<void> _hostChoiceWork = Future<void>.value();
+  int _hostChoiceRevision = 0;
   Map<String, Object> _baseParameters = const {};
 
+  // Separate source gate: a saved choice cannot activate an unaccepted release.
+  static const hostProductMeasurementEnabled = false;
+
   static bool get _defaultShouldCollect {
-    return AppConfig.shouldCollectObservability;
+    return AppConfig.shouldCollectObservability &&
+        (!AppConfig.appRole.isHost || hostProductMeasurementEnabled);
   }
 
   static AnalyticsReporter _defaultReporter(bool shouldCollect) {
@@ -97,7 +138,22 @@ class AppAnalytics {
   }
 
   Future<void> initialize() async {
-    await _reporter.setCollectionEnabled(_shouldCollect);
+    if (_hostRole) {
+      // Existing installations may have persisted SDK collection=true.
+      // Explicitly deny/reset instead of trusting native default flags.
+      await _reporter.setCollectionEnabled(false);
+      _hostPermissionExpiry = await _hostChoiceStore.permittedUntil();
+      await _hostPermission?.apply(
+        false,
+        resetData: _hostPermissionExpiry == null,
+      );
+      if (_hostPermissionExpiry != null && _shouldCollect) {
+        await _hostPermission?.apply(true);
+        _scheduleHostExpiry();
+      }
+    } else {
+      await _reporter.setCollectionEnabled(_shouldCollect);
+    }
     if (!_shouldCollect) return;
 
     final packageInfo = await PackageInfo.fromPlatform();
@@ -110,7 +166,9 @@ class AppAnalytics {
   }
 
   void logScreenView(String screenName) {
-    if (!_shouldCollect) return;
+    // Shared route names can contain private route context. Host uses only
+    // the closed product event contract, never generic screen reporting.
+    if (!_shouldCollect || _hostRole) return;
     unawaited(
       _reporter.logScreenView(screenName: screenName, screenClass: 'GoRouter'),
     );
@@ -118,7 +176,11 @@ class AppAnalytics {
 
   void logEvent(String name, {Map<String, Object?> parameters = const {}}) {
     if (!_shouldCollect) return;
-    final sanitizedParameters = _sanitizeParameters(parameters);
+    if (_hostRole && !hostAnalyticsAllowed) return;
+    final sanitizedParameters = _hostRole
+        ? hostAnalyticsParameters(name, parameters)
+        : _sanitizeParameters(parameters);
+    if (sanitizedParameters == null) return;
 
     unawaited(
       _reporter.logEvent(
@@ -128,9 +190,68 @@ class AppAnalytics {
     );
   }
 
+  /// Capture permission when a Host operation starts. Completion never replays
+  /// activity begun before consent or across a withdrawal/re-consent cycle.
+  VoidCallback hostEventCompletion(String name) {
+    final permitted = hostAnalyticsAllowed;
+    final revision = _hostChoiceRevision;
+    return () {
+      if (permitted &&
+          revision == _hostChoiceRevision &&
+          hostAnalyticsAllowed) {
+        logEvent(name);
+      }
+    };
+  }
+
   void setUserId(String? userId) {
-    if (!_shouldCollect) return;
+    if (!_shouldCollect || _hostRole) return;
     unawaited(_reporter.setUserId(userId));
+  }
+
+  /// Called only by the versioned Host privacy-choice owner. Permission never
+  /// overrides the environment/release collection gate.
+  bool get hostAnalyticsAllowed =>
+      _hostRole &&
+      _hostPermission?.allowed == true &&
+      hostAnalyticsChoiceGranted;
+
+  bool get hostAnalyticsChoiceGranted =>
+      _hostRole && _hostPermissionExpiry?.isAfter(DateTime.now()) == true;
+
+  Future<void> setHostAnalyticsPermission(bool granted) {
+    if (!_hostRole) return Future<void>.value();
+    final revision = ++_hostChoiceRevision;
+    _hostPermissionExpiry = null;
+    _hostExpiryTimer?.cancel();
+    // Start disabling synchronously, before persistence or another action.
+    final denied = _hostPermission?.apply(false) ?? Future<void>.value();
+    final operation = _hostChoiceWork.then((_) async {
+      await denied;
+      final expiry = await _hostChoiceStore.save(granted);
+      if (revision != _hostChoiceRevision) return;
+      _hostPermissionExpiry = expiry;
+      await _hostPermission?.apply(granted && _shouldCollect);
+      if (revision == _hostChoiceRevision) _scheduleHostExpiry();
+    });
+    final completion = Completer<void>();
+    _hostChoiceWork = operation.then<void>(completion.complete).catchError((
+      Object error,
+      StackTrace stack,
+    ) {
+      completion.completeError(error, stack);
+    });
+    return completion.future;
+  }
+
+  void _scheduleHostExpiry() {
+    _hostExpiryTimer?.cancel();
+    final expiry = _hostPermissionExpiry;
+    if (expiry == null || _hostPermission?.allowed != true) return;
+    _hostExpiryTimer = Timer(expiry.difference(DateTime.now()), () {
+      _hostPermissionExpiry = null;
+      unawaited(_hostPermission?.apply(false));
+    });
   }
 
   /// Logs a normalized backend failure with non-PII operation context.
@@ -250,6 +371,7 @@ abstract final class AnalyticsEvents {
   static const matchCreated = 'match_created';
   static const hostClubCreated = 'host_club_created';
   static const hostEventCreated = 'host_event_created';
+  static const hostEventPublished = 'host_event_published';
   static const swipeSent = 'swipe_sent';
   static const matchViewed = 'match_viewed';
   static const chatMessageSent = 'chat_message_sent';

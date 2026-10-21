@@ -56,9 +56,22 @@ test("checked manifest validates offline without invoking gcloud", () => {
   );
 
   assert.equal(execution.exitCode, 0);
-  assert.equal(execution.report.secretCount, 18);
-  assert.equal(execution.report.requirementCount, 23);
+  assert.equal(execution.report.secretCount, 19);
+  assert.equal(execution.report.requirementCount, 24);
   assert.equal(commandCalls, 0);
+});
+
+test("future Host Meta credential is opt-in and excluded from ordinary deployments", () => {
+  for (const environment of manifest.environments) {
+    for (const targets of [["all"], ["functions"],
+      ["functions:joinWaitlist", "functions:hostAcquisitionConsent", "functions:onHostPilotCheckIn"]]) {
+      assert.equal(selectReadinessRequirements({environment, manifest, targets})
+        .some((entry) => entry.name === "CATCH_HOST_META_CONVERSIONS_TOKEN"), false);
+    }
+    const selected = selectReadinessRequirements({environment, manifest,
+      capabilities: ["host-acquisition-meta"]});
+    assert.deepEqual(selected.map((entry) => entry.name), ["CATCH_HOST_META_CONVERSIONS_TOKEN"]);
+  }
 });
 
 test("manifest completeness catches missing and dynamic defineSecret declarations", () => {

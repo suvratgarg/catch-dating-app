@@ -26,6 +26,7 @@ export interface SalesPrivacyInventory {
 
 /** Only these private, organizer-scoped collections can enter a cleanup plan. */
 export const DIRECT_SALES_COLLECTIONS = [
+  "hostPilotEventReviews", "hostOrganizerActivations",
   "salesPartnerAssignments", "salesTasks", "salesOpportunities", "salesActivities",
   "salesEvidence", "salesEvidenceProposals", "salesInboundIntents",
   "salesContactRelationships", "salesSuppressionDecisions", "salesIntakeLinks",

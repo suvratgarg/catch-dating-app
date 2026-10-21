@@ -3629,6 +3629,81 @@ export interface SalesEvidenceProposalsDocument {
 }
 
 /**
+ * Private anonymous device permission, keyed by a domain-separated capability hash. Revocation tombstones cannot be reactivated; fresh permission requires a new capability.
+ */
+export interface HostAcquisitionConsentDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  consentId: string;
+  status: "active" | "revoked";
+  authority: {
+    version: 1;
+    purpose: "host_acquisition_measurement";
+    analytics: true;
+    advertising: boolean;
+    chosenAt: number;
+    acceptedAt: number;
+    expiresAt: number;
+    revokedAt: number | null;
+  } | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Private Host pilot review and operational activation evidence. No attendee identity or advertising permission.
+ */
+export interface HostPilotEventReviewDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  eventId: string;
+  organizerId: string;
+  realEvent: boolean;
+  revision: number;
+  reviewedAt: number;
+  reviewedBy: string;
+}
+
+/**
+ * Private Host pilot review and operational activation evidence. No attendee identity or advertising permission.
+ */
+export interface HostOrganizerActivationDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  organizerId: string;
+  eventId: string;
+  receiptId: string;
+  activatedAt: number;
+  recordedAt: number;
+  reviewRevision: number;
+}
+
+/**
+ * Private, bounded Meta Lead delivery. Current consent and the original Sales intent are rechecked before dispatch. Contact data and form answers are excluded.
+ */
+export interface HostAcquisitionDeliveryDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  eventId: string;
+  intentId: string;
+  consentId: string;
+  acceptedAt: number;
+  status: "pending" | "sending" | "accepted" | "unknown" | "stopped";
+  attempts: number;
+  nextAttemptAt: number;
+  attemptId: string | null;
+  lastAttemptAt: number | null;
+  expiresAt: FirebaseFirestore.Timestamp;
+  context: {
+    clientId: string;
+    userAgent: string;
+    fbclid?: string;
+    clickCapturedAt?: number;
+  } | null;
+}
+
+/**
  * Private self-reported host submission, immutable at capture and linked only after identity review.
  */
 export interface SalesInboundIntentsDocument {

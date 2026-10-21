@@ -71,10 +71,11 @@ function layerFor(relativePath) {
   if (parts[0] === "content") return {name: "content"};
   if (parts[0] === "features") return {name: "feature", feature: parts[1] ?? ""};
   if (parts[0] === "generated") return {name: "generated"};
+  if (relativePath.startsWith("shared/contracts/generated/")) return {name: "contract"};
   if (parts[0] === "shared") return {name: "shared"};
   if (parts[0] === "stories") return {name: "story"};
   if (
-    relativePath === "analytics.ts" ||
+    relativePath === "analytics.ts" || relativePath.startsWith("analytics/") ||
     relativePath === "firebase.ts" ||
     relativePath === "firebaseConfig.ts"
   ) {
@@ -153,6 +154,11 @@ function violationFor(sourceRelativePath, sourceLayer, targetLayer, targetRelati
   }
   if (sourceLayer.name === "next-entry") return null;
   if (sourceLayer.name === "story") return null;
+
+  if (sourceLayer.name === "contract") {
+    return targetLayer.name === "contract" ? null :
+      "generated contracts must not import application or UI layers";
+  }
 
   if (sourceLayer.name === "content") {
     if (targetLayer.name !== "content") {
@@ -357,6 +363,17 @@ ownership, and environment-access boundaries.
 }
 
 function runSelfTest() {
+  // Analytics services may share pure contracts, never UI or feature state.
+  assert.deepEqual(layerFor("analytics/hostServerConsent.ts"), {name: "service"});
+  assert.deepEqual(layerFor("shared/contracts/generated/hostAcquisitionConsentHttpRequest.ts"), {name: "contract"});
+  assert.equal(violationFor("analytics/hostServerConsent.ts", {name: "service"}, {name: "contract"}), null);
+  assert.equal(violationFor("analytics/hostServerConsent.ts", {name: "service"}, {name: "service"}), null);
+  for (const layer of ["app", "feature", "shared", "content"]) {
+    assert.match(violationFor("analytics/hostServerConsent.ts", {name: "service"}, {name: layer}), /must stay independent/);
+  }
+  for (const layer of ["app", "feature", "shared", "content", "service", "server"]) {
+    assert.ok(violationFor("shared/contracts/generated/test.ts", {name: "contract"}, {name: layer}));
+  }
   assert.equal(violationFor("features/home/exploreDiscovery.ts", {name: "feature", feature: "home"}, {name: "feature", feature: "events"}, "features/events/eventDetailModel.ts"), null);
   assert.match(violationFor("features/home/exploreDiscovery.ts", {name: "feature", feature: "home"}, {name: "feature", feature: "events"}, "features/events/GuestEventEntry.tsx"), /without a scanner allowlist/);
   const imports = importSpecifiers(`

@@ -423,6 +423,23 @@ export const adminUpdateEventDetailsCallablePayloadSchema: Record<string, unknow
               }
             }
           }
+        },
+        "hostPilotReview": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "realEvent",
+            "expectedRevision"
+          ],
+          "properties": {
+            "realEvent": {
+              "type": "boolean"
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
         }
       }
     }

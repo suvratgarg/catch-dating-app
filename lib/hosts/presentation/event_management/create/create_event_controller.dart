@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -239,6 +240,9 @@ class CreateEventController extends _$CreateEventController {
               adapterVersion: externalOrigin.adapterVersion,
             ),
     );
+    final reportCreated = ref
+        .read(appAnalyticsProvider)
+        .hostEventCompletion(AnalyticsEvents.hostEventCreated);
     await eventRepo.createEvent(
       event: event,
       inviteCode: normalizedInviteCode,
@@ -251,6 +255,7 @@ class CreateEventController extends _$CreateEventController {
       externalOrigin: externalOrigin,
       runtimeWalkInPolicy: runtimeWalkInPolicy,
     );
+    reportCreated();
     final selectedPhotoImages = photoImages.isNotEmpty
         ? photoImages
         : [?photoImage];

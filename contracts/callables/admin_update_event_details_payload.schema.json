@@ -6,22 +6,63 @@
   "x-callable-shape": "patch",
   "type": "object",
   "additionalProperties": false,
-  "required": ["eventId", "fields"],
+  "required": [
+    "eventId",
+    "fields"
+  ],
   "properties": {
-    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "reviewNote": {"type": ["string", "null"], "maxLength": 1000},
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "reviewNote": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
     "fields": {
       "type": "object",
       "additionalProperties": false,
       "minProperties": 1,
       "properties": {
-        "description": {"type": "string", "maxLength": 2000},
-        "photoUrl": {"$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"},
-        "distanceKm": {"type": "number", "minimum": 0, "maximum": 100},
-        "pace": {"$ref": "../shared/event_common.schema.json#/definitions/paceLevel"},
-        "crossPathsDiscoveryEnabled": {"type": "boolean"},
+        "description": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "photoUrl": {
+          "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
+        },
+        "distanceKm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "pace": {
+          "$ref": "../shared/event_common.schema.json#/definitions/paceLevel"
+        },
+        "crossPathsDiscoveryEnabled": {
+          "type": "boolean"
+        },
         "eventFormat": {
           "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
+        },
+        "hostPilotReview": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "realEvent",
+            "expectedRevision"
+          ],
+          "properties": {
+            "realEvent": {
+              "type": "boolean"
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
         }
       }
     }

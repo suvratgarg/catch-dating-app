@@ -556,3 +556,32 @@ function deferred<T>() {
   });
   return {promise, resolve, reject};
 }
+
+describe("supported pilot review", () => {
+  afterEach(cleanup);
+  it("shows an explicit real-event choice and binds the reviewed revision", async () => {
+    const {formFromEventProfile, buildEventSavePayload} = await import("./eventPublishingHelpers");
+    const {eventPublishingEditorPanels} = await import("../ui/eventPublishingEditorPanels");
+    const event = {...sampleEventDetails["mumbai-padel-mixer-1"],
+      hostPilotReview: {realEvent: false, revision: 3, reviewedAt: 100}};
+    const form = formFromEventProfile(event);
+    const onFormChange = vi.fn();
+    render(<eventPublishingEditorPanels.EventEditor
+      event={event} eventId={event.eventId} form={form}
+      diffRows={[]} isDetailLoading={false} isSaving={false}
+      validationIssues={[]} onEventIdChange={vi.fn()}
+      onFormChange={onFormChange} onLoad={vi.fn()} onSave={vi.fn()}
+    />);
+    const choice = screen.getByRole("checkbox", {
+      name: "I reviewed this as a real pilot event, not a test",
+    });
+    expect((choice as HTMLInputElement).checked).toBe(false);
+    fireEvent.click(choice);
+    const changed = {...onFormChange.mock.calls[0][0], reviewNote: "Real supported pilot"};
+    expect(buildEventSavePayload(event, changed)).toEqual({
+      eventId: event.eventId, reviewNote: "Real supported pilot",
+      fields: {hostPilotReview: {realEvent: true, expectedRevision: 3}},
+    });
+    expect(screen.getByText(/Earlier check-ins are excluded/)).toBeTruthy();
+  });
+});

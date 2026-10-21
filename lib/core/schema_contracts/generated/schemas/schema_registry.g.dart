@@ -1197,6 +1197,26 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaSalesEvidenceProposalsDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'HostAcquisitionConsentDocument',
+    source: 'firestore/host_acquisition_consents.schema.json',
+    schema: schemaHostAcquisitionConsentDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'HostPilotEventReviewDocument',
+    source: 'firestore/host_pilot_event_reviews.schema.json',
+    schema: schemaHostPilotEventReviewDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'HostOrganizerActivationDocument',
+    source: 'firestore/host_organizer_activations.schema.json',
+    schema: schemaHostOrganizerActivationDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'HostAcquisitionDeliveryDocument',
+    source: 'firestore/host_acquisition_deliveries.schema.json',
+    schema: schemaHostAcquisitionDeliveryDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'SalesInboundIntentsDocument',
     source: 'firestore/sales_inbound_intents.schema.json',
     schema: schemaSalesInboundIntentsDocumentSchema,
@@ -6202,6 +6222,16 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaAdminSetCrossPathsShowcaseEligibilityCallableResponseSchema,
   ),
   SchemaContractDefinition(
+    name: 'HostAcquisitionConsentHTTPRequest',
+    source: 'http/host_acquisition_consent_request.schema.json',
+    schema: schemaHostAcquisitionConsentHTTPRequestSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'HostAcquisitionConsentHTTPResponse',
+    source: 'http/host_acquisition_consent_response.schema.json',
+    schema: schemaHostAcquisitionConsentHTTPResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'JoinWaitlistHTTPRequest',
     source: 'http/join_waitlist_request.schema.json',
     schema: schemaJoinWaitlistHTTPRequestSchema,
@@ -6450,6 +6480,10 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'SalesDemoSetupCallableResponse': schemaSalesDemoSetupCallableResponseSchema,
   'SalesDemoSessionsDocument': schemaSalesDemoSessionsDocumentSchema,
   'SalesEvidenceProposalsDocument': schemaSalesEvidenceProposalsDocumentSchema,
+  'HostAcquisitionConsentDocument': schemaHostAcquisitionConsentDocumentSchema,
+  'HostPilotEventReviewDocument': schemaHostPilotEventReviewDocumentSchema,
+  'HostOrganizerActivationDocument': schemaHostOrganizerActivationDocumentSchema,
+  'HostAcquisitionDeliveryDocument': schemaHostAcquisitionDeliveryDocumentSchema,
   'SalesInboundIntentsDocument': schemaSalesInboundIntentsDocumentSchema,
   'SalesIntelligenceAssessmentDocument': schemaSalesIntelligenceAssessmentDocumentSchema,
   'SalesIntelligenceClauseDocument': schemaSalesIntelligenceClauseDocumentSchema,
@@ -7451,6 +7485,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'AdminRecordMarketingReviewDecisionCallableResponse': schemaAdminRecordMarketingReviewDecisionCallableResponseSchema,
   'AdminListCrossPathsShowcaseCandidatesCallableResponse': schemaAdminListCrossPathsShowcaseCandidatesCallableResponseSchema,
   'AdminSetCrossPathsShowcaseEligibilityCallableResponse': schemaAdminSetCrossPathsShowcaseEligibilityCallableResponseSchema,
+  'HostAcquisitionConsentHTTPRequest': schemaHostAcquisitionConsentHTTPRequestSchema,
+  'HostAcquisitionConsentHTTPResponse': schemaHostAcquisitionConsentHTTPResponseSchema,
   'JoinWaitlistHTTPRequest': schemaJoinWaitlistHTTPRequestSchema,
   'JoinWaitlistHTTPResponse': schemaJoinWaitlistHTTPResponseSchema,
 };
@@ -7692,6 +7728,10 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callable_responses/sales_demo_setup_response.schema.json': schemaSalesDemoSetupCallableResponseSchema,
   'firestore/sales_demo_sessions.schema.json': schemaSalesDemoSessionsDocumentSchema,
   'firestore/sales_evidence_proposals.schema.json': schemaSalesEvidenceProposalsDocumentSchema,
+  'firestore/host_acquisition_consents.schema.json': schemaHostAcquisitionConsentDocumentSchema,
+  'firestore/host_pilot_event_reviews.schema.json': schemaHostPilotEventReviewDocumentSchema,
+  'firestore/host_organizer_activations.schema.json': schemaHostOrganizerActivationDocumentSchema,
+  'firestore/host_acquisition_deliveries.schema.json': schemaHostAcquisitionDeliveryDocumentSchema,
   'firestore/sales_inbound_intents.schema.json': schemaSalesInboundIntentsDocumentSchema,
   'firestore/sales_intelligence_assessments.schema.json': schemaSalesIntelligenceAssessmentDocumentSchema,
   'firestore/sales_intelligence_clauses.schema.json': schemaSalesIntelligenceClauseDocumentSchema,
@@ -8693,6 +8733,8 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callable_responses/admin_record_marketing_review_decision_response.schema.json': schemaAdminRecordMarketingReviewDecisionCallableResponseSchema,
   'callable_responses/admin_list_cross_paths_showcase_candidates_response.schema.json': schemaAdminListCrossPathsShowcaseCandidatesCallableResponseSchema,
   'callable_responses/admin_set_cross_paths_showcase_eligibility_response.schema.json': schemaAdminSetCrossPathsShowcaseEligibilityCallableResponseSchema,
+  'http/host_acquisition_consent_request.schema.json': schemaHostAcquisitionConsentHTTPRequestSchema,
+  'http/host_acquisition_consent_response.schema.json': schemaHostAcquisitionConsentHTTPResponseSchema,
   'http/join_waitlist_request.schema.json': schemaJoinWaitlistHTTPRequestSchema,
   'http/join_waitlist_response.schema.json': schemaJoinWaitlistHTTPResponseSchema,
 };
