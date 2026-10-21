@@ -25,6 +25,11 @@ The migration is incremental:
   facts. `legal.ts` exposes the typed content; `site.ts` owns the public contact
   destination and footer links. The published-legal-content test rejects empty
   sections, placeholders, or missing runtime routes.
+- `publicContact.ts` validates the only server-configurable public contact field,
+  `supportEmail`. The Next server reads `config/publicContact` for legal routes;
+  legal policy prose and all other operator facts remain authored here. The
+  source-controlled Gmail address is the fallback if the document is absent,
+  malformed, or unavailable. The Vite artifact also uses that fallback.
 - Cities are structured records with stable ids/slugs, aliases, IANA timezone,
   and `live`/`waitlist` status. Event-live inventory is derived from status;
   waitlist/host options derive from the configured city records; only the

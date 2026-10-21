@@ -2,7 +2,7 @@ import legalDocument from "./legal.json" with {type: "json"};
 import type {StoreCtaCopy} from "./types";
 
 export const ownerGatedSiteDestinations = {
-  contactHref: "mailto:suvrat@catchdates.com",
+  contactHref: `mailto:${legalDocument.operator.supportEmail}`,
 } as const;
 
 export const siteFooterLegalLinks = [

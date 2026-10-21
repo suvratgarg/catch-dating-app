@@ -28,6 +28,6 @@ export default async function Page(props: Props) {
     : route.page === "organizers" ? `?${organizerDirectorySearchParams(readOrganizerFiltersFromUrl(directoryOptions.cityOptions, directoryOptions.formatOptions, directorySearch))}`
     : route.page === "home" ? `?${new URLSearchParams({city: selected.city, format: selected.category})}` : "";
   return <PublicProviders pathname={route.pathname} initialSearch={initialSearch} catalog={route.catalog} live={route.live}>
-    <PublicPage page={route.page} readAt={route.catalog.readAt} />
+    <PublicPage page={route.page} readAt={route.catalog.readAt} contact={route.contact ?? undefined} />
   </PublicProviders>;
 }

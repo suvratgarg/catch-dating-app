@@ -1,6 +1,7 @@
 import {productionIndexing} from "./publicEnvironment";
 import {cache} from "react";
 import {readPublicCatalog, readPublicListingReviews} from "./publicCatalog";
+import {readPublicContact} from "./publicContact";
 import {pageMeta, pageMetaForHostPath, pageMetaForListing, pageMetaForEvent, type PageKey} from "../app/pageMeta";
 import {getHostListingRouteForPath} from "../features/organizers/routing";
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../features/events/eventDetailModel";
@@ -22,6 +23,7 @@ export const resolvePublicRoute = cache(async (pathname: string) => {
     "/host/apply": "host", "/organizers": "organizers", "/privacy": "privacy", "/terms": "terms", "/help": "help", "/claim": "claim"};
   const page: PageKey = listingRoute ? "listing" : event ? "event_detail" : routes[key] ??
     (/^\/claim\/[^/]+$/.test(key) ? "claim" : "not_found");
+  const contact = page === "privacy" || page === "terms" || page === "help" ? await readPublicContact() : null;
   const meta = listingRoute ? pageMetaForListing(listingRoute.listing) : event ? pageMetaForEvent(event) :
     pageMetaForHostPath(pathname) ?? pageMeta[page as keyof typeof pageMeta];
   const metadata: Metadata = {title: meta.title, description: meta.description,
@@ -29,5 +31,5 @@ export const resolvePublicRoute = cache(async (pathname: string) => {
     robots: productionIndexing() ? meta.robots ?? "index, follow" : "noindex, follow", openGraph: {title: meta.title, description: meta.description,
       url: `https://catchdates.com${meta.canonicalPath}`, type: "website"},
     twitter: {card: "summary_large_image", title: meta.title, description: meta.twitterDescription}};
-  return {page, catalog, metadata, listingRoute, event, live};
+  return {page, catalog, metadata, listingRoute, event, live, contact};
 });
