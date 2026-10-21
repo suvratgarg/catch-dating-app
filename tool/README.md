@@ -1261,3 +1261,23 @@ until their stated scope is complete; ordering never substitutes for review.
 Measure completed job runner time, reruns and superseded work separately from
 queue/approval waits. Public standard-runner usage and private billed usage must
 not be conflated when reporting savings.
+
+## Host measurement preview runtime
+
+The manual `Host measurement preview runtime` workflow publishes only the two
+reviewed PR726 assets to `catch-host-measurement.web.app`. The
+`ci:host-measurement-preview` check binds their configuration/content hashes,
+rejects extra files and symlinks, and validates serving bytes and privacy headers.
+The release helper requires current main, its successful same-source main CI,
+the exact workflow caller and a first-attempt dispatch before existing Hosting
+OIDC authentication and again at the deployment boundary. No source build,
+Functions, IAM, credential installation or production-parent permission is part
+of this release. The existing website preview is a separate deployment.
+
+The runtime accepts messages only from the reviewed `next-candidate` origin and
+sends only consented internal/debug Analytics events. Publication proves serving
+bytes, not provider receipt or live advertising attribution. A failed deployment
+requires inspecting its retained evidence before a new dispatch; no automatic
+deploy retry or rollback is provided. Production measurement and ad launch
+remain separately held. Run `node tool/run.mjs check ci:host-measurement-preview`
+for the offline release-boundary tests.
