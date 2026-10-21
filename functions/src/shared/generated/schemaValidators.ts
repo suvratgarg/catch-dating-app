@@ -244,6 +244,7 @@ export {validateSalesEvidenceProposalsDocument} from "./validators/salesEvidence
 export {validateHostAcquisitionConsentDocument} from "./validators/hostAcquisitionConsentDocument";
 export {validateHostPilotEventReviewDocument} from "./validators/hostPilotEventReviewDocument";
 export {validateHostOrganizerActivationDocument} from "./validators/hostOrganizerActivationDocument";
+export {validateHostOperatorAlertDocument} from "./validators/hostOperatorAlertDocument";
 export {validateHostAcquisitionDeliveryDocument} from "./validators/hostAcquisitionDeliveryDocument";
 export {validateSalesInboundIntentsDocument} from "./validators/salesInboundIntentsDocument";
 export {validateSalesIntelligenceAssessmentDocument} from "./validators/salesIntelligenceAssessmentsDocument";

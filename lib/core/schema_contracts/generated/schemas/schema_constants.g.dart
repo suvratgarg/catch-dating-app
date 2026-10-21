@@ -634,6 +634,7 @@ export 'host_event_summary_document.g.dart';
 export 'host_form_summary_document.g.dart';
 export 'host_group_detail_document.g.dart';
 export 'host_group_summary_document.g.dart';
+export 'host_operator_alert_document.g.dart';
 export 'host_organizer_activation_document.g.dart';
 export 'host_payment_account_document.g.dart';
 export 'host_pilot_event_review_document.g.dart';

@@ -1212,6 +1212,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaHostOrganizerActivationDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'HostOperatorAlertDocument',
+    source: 'firestore/host_operator_alerts.schema.json',
+    schema: schemaHostOperatorAlertDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'HostAcquisitionDeliveryDocument',
     source: 'firestore/host_acquisition_deliveries.schema.json',
     schema: schemaHostAcquisitionDeliveryDocumentSchema,
@@ -6483,6 +6488,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'HostAcquisitionConsentDocument': schemaHostAcquisitionConsentDocumentSchema,
   'HostPilotEventReviewDocument': schemaHostPilotEventReviewDocumentSchema,
   'HostOrganizerActivationDocument': schemaHostOrganizerActivationDocumentSchema,
+  'HostOperatorAlertDocument': schemaHostOperatorAlertDocumentSchema,
   'HostAcquisitionDeliveryDocument': schemaHostAcquisitionDeliveryDocumentSchema,
   'SalesInboundIntentsDocument': schemaSalesInboundIntentsDocumentSchema,
   'SalesIntelligenceAssessmentDocument': schemaSalesIntelligenceAssessmentDocumentSchema,
@@ -7731,6 +7737,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/host_acquisition_consents.schema.json': schemaHostAcquisitionConsentDocumentSchema,
   'firestore/host_pilot_event_reviews.schema.json': schemaHostPilotEventReviewDocumentSchema,
   'firestore/host_organizer_activations.schema.json': schemaHostOrganizerActivationDocumentSchema,
+  'firestore/host_operator_alerts.schema.json': schemaHostOperatorAlertDocumentSchema,
   'firestore/host_acquisition_deliveries.schema.json': schemaHostAcquisitionDeliveryDocumentSchema,
   'firestore/sales_inbound_intents.schema.json': schemaSalesInboundIntentsDocumentSchema,
   'firestore/sales_intelligence_assessments.schema.json': schemaSalesIntelligenceAssessmentDocumentSchema,

@@ -90282,6 +90282,69 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const hostOperatorAlertDocumentAcceptedAt = CatchContractFieldConstraints(
+    path: 'hostOperatorAlertDocument.acceptedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostOperatorAlertDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'hostOperatorAlertDocument.attemptId',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9-]{36}\$',
+  );
+
+  static const hostOperatorAlertDocumentAttempts = CatchContractFieldConstraints(
+    path: 'hostOperatorAlertDocument.attempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 5,
+  );
+
+  static const hostOperatorAlertDocumentClassification = CatchContractFieldConstraints(
+    path: 'hostOperatorAlertDocument.classification',
+    required: true,
+  );
+
+  static const hostOperatorAlertDocumentEventId = CatchContractFieldConstraints(
+    path: 'hostOperatorAlertDocument.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^host_lead_[0-9]{13}_[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}\$',
+  );
+
+  static const hostOperatorAlertDocumentIntentId = CatchContractFieldConstraints(
+    path: 'hostOperatorAlertDocument.intentId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const hostOperatorAlertDocumentNextAttemptAt = CatchContractFieldConstraints(
+    path: 'hostOperatorAlertDocument.nextAttemptAt',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const hostOperatorAlertDocumentProviderMessageId = CatchContractFieldConstraints(
+    path: 'hostOperatorAlertDocument.providerMessageId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,128}\$',
+  );
+
+  static const hostOperatorAlertDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'hostOperatorAlertDocument.schemaVersion',
+    required: true,
+  );
+
+  static const hostOperatorAlertDocumentStatus = CatchContractFieldConstraints(
+    path: 'hostOperatorAlertDocument.status',
+    required: true,
+    enumValues: <String>['pending', 'sending', 'accepted', 'failed', 'unknown', 'stopped'],
+  );
+
   static const hostOrganizerActivationDocumentActivatedAt = CatchContractFieldConstraints(
     path: 'hostOrganizerActivationDocument.activatedAt',
     required: true,
@@ -182399,6 +182462,16 @@ abstract final class CatchContractConstraints {
     'hostGroupSummaryDocument.status': hostGroupSummaryDocumentStatus,
     'hostGroupSummaryDocument.updatedAtMillis': hostGroupSummaryDocumentUpdatedAtMillis,
     'hostGroupSummaryDocument.version': hostGroupSummaryDocumentVersion,
+    'hostOperatorAlertDocument.acceptedAt': hostOperatorAlertDocumentAcceptedAt,
+    'hostOperatorAlertDocument.attemptId': hostOperatorAlertDocumentAttemptId,
+    'hostOperatorAlertDocument.attempts': hostOperatorAlertDocumentAttempts,
+    'hostOperatorAlertDocument.classification': hostOperatorAlertDocumentClassification,
+    'hostOperatorAlertDocument.eventId': hostOperatorAlertDocumentEventId,
+    'hostOperatorAlertDocument.intentId': hostOperatorAlertDocumentIntentId,
+    'hostOperatorAlertDocument.nextAttemptAt': hostOperatorAlertDocumentNextAttemptAt,
+    'hostOperatorAlertDocument.providerMessageId': hostOperatorAlertDocumentProviderMessageId,
+    'hostOperatorAlertDocument.schemaVersion': hostOperatorAlertDocumentSchemaVersion,
+    'hostOperatorAlertDocument.status': hostOperatorAlertDocumentStatus,
     'hostOrganizerActivationDocument.activatedAt': hostOrganizerActivationDocumentActivatedAt,
     'hostOrganizerActivationDocument.classification': hostOrganizerActivationDocumentClassification,
     'hostOrganizerActivationDocument.eventId': hostOrganizerActivationDocumentEventId,
