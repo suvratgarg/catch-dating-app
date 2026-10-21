@@ -1,4 +1,6 @@
 import {describe, expect, it, vi} from "vitest";
+import Ajv from "ajv";
+import {readFileSync} from "node:fs";
 import {captureOfferCredential} from "./offerCredential";
 import {assertOfferResponse, paymentCopy} from "./offerCheckoutModel";
 describe("private invitation contract", () => {
@@ -45,5 +47,85 @@ describe("private invitation contract", () => {
       .toContain("event was cancelled");
     expect(() => assertOfferResponse({grant: null, serverTimeMillis: 1000,
       payment: {...payment, status: "admitted", cancellationReason: "eventCancelled"}})).toThrow();
+  });
+});
+
+describe("offer response and authored schema", () => {
+  const schema = JSON.parse(readFileSync(
+    "../contracts/callable_responses/manage_event_offer_checkout_response.schema.json",
+    "utf8",
+  ));
+  const schemaAccepts = new Ajv().compile(schema);
+  const payment = {
+    paymentId: `ep_${"a".repeat(32)}`, status: "captured", amountPaise: 10000,
+    currency: "INR", mode: "test", refundedAmountPaise: 0,
+    expiresAtMillis: 9e12, checkout: null, cancellationReason: null,
+    cancellationPolicy: null, cancellationQuote: null,
+  };
+  const grant = {
+    grantId: "a".repeat(64), eventName: "Event", eventId: "event1",
+    startTimeMillis: 9e12, amountPaise: 10000, currency: "INR",
+    expiresAtMillis: 9e12,
+    cancellationPolicy: {refundDeadlineMillis: 0, eventStartsAtMillis: 9e12},
+  };
+  const response = (fields: Record<string, unknown>) =>
+    ({grant: null, payment: null, serverTimeMillis: 1000, ...fields});
+  const description = "A".repeat(1);
+  const mixedAtLimit = `${"a".repeat(199)}😀`;
+  const mixedOverLimit = `${"a".repeat(200)}😀`;
+  const checkout = {
+    publicToken: "rzp_test_key", orderId: "order_one", amountPaise: 10000,
+    currency: "INR", description, expiresAtMillis: 9e12,
+  };
+
+  it.each([
+    ["ordinary payment", response({payment}), true],
+    ["ordinary grant", response({grant}), true],
+    ["singleton array test mode", response({payment: {...payment, mode: ["test"]}}), false],
+    ["singleton array live mode", response({payment: {...payment, mode: ["live"]}}), false],
+    ["array mode with checkout", response({payment: {...payment, mode: ["test"],
+      status: "checkoutReady", checkout}}), false],
+    ["numeric mode", response({payment: {...payment, mode: 1}}), false],
+    ["null mode", response({payment: {...payment, mode: null}}), false],
+    ["200 supplementary event-name code points", response({grant: {...grant,
+      eventName: "😀".repeat(200)}}), true],
+    ["201 supplementary event-name code points", response({grant: {...grant,
+      eventName: "😀".repeat(201)}}), false],
+    ["mixed 200-point event name", response({grant: {...grant,
+      eventName: mixedAtLimit}}), true],
+    ["mixed 201-point event name", response({grant: {...grant,
+      eventName: mixedOverLimit}}), false],
+    ["200 supplementary checkout-description code points", response({payment: {
+      ...payment, status: "checkoutReady", checkout: {...checkout,
+        description: "😀".repeat(200)}}}), true],
+    ["201 supplementary checkout-description code points", response({payment: {
+      ...payment, status: "checkoutReady", checkout: {...checkout,
+        description: "😀".repeat(201)}}}), false],
+    ["mixed 200-point checkout description", response({payment: {
+      ...payment, status: "checkoutReady", checkout: {...checkout,
+        description: mixedAtLimit}}}), true],
+    ["mixed 201-point checkout description", response({payment: {
+      ...payment, status: "checkoutReady", checkout: {...checkout,
+        description: mixedOverLimit}}}), false],
+  ] as const)("agrees with the schema for %s", (_name, payload, accepted) => {
+    // The callable boundary receives JSON, not JavaScript objects with custom coercion.
+    const wireValue: unknown = JSON.parse(JSON.stringify(payload));
+    expect(schemaAccepts(wireValue)).toBe(accepted);
+    if (accepted) expect(() => assertOfferResponse(wireValue)).not.toThrow();
+    else expect(() => assertOfferResponse(wireValue)).toThrow();
+  });
+
+  it.each([
+    ["simultaneous grant and payment", response({grant, payment})],
+    ["checkout amount mismatch", response({payment: {...payment,
+      status: "checkoutReady", checkout: {...checkout, amountPaise: 10001}}})],
+    ["cancellation reason on a captured payment", response({payment: {...payment,
+      cancellationReason: "eventCancelled"}})],
+    ["cancelled payment without guest cancellation", response({payment: {...payment,
+      status: "cancelled", cancellationReason: "eventCancelled"}})],
+  ] as const)("preserves the stronger %s check", (_name, payload) => {
+    const wireValue: unknown = JSON.parse(JSON.stringify(payload));
+    expect(schemaAccepts(wireValue)).toBe(true);
+    expect(() => assertOfferResponse(wireValue)).toThrow();
   });
 });
