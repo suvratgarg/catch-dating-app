@@ -64,11 +64,46 @@ export function prepare(sourceRoot, destination, sourceSha) {
   fs.writeFileSync(path.join(destination, 'release.json'), JSON.stringify({sourceSha, ...release}, null, 2) + '\n');
   verifyPackage(destination, sourceSha);
 }
-export function verifyPackage(destination, sourceSha) {
+const packageEntries = ['measurement-hosting.json', 'measurement-runtime', 'release.json'];
+function verifyPackageContents(destination, sourceSha, entries) {
   verifyFiles(destination);
-  assert.deepEqual(fs.readdirSync(destination).sort(), ['measurement-hosting.json', 'measurement-runtime', 'release.json']);
+  assert.deepEqual(fs.readdirSync(destination).sort(), entries);
   assert.ok(fs.lstatSync(path.join(destination, 'release.json')).isFile());
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(destination, 'release.json'), 'utf8')), {sourceSha, ...release});
+}
+export function verifyPackage(destination, sourceSha) {
+  verifyPackageContents(destination, sourceSha, packageEntries);
+}
+export function verifyPostDeployPackage(destination, sourceSha) {
+  const cacheDirectory = path.join(destination, '.firebase');
+  const hasCache = fs.readdirSync(destination).includes('.firebase');
+  verifyPackageContents(destination, sourceSha, hasCache ? [...packageEntries, '.firebase'].sort() : packageEntries);
+  if (!hasCache) return;
+
+  assert.ok(fs.lstatSync(cacheDirectory).isDirectory(), 'Firebase cache must be a directory, not a link');
+  // Pinned firebase-tools 15.20.0 writes this hash cache at the config root after uploading the two public files.
+  const cacheName = `hosting.${Buffer.from('measurement-runtime').toString('base64').replace(/=+$/u, '')}.cache`;
+  assert.deepEqual(fs.readdirSync(cacheDirectory), [cacheName], 'Unexpected Firebase cache contents');
+  const cacheFile = path.join(cacheDirectory, cacheName);
+  const cacheStat = fs.lstatSync(cacheFile);
+  assert.ok(cacheStat.isFile() && cacheStat.size <= 1024, 'Firebase cache must be a bounded regular file');
+  const lines = fs.readFileSync(cacheFile, 'utf8').split('\n');
+  assert.equal(lines.pop(), '', 'Firebase cache must end with a newline');
+  const expectedNames = ['catch-acquisition-runtime.html', 'catch-acquisition-runtime.js'];
+  assert.equal(lines.length, expectedNames.length, 'Firebase cache must contain only the two runtime files');
+  const names = [];
+  for (const line of lines) {
+    const parts = line.split(',');
+    assert.equal(parts.length, 3, 'Malformed Firebase cache entry');
+    const [name, mtime, hash] = parts;
+    assert.ok(expectedNames.includes(name), `Unexpected Firebase cache path: ${name}`);
+    assert.match(mtime, /^[1-9][0-9]*$/u, 'Invalid Firebase cache timestamp');
+    assert.equal(Number(mtime), fs.statSync(path.join(destination, 'measurement-runtime', name)).mtime.getTime(),
+      `Stale Firebase cache timestamp: ${name}`);
+    assert.match(hash, /^[a-f0-9]{64}$/u, 'Invalid Firebase cache hash');
+    names.push(name);
+  }
+  assert.deepEqual(names.sort(), expectedNames);
 }
 function authorize() {
   assertInvocation(process.env);
@@ -90,7 +125,7 @@ export function assertResponse(name, bytes, headers, config) {
   assert.equal(headers.get('set-cookie'), null, 'Static runtime must not set cookies before consent');
 }
 async function verifyServing() {
-  verifyPackage(output, process.env.GITHUB_SHA);
+  verifyPostDeployPackage(output, process.env.GITHUB_SHA);
   const config = JSON.parse(fs.readFileSync(path.join(output, 'measurement-hosting.json'), 'utf8'));
   const checks = [];
   for (const name of ['catch-acquisition-runtime.html', 'catch-acquisition-runtime.js']) {
