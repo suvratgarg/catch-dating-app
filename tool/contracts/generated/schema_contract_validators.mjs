@@ -242,6 +242,7 @@ import {
   hostAcquisitionConsentDocumentSchema,
   hostPilotEventReviewDocumentSchema,
   hostOrganizerActivationDocumentSchema,
+  hostOperatorAlertDocumentSchema,
   hostAcquisitionDeliveryDocumentSchema,
   salesInboundIntentsDocumentSchema,
   salesIntelligenceAssessmentDocumentSchema,
@@ -1511,6 +1512,7 @@ export const validateSalesEvidenceProposalsDocument = ajv.compile(salesEvidenceP
 export const validateHostAcquisitionConsentDocument = ajv.compile(hostAcquisitionConsentDocumentSchema);
 export const validateHostPilotEventReviewDocument = ajv.compile(hostPilotEventReviewDocumentSchema);
 export const validateHostOrganizerActivationDocument = ajv.compile(hostOrganizerActivationDocumentSchema);
+export const validateHostOperatorAlertDocument = ajv.compile(hostOperatorAlertDocumentSchema);
 export const validateHostAcquisitionDeliveryDocument = ajv.compile(hostAcquisitionDeliveryDocumentSchema);
 export const validateSalesInboundIntentsDocument = ajv.compile(salesInboundIntentsDocumentSchema);
 export const validateSalesIntelligenceAssessmentDocument = ajv.compile(salesIntelligenceAssessmentDocumentSchema);

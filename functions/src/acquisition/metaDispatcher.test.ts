@@ -4,6 +4,17 @@ import type {Firestore} from "firebase-admin/firestore";
 import {dispatchDueHostMetaLeads, dispatchHostAcquisitionMeta} from
   "./metaDispatcher";
 
+test("Meta runtime uses its dedicated identity and credential", () => {
+  const endpoint = dispatchHostAcquisitionMeta.__endpoint;
+  assert.equal(endpoint.serviceAccountEmail, "catch-host-meta-delivery@");
+  assert.deepEqual(endpoint.secretEnvironmentVariables,
+    [{key: "CATCH_HOST_META_CONVERSIONS_TOKEN"}]);
+  assert.deepEqual(endpoint.region, ["asia-south1"]);
+  assert.equal(endpoint.maxInstances, 1);
+  assert.equal(endpoint.timeoutSeconds, 300);
+  assert.equal(endpoint.scheduleTrigger?.retryConfig?.retryCount, 0);
+});
+
 test("disabled dispatcher touches neither queue nor provider", async () => {
   assert.deepEqual(await dispatchDueHostMetaLeads({enabled: false,
     get db(): never {

@@ -1266,8 +1266,11 @@ not be conflated when reporting savings.
 
 The manual `Host measurement preview runtime` workflow publishes only the two
 reviewed PR726 assets to `catch-host-measurement.web.app`. The
-`ci:host-measurement-preview` check binds their configuration/content hashes,
-rejects extra files and symlinks, and validates serving bytes and privacy headers.
+`ci:host-measurement-preview` binds their configuration/content hashes and
+rejects extra files and symlinks before deploy. After deploy, serving acceptance
+allows only the pinned Hosting client's generated hash cache and validates its
+two gzip-upload hashes against the reviewed runtime before checking public
+bytes and privacy headers.
 The release helper requires current main, its successful same-source main CI,
 the exact workflow caller and a first-attempt dispatch before existing Hosting
 OIDC authentication and again at the deployment boundary. No source build,
