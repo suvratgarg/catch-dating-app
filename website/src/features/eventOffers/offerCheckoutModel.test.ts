@@ -70,9 +70,12 @@ describe("offer response and authored schema", () => {
   };
   const response = (fields: Record<string, unknown>) =>
     ({grant: null, payment: null, serverTimeMillis: 1000, ...fields});
+  const description = "A".repeat(1);
+  const mixedAtLimit = `${"a".repeat(199)}😀`;
+  const mixedOverLimit = `${"a".repeat(200)}😀`;
   const checkout = {
     publicToken: "rzp_test_key", orderId: "order_one", amountPaise: 10000,
-    currency: "INR", description: "Admission", expiresAtMillis: 9e12,
+    currency: "INR", description, expiresAtMillis: 9e12,
   };
 
   it.each([
@@ -89,9 +92,9 @@ describe("offer response and authored schema", () => {
     ["201 supplementary event-name code points", response({grant: {...grant,
       eventName: "😀".repeat(201)}}), false],
     ["mixed 200-point event name", response({grant: {...grant,
-      eventName: `${"a".repeat(199)}😀`}}), true],
+      eventName: mixedAtLimit}}), true],
     ["mixed 201-point event name", response({grant: {...grant,
-      eventName: `${"a".repeat(200)}😀`}}), false],
+      eventName: mixedOverLimit}}), false],
     ["200 supplementary checkout-description code points", response({payment: {
       ...payment, status: "checkoutReady", checkout: {...checkout,
         description: "😀".repeat(200)}}}), true],
@@ -100,10 +103,10 @@ describe("offer response and authored schema", () => {
         description: "😀".repeat(201)}}}), false],
     ["mixed 200-point checkout description", response({payment: {
       ...payment, status: "checkoutReady", checkout: {...checkout,
-        description: `${"a".repeat(199)}😀`}}}), true],
+        description: mixedAtLimit}}}), true],
     ["mixed 201-point checkout description", response({payment: {
       ...payment, status: "checkoutReady", checkout: {...checkout,
-        description: `${"a".repeat(200)}😀`}}}), false],
+        description: mixedOverLimit}}}), false],
   ] as const)("agrees with the schema for %s", (_name, payload, accepted) => {
     // The callable boundary receives JSON, not JavaScript objects with custom coercion.
     const wireValue: unknown = JSON.parse(JSON.stringify(payload));
