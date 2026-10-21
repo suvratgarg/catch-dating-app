@@ -13,6 +13,7 @@ import {usePublicHostListings} from "../../features/organizers/usePublicEventLis
 import {getHostListingRouteForPath} from "../../features/organizers/routing";
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../../features/events/eventDetailModel";
 import {publishedLegalContent} from "../../content/legal";
+import type {PublicContact} from "../../content/publicContact";
 import {MarketingConsentBanner} from "../../features/marketing/MarketingConsentBanner";
 import {claimRouteStateForLocation, claimUrlStateForListing} from "../../features/claims/claimRouting";
 const Home = dynamic(() => import("../../features/home/HomePage").then(m => m.HomePage));
@@ -26,7 +27,7 @@ const Claim = dynamic(() => import("../../features/claims/ClaimPage").then(m => 
 const Legal = dynamic(() => import("../../features/legal/LegalPage").then(m => m.LegalPage));
 const Missing = dynamic(() => import("../../features/notFound/NotFoundPage").then(m => m.NotFoundPage));
 
-export function PublicPage({page, readAt}: {page: PageKey; readAt: number}) {
+export function PublicPage({page, readAt, contact}: {page: PageKey; readAt: number; contact?: PublicContact}) {
   const location = useLocation();
   const {listings, readAt: currentReadAt} = usePublicHostListings();
   const captures = useMarketingCaptures();
@@ -67,7 +68,7 @@ export function PublicPage({page, readAt}: {page: PageKey; readAt: number}) {
     state.urlState = claimUrlStateForListing(state.listing, state.lookup);
     content = <Claim key={location.pathname + location.search} routeState={state} />;
   } else if (page === "privacy" || page === "terms" || page === "help") {
-    content = <Legal page={publishedLegalContent.pages[page]} effectiveDate={publishedLegalContent.effectiveDate} />;
+    content = <Legal page={publishedLegalContent.pages[page]} effectiveDate={publishedLegalContent.effectiveDate} contact={contact} />;
   } else content = <Missing />;
   return <PageShell pageClassName={pageClassFor(page)}>{structured !== null && <script type="application/ld+json" dangerouslySetInnerHTML={{__html: publicJsonLd(structured)}} />}{content}<MarketingConsentBanner serverRendered /></PageShell>;
 }
