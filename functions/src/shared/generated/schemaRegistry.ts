@@ -244,6 +244,7 @@ export {salesEvidenceProposalsDocumentSchema} from "./schemas/salesEvidencePropo
 export {hostAcquisitionConsentDocumentSchema} from "./schemas/hostAcquisitionConsentDocument";
 export {hostPilotEventReviewDocumentSchema} from "./schemas/hostPilotEventReviewDocument";
 export {hostOrganizerActivationDocumentSchema} from "./schemas/hostOrganizerActivationDocument";
+export {hostOperatorAlertDocumentSchema} from "./schemas/hostOperatorAlertDocument";
 export {hostAcquisitionDeliveryDocumentSchema} from "./schemas/hostAcquisitionDeliveryDocument";
 export {salesInboundIntentsDocumentSchema} from "./schemas/salesInboundIntentsDocument";
 export {salesIntelligenceAssessmentDocumentSchema} from "./schemas/salesIntelligenceAssessmentsDocument";
