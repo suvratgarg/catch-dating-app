@@ -5,6 +5,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
@@ -59,6 +60,7 @@ class WidgetbookDashboardScope extends StatelessWidget {
 
     return WidgetbookFixtureScope(
       overrides: [
+        dashboardNowProvider.overrideWithValue(DashboardSurfaceFixtures.now),
         uidProvider.overrideWithValue(
           AsyncData<String?>(widgetbookDashboardViewer.uid),
         ),

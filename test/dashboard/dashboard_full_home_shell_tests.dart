@@ -2,7 +2,7 @@ part of 'dashboard_screen_test.dart';
 
 void _dashboardFullHomeShellTests() {
   group('Dashboard full home shell', () {
-    testWidgets('keeps the focus rail while attended enrichment is loading', (
+    testWidgets('keeps the focus list while attended enrichment is loading', (
       tester,
     ) async {
       final joinedClubIds = ['club-1'];
@@ -38,7 +38,7 @@ void _dashboardFullHomeShellTests() {
 
       await tester.pump();
 
-      expect(find.byType(EventFocusRail), findsOneWidget);
+      expect(find.byType(EventFocusList), findsOneWidget);
       expect(find.text(event.title), findsOneWidget);
       expect(find.text('Your activity · this week'), findsNothing);
     });
@@ -76,7 +76,7 @@ void _dashboardFullHomeShellTests() {
 
       await tester.pump();
 
-      expect(find.byType(EventFocusRail), findsOneWidget);
+      expect(find.byType(EventFocusList), findsOneWidget);
       expect(find.text(event.title), findsOneWidget);
       expect(find.text('Dashboard unavailable'), findsNothing);
     });
@@ -123,10 +123,60 @@ void _dashboardFullHomeShellTests() {
       expect(find.text('Event Focus'), findsOneWidget);
       expect(find.textContaining('After the event'), findsOneWidget);
       expect(find.text('Start catching'), findsOneWidget);
-      expect(find.byKey(EventFocusRail.pageIndicatorKey), findsOneWidget);
-      final rail = tester.widget<EventFocusRail>(find.byType(EventFocusRail));
-      expect(rail.activeSwipeEvent?.id, swipeRun.id);
-      expect(rail.upcomingEvents.map((event) => event.id), [nextEvent.id]);
+      expect(find.byKey(EventFocusList.listKey), findsOneWidget);
+      final focusList = tester.widget<EventFocusList>(
+        find.byType(EventFocusList),
+      );
+      expect(focusList.windowedEvents.single.event.id, swipeRun.id);
+      expect(focusList.upcomingEvents.map((event) => event.id), [nextEvent.id]);
+    });
+
+    testWidgets('shows both open Catch windows without a swipe', (
+      tester,
+    ) async {
+      final now = DateTime.now();
+      final user = buildUser();
+      final earlier = buildEvent(
+        id: 'closing-first',
+        name: 'Closing first',
+        checkedInCount: 3,
+        startTime: now.subtract(const Duration(hours: 8)),
+        endTime: now.subtract(const Duration(hours: 6)),
+      );
+      final later = buildEvent(
+        id: 'closing-later',
+        name: 'Closing later',
+        checkedInCount: 5,
+        startTime: now.subtract(const Duration(hours: 4)),
+        endTime: now.subtract(const Duration(hours: 2)),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            watchAttendedEventsProvider(
+              user.uid,
+            ).overrideWithValue(AsyncData<List<Event>>([later, earlier])),
+            ..._dashboardHostOverrides(user),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: _DashboardFullTestShell(
+              user: user,
+              followedClubIds: const [],
+              signedUpEvents: const [],
+            ),
+          ),
+        ),
+      );
+
+      await _pumpDashboardUi(tester);
+      expect(find.text(earlier.title), findsOneWidget);
+      expect(find.text(later.title), findsOneWidget);
+      expect(
+        tester.getTopLeft(find.text(earlier.title)).dy,
+        lessThan(tester.getTopLeft(find.text(later.title)).dy),
+      );
     });
 
     testWidgets('uses the display name in the greeting header', (tester) async {
@@ -419,7 +469,7 @@ void _dashboardFullHomeShellTests() {
     });
 
     testWidgets(
-      'event focus uses full-width snapping cards with stacked actions',
+      'event focus shows full-width cards with a condensed upcoming tail',
       (tester) async {
         final now = DateTime.now();
         final user = buildUser();
@@ -475,31 +525,28 @@ void _dashboardFullHomeShellTests() {
         await _pumpDashboardUi(tester);
 
         expect(find.text(firstRunTitle), findsOneWidget);
-        expect(find.text(secondRunTitle), findsNothing);
-        expect(find.byKey(EventFocusRail.pageIndicatorKey), findsOneWidget);
+        expect(find.text(secondRunTitle), findsOneWidget);
+        expect(find.byKey(EventFocusList.listKey), findsOneWidget);
 
-        final railWidth = tester
-            .getSize(find.byKey(EventFocusRail.railKey))
+        final listWidth = tester
+            .getSize(find.byKey(EventFocusList.listKey))
             .width;
         final cardWidth = tester
             .getSize(_runFocusCardSurface(firstRunTitle))
             .width;
-        expect(cardWidth, railWidth);
+        expect(cardWidth, listWidth);
         expect(
-          tester.getTopLeft(find.text('Directions')).dy,
-          greaterThan(tester.getTopLeft(find.text('View event')).dy),
+          tester.getTopLeft(find.text('Directions').first).dy,
+          greaterThan(tester.getTopLeft(find.text('View event').first).dy),
         );
         expect(
-          tester.getTopLeft(find.text('Add to calendar')).dy,
-          greaterThan(tester.getTopLeft(find.text('Directions')).dy),
+          tester.getTopLeft(find.text('Add to calendar').first).dy,
+          greaterThan(tester.getTopLeft(find.text('Directions').first).dy),
         );
-
-        await tester.drag(find.text(firstRunTitle), const Offset(-420, 0));
-        await tester.pump();
-        await pumpFeatureUiFor(tester, const Duration(milliseconds: 250));
-
-        expect(find.text(firstRunTitle), findsNothing);
-        expect(find.text(secondRunTitle), findsOneWidget);
+        expect(
+          tester.getTopLeft(find.text(firstRunTitle)).dy,
+          lessThan(tester.getTopLeft(find.text(secondRunTitle)).dy),
+        );
       },
     );
 
