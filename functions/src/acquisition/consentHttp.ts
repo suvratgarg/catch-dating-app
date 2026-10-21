@@ -13,6 +13,7 @@ import {
   expireHostMetaDeliveries, stopHostMetaDeliveriesForConsent,
 } from "./metaDelivery";
 import {hostConsentKey} from "./consentPolicy";
+import {expireHostAttribution, withdrawHostAttribution} from "./attribution";
 
 // Activation is a separate reviewed source change after end-to-end acceptance.
 export const hostServerMeasurementEnabled = false;
@@ -81,6 +82,8 @@ export const hostAcquisitionConsent = onRequest(
         throw new Error("Invalid privacy response.");
       }
       if ("ok" in result && result.status === "revoked") {
+        await withdrawHostAttribution(admin.firestore(),
+          hostConsentKey(request.body.capability)!);
         await stopHostMetaDeliveriesForConsent(admin.firestore(),
           hostConsentKey(request.body.capability)!);
       }
@@ -127,6 +130,7 @@ export const expireHostAcquisitionConsent = onSchedule({
   schedule: "every 15 minutes", region: "asia-south1", maxInstances: 1,
   timeoutSeconds: 300,
 }, async () => {
+  await expireHostAttribution(admin.firestore());
   await expireHostMetaDeliveries(admin.firestore());
   await expireHostConsentRecords(admin.firestore());
 });
