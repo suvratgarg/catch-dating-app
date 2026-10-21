@@ -26,7 +26,8 @@ test("Host alert manifest separates intake and mailer identities", async () => {
       "catch-host-alert-intake@");
     assert.equal(result.mailer,
       "catch-host-alert-mailer@");
-    assert.deepEqual(result.intakeEndpoint.secretEnvironmentVariables ?? [], []);
+    assert.deepEqual(result.intakeEndpoint.secretEnvironmentVariables ?? [],
+      []);
     assert.deepEqual(result.mailerEndpoint.secretEnvironmentVariables,
       [{key: "CATCH_HOST_OPERATOR_ALERTS_RESEND_KEY"}]);
     assert.deepEqual(result.intakeEndpoint.eventTrigger.eventFilterPathPatterns,
@@ -35,7 +36,8 @@ test("Host alert manifest separates intake and mailer identities", async () => {
     assert.deepEqual(result.mailerEndpoint.region, ["asia-south1"]);
     assert.equal(result.mailerEndpoint.maxInstances, 1);
     assert.equal(result.mailerEndpoint.timeoutSeconds, 300);
-    assert.equal(result.mailerEndpoint.scheduleTrigger.retryConfig.retryCount, 0);
+    assert.equal(result.mailerEndpoint.scheduleTrigger.retryConfig.retryCount,
+      0);
   }
 });
 
