@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {gzipSync} from 'node:zlib';
 
 // Reviewed PR726 bytes. Changing runtime scope requires another source review.
 export const release = Object.freeze({
@@ -101,7 +102,8 @@ export function verifyPostDeployPackage(destination, sourceSha) {
     assert.equal(Number(mtime), fs.statSync(path.join(destination, 'measurement-runtime', name)).mtime.getTime(),
       `Stale Firebase cache timestamp: ${name}`);
     assert.match(hash, /^[a-f0-9]{64}$/u, 'Invalid Firebase cache hash');
-    assert.equal(hash, digest(fs.readFileSync(path.join(destination, 'measurement-runtime', name))),
+    // firebase-tools 15.20.0 Uploader.hashHandler hashes zipStream(): gzip(level 9) bytes.
+    assert.equal(hash, digest(gzipSync(fs.readFileSync(path.join(destination, 'measurement-runtime', name)), {level: 9})),
       `Stale Firebase cache hash: ${name}`);
     names.push(name);
   }

@@ -24,9 +24,14 @@ function addFirebaseCache(destination) {
   const directory = path.join(destination, '.firebase');
   fs.mkdirSync(directory);
   const names = ['catch-acquisition-runtime.html', 'catch-acquisition-runtime.js'];
-  const lines = names.map(name => {
+  // Produced independently with the pinned uploader's createReadStream().pipe(createGzip({level: 9})) path.
+  const uploadedHashes = [
+    '872df9982f92c3e03d0ac9e5ac8f9c3e1404ce49e7bff56c0e65a76248c8ac20',
+    '9c986dcdf2a409208e865cfb95b4cf529c72672990c6acd3bd1b58e8d7fdfa87',
+  ];
+  const lines = names.map((name, index) => {
     const file = path.join(destination, 'measurement-runtime', name);
-    return `${name},${fs.statSync(file).mtime.getTime()},${digest(fs.readFileSync(file))}`;
+    return `${name},${fs.statSync(file).mtime.getTime()},${uploadedHashes[index]}`;
   });
   const file = path.join(directory, 'hosting.bWVhc3VyZW1lbnQtcnVudGltZQ.cache');
   fs.writeFileSync(file, `${lines.join('\n')}\n`);
@@ -99,6 +104,8 @@ test('post-deploy verification rejects unexpected cache paths, links, stale meta
     lines => [lines[0].replace(/,[0-9]+,/u, ',1,'), lines[1]],
     lines => [lines[0].replace(/[a-f0-9]{64}$/u, 'wrong'), lines[1]],
     lines => [lines[0].replace(/[a-f0-9]{64}$/u, '0'.repeat(64)), lines[1]],
+    lines => [lines[0].replace(/[a-f0-9]{64}$/u,
+      digest(fs.readFileSync(path.join(destination, 'measurement-runtime/catch-acquisition-runtime.html')))), lines[1]],
   ]) {
     destination = fresh(); cache = addFirebaseCache(destination);
     fs.writeFileSync(cache.file, `${change(cache.lines).join('\n')}\n`);
