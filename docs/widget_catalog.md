@@ -715,8 +715,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventShareCard</code> | <code>lib/events/shared/event_share_card.dart:90</code> | — | — | No class documentation or registry summary. |
 | <code>EventShareChip</code> | <code>lib/events/shared/event_share_card.dart:262</code> | — | — | No class documentation or registry summary. |
 | <code>EventActionCard</code> | <code>lib/events/shared/event_tiles/event_action_card.dart:6</code> | — | — | No class documentation or registry summary. |
-| <code>EventActionCardHeader</code> | <code>lib/events/shared/event_tiles/event_action_card.dart:169</code> | — | — | No class documentation or registry summary. |
-| <code>EventActionList</code> | <code>lib/events/shared/event_tiles/event_action_card.dart:208</code> | — | — | No class documentation or registry summary. |
+| <code>EventActionCardHeader</code> | <code>lib/events/shared/event_tiles/event_action_card.dart:174</code> | — | — | No class documentation or registry summary. |
+| <code>EventActionList</code> | <code>lib/events/shared/event_tiles/event_action_card.dart:213</code> | — | — | No class documentation or registry summary. |
 | <code>EventAgendaTile</code> | <code>lib/events/shared/event_tiles/event_agenda_tile.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>DateRail</code> | <code>lib/events/shared/event_tiles/event_date_rail_card.dart:525</code> | — | — | No class documentation or registry summary. |
 | <code>EventDateRailCard</code> | <code>lib/events/shared/event_tiles/event_date_rail_card.dart:31</code> | — | <code>catch.event_card</code> | Compact list and map DateTicket with an activity rail, organizer and event identity hierarchy, one optional context block, and a trailing price decision row. |

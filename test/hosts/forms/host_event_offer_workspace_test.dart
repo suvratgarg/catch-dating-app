@@ -149,7 +149,7 @@ void main() {
     final accounts = StreamController<String?>();
     addTearDown(accounts.close);
     final auth = _SwitchingAuth('host-one');
-    final responses = _SwitchingLegacyResponses();
+    final responses = _LegacyResponseScript();
     var accountId = 'host-one';
     late StateSetter updateRoute;
     await tester.pumpWidget(
@@ -157,7 +157,9 @@ void main() {
         overrides: [
           uidProvider.overrideWith((ref) => accounts.stream),
           firebaseAuthProvider.overrideWithValue(auth),
-          hostFormResponsesControllerProvider.overrideWith2((_) => responses),
+          hostFormResponsesControllerProvider.overrideWith2(
+            (_) => _SwitchingLegacyResponses(responses),
+          ),
         ],
         child: MaterialApp(
           theme: AppTheme.light,
@@ -186,7 +188,7 @@ void main() {
     await pumpUntilFound(tester, find.text('Maya'));
     expect(find.text('Maya'), findsOneWidget);
 
-    responses._nextResponse = Completer<HostFormResponsesState>();
+    responses.nextResponse = Completer<HostFormResponsesState>();
     auth.uid = 'host-two';
     updateRoute(() => accountId = 'host-two');
     accounts.add('host-two');
@@ -194,12 +196,12 @@ void main() {
     await tester.pump();
     expect(find.text('Maya'), findsNothing);
 
-    responses._nextResponse!.completeError(StateError('Fixture read failed'));
+    responses.nextResponse!.completeError(StateError('Fixture read failed'));
     await pumpFeatureUi(tester);
     expect(find.byType(CatchLocalizedSliverErrorState), findsOneWidget);
     expect(find.text('Maya'), findsNothing);
 
-    responses._nextResponse = Completer<HostFormResponsesState>();
+    responses.nextResponse = Completer<HostFormResponsesState>();
     tester
         .widget<CatchLocalizedSliverErrorState>(
           find.byType(CatchLocalizedSliverErrorState),
@@ -209,7 +211,7 @@ void main() {
     await tester.pump();
     expect(find.text('Maya'), findsNothing);
 
-    responses._nextResponse!.complete(
+    responses.nextResponse!.complete(
       HostFormResponsesState(
         responses: [
           _SwitchingLegacyResponses.response('Rohan', 'response-two'),
