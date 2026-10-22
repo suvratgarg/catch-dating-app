@@ -72,7 +72,10 @@ test("Admin pending inputs add exact validation while preserving every source op
   const classification = graph.classifications.find((entry) => entry.id === "admin-pending-input");
   assert.deepEqual([...classification.paths.include].sort(), inputs);
   const scanner = toolsManifest.tools.find((entry) => entry.id === "web:admin-pending-operations");
-  assert.deepEqual([...scanner.impactPaths].sort(), inputs);
+  // The scanner also reads the frozen feature cases, which app.design already
+  // routes to Tools; only the controller closure needs this classification.
+  assert.deepEqual([...scanner.impactPaths].sort(),
+    [...inputs, "design/features/admin_*.feature.json"].sort());
   const before = clone(graph);
   before.classifications = before.classifications.filter((entry) => entry.id !== classification.id);
   before.components = before.components.filter((entry) => entry.id !== "web.admin-pending-input");
@@ -399,8 +402,7 @@ test("Hosting promotion controls select only their React callers and affected To
       assert.equal(tools.mode, "affected", `${file} ${mode}`);
       assert.deepEqual(tools.fullReasons, []);
       assert.deepEqual(tools.toolIds, ["agent:harness-v2", "ci:web-hosting-delivery-workflow",
-        "ci:web-hosting-freshness", "docs:metadata", "meta:enforcement-integrity",
-        "meta:repository-root-hygiene"]);
+        "ci:web-hosting-freshness", ...toolsManifest.ciImpact.mandatoryCheckIds].sort());
       assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
       assert.equal(tools.repositoryView, "full");
     }
@@ -451,13 +453,13 @@ test("Hosting promotion control routing preserves mixed Host and Functions owner
   }
 });
 
-test("Hosting promotion exceptions leave shared, admission, and unknown controls full", () => {
+test("Hosting promotion exceptions leave shared and unknown controls full", () => {
   const controls = [".github/workflows/_web-hosting-promote.yml",
     "tool/ci/web_hosting_freshness.mjs", "tool/ci/web_hosting_workflow.test.mjs"];
   const broad = [".github/workflows/ci.yml", ".github/workflows/tools-ci.yml",
     ".github/workflows/unknown-hosting.yml", ".github/workflows/_web-hosting-build.yml",
     ".github/workflows/host-website.yml", "tool/ci/unknown_hosting.mjs",
-    "tool/ci/pr_ci_admission.mjs", "tool/ci/pr_ci_admission.test.mjs",
+    "tool/ci/finalize_ci_plan.mjs", "tool/ci/required_ci_policy.test.mjs",
     "tool/ci/main_ci_baseline.mjs", "tool/ci/delivery_core.mjs",
     ".github/workflows/_web-hosting-promote-other.yml",
     "tool/ci/web_hosting_freshness_other.mjs",

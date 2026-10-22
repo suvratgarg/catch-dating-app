@@ -4451,7 +4451,8 @@ export interface EventSetupReceiptDocument {
     | "preferences"
     | "details"
     | "publish"
-    | "unpublish";
+    | "unpublish"
+    | "media";
   actorUid: string;
   organizerId: string;
   requestHash: string;
@@ -4459,6 +4460,8 @@ export interface EventSetupReceiptDocument {
   appliedRevision?: number;
   createdAt: FirebaseFirestore.Timestamp;
   outcome?: "discarded";
+  requestId?: string;
+  mediaPayloadHash?: string;
   expectedSetupRevision?: number;
 }
 

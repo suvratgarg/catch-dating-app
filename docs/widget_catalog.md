@@ -1302,8 +1302,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostSavedAudienceEditorScreen</code> | <code>lib/hosts/presentation/customers/host_saved_audience_editor.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>EditHostedEventRouteScreen</code> | <code>lib/hosts/presentation/edit_hosted_event_route_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>EditHostedEventScreen</code> | <code>lib/hosts/presentation/edit_hosted_event_screen.dart:62</code> | — | — | No class documentation or registry summary. |
-| <code>CreateEventScreen</code> | <code>lib/hosts/presentation/event_management/create/create_event_screen.dart:71</code> | — | — | No class documentation or registry summary. |
-| <code>CreateEventSuccessScreen</code> | <code>lib/hosts/presentation/event_management/create/create_event_success_screen.dart:15</code> | — | — | No class documentation or registry summary. |
+| <code>CreateEventScreen</code> | <code>lib/hosts/presentation/event_management/create/create_event_screen.dart:73</code> | — | — | No class documentation or registry summary. |
+| <code>CreateEventSuccessScreen</code> | <code>lib/hosts/presentation/event_management/create/create_event_success_screen.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>EventPublicationScreen</code> | <code>lib/hosts/presentation/event_management/create/event_publication_screen.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventOfferPreferencesScreen</code> | <code>lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart:14</code> | — | — | Manager settings for future offers; existing offers retain recorded terms. |
 | <code>PrivateEventCreateScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_create_screen.dart:49</code> | — | — | The first page of the single progressive event editor. |

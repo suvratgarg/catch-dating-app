@@ -6,6 +6,8 @@ import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
+import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -386,6 +388,10 @@ void main() {
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
           fetchClubProvider('club-1').overrideWith((ref) async => club),
+          commandJournalStorageProvider.overrideWith((ref) {
+            final storage = MemoryCommandJournalStorage();
+            return () async => storage;
+          }),
         ],
       );
       addTearDown(container.dispose);

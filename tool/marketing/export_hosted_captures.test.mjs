@@ -9,7 +9,6 @@ import crypto from "node:crypto";
 import {pathToFileURL} from "node:url";
 import {extractSteps} from "../harness/lib/workflow_steps.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
-import {isAdmissionEvent} from "../ci/pr_ci_admission.mjs";
 import {canonicalInventory, exportHostedCaptures, resolveCaptureRequest} from "./export_hosted_captures.mjs";
 
 const repository = "owner/repo";
@@ -364,19 +363,14 @@ test("actual job guard and source-keyed concurrency exclude unrelated PR metadat
   assert.match(source, /      cancel-in-progress: false\n/u);
 });
 
-test("capture label does not admit full CI or replace the Required CI context", () => {
-  const event = labelEvent();
-  assert.equal(isAdmissionEvent(event), false);
+test("capture label never starts CI or replaces the Required CI context", () => {
   const ci = fs.readFileSync(fromRepo(".github/workflows/ci.yml"), "utf8");
-  const required = ci.slice(ci.indexOf("  required:\n"));
-  const condition = required.match(/^    if: \$\{\{ (.*) \}\}$/mu)?.[1];
-  const name = required.match(/^    name: \$\{\{ (.*) \}\}$/mu)?.[1];
-  assert.equal(evaluate(condition, requestOptions(event)), false);
-  assert.equal(evaluate(name, requestOptions(event)), "Ignored PR metadata");
-  event.label.name = "ci:admitted";
-  assert.equal(isAdmissionEvent(event), true);
-  assert.equal(evaluate(condition, requestOptions(event)), true);
-  assert.equal(evaluate(name, requestOptions(event)), "Required CI");
+  const types = ci.match(/^  pull_request:\n    types: \[(.*)\]$/mu)?.[1].split(", ");
+  assert.ok(types?.length, "CI must declare its pull_request activity types");
+  for (const action of ["labeled", "unlabeled"]) {
+    assert.ok(!types.includes(action), `${action} events must not start CI`);
+  }
+  assert.match(ci.slice(ci.indexOf("  required:\n")), /^    name: Required CI$/mu);
 });
 
 test("actual artifact name includes exact selected source SHA for both dispatch and PR labels", () => {
