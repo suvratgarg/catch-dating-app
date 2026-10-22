@@ -87488,6 +87488,11 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const hostAcquisitionConsentDocumentAttributionCleanupPending = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.attributionCleanupPending',
+    valueTypes: <String>['boolean'],
+  );
+
   static const hostAcquisitionConsentDocumentAuthorityAcceptedAt = CatchContractFieldConstraints(
     path: 'hostAcquisitionConsentDocument.authority.acceptedAt',
     required: true,
@@ -149572,6 +149577,98 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const salesInboundIntentsDocumentAcquisitionAttributionAcceptedAt = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.acceptedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionConsentId = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.consentId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionExpiresAt = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionFirstTouchCapturedAt = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.capturedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionFirstTouchLandingPath = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.landingPath',
+    required: true,
+    enumValues: <String>['/host/', '/host/overview/', '/host/platform/', '/host/planners/', '/host/clubs/', '/host/directory/', '/claim/', '/host/claim/', '/host/apply/', '/host/stack/', '/host/workflows/'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmCampaign = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_campaign',
+    enumValues: <String>['launch', 'launch_2026', 'planner_launch', 'host_acquisition_2026', 'synthetic_launch'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmContent = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_content',
+    enumValues: <String>['host_hero', 'host_footer', 'claim_cta', 'application_cta'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmMedium = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_medium',
+    enumValues: <String>['cpc', 'paid_social', 'email', 'organic', 'referral'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmSource = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_source',
+    enumValues: <String>['google', 'meta', 'newsletter', 'catch', 'partner'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionLastTouchCapturedAt = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.capturedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionLastTouchLandingPath = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.landingPath',
+    required: true,
+    enumValues: <String>['/host/', '/host/overview/', '/host/platform/', '/host/planners/', '/host/clubs/', '/host/directory/', '/claim/', '/host/claim/', '/host/apply/', '/host/stack/', '/host/workflows/'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmCampaign = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_campaign',
+    enumValues: <String>['launch', 'launch_2026', 'planner_launch', 'host_acquisition_2026', 'synthetic_launch'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmContent = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_content',
+    enumValues: <String>['host_hero', 'host_footer', 'claim_cta', 'application_cta'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmMedium = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_medium',
+    enumValues: <String>['cpc', 'paid_social', 'email', 'organic', 'referral'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmSource = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_source',
+    enumValues: <String>['google', 'meta', 'newsletter', 'catch', 'partner'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionVersion = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.version',
+    required: true,
+  );
+
   static const salesInboundIntentsDocumentAlreadyJoined = CatchContractFieldConstraints(
     path: 'salesInboundIntentsDocument.alreadyJoined',
     required: true,
@@ -182069,6 +182166,7 @@ abstract final class CatchContractConstraints {
     'heartbeatEventSuccessPresenceCallableResponse.presenceState': heartbeatEventSuccessPresenceCallableResponsePresenceState,
     'heartbeatEventSuccessPresenceCallableResponse.presentWindowSeconds': heartbeatEventSuccessPresenceCallableResponsePresentWindowSeconds,
     'heartbeatEventSuccessPresenceCallableResponse.serverTimeMillis': heartbeatEventSuccessPresenceCallableResponseServerTimeMillis,
+    'hostAcquisitionConsentDocument.attributionCleanupPending': hostAcquisitionConsentDocumentAttributionCleanupPending,
     'hostAcquisitionConsentDocument.authority.acceptedAt': hostAcquisitionConsentDocumentAuthorityAcceptedAt,
     'hostAcquisitionConsentDocument.authority.advertising': hostAcquisitionConsentDocumentAuthorityAdvertising,
     'hostAcquisitionConsentDocument.authority.analytics': hostAcquisitionConsentDocumentAuthorityAnalytics,
@@ -190648,6 +190746,22 @@ abstract final class CatchContractConstraints {
     'salesImportRowDocument.sourceContentHash': salesImportRowDocumentSourceContentHash,
     'salesImportRowDocument.sourceId': salesImportRowDocumentSourceId,
     'salesImportRowDocument.sourceRowId': salesImportRowDocumentSourceRowId,
+    'salesInboundIntentsDocument.acquisitionAttribution.acceptedAt': salesInboundIntentsDocumentAcquisitionAttributionAcceptedAt,
+    'salesInboundIntentsDocument.acquisitionAttribution.consentId': salesInboundIntentsDocumentAcquisitionAttributionConsentId,
+    'salesInboundIntentsDocument.acquisitionAttribution.expiresAt': salesInboundIntentsDocumentAcquisitionAttributionExpiresAt,
+    'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.capturedAt': salesInboundIntentsDocumentAcquisitionAttributionFirstTouchCapturedAt,
+    'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.landingPath': salesInboundIntentsDocumentAcquisitionAttributionFirstTouchLandingPath,
+    'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_campaign': salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmCampaign,
+    'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_content': salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmContent,
+    'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_medium': salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmMedium,
+    'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_source': salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmSource,
+    'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.capturedAt': salesInboundIntentsDocumentAcquisitionAttributionLastTouchCapturedAt,
+    'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.landingPath': salesInboundIntentsDocumentAcquisitionAttributionLastTouchLandingPath,
+    'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_campaign': salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmCampaign,
+    'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_content': salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmContent,
+    'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_medium': salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmMedium,
+    'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_source': salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmSource,
+    'salesInboundIntentsDocument.acquisitionAttribution.version': salesInboundIntentsDocumentAcquisitionAttributionVersion,
     'salesInboundIntentsDocument.alreadyJoined': salesInboundIntentsDocumentAlreadyJoined,
     'salesInboundIntentsDocument.city': salesInboundIntentsDocumentCity,
     'salesInboundIntentsDocument.classification': salesInboundIntentsDocumentClassification,
