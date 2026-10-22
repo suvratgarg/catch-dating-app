@@ -1227,11 +1227,15 @@ explicit apply flag, and carry a `safety` label that reflects the blast radius.
 
 ## PR validation and the merge queue
 
-Every ready PR into `main` runs full `CI` in parallel. A newer push or a
+Every ready PR into `main` runs `CI` in parallel. A newer push or a
 conversion to draft cancels that PR's older run, and drafts validate once they
-are marked ready. The `Plan affected targets` job gives the early planner
-feedback within a minute; skipping expensive jobs is never evidence that those
-jobs passed.
+are marked ready. Pull requests defer the slow macOS and app-build lanes
+(`visual_integration`, `flutter_build_*` and `flutter_web_smoke`): the plan
+lists them as `queueDeferredCiTargets`, and the merge queue runs them on the
+exact combined source before `main` moves. Pass `--mode merge_group` to
+`tool/harness/verify_local.mjs` to select them locally. The `Plan affected
+targets` job gives the early planner feedback within a minute; skipping
+expensive jobs is never evidence that those jobs passed.
 
 A PR result does not need to stay current with `main`. The GitHub merge queue
 validates each group's exact combined source with the same `Required CI`
