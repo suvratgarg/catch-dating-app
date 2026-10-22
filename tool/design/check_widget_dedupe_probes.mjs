@@ -35,6 +35,7 @@ plus concept-primary, member-parent, composition-identity, and collision probes.
 
 run(dart, [
   "run",
+  "--packages=tool/widget_dedupe/.dart_tool/package_config.json",
   "tool/widget_dedupe/bin/extract_fingerprints.dart",
   "--files",
   fixtures.join(","),

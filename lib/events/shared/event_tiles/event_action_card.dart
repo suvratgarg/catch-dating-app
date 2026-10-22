@@ -20,6 +20,7 @@ class EventActionCard extends StatelessWidget {
     this.gradientColors,
     this.topAccentColors,
     this.radius = CatchRadius.lg,
+    this.onTap,
   });
 
   final Event event;
@@ -40,6 +41,9 @@ class EventActionCard extends StatelessWidget {
   /// activity at the card's top edge.
   final List<Color>? topAccentColors;
   final double radius;
+
+  /// Whole-card tap target. Inner [actions] stay separately reachable.
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +78,7 @@ class EventActionCard extends StatelessWidget {
         colors: effectiveGradientColors,
       ),
       clipBehavior: Clip.antiAlias,
+      onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
