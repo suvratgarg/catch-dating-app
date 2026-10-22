@@ -1,9 +1,10 @@
 # Catch Host App Store Asset Pack
 
-Prepared for the iOS Host app listing. This pack is scoped to `Catch Host`, not
-the consumer Catch app.
+The App Store submission packet for the iOS `Catch Host` app, not the consumer
+Catch app. Open work and owner decisions are tracked in Linear `CAT-39`
+("Prepare Catch Host release"), not in this folder.
 
-## Known App Store Connect record
+## App Store Connect record
 
 | Field | Value | Source |
 | --- | --- | --- |
@@ -14,21 +15,47 @@ the consumer Catch app.
 | Primary language | English (U.S.) | `docs/release_operations.md` |
 | Access | Full Access | `docs/release_operations.md` |
 
-## Prepared assets
+## Release build source
 
-| Asset | Path | Status |
+`node tool/platform/resolve_app_target.mjs --role host --environment prod`
+resolves the Host release target to this build:
+
+| Field | Value |
+| --- | --- |
+| Project root | `apps/host` |
+| Entrypoint | `apps/host/lib/main_prod.dart` |
+| Xcode scheme / configuration | `host-prod` / `Release-host-prod` |
+| Marketing version | `1.0.1` (`apps/host/pubspec.yaml`) |
+| Producer | `.github/workflows/mobile-internal-release.yml` |
+
+The packet's privacy, permission and export-compliance answers describe that
+target. The legacy root `ios/` project is not the Host release source.
+
+## Packet contents
+
+| Document | Path | State on 2026-10-22 |
 | --- | --- | --- |
-| App icon, 1024x1024 PNG | `docs/store/catch_host/icon/app-icon-1024.png` | Ready from existing host prod icon |
-| 6.9-inch iPhone screenshots | `docs/store/catch_host/screenshots/iphone_6_9/` | Draft sources; revision required by the eight-shot production brief |
-| Metadata draft | `docs/store/catch_host/metadata.md` | Ready for owner review |
-| Privacy inventory draft | `docs/store/catch_host/privacy_inventory.md` | Ready for legal/product review |
-| App Review notes draft | `docs/store/catch_host/review_notes.md` | Needs demo credentials and backend confirmation |
-| Asset manifest | `docs/store/catch_host/asset_manifest.json` | Updated; screenshot revision required |
+| Metadata, URLs, age rating, export compliance | `docs/store/catch_host/metadata.md` | Drafted. Seller name, copyright and territories wait on owner decisions. |
+| App privacy answers | `docs/store/catch_host/privacy_inventory.md` | Drafted per Apple data type from source. Needs legal/product sign-off and a check against the archive privacy report. |
+| Reviewer access, review notes, payment posture | `docs/store/catch_host/review_notes.md` | Drafted. The reviewer accounts are not provisioned; codes stay out of the repository. |
+| App icon, 1024x1024 PNG | `docs/store/catch_host/icon/app-icon-1024.png` | Ready, from the Host prod icon |
+| 6.9-inch iPhone screenshots | `docs/store/catch_host/screenshots/iphone_6_9/` | Draft sources. The eight-shot production brief requires revision. |
+| Asset manifest | `docs/store/catch_host/asset_manifest.json` | Updated |
 
 The approved cross-app screenshot order, replacement decisions, platform export
-matrix, and QA contract now live in
+matrix and QA contract are in
 [`../app_listing_screenshot_production_brief.md`](../app_listing_screenshot_production_brief.md).
 The five images in this pack are source drafts, not final upload assets.
+
+## In-app requirements and where they live
+
+| Requirement | Host build state on `origin/main` `3c930f24b` |
+| --- | --- |
+| Account deletion (5.1.1(v)) | Organizer tab → Account menu → Delete account |
+| In-app privacy policy link (5.1.1(i)) | Not in a build yet. Branch `claude/legal-links-in-app-20261022` adds Privacy policy, Terms and Help & support to the same Account menu, together with the prod URLs in `tool/env/dart_defines/prod.json`. |
+| Report and block for user-generated content (1.2) | Inbox conversation menu |
+| Encryption declaration | `ITSAppUsesNonExemptEncryption` = `false` in `apps/host/ios/Runner/Info.plist` |
+| Prod backend parity | The release workflow runs `check_client_callable_dependencies.mjs --role host --environment prod --verify-live` before archiving |
 
 ## Apple requirements referenced
 
@@ -49,25 +76,10 @@ As of June 22, 2026, Apple's App Store Connect docs say:
 - App privacy answers and privacy policy URL are required:
   https://developer.apple.com/help/app-store-connect/reference/app-information/app-privacy
 
-## Remaining release blockers
+The packet also applies these App Review Guidelines:
 
-- Accept any updated Apple Developer Program License Agreement if App Store
-  Connect blocks release work.
-- Host exact promotion run `31436882152` processed the final analyzer-clean
-  version `1.0.1`, build `202608100000030201`, as `VALID` and persisted exact
-  claim artifact `9081563645`; the legacy `Runner | Default` Xcode Cloud
-  workflow is disabled.
-  Assign that build to the intended TestFlight group and record install/launch
-  proof in GitHub issue `#218`.
-- Smoke test the Host TestFlight build with App Check/App Attest, Maps, phone
-  auth, push, host club/event entrypoints, check-in, and Event Success tools.
-- Create the Host Play record, enroll Play App Signing, grant the existing
-  `github-actions-play-publisher` OIDC identity app-scoped testing-track access,
-  configure internal testers, and record AAB processing/install proof before
-  rerunning the guarded manual Play `qa` promoter. Owner verification and both
-  app records are tracked in GitHub issue `#199`.
-- Replace review-note placeholders with reviewer credentials and seeded data.
-- Have legal/product confirm privacy labels, age rating, copyright owner, and
-  category choices before submission.
-- Refresh screenshots from the release/TestFlight build if the UI changes before
-  submission.
+- 2.1 (demo account and complete app)
+- 1.2 (user-generated content)
+- 3.1.1, 3.1.3(c), 3.1.3(e) and 3.1.3(f) (payments)
+- 4.8 (login services)
+- 5.1.1 (privacy, purpose strings and account deletion)

@@ -6,7 +6,17 @@
     "sku": "catch-host-ios",
     "primaryLanguage": "English (U.S.)"
   },
+  "buildSource": {
+    "targetId": "host-prod",
+    "projectRoot": "apps/host",
+    "entrypoint": "apps/host/lib/main_prod.dart",
+    "iosScheme": "host-prod",
+    "iosConfiguration": "Release-host-prod",
+    "infoPlist": "apps/host/ios/Runner/Info.plist",
+    "entitlements": "apps/host/ios/Runner/RunnerHost.entitlements"
+  },
   "preparedAt": "2026-06-22",
+  "updatedAt": "2026-10-22",
   "status": "screenshot_revision_required",
   "screenshotProductionBrief": "docs/store/app_listing_screenshot_production_brief.md",
   "icon": {
@@ -24,10 +34,11 @@
     "subtitleCharacters": 21,
     "promotionalTextCharacters": 109,
     "keywordsBytes": 84,
-    "privacyPolicyUrl": "https://catchdates.com/privacy",
-    "supportUrl": "https://catchdates.com/help",
-    "termsUrl": "https://catchdates.com/terms",
-    "marketingUrl": "https://catchdates.com/host/"
+    "privacyPolicyUrl": "https://catchdates.com/privacy/",
+    "supportUrl": "https://catchdates.com/help/",
+    "termsUrl": "https://catchdates.com/terms/",
+    "marketingUrl": "https://catchdates.com/host/",
+    "urlsVerifiedAt": "2026-10-22"
   },
   "screenshots": [
     {
@@ -86,11 +97,16 @@
       "status": "replace_draft_alpha_channel"
     }
   ],
-  "remainingBlockers": [
-    "Host TestFlight archive/upload and smoke proof",
-    "Reviewer credentials and seeded Host account",
-    "Legal/product privacy label confirmation",
-    "Age rating questionnaire confirmation",
-    "Category and copyright owner confirmation"
-  ]
+  "submissionDocs": {
+    "privacy": "docs/store/catch_host/privacy_inventory.md",
+    "reviewNotes": "docs/store/catch_host/review_notes.md",
+    "metadata": "docs/store/catch_host/metadata.md"
+  },
+  "decisionDependentFields": {
+    "sellerName": "developer account type: individual or organization",
+    "copyright": "developer account type: individual or organization",
+    "ageRating": "owner choice of 18+ override",
+    "territories": "owner territory choice",
+    "secondaryCategory": "owner category choice"
+  }
 }
