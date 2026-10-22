@@ -97,7 +97,7 @@ Widget catchFormStepListContractStates(BuildContext context) {
             CatchFormStepReviewItem(
               index: 0,
               title:
-                  'A longer section title that wraps beside the status badge without truncation',
+                  'Guest questions, dietary requirements and accessibility notes',
               status: CatchFormStepListStatus.needsInformation,
             ),
             CatchFormStepReviewItem(
