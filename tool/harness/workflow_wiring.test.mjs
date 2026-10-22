@@ -542,7 +542,7 @@ test("retired React graph snapshots stay absent while the live CI gate remains",
 
 test("required CI consumes every bounded Harness v2 target", () => {
   const ci = workflow("ci.yml");
-  assert.match(ci, /name: .*\|\| 'Required CI'/);
+  assert.match(ci, /^    name: Required CI$/m);
   assert.match(ci, /node tool\/harness\.mjs plan/);
   assert.doesNotMatch(ci, new RegExp(`${retiredPlanner}|harness\\.mjs shadow`));
   for (const target of graph.targets) {
@@ -1259,41 +1259,25 @@ test("every selective main consumer reads the exact committed validation window"
     /--commit-window "\$COMMIT_WINDOW"/u);
 });
 
-test("PR admission serializes full validation without green deferred checks", () => {
+test("every ready PR validates in parallel and the merge queue guards main", () => {
   const ci = workflow("ci.yml");
-  assert.match(ci, /types: \[opened, synchronize, reopened, labeled, unlabeled, ready_for_review, converted_to_draft\]/u);
-  assert.match(ci, /github\.event_name == 'pull_request' && 'admitted'/u);
+  assert.match(ci, /^  merge_group:$/mu);
+  assert.match(ci, /github\.event_name == 'pull_request' && github\.event\.pull_request\.number/u);
   assert.match(ci, /github\.event_name == 'push' && github\.run_id/u);
-  assert.match(ci, /queue: max\n  cancel-in-progress: false/u);
-  assert.match(ci, /admission:\n    name: Check PR admission\n    runs-on:/u);
-  assert.match(ci, /reason_code: \$\{\{ steps\.check\.outputs\.reason_code \}\}/u);
-  assert.match(namedStep(ci, "Preserve non-PR validation"), /Non-PR validation retains/u);
-  assert.match(ci, /plan:\n    needs: admission\n    if: \$\{\{ !cancelled\(\) && \(github\.event_name != 'pull_request' \|\| needs\.admission\.outputs\.admitted == 'true'\) \}\}/u);
-  assert.match(ci, /required:[\s\S]*?name: .*'Ignored PR metadata' \|\| 'Required CI'/u);
-  assert.match(ci, /if: \$\{\{ !cancelled\(\) && !\(github\.event_name == 'pull_request' && contains[\s\S]*?github\.event\.label\.name != 'ci:admitted'\) \}\}\n    needs:\n      - admission/u);
-  assert.match(namedStep(ci, "Refuse deferred PR validation"), /exit 1/u);
-  assert.match(namedStep(ci, "Refuse deferred PR validation"),
-    /REASON_CODE: \$\{\{ needs\.admission\.outputs\.reason_code \}\}/u);
-  assert.match(namedStep(ci, "Refuse deferred PR validation"),
-    /Admission status: \$\{REASON_CODE:-unavailable\}/u);
-  assert.match(namedStep(ci, "Recheck live PR admission and tested source"), /pr_ci_admission\.mjs --require/u);
+  assert.match(ci, /^  cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}$/mu);
+  assert.doesNotMatch(ci, /admission|admitted|queue: max|Ignored PR metadata/iu);
+  assert.match(ci, /plan:\n    # .*\n    if: \$\{\{ !cancelled\(\) && \(github\.event_name != 'pull_request' \|\| !github\.event\.pull_request\.draft\) \}\}\n    name: Plan affected targets/u);
+  assert.match(ci, /required:\n    name: Required CI\n/u);
   assert.doesNotMatch(ci, /backend-review|Backend source review|BACKEND_REVIEW_REQUIRED/u);
-  const feedback = workflow("pr-feedback.yml");
-  const plan = namedStep(feedback, "Plan affected checks");
-  assert.match(plan, /node tool\/harness\/verify_local\.mjs --preflight --allow-deferred --base "\$BASE_SHA" --head HEAD --mode pr/u);
+  // Full CI's first job gives the same early planner feedback the retired
+  // pr-feedback workflow provided while full validation was rationed.
+  assert.equal(fs.existsSync(new URL("../../.github/workflows/pr-feedback.yml", import.meta.url)), false);
   assert.match(ci, /node tool\/harness\/verify_local\.mjs --preflight --allow-deferred \\\n\s+--base "\$base_sha" --head "\$HEAD_SHA" --mode "\$event_mode"/u);
-  for (const source of [ci, feedback]) {
-    assert.match(source, /uses: \.\/\.github\/actions\/load-toolchain/u);
-    assert.match(source, /uses: actions\/setup-node@v6/u);
-    assert.match(source, /node-version: \$\{\{ steps\.toolchain\.outputs\.node-version \}\}/u);
-  }
-  assert.doesNotMatch(feedback, /git diff --check/u);
-  assert.doesNotMatch(feedback, /npm ci|flutter test|uses: \.\/\.github\/workflows|name: Required CI/u);
-  assert.deepEqual(literalSparsePaths(feedback), graph.ciCheckout.planner.paths);
+  assert.match(ci, /uses: \.\/\.github\/actions\/load-toolchain/u);
+  assert.match(ci, /node-version: \$\{\{ steps\.toolchain\.outputs\.node-version \}\}/u);
 });
 
-
-test("CI run names preserve main delivery identity and distinguish PR admission events", () => {
+test("CI run names preserve main delivery identity and name every PR run", () => {
   const expression = workflow("ci.yml").match(/^run-name: >-\n  \$\{\{ (.+) \}\}$/mu)?.[1];
   assert.ok(expression, "missing run-name expression");
   // GitHub exposes an explicit run-name as REST run.name as well as
@@ -1310,10 +1294,9 @@ test("CI run names preserve main delivery identity and distinguish PR admission 
   for (const action of ["opened", "synchronize", "reopened", "ready_for_review", "converted_to_draft"]) {
     assert.equal(runName("pull_request", action), "CI PR #42", action);
   }
-  for (const action of ["labeled", "unlabeled"]) {
-    assert.equal(runName("pull_request", action, "ci:admitted"), "CI PR #42");
-    assert.equal(runName("pull_request", action, "documentation"), "CI pull_request");
-  }
+  const types = workflow("ci.yml").match(/^    types: \[(.*)\]$/mu)?.[1].split(", ");
+  assert.deepEqual(types, ["opened", "synchronize", "reopened", "ready_for_review", "converted_to_draft"],
+    "label metadata must never start or replace PR validation");
 });
 
 test("Widgetbook first pass selects every package suite and preserves golden obligations", () => {
@@ -1485,7 +1468,7 @@ test("capture consumer dependency expressions reject failed producers and stale 
   assert.equal(captureJobCondition("tools-ci.yml", "captures", context), false);
 });
 
-test("cancelling admission or a validation run makes every aggregate job terminal", () => {
+test("cancelling a validation run makes every aggregate job terminal", () => {
   const ci = workflow("ci.yml");
   // Exercise the real expressions, including the historical always() fault.
   const guardFor = id => {
@@ -1496,11 +1479,12 @@ test("cancelling admission or a validation run makes every aggregate job termina
     assert.ok(folded, `missing ${id} cancellation guard`);
     return folded.trim().replace(/\n\s*/gu, " ");
   };
-  const context = (wasCancelled, result = "success", admitted = "true") => ({
+  const context = (wasCancelled, result = "success", draft = false) => ({
     cancelled: () => wasCancelled, always: () => true,
     contains: (values, value) => values.includes(value), fromJSON: JSON.parse,
-    github: {event_name: "pull_request", ref: "refs/pull/522/merge", event: {action: "synchronize"}},
-    needs: {admission: {outputs: {admitted}}, plan: {result},
+    github: {event_name: "pull_request", ref: "refs/pull/522/merge",
+      event: {action: "synchronize", pull_request: {draft}}},
+    needs: {plan: {result},
       "finalize-plan": {result, outputs: {deploy_required: "false"}}},
     results: [result],
   });
@@ -1529,15 +1513,15 @@ test("cancelling admission or a validation run makes every aggregate job termina
     assert.equal(evaluate(required, context(false, result)), true,
       "ordinary failures still run the existing fail-closed shell aggregate");
   }
-  assert.equal(evaluate(guardFor("plan"), context(false, "success", "false")), false);
-  assert.equal(evaluate(required, context(false, "skipped", "false")), true,
-    "unadmitted runs promptly execute the rejecting aggregate");
-  assert.match(ci, /timeout-minutes: 3/u);
+  assert.equal(evaluate(guardFor("plan"), context(false)), true, "ready PRs plan immediately");
+  assert.equal(evaluate(guardFor("plan"), context(false, "success", true)), false, "drafts wait");
+  assert.equal(evaluate(required, context(false, "skipped", true)), false,
+    "a draft publishes no Required CI context until it is ready");
   assert.match(ci.slice(ci.indexOf("\n  required:\n")), /timeout-minutes: 5/u);
 });
 
 test("selector comparison runs before fanout and keeps delivery plan artifact unchanged", () => {
-  for (const name of ["ci.yml", "pr-feedback.yml"]) {
+  for (const name of ["ci.yml"]) {
     const source = workflow(name);
     assert.match(source, /\/tool\/harness\/compare_selectors.mjs/u);
     assert.match(source, /node tool\/harness\/compare_selectors.mjs --base/u);
