@@ -1,5 +1,7 @@
 import {matchesGlob, planAffected} from "../harness/lib/component_graph.mjs";
 
+const toolsControlComponents = new Set(["repo.harness", "repo.tools-manifest"]);
+
 export const supportedToolSetupRequirements = Object.freeze([
   "node",
   "flutter",
@@ -49,7 +51,9 @@ export function planAffectedToolChecks({
     });
     // Terminal classifications override broad Harness globs. Use the resolved
     // graph ownership instead of independently classifying the same path again.
-    if (pathPlan.selectedComponents.includes("repo.harness") ||
+    // A manifest edit can change any check definition, and only the complete
+    // Tools matrix executes every one of them.
+    if (pathPlan.selectedComponents.some((id) => toolsControlComponents.has(id)) ||
         additionalFullPaths.some((pattern) => matchesGlob(changedPath, pattern))) {
       controlPlanePaths.add(changedPath);
     }
