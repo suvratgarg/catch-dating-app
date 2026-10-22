@@ -1,4 +1,5 @@
 import type {CSSProperties, HTMLAttributes, ReactNode} from "react";
+import "../foundations.css";
 import styles from "./CatchText.module.css";
 
 /**

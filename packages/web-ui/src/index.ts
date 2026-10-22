@@ -1,5 +1,3 @@
-import "./foundations.css";
-
 export {CatchGap} from "./components/CatchGap";
 export type {
   CatchGapCrossAxisAlignment,
