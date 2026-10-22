@@ -175,3 +175,20 @@ for (const result of ["failure", "cancelled", "skipped", undefined]) {
     failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(needs)}));
   });
 }
+
+test("Required CI accepts merge-queue-proven lanes only when this source's queue run is cited", () => {
+  const needs = successfulNeeds();
+  for (const lane of ["flutter", "tools", "visual-integration", "admin", "operations", "docs-policy"]) {
+    needs[lane].result = "skipped";
+  }
+  for (const target of ["flutter", "tools", "visual_integration", "admin", "operations", "docs"]) {
+    needs.plan.outputs[target] = "true";
+  }
+  passed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(needs), QUEUE_RUN: "39822205436"}));
+  failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(needs), QUEUE_RUN: ""}));
+  // Delivery producers always run on main, even after a successful queue run.
+  const delivery = successfulNeeds();
+  delivery.functions.result = "skipped";
+  delivery.plan.outputs.functions = "true";
+  failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(delivery), QUEUE_RUN: "39822205436"}));
+});
