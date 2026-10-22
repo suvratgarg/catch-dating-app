@@ -933,16 +933,6 @@
       "rationale": "Existing bounded review signal at _HostFormResponseDetailScreenState._reviewConversion (await:hostFormsControllerProvider.previewConversion). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
-      "id": "ownership-widget-async:lib/hosts/presentation/forms/host_form_responses_section.dart#_HostFormResponsesSectionState.build:await:hostFormResponsesControllerProvider.future",
-      "path": "lib/hosts/presentation/forms/host_form_responses_section.dart",
-      "symbol": "_HostFormResponsesSectionState.build",
-      "operation": "await:hostFormResponsesControllerProvider.future",
-      "maxCallsites": 1,
-      "status": "watch",
-      "debtId": "CAT156",
-      "rationale": "Existing bounded review signal at _HostFormResponsesSectionState.build (await:hostFormResponsesControllerProvider.future). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
-    },
-    {
       "id": "ownership-widget-async:lib/hosts/presentation/forms/host_form_share_screen.dart#_HostFormShareScreenState._createTrackedLink:await:hostFormsControllerProvider.createShareLink",
       "path": "lib/hosts/presentation/forms/host_form_share_screen.dart",
       "symbol": "_HostFormShareScreenState._createTrackedLink",

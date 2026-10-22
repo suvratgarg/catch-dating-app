@@ -1,7 +1,11 @@
+import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/explore/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
+import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
+import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const noRecommendationCandidates =
@@ -41,3 +45,19 @@ ClubMembership membership({required String clubId, String uid = 'runner-1'}) {
     joinedAt: DateTime(2026),
   );
 }
+
+dynamic membershipsOverride(UserProfile user, List<String> clubIds) =>
+    watchActiveClubMembershipsForUserProvider(user.uid).overrideWith(
+      (ref) => Stream.value(
+        clubIds
+            .map((clubId) => membership(clubId: clubId, uid: user.uid))
+            .toList(),
+      ),
+    );
+
+dynamic activityNotificationsOverride(
+  UserProfile user, [
+  List<ActivityNotification> notifications = const [],
+]) => watchActivityNotificationsProvider(
+  user.uid,
+).overrideWithValue(AsyncData<List<ActivityNotification>>(notifications));

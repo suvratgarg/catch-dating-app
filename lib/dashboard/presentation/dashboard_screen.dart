@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
@@ -30,8 +32,23 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  Timer? _homeClock;
   String? _lastLoggedHomeState;
   final Set<String> _loggedModuleImpressions = <String>{};
+
+  @override
+  void initState() {
+    super.initState();
+    _homeClock = Timer.periodic(dashboardHomeClockTick, (_) {
+      if (mounted) ref.invalidate(dashboardNowProvider);
+    });
+  }
+
+  @override
+  void dispose() {
+    _homeClock?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

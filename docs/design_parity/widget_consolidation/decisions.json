@@ -1845,11 +1845,11 @@
       "status": "recorded-WO-015"
     },
     {
-      "clusterId": "c044-event-focus-rail",
+      "clusterId": "c044-event-focus-list",
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "EventFocusRail",
+          "name": "EventFocusList",
           "action": "keep"
         },
         {
@@ -1857,7 +1857,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K2 domain fork: EventFocusRail is member dashboard event-focus navigation while HostEventToolsRail is host management tooling with different data and action contracts.",
+      "rationale": "K2 domain fork: EventFocusList is member dashboard event-focus navigation while HostEventToolsRail is host management tooling with different data and action contracts.",
       "decidedBy": "codex-rule:K2",
       "date": "2026-07-03",
       "status": "recorded-WO-015"
