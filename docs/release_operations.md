@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.12.0
-updated: 2026-10-20
+version: 2.13.0
+updated: 2026-10-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -349,14 +349,21 @@ existing validation flow.
 Root Flutter unit/widget tests are selected by
 `tool/harness/lib/flutter_test_selection.dart` from the exact base and head Git
 objects. Dart's parser follows imports, exports, conditional imports and parts
-in both snapshots, so deleted or moved dependencies remain covered. Tests that
-inspect files through `dart:io` remain selected. Mixed ordinary Markdown changes
-retain source selection only when both committed component graphs classify the
-prose as documentation-only and neither snapshot's package manifests could bundle
-it as an asset. Markdown in test or asset directories is never exempt. Assets,
-dependency manifests, test configuration, other non-Dart changes, unsupported
-inputs, and any changed source with no provable dependent test retain the full
-suite, including when another changed source has proven coverage.
+in both snapshots, so deleted or moved dependencies remain covered. Every
+ancestor `flutter_test_config.dart` counts as an import of the tests beneath it.
+Tests that inspect files through `dart:io` are filesystem probes and are always
+selected. Dart files anywhere in the repository are covered by the import graph.
+Paths outside the root package (backend, web, design, docs, tooling, CI,
+golden and integration suites, other packages' apps, firebase configuration and
+Markdown outside test or asset directories) are probe-only. A root test can only
+read them from disk, so the probes cover them without broadening the selection.
+These inputs keep the full suite: package manifests and the lockfile, analyzer,
+runner, build and localization configuration, `.arb` sources, the Flutter SDK
+pin and the Flutter CI job, and any path that either snapshot's `flutter:`
+manifest section could bundle as an asset. The same goes for test fixtures,
+assets, native folders, unknown roots, and any changed `lib/`, `test/` or package
+source with no provable dependent test, even when another changed source has
+proven coverage.
 Scheduled and manual CI resolve their base revision to an exact commit before
 binding any lane inputs or artifacts. Nightly and explicit full runs
 also execute every test. Native, package, golden, integration, analyzer and

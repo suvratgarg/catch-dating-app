@@ -82,17 +82,22 @@ Map<String, Object> selectFlutterTests({
   if (full || sourceChanges.isEmpty) {
     return result(all, 'Full validation or no usable change window');
   }
-  // Unknown/non-Dart inputs can be loaded without an import (assets, fixtures,
-  // configuration, generators, plugins). Keep the full suite for those changes.
-  if (sourceChanges.any(
-    (name) =>
-        !name.endsWith('.dart') ||
-        !(name.startsWith('lib/') || name.startsWith('test/')) ||
-        name.endsWith('/flutter_test_config.dart'),
-  )) {
+  // Package resolution, toolchain, generated localizations, runner
+  // configuration and bundled assets reach every test without an import.
+  final global =
+      sourceChanges
+          .where(
+            (name) =>
+                _globalTestInput(name) ||
+                _possiblyBundled(name, before) ||
+                _possiblyBundled(name, after),
+          )
+          .toList()
+        ..sort();
+  if (global.isNotEmpty) {
     return result(
       all,
-      'Non-source, toolchain, test configuration or unmodelled input changed',
+      'Toolchain, package, localization, runner or bundled asset input changed: ${global.join(', ')}',
     );
   }
   try {
@@ -107,11 +112,14 @@ Map<String, Object> selectFlutterTests({
             before.containsKey(name) &&
             !after.containsKey(name))
           name,
+      // Outside the root package and its bundle, a test can only read these
+      // from disk. Every such reader is a retained filesystem probe below.
+      ...sourceChanges.where(_probeOnlyInput),
     };
     for (final test in all) {
-      final current = newGraph.closure(test);
+      final current = newGraph.testClosure(test);
       final previous = before.containsKey(test)
-          ? oldGraph.closure(test)
+          ? oldGraph.testClosure(test)
           : <String>{};
       final impactedChanges = {
         ...current,
@@ -136,11 +144,133 @@ Map<String, Object> selectFlutterTests({
     }
     return result(
       selected,
-      'Union of base/head transitive imports, exports and parts; filesystem probes retained',
+      'Union of base/head transitive imports, exports, parts and test configs; filesystem probes retained',
     );
   } on Object catch (error) {
     return result(all, 'Conservative fallback: $error');
   }
+}
+
+const _globalInputNames = {
+  '.metadata',
+  'analysis_options.yaml',
+  'build.yaml',
+  'dart_test.yaml',
+  'l10n.yaml',
+  'pubspec.lock',
+  'pubspec.yaml',
+  'pubspec_overrides.yaml',
+};
+
+// The Flutter CI job pins the SDK and runs the selected files.
+const _globalInputPaths = {
+  '.github/workflows/flutter-ci.yml',
+  'tool/ci/toolchain.env',
+};
+const _globalInputDirectories = [
+  '.github/actions/load-toolchain/',
+  '.github/actions/setup-flutter/',
+];
+
+bool _globalTestInput(String name) =>
+    _globalInputNames.contains(name.split('/').last) ||
+    name.endsWith('.arb') ||
+    _globalInputPaths.contains(name) ||
+    _globalInputDirectories.any(name.startsWith);
+
+// Surfaces outside the root package: backend, web, design, docs, tooling and
+// CI sources, other Flutter packages and apps, and golden/integration suites
+// with their own gates. A root test reaches a Dart file here through the
+// import graph, or reads a file here from disk as a filesystem probe. Any
+// other path, including test fixtures, assets, native folders and new
+// top-level roots, still needs import proof or keeps the full suite.
+const _probeOnlyDirectories = [
+  '.github/',
+  'admin/',
+  'analytics/',
+  'apps/',
+  'artifacts/',
+  'contracts/',
+  'copy/',
+  'design/',
+  'design_context_pack/',
+  'docs/',
+  'extensions/',
+  'firebase/',
+  'functions/',
+  'integration_test/',
+  'operations/',
+  'test/goldens/',
+  'test/integration/',
+  'tool/',
+  'website/',
+  'widgetbook/',
+];
+const _probeOnlyFiles = {
+  '.editorconfig',
+  '.env.example',
+  '.firebaserc',
+  '.gitignore',
+  'firebase.json',
+  'firestore.indexes.json',
+  'firestore.rules',
+  'package-lock.json',
+  'package.json',
+  'storage.rules',
+};
+
+bool _probeOnlyInput(String name) =>
+    (name.endsWith('.md') &&
+        !RegExp(r'(^|/)(assets|test|integration_test)/').hasMatch(name)) ||
+    _probeOnlyFiles.contains(name) ||
+    _probeOnlyDirectories.any(name.startsWith);
+
+/// Whether any manifest's top-level `flutter:` section may bundle [name] as
+/// an asset, font or shader. This scans tokens conservatively rather than
+/// parsing YAML: every value is a possible file or directory relative to its
+/// manifest, and escapes, anchors or aliases make the manifest opaque.
+bool _possiblyBundled(String name, Map<String, String> tree) {
+  for (final MapEntry(key: manifest, value: source) in tree.entries) {
+    if (manifest != 'pubspec.yaml' && !manifest.endsWith('/pubspec.yaml')) {
+      continue;
+    }
+    final root = manifest.substring(0, manifest.length - 'pubspec.yaml'.length);
+    final section = StringBuffer();
+    var inside = false;
+    for (final line in source.split('\n')) {
+      if (line.isNotEmpty && !line.startsWith(RegExp(r'[\s#]'))) {
+        inside = line.startsWith('flutter:');
+        if (inside) section.writeln(line.substring('flutter:'.length));
+      } else if (inside) {
+        section.writeln(line);
+      }
+    }
+    final text = section.toString().replaceAll(
+      RegExp(r'(^|\s)#.*$', multiLine: true),
+      ' ',
+    );
+    if (RegExp(r'[\\*&]').hasMatch(text)) return true;
+    tokens:
+    for (var token in text.split(RegExp(r'''[\s,\[\]{}'"]+'''))) {
+      if (token.startsWith('-')) token = token.substring(1);
+      if (token.isEmpty || token.endsWith(':')) continue;
+      if (token.startsWith('/')) return true;
+      final segments = <String>[];
+      for (final segment in '$root$token'.split('/')) {
+        if (segment == '..') {
+          if (segments.isEmpty) continue tokens; // Outside the repository.
+          segments.removeLast();
+        } else if (segment.isNotEmpty && segment != '.') {
+          segments.add(segment);
+        }
+      }
+      final target = segments.join('/');
+      if (target.isEmpty || name == target || name.startsWith('$target/')) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 class _Imports {
@@ -182,6 +312,22 @@ class _Imports {
 
     walk(start);
     return visited;
+  }
+
+  /// `flutter test` wraps a test in a `flutter_test_config.dart` from its
+  /// directory or an ancestor. Every ancestor config counts as an import.
+  Set<String> testClosure(String test) {
+    final result = closure(test);
+    var directory = test;
+    while (directory.contains('/')) {
+      directory = directory.substring(0, directory.lastIndexOf('/'));
+      final config = '$directory/flutter_test_config.dart';
+      if (files.containsKey(config)) result.addAll(closure(config));
+    }
+    if (files.containsKey('flutter_test_config.dart')) {
+      result.addAll(closure('flutter_test_config.dart'));
+    }
+    return result;
   }
 
   Set<String> imports(String name) {
