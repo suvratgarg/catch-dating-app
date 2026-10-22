@@ -15,8 +15,15 @@
       "package-lock.json",
       "pubspec.yaml",
       "pubspec.lock",
-      "tool/lib/**",
+      "tool/impact/**",
+      "tool/lib/tool_import_graph.mjs",
       "tool/run.test.mjs"
+    ],
+    "importGraphPaths": [
+      "tool/lib/**"
+    ],
+    "importOwnerCheckIds": [
+      "tool:runner"
     ]
   },
   "tools": [
@@ -48,8 +55,33 @@
           "the runner executes manifest checks without task authority metadata",
           "manifest validation rejects vacuous tools before dispatch",
           "manifest validation rejects malformed safety and platform metadata",
-          "manifest validation rejects unregistered scripts and duplicate ids"
+          "manifest validation rejects unregistered scripts and duplicate ids",
+          "import-derived owners select only the tools that reach a changed file"
         ]
+      }
+    },
+    {
+      "id": "tool:import-owners",
+      "category": "meta",
+      "path": "tool/impact/import_owners.mjs",
+      "command": "node tool/impact/import_owners.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Derives which active tools reach each repository file through static imports, using the pinned dependency-cruiser in tool/impact, so affected-tool selection owns code inputs without hand-written globs.",
+      "impactPaths": [
+        "tool/lib/tool_import_graph.mjs",
+        "tool/lib/tool_import_graph.test.mjs",
+        "tool/impact/package.json",
+        "tool/impact/package-lock.json"
+      ],
+      "checks": [
+        "node --check tool/impact/import_owners.mjs",
+        "node --test tool/lib/tool_import_graph.test.mjs"
+      ],
+      "role": "generator",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/lib/tool_import_graph.test.mjs"
       }
     },
     {

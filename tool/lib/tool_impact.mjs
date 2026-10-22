@@ -28,6 +28,7 @@ export function planAffectedToolChecks({
   componentGraph,
   mode = "pr",
   full = false,
+  importOwners = null,
 }) {
   const paths = [...new Set(changedPaths)].sort();
   const activeTools = manifest.tools.filter(
@@ -35,6 +36,9 @@ export function planAffectedToolChecks({
   );
   const activeById = new Map(activeTools.map((tool) => [tool.id, tool]));
   const additionalFullPaths = manifest.ciImpact?.additionalFullPaths ?? [];
+  // Shared helpers run the full matrix unless the import graph names every
+  // tool that reaches them.
+  const importGraphPaths = manifest.ciImpact?.importGraphPaths ?? [];
   const controlPlanePaths = new Set();
   const fullReasons = [];
   const toolLanePaths = [];
@@ -50,7 +54,9 @@ export function planAffectedToolChecks({
     // Terminal classifications override broad Harness globs. Use the resolved
     // graph ownership instead of independently classifying the same path again.
     if (pathPlan.selectedComponents.includes("repo.harness") ||
-        additionalFullPaths.some((pattern) => matchesGlob(changedPath, pattern))) {
+        additionalFullPaths.some((pattern) => matchesGlob(changedPath, pattern)) ||
+        (!(importOwners?.get(changedPath)?.size > 0) &&
+          importGraphPaths.some((pattern) => matchesGlob(changedPath, pattern)))) {
       controlPlanePaths.add(changedPath);
     }
     // Companion workflow policy checks can belong to Tools in a mixed change,
@@ -74,18 +80,27 @@ export function planAffectedToolChecks({
   }
 
   const ownersByPath = {};
+  const importOwnedPaths = [];
   const unmappedPaths = [];
   for (const changedPath of toolLanePaths) {
-    const owners = activeTools.filter((tool) =>
+    const owners = new Set(activeTools.filter((tool) =>
       tool.path === changedPath ||
       (tool.impactPaths ?? []).some((pattern) => matchesGlob(changedPath, pattern))
-    );
-    if (owners.length > 0) {
-      ownersByPath[changedPath] = owners.map((tool) => tool.id).sort();
-      for (const owner of owners) selectedIds.add(owner.id);
+    ).map((tool) => tool.id));
+    // A tool owns every file its checks reach through static imports.
+    const importers = [...(importOwners?.get(changedPath) ?? [])].filter((id) => activeById.has(id));
+    if (importers.some((id) => !owners.has(id))) importOwnedPaths.push(changedPath);
+    for (const id of importers) owners.add(id);
+    if (owners.size > 0) {
+      ownersByPath[changedPath] = [...owners].sort();
+      for (const owner of owners) selectedIds.add(owner);
     } else if (!controlPlanePaths.has(changedPath)) {
       unmappedPaths.push(changedPath);
     }
+  }
+  // Import edges cannot see files read as text, such as script registration.
+  if (importOwnedPaths.length > 0) {
+    for (const id of manifest.ciImpact?.importOwnerCheckIds ?? []) selectedIds.add(id);
   }
 
   if (unmappedPaths.length > 0) {
@@ -106,6 +121,7 @@ export function planAffectedToolChecks({
       ignoredPaths,
       toolIds: [],
       ownersByPath,
+      importOwnedPaths,
       unmappedPaths,
       fullReasons: [...new Set(fullReasons)].sort(),
       repositoryView: fullCiRequirements.repositoryView,
@@ -143,6 +159,7 @@ export function planAffectedToolChecks({
     ignoredPaths,
     toolIds,
     ownersByPath,
+    importOwnedPaths,
     unmappedPaths: [],
     fullReasons: [],
     repositoryView: requirements.repositoryView,

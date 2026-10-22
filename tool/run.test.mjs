@@ -10,6 +10,7 @@ import {
   toolSupportsPlatform,
   validateToolPlatforms,
 } from "./lib/tool_platform.mjs";
+import {planAffectedToolChecks} from "./lib/tool_impact.mjs";
 
 const repositoryRoot = process.cwd();
 const require = createRequire(import.meta.url);
@@ -138,6 +139,29 @@ test("shared glob dependency selects every consuming tool", () => {
     "meta:repository-root-hygiene",
   ]);
   assert.equal(plan.full, true);
+});
+
+test("import-derived owners select only the tools that reach a changed file", () => {
+  const manifest = JSON.parse(fs.readFileSync("tool/tools_manifest.json", "utf8"));
+  const componentGraph = JSON.parse(fs.readFileSync("tool/harness/component_graph.json", "utf8"));
+  const changedPaths = ["tool/data/lib/new_import_only_helper.mjs", "tool/lib/cli_args.mjs"];
+  const plan = (importOwners) => planAffectedToolChecks({changedPaths, manifest, componentGraph, importOwners});
+  const declaredOnly = plan(null);
+  assert.equal(declaredOnly.mode, "full");
+  assert.ok(declaredOnly.fullReasons.some((reason) => reason.includes("tool/data/lib/new_import_only_helper.mjs")));
+  const importOwners = new Map([
+    ["tool/data/lib/new_import_only_helper.mjs", new Set(["docs:metadata"])],
+    ["tool/lib/cli_args.mjs", new Set(["tool:runner", "lint:probe-batch-protocol"])],
+  ]);
+  const derived = plan(importOwners);
+  assert.equal(derived.mode, "affected", derived.fullReasons.join("; "));
+  assert.deepEqual(derived.importOwnedPaths, changedPaths.slice().sort());
+  const expected = new Set([...manifest.ciImpact.mandatoryCheckIds, ...manifest.ciImpact.importOwnerCheckIds,
+    "docs:metadata", "tool:runner", "lint:probe-batch-protocol"]);
+  for (const id of expected) assert.ok(derived.toolIds.includes(id), id);
+  assert.ok(derived.toolIds.length < 20, `selected ${derived.toolIds.length} tools`);
+  assert.equal(derived.toolIds.includes("agent:context-pack"), false);
+  assert.equal(plan(new Map([["tool/lib/cli_args.mjs", new Set(["retired:none"])]])).mode, "full");
 });
 
 test("mobile evidence and target contracts select producer-promoter compatibility gates", () => {

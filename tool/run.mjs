@@ -266,13 +266,18 @@ async function affectedToolChecks(args) {
     }
   }
   const changedPaths = options.paths ?? changedPathsSince({...options, committedOnly});
+  const importGraph = options.importOwners ?
+    JSON.parse(fs.readFileSync(options.importOwners, "utf8")) : null;
   const plan = planAffectedToolChecks({
     changedPaths,
     manifest,
     componentGraph,
     mode: options.mode,
     full: options.full,
+    importOwners: importGraph && !options.full ?
+      new Map(Object.entries(importGraph.owners).map(([file, ids]) => [file, new Set(ids)])) : null,
   });
+  plan.importGraph = importGraph ? {tool: importGraph.tool, version: importGraph.version} : null;
   if (!options.check) {
     console.log(JSON.stringify(plan, null, 2));
     if (!options.githubOutput) return;
@@ -414,6 +419,18 @@ function validateManifest(manifest, componentGraph) {
       errors,
       {required: true, nonEmpty: true},
     );
+    validateStringArrayField(
+      manifest.ciImpact.importGraphPaths,
+      "ciImpact.importGraphPaths",
+      errors,
+      {required: false, nonEmpty: true},
+    );
+    validateStringArrayField(
+      manifest.ciImpact.importOwnerCheckIds,
+      "ciImpact.importOwnerCheckIds",
+      errors,
+      {required: false, nonEmpty: true},
+    );
   }
 
   try {
@@ -437,6 +454,7 @@ function validateManifest(manifest, componentGraph) {
   );
   const referencedIds = [
     ...(manifest.ciImpact?.mandatoryCheckIds ?? []),
+    ...(manifest.ciImpact?.importOwnerCheckIds ?? []),
     ...manifest.tools.flatMap((tool) => tool.alsoCheckIds ?? []),
   ];
   for (const id of new Set(referencedIds)) {
@@ -544,6 +562,7 @@ function parseAffectedToolArgs(args) {
     json: args.includes("--json"),
     check: args.includes("--check"),
     full: args.includes("--full"),
+    importOwners: valueAfter(args, "--import-owners"),
     mode: valueAfter(args, "--mode") ?? "pr",
     marketingChecksInReact: args.includes("--marketing-checks-in-react"),
     marketingCapturesImported: args.includes("--marketing-captures-imported"),
@@ -574,7 +593,8 @@ Commands:
   check [--category name] [--manifest-only] [tool-id ...]
     Repeat --category to validate several categories in one deduplicated run.
   affected-tools [--base ref [--head ref] [--commit-window] | --paths a,b] [--mode mode] [--full] [--json] [--check]
-    [--github-output path]
+    [--github-output path] [--import-owners file]
+  --import-owners reads node tool/impact/import_owners.mjs output so each check also owns the files it imports.
   CI check execution may add --marketing-checks-in-react only when its required
     aggregate owns the same-run React marketing lane.
   --marketing-captures-imported verifies CAPTURE_BINDING and all imported bytes
