@@ -38,6 +38,13 @@ artifacts. Pass a device id and scope to the runner—for example,
 pass. Live Firebase/device evidence remains a release-runbook lane rather than
 being implied by repository integration tests.
 
+Catch Host journeys (`integration_test/host_app_shell_journeys_test.dart`) boot
+the Host entrypoint's router against `HostShellBackend`: real Host repositories
+over an in-memory Firestore and a recording callable surface whose responses
+follow the callable contracts. A screen that calls a callable without a fixture
+fails the journey by name, so a new Host read needs a fixture in
+`integration_test/support/host_app_shell_test_harness.dart`.
+
 ## Coverage and test maintainability
 
 Coverage is an evidence surface, not a global percentage gate:

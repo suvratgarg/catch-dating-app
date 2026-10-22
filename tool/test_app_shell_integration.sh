@@ -76,6 +76,11 @@ if [[ "${mode}" == "--self-test" ]]; then
   [[ "${headless_plan}" == *"test/integration/app_shell_smoke_test.dart"* ]]
   [[ "${headless_plan}" != *"app_shell_event_flows_test.dart"* ]]
 
+  headless_all_plan="$(
+    APP_SHELL_INTEGRATION_DRY_RUN=true bash "${runner}" headless all
+  )"
+  [[ "${headless_all_plan}" == *"test/integration/host_app_shell_journeys_test.dart"* ]]
+
   native_plan="$(
     APP_SHELL_INTEGRATION_DRY_RUN=true bash "${runner}" macos smoke
   )"
@@ -169,6 +174,7 @@ native_suites=(
   integration_test/app_shell_catches_flows_test.dart
   integration_test/app_shell_chat_settings_review_flows_test.dart
   integration_test/app_shell_regression_test.dart
+  integration_test/host_app_shell_journeys_test.dart
 )
 
 if [[ "${scope}" != "all" && "${scope}" != "smoke" ]]; then
@@ -195,6 +201,7 @@ if [[ "${mode}" == "headless" ]]; then
     test/integration/app_shell_catches_flows_test.dart
     test/integration/app_shell_chat_settings_review_flows_test.dart
     test/integration/app_shell_regression_test.dart
+    test/integration/host_app_shell_journeys_test.dart
   )
   if [[ "${scope}" == "smoke" ]]; then
     headless_suites=(test/integration/app_shell_smoke_test.dart)
