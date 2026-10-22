@@ -22,6 +22,7 @@ import {
   parseArgs,
   parseFunctionEnvironment,
   scanFunctionParamNames,
+  scanRetiredReferences,
   scanSourceGates,
   scanWorkflowVariables,
 } from "./report_environment_parity.mjs";
@@ -167,6 +168,54 @@ test("a Dart define feature gate may not differ between dev and prod without an 
     prod: {APP_ENV: "prod", ENABLE_FLAG: "false"},
   }});
   assert.match(evaluatePolicy(state, {now}).violations.join("\n"), /ENABLE_FLAG: tool\/env\/dart_defines gives this feature gate different values \(dev=true, prod=false\)/u);
+});
+
+test("retired switches may not return outside their allowed sources", () => {
+  const retired = {
+    LEGACY_ENABLED: {allowedIn: ["github-variable"], note: "frozen workflow", ticket: "CAT-186"},
+    OLD_READY: {allowedIn: []},
+  };
+  const state = repoState({
+    remoteConfigTemplate: {parameters: {
+      MIN_BUILD: {defaultValue: {value: "0"}},
+      OLD_READY: {defaultValue: {value: "false"}},
+      host_flag: {defaultValue: {value: "false"}},
+    }},
+    retiredReferences: [{file: "lib/a.dart", name: "OLD_READY"}],
+    workflowVariables: workflowVariables([
+      ["GATE_ENABLED", ["*"]], ["KEY_ID", ["*"]], ["LEGACY_ENABLED", ["*"]]]),
+  });
+  state.policy.retired = retired;
+  const violations = evaluatePolicy(state, {now}).violations;
+  assert.deepEqual(violations, [
+    "OLD_READY: retired switch is referenced again in lib/a.dart.",
+    "OLD_READY: retired switch reappeared as remote-config-template.",
+  ]);
+  state.policy.retired = {...retired, LEGACY_ENABLED: {allowedIn: ["github-variable"]},
+    GATE_ENABLED: {allowedIn: ["nowhere"]}};
+  const misconfigured = evaluatePolicy(state, {now}).violations.join("\n");
+  assert.match(misconfigured, /LEGACY_ENABLED: a retired switch still allowed somewhere needs a CAT ticket and note/u);
+  assert.match(misconfigured, /GATE_ENABLED: listed as both a switch and retired/u);
+  assert.match(misconfigured, /GATE_ENABLED: retired allowedIn must list discovery sources/u);
+  assert.deepEqual(scanRetiredReferences([
+    {contents: "const key = 'OLD_READY';", file: "lib/a.dart"},
+    {contents: "// OLD_READY was removed", file: "lib/b.dart"},
+  ], ["OLD_READY"]), [{file: "lib/a.dart", name: "OLD_READY"}]);
+});
+
+test("live leftovers of retired switches are reported for cleanup, not as gate drift", () => {
+  const rules = {...policy(), retired: {OLD_READY: {allowedIn: []},
+    LEGACY_ENABLED: {allowedIn: ["materialized-param"], note: "x", ticket: "CAT-186"}}};
+  const remote = compareRemoteConfig({
+    live: {dev: {parameters: {}}, prod: {parameters: {OLD_READY: {defaultValue: {value: "true"}}}}},
+    policy: rules,
+    template: {parameters: {}},
+  });
+  assert.deepEqual(remote.rows[0].flags, ["RETIRED-STILL-LIVE", "NOT-IN-TEMPLATE"]);
+  assert.deepEqual(remote.rows[0].values, {dev: "absent", main: "absent", prod: "true"});
+  assert.deepEqual(classifySwitchRow({columns: {dev: "true", prod: "false"},
+    compared: ["dev", "prod"], name: "LEGACY_ENABLED", policy: rules,
+    retiredCompatible: true}).flags, ["RETIRED-COMPAT"]);
 });
 
 test("workflow scanning records defaults and the reading job's environment", () => {
