@@ -304,7 +304,7 @@ test("GitHub variables flag unread environment copies, unreferenced names and la
   assert.deepEqual(flags.SITE_KEY, ["UNREAD-IN:prod"]);
 });
 
-test("index comparison normalizes mode/order and implicit __name__, and reports field overrides", () => {
+test("index comparison normalizes mode/order and implicit __name__, and reports field overrides and readiness TTLs", () => {
   const liveIndex = {
     collectionGroup: "events",
     density: "SPARSE_ALL",
@@ -320,15 +320,20 @@ test("index comparison normalizes mode/order and implicit __name__, and reports 
   const result = compareFirestoreIndexes({
     live: {
       dev: {fieldOverrides: [{collectionGroup: "x", fieldPath: "y", indexes: [], ttl: true}], indexes: [liveIndex, legacy]},
-      prod: {fieldOverrides: [{collectionGroup: "events", fieldPath: "expiresAt", indexes: [], ttl: true}], indexes: []},
+      prod: {fieldOverrides: [
+        {collectionGroup: "events", fieldPath: "expiresAt", indexes: [], ttl: true},
+        {collectionGroup: "exposures", fieldPath: "expiresAt", indexes: [{order: "ASCENDING"}], ttl: true},
+      ], indexes: []},
     },
+    readinessTtl: [{environments: ["dev", "prod"], key: "exposures.expiresAt"}],
     repoDocument: repoState().indexes,
   });
-  assert.deepEqual(result.counts.dev, {compositeLiveOnly: 1, compositeMissing: 0, fieldOverridesDiffer: 2});
+  assert.deepEqual(result.counts.dev, {compositeLiveOnly: 1, compositeMissing: 0, fieldOverridesDiffer: 3});
   assert.deepEqual(result.counts.prod, {compositeLiveOnly: 0, compositeMissing: 1, fieldOverridesDiffer: 0});
   assert.deepEqual(result.rows.map((row) => `${row.name}|${row.values.main}|${row.values.dev}|${row.values.prod}`), [
     "events [status:ASCE,startTime:DESC]|declared|live|absent",
     "fieldOverride events.expiresAt|declared|absent|match",
+    "fieldOverride exposures.expiresAt|readiness TTL|ttl absent|match",
     "fieldOverride x.y|absent|live-only|absent",
     "runs [a:ASCE,b:ASCE]|absent|live|absent",
   ]);
@@ -441,6 +446,7 @@ test("policy-only mode reads a real repository layout offline and fails closed o
     write("tool/firebase/list_firebase_function_targets.mjs",
       "export const dormantFirebaseFunctionTargets = Object.freeze([\n]);\n");
     write("tool/firebase/client_callable_dependencies.json", {dependencies: [], version: 1});
+    write("tool/firebase/environment_readiness.json", {requirements: [], version: 1});
     write("tool/env/dart_defines/dev.json", {APP_ENV: "dev"});
     write("tool/env/dart_defines/prod.json", {APP_ENV: "prod"});
     write(".github/workflows/w.yml", "jobs:\n  a:\n    environment: prod\n    steps:\n      - run: echo ${{ vars.KEY_ID }}\n");

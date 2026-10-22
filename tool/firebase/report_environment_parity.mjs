@@ -294,6 +294,12 @@ export function loadRepositoryState(repoRoot = defaultRepoRoot) {
     indexes: readJson(repoRoot, "firestore.indexes.json"),
     materializedParams: [...materializedNonSecretParams],
     policy: readJson(repoRoot, policyPath),
+    readinessTtl: (readJson(repoRoot, "tool/firebase/environment_readiness.json").requirements ?? [])
+      .filter((requirement) => requirement.kind === "firestore-ttl")
+      .map((requirement) => ({
+        environments: requirement.environments ?? [],
+        key: `${requirement.collectionGroup}.${requirement.field}`,
+      })),
     remoteConfigTemplate: readJson(repoRoot, "firebase/remote_config.template.json"),
     ruleTargets: readConfiguredRuleTargets({repoRoot}),
     sourceGates: scanSourceGates(gateSources),
@@ -667,7 +673,7 @@ function normalizeFieldOverrides(document) {
   return overrides;
 }
 
-export function compareFirestoreIndexes({repoDocument, live}) {
+export function compareFirestoreIndexes({repoDocument, live, readinessTtl = []}) {
   const envs = Object.keys(live);
   const composite = new Map();
   const fields = new Map();
@@ -708,9 +714,22 @@ export function compareFirestoreIndexes({repoDocument, live}) {
       composite.set(signature, entry);
     }
     const liveOverrides = normalizeFieldOverrides(live[env]);
-    for (const key of new Set([...repoOverrides.keys(), ...liveOverrides.keys()])) {
+    // TTL policies owned by environment_readiness.json are applied out of
+    // band; they are declared state, not drift, when the live TTL is on.
+    const readinessKeys = readinessTtl
+      .filter((requirement) => requirement.environments.includes(env))
+      .map((requirement) => requirement.key);
+    for (const key of new Set([...repoOverrides.keys(), ...liveOverrides.keys(), ...readinessKeys])) {
       const main = repoOverrides.get(key) ?? null;
       const current = liveOverrides.get(key) ?? null;
+      if (main === null && readinessKeys.includes(key)) {
+        const entry = fields.get(key) ?? {values: {main: "readiness TTL"}};
+        const ttlLive = current !== null && JSON.parse(current).ttl;
+        entry.values[env] = ttlLive ? "match" : "ttl absent";
+        if (!ttlLive) counts[env].fieldOverridesDiffer += 1;
+        fields.set(key, entry);
+        continue;
+      }
       const entry = fields.get(key) ?? {values: {main: main ? "declared" : "absent"}};
       entry.values[env] = current === null ? "absent" : main === null ? "live-only" :
         current === main ? "match" : "differs";
@@ -1127,7 +1146,9 @@ export function buildReport({envs, live, now = new Date(), repo, sourceSha, surf
       errors = githubError;
     } else if (surface === "firestore-indexes") {
       const indexes = liveFor(live, envs, "indexes");
-      result = compareFirestoreIndexes({live: indexes.values, repoDocument: repo.indexes});
+      result = compareFirestoreIndexes({
+        live: indexes.values, readinessTtl: repo.readinessTtl ?? [], repoDocument: repo.indexes,
+      });
       errors = indexes.errors;
     } else if (surface === "rules") {
       const rules = liveFor(live, envs, "rules");
