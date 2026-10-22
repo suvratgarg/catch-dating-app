@@ -585,8 +585,6 @@ export const sampleClubDetails: Record<string, AdminClubDetails> =
       sourceConfidence: "medium",
       verificationStatus: "sourceBacked",
       formats: ["Social run", "Pace pods"],
-      fitNotes: ["Confirm owner contact", "Add route photos"],
-      missingEvidence: ["Owner contact", "Media permission"],
     }),
     sampleOrganizer({
       clubId: "bhag",
@@ -608,8 +606,6 @@ export const sampleClubDetails: Record<string, AdminClubDetails> =
       sourceConfidence: "medium",
       verificationStatus: "sourceBacked",
       formats: ["Running", "Training run"],
-      fitNotes: ["Confirm claim contact", "Add recurring schedule"],
-      missingEvidence: ["Owner contact"],
     }),
     sampleOrganizer({
       clubId: "bandra-runners",
@@ -631,8 +627,6 @@ export const sampleClubDetails: Record<string, AdminClubDetails> =
       sourceConfidence: "low",
       verificationStatus: "unverified",
       formats: ["Running", "Social run"],
-      fitNotes: ["Backfill admin search", "Confirm source URLs"],
-      missingEvidence: ["Owner contact", "Source attribution"],
     }),
     sampleOrganizer({
       clubId: "mumbai-padel-social",
@@ -654,8 +648,6 @@ export const sampleClubDetails: Record<string, AdminClubDetails> =
       sourceConfidence: "medium",
       verificationStatus: "sourceBacked",
       formats: ["Padel mixer", "Paired rotations"],
-      fitNotes: ["Confirm court partner", "Add photo permissions"],
-      missingEvidence: ["Media permission"],
     }),
   ].map((club) => [club.clubId, club]));
 
@@ -979,8 +971,6 @@ function sampleOrganizer(config: {
   sourceConfidence: AdminClubDetails["provenance"]["sourceConfidence"];
   verificationStatus: AdminClubDetails["provenance"]["verificationStatus"];
   formats: string[];
-  fitNotes: string[];
-  missingEvidence: string[];
 }): AdminClubDetails {
   const market = sampleMarketsBySlug[config.citySlug] ?? {
     cityId: config.citySlug,
@@ -1040,14 +1030,12 @@ function sampleOrganizer(config: {
     publicProfile: {
       headline: `${config.name} organizer profile`,
       summary:
-        `${config.name} is an unclaimed organizer profile used for admin ` +
-        `local preview review in ${config.cityName}.`,
-      sourceSummary:
-        `${config.sourceConfidence ?? "unknown"} confidence local profile ` +
-        `with ${config.verificationStatus ?? "unverified"} provenance.`,
+        `${config.name} hosts ${config.formats.join(", ").toLowerCase()} ` +
+        `in ${config.cityName}.`,
+      sourceSummary: null,
       formats: config.formats,
-      fitNotes: config.fitNotes,
-      missingEvidence: config.missingEvidence,
+      fitNotes: [],
+      missingEvidence: [],
     },
   };
 }

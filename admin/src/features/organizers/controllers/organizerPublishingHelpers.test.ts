@@ -39,8 +39,6 @@ const courtsideForm: OrganizerPublishingFormState = {
   summary: "",
   sourceSummary: "Official source identifies Courtside in Mumbai.",
   formatsText: "Padel socials\nCommunity play",
-  fitNotesText: "",
-  missingEvidenceText: "Confirm the next public session.",
   reviewNote: "",
 };
 
