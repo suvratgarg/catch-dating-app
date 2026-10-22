@@ -1,7 +1,7 @@
 ---
 doc_id: location_stack
-version: 1.1.6
-updated: 2026-09-09
+version: 1.1.7
+updated: 2026-10-22
 owner: recursive_audit_loop
 status: active
 ---
@@ -240,15 +240,15 @@ References:
    - App restriction: Android apps.
    - Add the Catch package names and signing certificate SHA-1s for debug,
      upload, and release builds.
-   - Put the key in `android/local.properties` as
+   - Put the key in each app's `apps/<role>/android/local.properties` as
      `GOOGLE_MAPS_ANDROID_API_KEY=...`, or provide the same value as an
      environment variable in CI.
 4. Create an iOS-restricted Maps SDK key:
    - API restriction: Maps SDK for iOS only.
    - App restriction: iOS apps.
    - Add each Catch bundle ID used by dev, staging, and prod.
-   - Copy `ios/Flutter/GoogleMapsKeys.xcconfig.example` to
-     `ios/Flutter/GoogleMapsKeys.xcconfig` and set the environment-specific
+   - Copy `apps/<role>/ios/Flutter/GoogleMapsKeys.xcconfig.example` to
+     `apps/<role>/ios/Flutter/GoogleMapsKeys.xcconfig` and set the environment-specific
      entries `GOOGLE_MAPS_IOS_API_KEY_DEV`,
      `GOOGLE_MAPS_IOS_API_KEY_STAGING`, and
      `GOOGLE_MAPS_IOS_API_KEY_PROD`.
