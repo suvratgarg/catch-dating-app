@@ -451,13 +451,13 @@ test("Hosting promotion control routing preserves mixed Host and Functions owner
   }
 });
 
-test("Hosting promotion exceptions leave shared, admission, and unknown controls full", () => {
+test("Hosting promotion exceptions leave shared and unknown controls full", () => {
   const controls = [".github/workflows/_web-hosting-promote.yml",
     "tool/ci/web_hosting_freshness.mjs", "tool/ci/web_hosting_workflow.test.mjs"];
   const broad = [".github/workflows/ci.yml", ".github/workflows/tools-ci.yml",
     ".github/workflows/unknown-hosting.yml", ".github/workflows/_web-hosting-build.yml",
     ".github/workflows/host-website.yml", "tool/ci/unknown_hosting.mjs",
-    "tool/ci/pr_ci_admission.mjs", "tool/ci/pr_ci_admission.test.mjs",
+    "tool/ci/finalize_ci_plan.mjs", "tool/ci/required_ci_policy.test.mjs",
     "tool/ci/main_ci_baseline.mjs", "tool/ci/delivery_core.mjs",
     ".github/workflows/_web-hosting-promote-other.yml",
     "tool/ci/web_hosting_freshness_other.mjs",

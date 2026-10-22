@@ -50,8 +50,9 @@ test("main CI starts validation immediately and serializes only proven publicati
   const plan = ciJob(ci, "plan");
   const finalizer = ciJob(ci, "finalize-plan");
   assert.match(ci, /group: ci-\$\{\{ github\.event_name \}\}-\$\{\{[\s\S]*github\.event_name == 'push'[\s\S]*github\.run_id/);
-  assert.match(ci, /queue: max\n  cancel-in-progress: false/);
-  assert.match(ci, /github\.event_name == 'pull_request' && 'admitted'/);
+  // Only a newer run of the same PR cancels; main pushes keep unique groups and finish.
+  assert.match(ci, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/);
+  assert.match(ci, /github\.event_name == 'pull_request' && github\.event\.pull_request\.number/);
   assert.match(plan, /main_ci_baseline\.mjs/);
   assert.doesNotMatch(plan, /--wait|while true|sleep 20/);
   assert.match(plan, /window_flag=\(--commit-window\)/);
@@ -84,7 +85,7 @@ test("CI fences plan consumers and sends Rules retries to executable refusal", (
     "flutter", "visual-integration", "admin", "marketing", "capture-freshness", "operations",
     "docs-policy", "app-builds", "finalize-plan", "package-firebase"];
   assert.deepEqual([...ci.slice(ci.indexOf("\njobs:\n")).matchAll(/^  ([a-z][a-z-]*):$/gm)].map((match) => match[1]),
-    ["admission", "plan", ...consumers, "required"], "New jobs need an explicit retry decision.");
+    ["plan", ...consumers, "required"], "New jobs need an explicit retry decision.");
   for (const name of consumers) {
     const job = ciJob(ci, name);
     const condition = job.match(/^    if: (.*(?:\n      [^\n]*)*)/m)?.[1];
@@ -112,8 +113,7 @@ test("CI fences plan consumers and sends Rules retries to executable refusal", (
   assert.match(required, /if: \$\{\{ !cancelled\(\)/);
   assert.ok(!required.includes(guard), "Required CI must run after incompatible leaves skip.");
   const steps = extractSteps(`jobs:\n${required}`).filter((step) => step.run || step.uses);
-  assert.equal(steps[0].name, "Refuse deferred PR validation");
-  assert.equal(steps[1].name, "Require this attempt's planner");
+  assert.equal(steps[0].name, "Require this attempt's planner");
   const plan = ciJob(ci, "plan");
   assert.match(plan, /producer_attempt: \$\{\{ steps.plan.outputs.producer_attempt \}\}/);
   // Evaluate this workflow's existing boolean-expression subset, as the
