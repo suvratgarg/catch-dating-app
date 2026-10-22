@@ -16,6 +16,7 @@ import {
 
 import {hostSalesIntentReplay, prepareHostSalesIntent} from "./hostSalesIntent";
 import {hostConsentKey} from "../acquisition/consentPolicy";
+import {prepareHostAttribution} from "../acquisition/attribution";
 import {HOST_CONSENT_COLLECTION} from "../acquisition/consentStore";
 import {
   hostConsentAllowedOrigin, hostServerMeasurementEnabled,
@@ -478,9 +479,10 @@ export function createJoinWaitlistHandler(options: {
     const instagram = normalizeInstagram(body.instagram);
     const honeypot = normalizeText(body.website);
     const hostApplication = normalizeHostApplication(body.hostApplication);
-    const marketingAttribution = normalizeMarketingAttribution(
-      body.attribution
-    );
+    // Host acquisition uses only the consent-bound immutable receipt below.
+    // The legacy mutable field remains available for consumer submissions.
+    const marketingAttribution = role === "host" || role === "both" ? null :
+      normalizeMarketingAttribution(body.attribution);
     const marketingAnalytics = normalizeMarketingAnalytics(body.analytics);
 
     const clientIp = request.get("x-forwarded-for")?.split(",")[0]?.trim() ??
@@ -621,9 +623,14 @@ export function createJoinWaitlistHandler(options: {
               .collection(HOST_DELIVERY_COLLECTION).doc(delivery.eventId),
             delivery);
           }
+          const acquisitionAttribution = measurement && consentId ?
+            prepareHostAttribution({enabled: options.measurementEnabled,
+              ...hostLead, consentId, consentDocument: permission?.data(),
+              attribution: body.attribution, now: Date.now()}) : null;
           transaction.create(intentRef, {
             ...intent,
             hostLead,
+            ...(acquisitionAttribution ? {acquisitionAttribution} : {}),
             alreadyJoined: existing.exists,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),

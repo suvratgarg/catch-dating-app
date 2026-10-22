@@ -1,6 +1,6 @@
 ---
 doc_id: ads_conversion_spec
-version: 0.7.0
+version: 0.7.2
 updated: 2026-10-21
 owner: marketing_website
 status: active
@@ -287,6 +287,47 @@ shared business conversion identities are unsuitable. The dispatcher remains
 unexported and both server measurement and Meta delivery gates remain false
 until credential access, synthetic provider acceptance and activation receive
 their separate reviews. Index source alone does not establish readiness.
+
+### Receipt-bound first-party reporting
+
+Host intake prepares `salesInboundIntents.acquisitionAttribution` only for a
+new authoritative Host receipt when the disabled server-measurement gate is
+explicitly enabled and the same transaction reads current analytics permission.
+It keeps allowlisted campaign labels, exact acquisition paths and touch times;
+URLs, referrers, search terms, click identifiers and contact data are discarded.
+Touches must follow that consent choice, precede acceptance and fall inside
+30 days. Expiry remains the original consent expiry and cannot be renewed by a
+submission or replay. Advertising permission is not required for this private
+analytics snapshot and is never inferred from it.
+
+The legacy mutable waitlist attribution field is null for Host submissions;
+consumer handling is unchanged. Exact replay returns before a write and later
+Host submissions cannot replace the original new-receipt snapshot. Historical
+records without a valid snapshot stay unassigned; do not backfill from the
+current waitlist row or an earlier consumer conversion record.
+
+Withdrawal and scheduled expiry clear only this optional attribution field in
+bounded, transactionally rechecked batches. Operational application history is
+preserved. The withdrawal request clears one batch of at most 500 snapshots;
+its tombstone records `attributionCleanupPending` until the 15-minute expiry
+worker drains the remainder, one bounded batch per run, well before snapshot
+expiry. A revoked capability cannot create new snapshots, so a short final
+page lets the worker clear that flag under a transactional recheck. Existing Sales privacy deletion removes the containing intent.
+Any report reader must check current consent, snapshot expiry and current Sales
+privacy restrictions before using a snapshot; cleanup completion is not an
+authorization signal. Cohort joins and qualification/response history remain
+separate implementation work. This capture preparation enables no collection,
+provider delivery, reporting endpoint or production measurement.
+
+The approved response calendar is Monday-Saturday, 09:00-18:00 Asia/Kolkata,
+excluding Sundays only. One business day means nine working hours from the
+accepted application receipt; outside-hours time is paused. For example, a
+Saturday 17:00 application is due Monday 17:00, and a Sunday application is due
+Monday 18:00. Public holidays are not silently excluded. The deterministic
+`hostResponseDueAt` helper calculates this deadline without using the server's
+local timezone. An automatic operator email, delivery receipt or stage change
+does not establish a human response. Authoritative response capture and report
+integration remain pending; this helper alone enables no SLA reporting or sends.
 
 ## Outcome deduplication
 

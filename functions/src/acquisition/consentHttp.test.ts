@@ -80,6 +80,7 @@ test("expiry rechecks current row and retains a concurrent withdrawal",
       createdAt: Timestamp.fromMillis(now),
       updatedAt: Timestamp.fromMillis(now),
       expiresAt: Timestamp.fromMillis(expiry),
+      attributionCleanupPending: false,
     });
     const expired = "a".repeat(64);
     const extended = "b".repeat(64);
