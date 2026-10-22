@@ -290,8 +290,8 @@ contracts, rules, policy and the affected Tools check closure without compiling
 unrelated clients. Files PR validation never executes run only their own Tools
 checks and policy: harness and CI tests, release, deploy and operations
 workflows, and `tool/ci` release scripts no PR workflow invokes
-(`harness-scoped-control`). A `tool/tools_manifest.json` edit runs the complete
-Tools matrix, which executes every registered check. A harness test proves that
+(`harness-scoped-control`). Selector controls, including the planner, graph and
+`tool/tools_manifest.json`, still run every target. A harness test proves that
 no workflow PR CI runs, and no `tool/ci` module it invokes or imports, is ever
 narrowed. The tool planner honors the graph's terminal classifications
 and includes every declared check plus its transitive dependencies; it does not
