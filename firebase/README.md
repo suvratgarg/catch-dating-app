@@ -36,9 +36,9 @@ firebase/<env>/host/macos/GoogleService-Info.plist
 firebase/<env>/host/web/firebase-messaging-sw.js
 ```
 
-`./tool/use_firebase_environment.sh <env> <consumer|host>` resolves the selected
-registration through `tool/app_targets.json` and copies it into the active
-native/web working copies. Android app identity itself is owned by six explicit
+`./tool/use_firebase_environment.sh <env> <consumer|host> apps/<role>` resolves
+the selected registration through `tool/app_targets.json` and copies it into
+that app project's active native/web working copies. Android app identity itself is owned by six explicit
 `consumerDev|consumerStaging|consumerProd|hostDev|hostStaging|hostProd`
 flavors; it is no longer selected through a mutable Gradle role property.
 
@@ -68,7 +68,7 @@ Current state:
   owner operation. Use `probe_chat_storage_rules.mjs` for the authenticated
   upload/delete proof after IAM or chat-image rule changes.
 - Local web debug App Check follows Firebase's documented debug-provider flow:
-  `web/index.html` sets `self.FIREBASE_APPCHECK_DEBUG_TOKEN = true` only on
+  each app's `apps/<role>/web/index.html` sets `self.FIREBASE_APPCHECK_DEBUG_TOKEN = true` only on
   localhost/loopback origins, and the generated local browser token is
   registered on the dev web app. Do not commit raw debug tokens.
 - Firestore rules are deployed and aligned across dev, staging, and prod. All
@@ -180,9 +180,10 @@ Last consolidated from live environment evidence on 2026-05-21.
 - Checked-in defaults live in `tool/env/dart_defines/dev.json`,
   `tool/env/dart_defines/staging.json`, and `tool/env/dart_defines/prod.json`.
 - Native Firebase files are activated by `./tool/use_firebase_environment.sh`.
-- The active root Firebase files are mutable working copies. Validate them with
-  `./tool/validate_firebase_environment.sh <env>` before debugging runtime
-  Firebase issues.
+- Each app project's active Firebase files are mutable working copies.
+  Validate them with
+  `./tool/validate_firebase_environment.sh <env> <consumer|host> apps/<role>`
+  before debugging runtime Firebase issues.
 
 ## Common commands
 
@@ -211,7 +212,8 @@ placeholder integrations, ports, and restart behavior.
 Switch the active native/web Firebase config:
 
 ```bash
-./tool/use_firebase_environment.sh dev
+./tool/use_firebase_environment.sh dev consumer apps/consumer
+./tool/use_firebase_environment.sh dev host apps/host
 ```
 
 Run Flutter with the matching `APP_ENV` define file:
@@ -306,8 +308,9 @@ flutterfire configure --project=<firebase-project-id> --out=lib/firebase_options
    from the same Firebase project.
 5. Add the Firebase CLI alias with `firebase use --add` and map it to
    `staging` or `prod` in `.firebaserc`.
-6. Re-run `./tool/use_firebase_environment.sh dev` if you want to restore the
-   default dev files in the workspace after generating another environment.
+6. Re-run `./tool/use_firebase_environment.sh dev <consumer|host> apps/<role>`
+   if you want to restore the default dev files in an app project after
+   generating another environment.
 
 Do not copy one environment's config into another environment. If a Firebase app
 is recreated, refresh both the Dart options file and the native/web config file

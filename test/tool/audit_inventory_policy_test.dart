@@ -31,20 +31,29 @@ void main() {
     const manifest = <String, dynamic>{
       'auditPolicies': <Map<String, dynamic>>[
         <String, dynamic>{
-          'pattern': 'android/app/src/*/res/**',
+          'pattern': 'apps/*/android/app/src/*/res/**',
           'review': 'aggregate',
         },
       ],
     };
 
     expect(
-      auditPolicyFor('android/app/src/main/res/drawable/splash.png', manifest),
+      auditPolicyFor(
+        'apps/consumer/android/app/src/main/res/drawable/splash.png',
+        manifest,
+      ),
       isNotNull,
     );
     expect(
-      auditPolicyFor('android/app/src/main/AndroidManifest.xml', manifest),
+      auditPolicyFor(
+        'apps/consumer/android/app/src/main/AndroidManifest.xml',
+        manifest,
+      ),
       isNull,
     );
-    expect(auditPolicyFor('android/app/build.gradle.kts', manifest), isNull);
+    expect(
+      auditPolicyFor('apps/consumer/android/app/build.gradle.kts', manifest),
+      isNull,
+    );
   });
 }
