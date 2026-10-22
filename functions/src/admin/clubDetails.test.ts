@@ -340,8 +340,6 @@ function clubDoc(overrides: FakeData = {}): FakeData {
       summary: "A public event source connects AFTER FLY to Indore.",
       sourceSummary: "Luma event page confirmed.",
       formats: ["Run and rave"],
-      fitNotes: ["Social event format"],
-      missingEvidence: ["Owner contact"],
       facts: [],
       eventEvidence: [],
     },
@@ -384,9 +382,8 @@ test("adminGetClubDetailsHandler returns a review-safe club snapshot",
     assert.equal(result.club.name, "AFTER FLY");
     assert.equal(result.club.publicPage.indexStatus, "noindex");
     assert.equal(result.club.provenance.sourceConfidence, "high");
-    assert.deepEqual(result.club.publicProfile.missingEvidence, [
-      "Owner contact",
-    ]);
+    assert.deepEqual(result.club.publicProfile.formats, ["Run and rave"]);
+    assert.equal("missingEvidence" in result.club.publicProfile, false);
   }
 );
 
@@ -523,7 +520,6 @@ test("adminUpdateClubDetailsHandler saves allowed cleanup fields", async () => {
         },
         publicProfile: {
           headline: "Afterfly Run Club in Indore",
-          missingEvidence: [],
         },
       },
       reviewNote: "Cleaned up naming and owner contact.",
@@ -532,7 +528,7 @@ test("adminUpdateClubDetailsHandler saves allowed cleanup fields", async () => {
   );
 
   assert.equal(result.clubId, "afterfly-run-club-indore");
-  assert.equal(result.updatedFieldCount, 9);
+  assert.equal(result.updatedFieldCount, 8);
   const club = h.firestore.get("organizers/afterfly-run-club-indore");
   assert.equal(club?.name, "Afterfly Run Club");
   assert.deepEqual(club?.tags, ["social run"]);
@@ -545,7 +541,6 @@ test("adminUpdateClubDetailsHandler saves allowed cleanup fields", async () => {
     (club?.provenance as FakeData).lastVerifiedAt,
     "SERVER_TIMESTAMP"
   );
-  assert.deepEqual((club?.publicProfile as FakeData).missingEvidence, []);
   assert.equal((club?.adminSearch as FakeData).updatedBySource,
     "adminUpdateClubDetails");
   assert.ok(((club?.adminSearch as FakeData).tokens as string[])
@@ -828,8 +823,6 @@ test("adminUpdateClubDetailsHandler keeps operator text out of public fields",
         summary: "This unclaimed profile summarizes verified public facts " +
           "for owner review and stays out of search until confirmed.",
       }},
-      {publicProfile: {fitNotes: ["Strong category for the Indore launch."]}},
-      {publicProfile: {missingEvidence: ["Owner verification or claim"]}},
       {description: "Source-backed seed listing pending admin review."},
       {publicPage: {seoDescription: "Noindex until verified."}},
     ]) {
@@ -846,6 +839,22 @@ test("adminUpdateClubDetailsHandler keeps operator text out of public fields",
         JSON.stringify(fields)
       );
     }
+    // Operator-only lists left the contract, so the payload schema rejects
+    // them before any policy check.
+    for (const field of ["fitNotes", "missingEvidence"]) {
+      await assert.rejects(
+        () => adminUpdateClubDetailsHandler(
+          callableRequest("admin-1", {
+            clubId: "afterfly-run-club-indore",
+            fields: {publicProfile: {[field]: ["Owner contact"]}},
+            reviewNote: "Recorded intake findings.",
+          }, {admin: true}),
+          h.deps
+        ),
+        (error) => assertHttpsCode(error, "invalid-argument"),
+        field
+      );
+    }
     assert.deepEqual(h.firestore.get("organizers/afterfly-run-club-indore"),
       before);
     assert.equal(h.firestore.auditLogs().length, 0);
@@ -856,8 +865,6 @@ test("adminUpdateClubDetailsHandler refuses to publish operator content",
     const leaked = clubDoc({
       publicProfile: {
         ...(clubDoc().publicProfile as FakeData),
-        fitNotes: [],
-        missingEvidence: [],
         facts: [{label: "Claim state", value: "Unclaimed"}],
       },
       publicSources: [{
@@ -894,13 +901,7 @@ test("adminUpdateClubDetailsHandler refuses to publish operator content",
     );
 
     const clean = harness({
-      "organizers/afterfly-run-club-indore": clubDoc({
-        publicProfile: {
-          ...(clubDoc().publicProfile as FakeData),
-          fitNotes: [],
-          missingEvidence: [],
-        },
-      }),
+      "organizers/afterfly-run-club-indore": clubDoc(),
     });
     await adminUpdateClubDetailsHandler(
       callableRequest("admin-1", {

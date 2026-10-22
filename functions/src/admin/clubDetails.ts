@@ -127,8 +127,6 @@ export interface AdminClubDetailsSnapshot {
     summary: string | null;
     sourceSummary: string | null;
     formats: string[];
-    fitNotes: string[];
-    missingEvidence: string[];
   };
 }
 
@@ -645,8 +643,6 @@ function publicClubDetails(
       summary: club.publicProfile?.summary ?? null,
       sourceSummary: club.publicProfile?.sourceSummary ?? null,
       formats: club.publicProfile?.formats ?? [],
-      fitNotes: club.publicProfile?.fitNotes ?? [],
-      missingEvidence: club.publicProfile?.missingEvidence ?? [],
     },
   };
 }
@@ -800,8 +796,6 @@ function buildFirestorePatch(
     "summary",
     "sourceSummary",
     "formats",
-    "fitNotes",
-    "missingEvidence",
   ]);
   copyNestedDefined(patch, "provenance", fields.provenance, [
     "sourceConfidence",
@@ -1034,8 +1028,6 @@ function normalizePublicProfile(
     summary: normalizeNullableString(value.summary),
     sourceSummary: normalizeNullableString(value.sourceSummary),
     formats: normalizeStringArray(value.formats),
-    fitNotes: normalizeStringArray(value.fitNotes),
-    missingEvidence: normalizeStringArray(value.missingEvidence),
   };
 }
 

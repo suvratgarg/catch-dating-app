@@ -402,8 +402,6 @@ test("adminSetClubIndexStatusHandler refuses to publish operator content",
       publicProfile: {
         summary: "This unclaimed profile stays out of search until verified.",
         facts: [{label: "Indexing", value: "Noindex until verified"}],
-        fitNotes: [],
-        missingEvidence: ["Owner verification or claim"],
       },
     });
     const h = harness({"organizers/afterfly-run-club-indore": leaked});
@@ -422,8 +420,6 @@ test("adminSetClubIndexStatusHandler refuses to publish operator content",
         assertHttpsCode(error, "failed-precondition");
         assert.match((error as Error).message, /publicProfile\.summary/u);
         assert.match((error as Error).message, /publicProfile\.facts\[0\]/u);
-        assert.match((error as Error).message,
-          /publicProfile\.missingEvidence/u);
         return true;
       }
     );

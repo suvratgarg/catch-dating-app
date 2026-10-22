@@ -387,8 +387,6 @@ function buildOrganizerDraft({
         null,
       formats,
       facts: [],
-      fitNotes: [],
-      missingEvidence: [],
       eventEvidence: [],
     },
     publicSources: [{

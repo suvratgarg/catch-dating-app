@@ -7,6 +7,9 @@ const path = require("node:path");
 const test = require("node:test");
 const {parseArgs, run} = require("./repair-organizer-public-content.cjs");
 
+const repoRoot = path.resolve(__dirname, "../..");
+const DELETE = Symbol("delete");
+
 class FakeTimestamp {
   constructor(seconds, nanoseconds) {
     this._seconds = seconds;
@@ -14,12 +17,27 @@ class FakeTimestamp {
   }
 }
 
+// A contract-valid organizer, so a clean document also passes --check.
+function baseOrganizer() {
+  const schema = JSON.parse(fs.readFileSync(
+    path.join(repoRoot, "contracts/firestore/organizers.schema.json"), "utf8"));
+  const club = JSON.parse(fs.readFileSync(
+    path.join(repoRoot, "contracts/fixtures/valid/club_doc.json"), "utf8"));
+  return {
+    ...Object.fromEntries(Object.entries(club)
+      .filter(([key]) => key in schema.properties)),
+    followerCount: 0,
+    organizerPhotos: [],
+    organizerType: "club",
+  };
+}
+
 function leakedOrganizer() {
   return {
+    ...baseOrganizer(),
     name: "AFTER FLY",
     description: "AFTER FLY is an Indore organizer discovered through a " +
       "public Luma event page.",
-    publicPage: {seoTitle: "AFTER FLY", seoDescription: null},
     publicProfile: {
       headline: "AFTER FLY run club in Indore",
       summary: "This unclaimed profile stays out of search until verified.",
@@ -54,13 +72,30 @@ function leakedOrganizer() {
   };
 }
 
-function cleanOrganizer() {
+function hostCreatedOrganizer() {
   return {
+    ...baseOrganizer(),
     name: "Courtside",
     description: "Racket sports and socials in Mumbai.",
-    publicProfile: {fitNotes: [], missingEvidence: [], facts: []},
+    publicProfile: {
+      headline: null,
+      summary: null,
+      sourceSummary: null,
+      formats: [],
+      facts: [],
+      fitNotes: [],
+      missingEvidence: [],
+      eventEvidence: [],
+    },
     publicSources: [],
   };
+}
+
+function cleanOrganizer() {
+  const organizer = hostCreatedOrganizer();
+  delete organizer.publicProfile.fitNotes;
+  delete organizer.publicProfile.missingEvidence;
+  return organizer;
 }
 
 // Like Firestore, snapshots hand out copies that keep Timestamp instances.
@@ -101,14 +136,14 @@ function fakeDb(docs, {beforeTransaction} = {}) {
         get: async (ref) => snapshot(ref.path),
         update: (ref, patch) => {
           this.writes.push({path: ref.path, patch});
-          const next = docs[ref.path];
           for (const [field, value] of Object.entries(patch)) {
             const segments = field.split(".");
-            let cursor = next;
+            let cursor = docs[ref.path];
             for (const segment of segments.slice(0, -1)) {
               cursor = cursor[segment];
             }
-            cursor[segments.at(-1)] = value;
+            if (value === DELETE) delete cursor[segments.at(-1)];
+            else cursor[segments.at(-1)] = value;
           }
         },
       };
@@ -123,6 +158,7 @@ async function invoke(argv, db, prodProject = "catchdates-prod") {
     db,
     prodProject,
     Timestamp: FakeTimestamp,
+    deleteField: () => DELETE,
     log: (line) => lines.push(line),
   });
   return {status, report: JSON.parse(lines[0]), lines};
@@ -146,25 +182,37 @@ const afterflyCopy = {
 test("dry run plans repairs without writing", async () => {
   const db = fakeDb({
     "organizers/afterfly": leakedOrganizer(),
-    "organizers/courtside": cleanOrganizer(),
+    "organizers/courtside": hostCreatedOrganizer(),
+    "organizers/clean": cleanOrganizer(),
   });
   const {status, report, lines} = await invoke(["--project", "demo"], db);
 
   assert.equal(status, 0);
   assert.equal(report.mode, "dry_run");
-  assert.equal(report.scanned, 2);
+  assert.equal(report.scanned, 3);
   assert.equal(report.clean, 1);
-  assert.deepEqual(report.blocked, ["organizers/afterfly"]);
-  assert.deepEqual(Object.keys(report.plans[0].patch).sort(), [
-    "publicProfile.facts",
+  assert.deepEqual(report.blocked, []);
+  assert.deepEqual(report.needsReplacement, ["organizers/afterfly"]);
+  assert.deepEqual(report.contractInvalidAfterRepair, []);
+  const afterfly = report.plans.find((plan) =>
+    plan.path === "organizers/afterfly");
+  assert.deepEqual(afterfly.deletes, [
     "publicProfile.fitNotes",
     "publicProfile.missingEvidence",
+  ]);
+  assert.deepEqual(Object.keys(afterfly.patch).sort(), [
+    "publicProfile.facts",
     "publicSources",
   ]);
-  assert.deepEqual(
-    report.plans[0].remainingIssues.map((issue) => issue.field),
-    ["description", "publicProfile.summary"]
-  );
+  assert.deepEqual(afterfly.remainingIssues.map((issue) => issue.field),
+    ["description", "publicProfile.summary"]);
+  const courtside = report.plans.find((plan) =>
+    plan.path === "organizers/courtside");
+  assert.deepEqual(courtside.patch, {});
+  assert.deepEqual(courtside.deletes, [
+    "publicProfile.fitNotes",
+    "publicProfile.missingEvidence",
+  ]);
   assert.match(report.planHash, /^[0-9a-f]{64}$/u);
   assert.equal(lines.at(-1), "Dry run only. Nothing was written.");
   assert.deepEqual(db.writes, []);
@@ -173,32 +221,32 @@ test("dry run plans repairs without writing", async () => {
 test("check exits non-zero until every organizer is clean", async () => {
   const leaked = await invoke(
     ["--project", "demo", "--check"],
-    fakeDb({"organizers/afterfly": leakedOrganizer()})
+    fakeDb({"organizers/courtside": hostCreatedOrganizer()})
   );
-  assert.equal(leaked.status, 1);
+  assert.equal(leaked.status, 1, "stale empty lists still need deleting");
   const clean = await invoke(
     ["--project", "demo", "--check"],
-    fakeDb({"organizers/courtside": cleanOrganizer()})
+    fakeDb({"organizers/clean": cleanOrganizer()})
   );
   assert.equal(clean.status, 0);
 });
 
 test("apply writes only the reviewed plan and leaves a clean check",
   async () => {
-    const docs = {"organizers/afterfly": leakedOrganizer()};
+    const docs = {
+      "organizers/afterfly": leakedOrganizer(),
+      "organizers/courtside": hostCreatedOrganizer(),
+    };
     const db = fakeDb(docs);
     const replacements = writeReplacements(afterflyCopy);
-    const base = [
-      "--project", "demo", "--organizer", "afterfly",
-      "--replacements", replacements,
-    ];
+    const base = ["--project", "demo", "--replacements", replacements];
 
     await assert.rejects(
       invoke([...base, "--apply"], db),
       /requires --plan-hash/u
     );
     const reviewed = await invoke(base, db);
-    assert.deepEqual(reviewed.report.blocked, []);
+    assert.deepEqual(reviewed.report.needsReplacement, []);
     await assert.rejects(
       invoke([...base, "--apply", "--plan-hash", "0".repeat(64)], db),
       /does not match the current plan/u
@@ -210,34 +258,58 @@ test("apply writes only the reviewed plan and leaves a clean check",
       db
     );
     assert.equal(applied.status, 0);
-    assert.equal(db.writes.length, 1);
-    assert.equal(docs["organizers/afterfly"].publicProfile.summary,
+    assert.equal(db.writes.length, 2);
+    const afterfly = docs["organizers/afterfly"];
+    assert.equal(afterfly.publicProfile.summary,
       afterflyCopy["organizers/afterfly"]["publicProfile.summary"]);
-    assert.deepEqual(docs["organizers/afterfly"].publicProfile.facts,
+    assert.equal("fitNotes" in afterfly.publicProfile, false);
+    assert.equal("missingEvidence" in afterfly.publicProfile, false);
+    assert.equal("fitNotes" in docs["organizers/courtside"].publicProfile,
+      false);
+    assert.deepEqual(afterfly.publicProfile.facts,
       [{label: "Location", value: "Indore, Madhya Pradesh"}]);
-    assert.deepEqual(
-      docs["organizers/afterfly"].publicSources.map((source) => source.label),
-      ["Luma event page"]
-    );
-    assert.ok(docs["organizers/afterfly"].publicSources[0].lastCheckedAt
-      instanceof FakeTimestamp);
+    assert.deepEqual(afterfly.publicSources.map((source) => source.label),
+      ["Luma event page"]);
+    assert.ok(afterfly.publicSources[0].lastCheckedAt instanceof FakeTimestamp);
 
-    const verified = await invoke([...base, "--check"], db);
+    const verified = await invoke(["--project", "demo", "--check"], db);
     assert.equal(verified.status, 0);
     assert.equal(verified.report.pending, 0);
   });
 
-test("apply refuses blocked plans, prod without opt-in and drifted docs",
+test("mechanical repairs apply before reviewed copy exists", async () => {
+  const docs = {"organizers/afterfly": leakedOrganizer()};
+  const db = fakeDb(docs);
+  const reviewed = await invoke(["--project", "demo"], db);
+  assert.deepEqual(reviewed.report.needsReplacement, ["organizers/afterfly"]);
+
+  await invoke(
+    ["--project", "demo", "--apply", "--plan-hash", reviewed.report.planHash],
+    db
+  );
+  assert.equal("fitNotes" in docs["organizers/afterfly"].publicProfile, false);
+  const verified = await invoke(["--project", "demo", "--check"], db);
+  assert.equal(verified.status, 1, "intake wording still needs copy");
+  assert.deepEqual(verified.report.needsReplacement, ["organizers/afterfly"]);
+});
+
+test("apply refuses contract regressions, prod without opt-in and drift",
   async () => {
-    const blockedDb = fakeDb({"organizers/afterfly": leakedOrganizer()});
-    const blocked = await invoke(["--project", "demo"], blockedDb);
-    await assert.rejects(
-      invoke(
-        ["--project", "demo", "--apply", "--plan-hash", blocked.report.planHash],
-        blockedDb
-      ),
-      /still have intake wording/u
+    const broken = writeReplacements({
+      "organizers/clean": {"description": 42},
+    });
+    const brokenDb = fakeDb({"organizers/clean": cleanOrganizer()});
+    const blocked = await invoke(
+      ["--project", "demo", "--replacements", broken],
+      brokenDb
     );
+    assert.deepEqual(blocked.report.blocked, ["organizers/clean"]);
+    await assert.rejects(
+      invoke(["--project", "demo", "--replacements", broken, "--apply",
+        "--plan-hash", blocked.report.planHash], brokenDb),
+      /would break the organizer contract: organizers\/clean/u
+    );
+    assert.deepEqual(brokenDb.writes, []);
 
     await assert.rejects(
       invoke(
@@ -247,17 +319,15 @@ test("apply refuses blocked plans, prod without opt-in and drifted docs",
       /without --allow-prod/u
     );
 
-    const replacements = writeReplacements(afterflyCopy);
-    const base = ["--project", "demo", "--replacements", replacements];
     const driftDb = fakeDb({"organizers/afterfly": leakedOrganizer()}, {
       beforeTransaction: (docs) => {
         docs["organizers/afterfly"].publicProfile.fitNotes.push("New note");
       },
     });
-    const reviewed = await invoke(base, driftDb);
+    const reviewed = await invoke(["--project", "demo"], driftDb);
     await assert.rejects(
-      invoke([...base, "--apply", "--plan-hash", reviewed.report.planHash],
-        driftDb),
+      invoke(["--project", "demo", "--apply", "--plan-hash",
+        reviewed.report.planHash], driftDb),
       /changed after the reviewed dry run/u
     );
     assert.deepEqual(driftDb.writes, []);

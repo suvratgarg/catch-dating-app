@@ -333,7 +333,8 @@ test("creates a fail-closed organizer draft and curation receipt", async () => {
     ((organizer?.publicProfile as FakeData).sourceSummary),
     "Sports and social community in Mumbai."
   );
-  assert.deepEqual((organizer?.publicProfile as FakeData).missingEvidence, []);
+  assert.equal("missingEvidence" in (organizer?.publicProfile as FakeData),
+    false);
   assert.deepEqual(
     organizerPublicContentIssues(organizer as OrganizerPublicContent),
     []

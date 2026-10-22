@@ -1034,8 +1034,6 @@ function sampleOrganizer(config: {
         `in ${config.cityName}.`,
       sourceSummary: null,
       formats: config.formats,
-      fitNotes: [],
-      missingEvidence: [],
     },
   };
 }

@@ -3155,8 +3155,6 @@ function clubDocumentForClaimTarget(entity, entry) {
         {label: markets.length > 1 ? "Markets" : "Market", value: markets.map((market) => market.displayName).join(", ") || cityName},
         {label: "Organizer type", value: displayEntityKind(entity.entityKind)},
       ],
-      fitNotes: [],
-      missingEvidence: [],
       eventEvidence: [],
     },
     publicSources,

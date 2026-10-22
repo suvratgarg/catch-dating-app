@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import path from "node:path";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
 import {
@@ -13,18 +15,47 @@ import {
 
 type Data = Record<string, unknown>;
 
+const repoRoot = path.resolve(__dirname, "../../..");
+
+// A contract-valid organizer, so "clean" means clean under the contract too.
+function baseOrganizer(): Data {
+  const schema = JSON.parse(readFileSync(
+    path.join(repoRoot, "contracts/firestore/organizers.schema.json"),
+    "utf8"
+  ));
+  const club = JSON.parse(readFileSync(
+    path.join(repoRoot, "contracts/fixtures/valid/club_doc.json"),
+    "utf8"
+  ));
+  return {
+    ...Object.fromEntries(Object.entries(club)
+      .filter(([key]) => key in schema.properties)),
+    followerCount: 0,
+    organizerPhotos: [],
+    organizerType: "club",
+  };
+}
+
 // Shape of the stored AFTER FLY seed listing whose intake text leaked onto
-// the public organizer page.
+// the public organizer page, including the retired operator-only lists.
 function leakedListing(): Data {
   return {
+    ...baseOrganizer(),
     name: "AFTER FLY",
     description: "AFTER FLY is an Indore run-and-rave organizer discovered " +
       "through a public Luma event page. This unclaimed profile summarizes " +
       "owner-safe public facts while claim, cadence, and contact details " +
       "remain unverified.",
     publicPage: {
+      slug: "afterfly",
+      citySlug: "indore",
+      canonicalPath: "/organizers/afterfly/",
+      publishStatus: "published",
+      indexStatus: "noindex",
+      robots: "noindex, follow",
       seoTitle: "AFTER FLY | Indore organizer profile | Catch",
       seoDescription: "Source-backed, unclaimed Catch profile for AFTER FLY.",
+      lastRenderedAt: null,
     },
     publicProfile: {
       headline: "AFTER FLY run club in Indore",
@@ -76,9 +107,9 @@ function leakedListing(): Data {
 
 function cleanListing(): Data {
   return {
+    ...baseOrganizer(),
     name: "Courtside",
     description: "Racket sports and socials in Mumbai.",
-    publicPage: {seoTitle: "Courtside", seoDescription: null},
     publicProfile: {
       headline: null,
       summary: "Courtside runs weekly racket sessions with a calorie " +
@@ -87,8 +118,6 @@ function cleanListing(): Data {
       sourceSummary: null,
       formats: ["Racket sports"],
       facts: [{label: "Location", value: "Mumbai"}],
-      fitNotes: [],
-      missingEvidence: [],
       eventEvidence: [],
     },
     publicSources: [{
@@ -102,6 +131,15 @@ function cleanListing(): Data {
   };
 }
 
+const afterflyCopy = {
+  "description": "AFTER FLY pairs social runs with post-run music in Indore.",
+  "publicPage.seoDescription":
+    "AFTER FLY pairs social runs with post-run music in Indore.",
+  "publicProfile.summary":
+    "AFTER FLY pairs social runs with post-run music in Indore.",
+  "publicProfile.sourceSummary": null,
+};
+
 test("flags every operator leak found on the AFTER FLY page", () => {
   const issues = organizerPublicContentIssues(leakedListing());
   const byField = new Map(issues.map((issue) => [issue.field, issue.rule]));
@@ -113,8 +151,6 @@ test("flags every operator leak found on the AFTER FLY page", () => {
     "publicProfile.sourceSummary": "operator_wording",
     "publicProfile.facts[1]": "authority_fact",
     "publicProfile.facts[2]": "authority_fact",
-    "publicProfile.fitNotes": "operator_only_field",
-    "publicProfile.missingEvidence": "operator_only_field",
     "publicSources[0].href": "source_without_public_link",
     "publicSources[0].label": "operator_wording",
     "publicSources[2].href": "duplicate_source_link",
@@ -138,9 +174,9 @@ test("checks only the fields present in a partial patch", () => {
   }), []);
   assert.deepEqual(
     organizerPublicContentIssues({
-      publicProfile: {missingEvidence: ["Owner contact"]},
+      publicPage: {seoDescription: "Noindex until verified."},
     }).map((issue) => issue.field),
-    ["publicProfile.missingEvidence"]
+    ["publicPage.seoDescription"]
   );
 });
 
@@ -162,20 +198,20 @@ test("assert raises failed-precondition naming fields, not the copy", () => {
     assertOrganizerPublicContent(cleanListing(), "This organizer edit"));
 });
 
-test("repair removes mechanical leaks and leaves wording for review", () => {
+test("repair deletes retired lists and removes mechanical leaks", () => {
   const plan = planOrganizerPublicContentRepair(
     "organizers/afterfly",
     leakedListing()
   );
 
-  assert.deepEqual(Object.keys(plan.patch).sort(), [
-    "publicProfile.facts",
+  assert.deepEqual(plan.deletes, [
     "publicProfile.fitNotes",
     "publicProfile.missingEvidence",
+  ]);
+  assert.deepEqual(Object.keys(plan.patch).sort(), [
+    "publicProfile.facts",
     "publicSources",
   ]);
-  assert.deepEqual(plan.patch["publicProfile.fitNotes"], []);
-  assert.deepEqual(plan.patch["publicProfile.missingEvidence"], []);
   assert.deepEqual(plan.patch["publicProfile.facts"], [
     {label: "Location", value: "Indore, Madhya Pradesh"},
   ]);
@@ -192,34 +228,49 @@ test("repair removes mechanical leaks and leaves wording for review", () => {
     "publicProfile.summary",
     "publicProfile.sourceSummary",
   ]);
+  assert.deepEqual(plan.schemaErrors, [],
+    "deleting the retired lists restores the organizer contract");
   assert.deepEqual(plan.schemaRegressions, []);
 });
 
+test("an empty retired list is still deleted so the contract validates",
+  () => {
+    const stale = cleanListing();
+    (stale.publicProfile as Data).fitNotes = [];
+    (stale.publicProfile as Data).missingEvidence = [];
+    const plan = planOrganizerPublicContentRepair("organizers/x", stale);
+
+    assert.deepEqual(plan.deletes, [
+      "publicProfile.fitNotes",
+      "publicProfile.missingEvidence",
+    ]);
+    assert.deepEqual(plan.patch, {});
+    assert.deepEqual(plan.schemaErrors, []);
+    assert.deepEqual(
+      planOrganizerPublicContentRepair("organizers/x", cleanListing()).deletes,
+      []
+    );
+  });
+
 test("reviewed replacements clear the remaining wording issues", () => {
-  const replacements = {
-    "description": "AFTER FLY pairs social runs with post-run music in Indore.",
-    "publicPage.seoDescription":
-      "AFTER FLY pairs social runs with post-run music in Indore.",
-    "publicProfile.summary":
-      "AFTER FLY pairs social runs with post-run music in Indore.",
-    "publicProfile.sourceSummary": null,
-  };
   const plan = planOrganizerPublicContentRepair(
     "organizers/afterfly",
     leakedListing(),
-    replacements
+    afterflyCopy
   );
   assert.deepEqual(plan.remainingIssues, []);
   assert.equal(plan.patch["publicProfile.sourceSummary"], null);
 
-  const repaired = applyDotPatch(leakedListing(), plan.patch);
+  const repaired = applyRepair(leakedListing(), plan.patch, plan.deletes);
   const rerun = planOrganizerPublicContentRepair(
     "organizers/afterfly",
     repaired,
-    replacements
+    afterflyCopy
   );
   assert.deepEqual(rerun.patch, {}, "a repaired document plans no writes");
+  assert.deepEqual(rerun.deletes, []);
   assert.deepEqual(rerun.remainingIssues, []);
+  assert.deepEqual(rerun.schemaErrors, []);
 });
 
 test("plan hashes bind the reviewed before-state", () => {
@@ -256,15 +307,23 @@ test("repair refuses fields outside the public replacement allowlist", () => {
   );
 });
 
-function applyDotPatch(value: Data, patch: Data): Data {
+function applyRepair(value: Data, patch: Data, deletes: string[]): Data {
   const next = structuredClone(value);
-  for (const [field, fieldValue] of Object.entries(patch)) {
+  const parent = (field: string) => {
     const segments = field.split(".");
     let cursor = next;
     for (const segment of segments.slice(0, -1)) {
       cursor = cursor[segment] as Data;
     }
-    cursor[segments[segments.length - 1]] = fieldValue;
+    return {cursor, key: segments[segments.length - 1]};
+  };
+  for (const [field, fieldValue] of Object.entries(patch)) {
+    const {cursor, key} = parent(field);
+    cursor[key] = fieldValue;
+  }
+  for (const field of deletes) {
+    const {cursor, key} = parent(field);
+    delete cursor[key];
   }
   return next;
 }

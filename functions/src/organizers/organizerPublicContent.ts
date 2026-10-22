@@ -23,8 +23,6 @@ export interface OrganizerPublicContent {
     sourceSummary?: string | null;
     formats?: string[];
     facts?: Array<{label: string; value: string}>;
-    fitNotes?: string[];
-    missingEvidence?: string[];
     eventEvidence?: Array<{
       title: string;
       summary: string;
@@ -40,7 +38,6 @@ export interface OrganizerPublicContent {
 }
 
 export type OrganizerPublicContentRule =
-  | "operator_only_field"
   | "operator_wording"
   | "authority_fact"
   | "source_without_public_link"
@@ -169,14 +166,6 @@ export function organizerPublicContentIssues(
     checkText(`publicProfile.facts[${index}].label`, fact.label);
     checkText(`publicProfile.facts[${index}].value`, fact.value);
   });
-  for (const field of ["fitNotes", "missingEvidence"] as const) {
-    if ((profile[field]?.length ?? 0) > 0) {
-      issues.push({
-        field: `publicProfile.${field}`,
-        rule: "operator_only_field",
-      });
-    }
-  }
   (profile.eventEvidence ?? []).forEach((event, index) => {
     const prefix = `publicProfile.eventEvidence[${index}]`;
     checkText(`${prefix}.title`, event.title);
@@ -242,7 +231,6 @@ export function describeOrganizerPublicContentIssues(
 }
 
 const issueReasons: Record<OrganizerPublicContentRule, string> = {
-  operator_only_field: "operator-only field",
   operator_wording: "intake wording",
   authority_fact: "restates claim/index state",
   source_without_public_link: "no public link",

@@ -295,24 +295,6 @@ const schemaAdminUpdateClubDetailsCallablePayloadSchema = <String, Object?>{
                 'maxLength': 80,
               },
             },
-            'fitNotes': <String, Object?>{
-              'type': 'array',
-              'maxItems': 8,
-              'items': <String, Object?>{
-                'type': 'string',
-                'minLength': 1,
-                'maxLength': 400,
-              },
-            },
-            'missingEvidence': <String, Object?>{
-              'type': 'array',
-              'maxItems': 12,
-              'items': <String, Object?>{
-                'type': 'string',
-                'minLength': 1,
-                'maxLength': 200,
-              },
-            },
           },
         },
       },

@@ -8,9 +8,12 @@ const usage = `Usage: node scripts/repair-organizer-public-content.cjs --project
 
 Plans and applies the cleanup of operator content in organizer public fields
 (organizers/{id}.description, publicPage SEO copy, publicProfile and
-publicSources). Fit notes, evidence checklists, claim/index facts and sources
-without a distinct public link are removed mechanically. Intake wording in
-prose fields needs a reviewed replacement value. Dry run is the default and
+publicSources). It deletes the retired publicProfile.fitNotes and
+publicProfile.missingEvidence keys (run it in every environment before
+deploying a build whose organizer contract no longer has them) and removes
+claim/index facts and sources without a distinct public link. Intake wording
+in prose fields needs a reviewed replacement value; until one is supplied the
+organizer stays listed under needsReplacement. Dry run is the default and
 never writes. Build first: npm --prefix functions run build.
 
 Options:
@@ -22,7 +25,8 @@ Options:
                           publicProfile.headline, publicProfile.summary,
                           publicProfile.sourceSummary, publicProfile.facts,
                           publicProfile.eventEvidence or publicSources.
-  --check                 Exit 1 while any scanned organizer needs a repair.
+  --check                 Exit 1 while any scanned organizer needs a repair,
+                          replacement copy, or still breaks its contract.
   --apply                 Write the reviewed plan. Requires --plan-hash.
   --plan-hash <sha256>    planHash printed by the reviewed dry run.
   --allow-prod            Required with --apply against the prod project.
@@ -136,13 +140,23 @@ async function readOrganizers(db, organizerId) {
   return (await db.collection("organizers").get()).docs;
 }
 
-function needsRepair(plan) {
-  return Object.keys(plan.patch).length > 0 ||
-    plan.remainingIssues.length > 0 ||
-    plan.schemaRegressions.length > 0;
+function hasWrites(plan) {
+  return Object.keys(plan.patch).length > 0 || plan.deletes.length > 0;
 }
 
-async function run(argv, {db, prodProject, Timestamp, log = console.log}) {
+function needsRepair(plan) {
+  return hasWrites(plan) ||
+    plan.remainingIssues.length > 0 ||
+    plan.schemaErrors.length > 0;
+}
+
+async function run(argv, {
+  db,
+  prodProject,
+  Timestamp,
+  deleteField,
+  log = console.log,
+}) {
   const args = parseArgs(argv);
   if (args.help) {
     log(usage);
@@ -172,8 +186,9 @@ async function run(argv, {db, prodProject, Timestamp, log = console.log}) {
     replacements[snapshot.ref.path] ?? {}
   ));
   const pending = plans.filter(needsRepair);
-  const blocked = pending.filter((plan) =>
-    plan.remainingIssues.length > 0 || plan.schemaRegressions.length > 0);
+  const pathsWhere = (predicate) =>
+    pending.filter(predicate).map((plan) => plan.path);
+  const blocked = pathsWhere((plan) => plan.schemaRegressions.length > 0);
   const planHash = organizerPublicContentPlanSetHash(pending);
   log(JSON.stringify({
     projectId: args.project,
@@ -181,7 +196,10 @@ async function run(argv, {db, prodProject, Timestamp, log = console.log}) {
     scanned: plans.length,
     clean: plans.length - pending.length,
     pending: pending.length,
-    blocked: blocked.map((plan) => plan.path),
+    blocked,
+    needsReplacement: pathsWhere((plan) => plan.remainingIssues.length > 0),
+    contractInvalidAfterRepair: pathsWhere((plan) =>
+      plan.schemaErrors.length > 0),
     planHash,
     plans: pending,
   }, null, 2));
@@ -193,8 +211,8 @@ async function run(argv, {db, prodProject, Timestamp, log = console.log}) {
   }
   if (blocked.length > 0) {
     throw new Error(
-      "Refusing to apply while organizers still have intake wording or " +
-        `contract regressions: ${blocked.map((plan) => plan.path).join(", ")}`
+      "Refusing to apply a plan that would break the organizer contract: " +
+        blocked.join(", ")
     );
   }
   if (args.planHash !== planHash) {
@@ -205,7 +223,7 @@ async function run(argv, {db, prodProject, Timestamp, log = console.log}) {
   }
   let applied = 0;
   for (const plan of pending) {
-    if (Object.keys(plan.patch).length === 0) continue;
+    if (!hasWrites(plan)) continue;
     await db.runTransaction(async (tx) => {
       const ref = db.doc(plan.path);
       const snapshot = await tx.get(ref);
@@ -222,7 +240,11 @@ async function run(argv, {db, prodProject, Timestamp, log = console.log}) {
             "was written. Re-run the dry run."
         );
       }
-      tx.update(ref, plan.patch);
+      tx.update(ref, {
+        ...plan.patch,
+        ...Object.fromEntries(plan.deletes.map((field) =>
+          [field, deleteField()])),
+      });
     });
     applied++;
   }
@@ -244,6 +266,7 @@ async function main(argv = process.argv.slice(2)) {
       db: app.firestore(),
       prodProject: prodProjectId(),
       Timestamp: admin.firestore.Timestamp,
+      deleteField: () => admin.firestore.FieldValue.delete(),
     });
   } finally {
     await app.delete();

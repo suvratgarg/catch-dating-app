@@ -2476,7 +2476,7 @@ const schemaOrganizerDocumentSchema = <String, Object?>{
     'publicProfile': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
-      'description': 'Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.',
+      'description': 'Visitor-facing organizer listing content derived from sources or owner edits. Operator evidence (fit rationale, evidence checklists, intake requests, claim and index state) and raw scrape snapshots belong in private intake and evidence collections; operator writes are checked by functions/src/organizers/organizerPublicContent.ts.',
       'properties': <String, Object?>{
         'headline': <String, Object?>{
           'type': <Object?>[
@@ -2530,24 +2530,6 @@ const schemaOrganizerDocumentSchema = <String, Object?>{
                 'maxLength': 240,
               },
             },
-          },
-        },
-        'fitNotes': <String, Object?>{
-          'type': 'array',
-          'maxItems': 8,
-          'items': <String, Object?>{
-            'type': 'string',
-            'minLength': 1,
-            'maxLength': 400,
-          },
-        },
-        'missingEvidence': <String, Object?>{
-          'type': 'array',
-          'maxItems': 12,
-          'items': <String, Object?>{
-            'type': 'string',
-            'minLength': 1,
-            'maxLength': 200,
           },
         },
         'eventEvidence': <String, Object?>{

@@ -84,8 +84,8 @@ test("approved review decisions create public projections and claim targets", ()
     "/organizers/afterfly/"
   );
   const claimTargetProfile = claimTargets.targets[0].clubDocument.publicProfile;
-  assert.deepEqual(claimTargetProfile.fitNotes, []);
-  assert.deepEqual(claimTargetProfile.missingEvidence, []);
+  assert.equal("fitNotes" in claimTargetProfile, false);
+  assert.equal("missingEvidence" in claimTargetProfile, false);
   assert.deepEqual(
     claimTargetProfile.facts.map((fact) => fact.label),
     ["Market", "Organizer type"]
