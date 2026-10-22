@@ -1810,6 +1810,28 @@ const installReviewedQueueClock = () => {
   };
 };
 
+// Intake ages and countdowns read both Date.now() and new Date(). Pin both to
+// the reviewed baseline capture (13d oldest, 2099 sample in 26655d) so
+// captures do not drift as real days pass.
+const installIntakeBaselineClock = () => {
+  const RealDate = globalThis.Date;
+  const fixedMs = RealDate.parse("2026-07-27T12:00:00.000Z");
+  class BaselineDate extends RealDate {
+    constructor(...args: [] | [string | number | Date]) {
+      if (args.length === 0) super(fixedMs);
+      else super(args[0]);
+    }
+
+    static now() {
+      return fixedMs;
+    }
+  }
+  globalThis.Date = BaselineDate as DateConstructor;
+  return () => {
+    globalThis.Date = RealDate;
+  };
+};
+
 export const SafetyTriageRouteStory: Story = {
   name: "Safety",
   beforeEach: installReviewedQueueClock,
@@ -1918,6 +1940,7 @@ export const EventPublishingDetailStory: Story = {
 
 export const IntakeWorkspaceRouteStory: Story = {
   name: "Intake",
+  beforeEach: installIntakeBaselineClock,
   parameters: {
     catchComponent: {
       id: "route_intake_workspace",
@@ -1929,6 +1952,7 @@ export const IntakeWorkspaceRouteStory: Story = {
 
 export const IntakeWorkspaceStory: Story = {
   name: "Intake Workspace Shell",
+  beforeEach: installIntakeBaselineClock,
   parameters: {
     catchComponent: {
       id: "workspace_intake_workspace",
@@ -1940,6 +1964,7 @@ export const IntakeWorkspaceStory: Story = {
 
 export const EventIntakeWorkspaceStory: Story = {
   name: "Event Intake Workspace",
+  beforeEach: installIntakeBaselineClock,
   parameters: {
     catchComponent: {
       id: "workspace_event_intake",
@@ -1985,6 +2010,7 @@ export const OrganizerIntakeWorkspaceStory: Story = {
 
 export const IntakeOperationsWorkspaceStory: Story = {
   name: "Supply Intake Automation Workspace",
+  beforeEach: installIntakeBaselineClock,
   parameters: {
     catchComponent: {
       id: "workspace_intake_operations",
