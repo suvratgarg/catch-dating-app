@@ -72,7 +72,10 @@ test("Admin pending inputs add exact validation while preserving every source op
   const classification = graph.classifications.find((entry) => entry.id === "admin-pending-input");
   assert.deepEqual([...classification.paths.include].sort(), inputs);
   const scanner = toolsManifest.tools.find((entry) => entry.id === "web:admin-pending-operations");
-  assert.deepEqual([...scanner.impactPaths].sort(), inputs);
+  // The scanner also reads the frozen feature cases, which app.design already
+  // routes to Tools; only the controller closure needs this classification.
+  assert.deepEqual([...scanner.impactPaths].sort(),
+    [...inputs, "design/features/admin_*.feature.json"].sort());
   const before = clone(graph);
   before.classifications = before.classifications.filter((entry) => entry.id !== classification.id);
   before.components = before.components.filter((entry) => entry.id !== "web.admin-pending-input");
@@ -399,8 +402,7 @@ test("Hosting promotion controls select only their React callers and affected To
       assert.equal(tools.mode, "affected", `${file} ${mode}`);
       assert.deepEqual(tools.fullReasons, []);
       assert.deepEqual(tools.toolIds, ["agent:harness-v2", "ci:web-hosting-delivery-workflow",
-        "ci:web-hosting-freshness", "docs:metadata", "meta:enforcement-integrity",
-        "meta:repository-root-hygiene"]);
+        "ci:web-hosting-freshness", ...toolsManifest.ciImpact.mandatoryCheckIds].sort());
       assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
       assert.equal(tools.repositoryView, "full");
     }

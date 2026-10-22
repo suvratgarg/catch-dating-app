@@ -83,7 +83,15 @@ context-pack and gallery manifests select `design:context-pack`, which rebuilds
 the pack in a temporary directory and verifies drift. Their check tests and
 generator have the same owners. These explicit mappings avoid full fanout when
 ordinary screen changes update generated manifests; unknown companion inputs
-still trigger the full fallback. Both owners retain the full source checkout,
+still trigger the full fallback. Committed evidence follows the same rule:
+website Storybook baselines select `web:storybook-visuals`, app screenshots
+select every capture check that reads their bytes, and feature contracts select
+each compiler, coverage, responsibility, screen and pending-operation check that
+reads them. Declare an input on every check that reads it, because a declared
+owner suppresses the fallback for that path. Admin and `@catch/web-ui`
+baselines, Widgetbook Flutter tests and Operations unit tests have no Tools
+reader, so they keep the full fallback. `operations:boundaries` is a mandatory
+guard because it scans every code file under `tool/` and `operations/src/`. Both owners retain the full source checkout,
 with Node/root npm for coverage and Node/Flutter/pub for context generation.
 CI passes the same PR, merge-queue, main, or nightly mode into both planners.
 Companion files owned exclusively by Docs, Policy, or another Harness lane are
