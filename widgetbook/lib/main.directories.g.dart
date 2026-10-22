@@ -429,6 +429,8 @@ import 'package:widgetbook_workspace/primitives/contracts/field.dart'
     as _widgetbook_workspace_primitives_contracts_field;
 import 'package:widgetbook_workspace/primitives/contracts/field_rows.dart'
     as _widgetbook_workspace_primitives_contracts_field_rows;
+import 'package:widgetbook_workspace/primitives/contracts/form_step_list.dart'
+    as _widgetbook_workspace_primitives_contracts_form_step_list;
 import 'package:widgetbook_workspace/primitives/contracts/icons.dart'
     as _widgetbook_workspace_primitives_contracts_icons;
 import 'package:widgetbook_workspace/primitives/contracts/images.dart'
@@ -2190,17 +2192,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFormStepList',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Required, optional and complete steps',
-                builder:
-                    _widgetbook_workspace_primitives_form_protocol_use_cases
-                        .formStepOverviewStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchFormStepSpec',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3646,6 +3637,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Contract states',
                 builder: _widgetbook_workspace_primitives_contracts_chrome
                     .catchCollapsedSliverTitleContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFormStepList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_form_step_list
+                        .catchFormStepListContractStates,
               ),
             ],
           ),
