@@ -1,5 +1,10 @@
 part of '../host_operations_screen.dart';
 
+const _hostAccountPrivacyPolicyAction = 'privacy-policy';
+const _hostAccountTermsAction = 'terms';
+const _hostAccountHelpAction = 'help';
+const _hostAccountDeleteAction = 'delete';
+
 List<CatchOption<HostClubTab>> _hostClubTabOptions(BuildContext context) => [
   CatchOption(
     value: HostClubTab.edit,
@@ -156,19 +161,46 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
       icon: CatchIcons.logoutRounded,
       onPressed: accountOperationPending ? null : () => unawaited(_signOut()),
     );
+    final legalLinks = ref.watch(legalLinksProvider);
     final accountMenu = CatchActionMenu<String>(
       key: const ValueKey<String>('host-account-menu'),
       tooltip: context.l10n.safetySettingsScreenTitleAccount,
       enabled: !accountOperationPending,
       items: [
+        if (legalLinks.privacyPolicy != null)
+          CatchActionMenuItem(
+            value: _hostAccountPrivacyPolicyAction,
+            label: context.l10n.safetySettingsScreenTitlePrivacyPolicy,
+            icon: CatchIcons.lockOutline,
+          ),
+        if (legalLinks.terms != null)
+          CatchActionMenuItem(
+            value: _hostAccountTermsAction,
+            label: context.l10n.safetySettingsScreenTitleTerms,
+            icon: CatchIcons.descriptionOutlined,
+          ),
+        if (legalLinks.help != null)
+          CatchActionMenuItem(
+            value: _hostAccountHelpAction,
+            label: context.l10n.safetySettingsScreenTitleHelpSupport,
+            icon: CatchIcons.helpOutline,
+          ),
         CatchActionMenuItem(
-          value: 'delete',
+          value: _hostAccountDeleteAction,
           label: context.l10n.safetySettingsScreenTitleDeleteAccount658588,
           icon: CatchIcons.deleteOutline,
           isDestructive: true,
         ),
       ],
-      onSelected: (_) => unawaited(_deleteAccount()),
+      onSelected: (action) => unawaited(switch (action) {
+        _hostAccountPrivacyPolicyAction => _openLegalLink(
+          legalLinks.privacyPolicy,
+        ),
+        _hostAccountTermsAction => _openLegalLink(legalLinks.terms),
+        _hostAccountHelpAction => _openLegalLink(legalLinks.help),
+        _hostAccountDeleteAction => _deleteAccount(),
+        _ => Future<void>.value(),
+      }),
     );
     final selectedOrganizerId = ref.watch(
       hostOrganizerSelectionProvider(widget.currentUid),
@@ -342,6 +374,24 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
       return;
     }
     if (mounted) context.go(Routes.startScreen.path);
+  }
+
+  /// Opens a public legal/support page through the same external launcher as
+  /// consumer Settings, reporting false and thrown outcomes alike.
+  Future<void> _openLegalLink(Uri? uri) async {
+    if (uri == null) return;
+    var opened = false;
+    try {
+      opened = await ref.read(externalLinkControllerProvider).openExternal(uri);
+    } catch (_) {
+      // ExternalLinkController retains the backend context; the account menu
+      // owns the visible result.
+    }
+    if (!mounted || opened) return;
+    showCatchNotice(
+      context,
+      context.l10n.safetySettingsScreenExternalLinkOpenFailed,
+    );
   }
 
   Future<void> _deleteAccount() async {
