@@ -24,6 +24,20 @@ the consumer app surface and should continue sharing mobile app code. The
 marketing and admin surfaces are web-native products and should use the same
 React + TypeScript stack where practical.
 
+**Web code unification (owner decision, 2026-10-22).** The website and Admin
+stay separate deployables on separate origins. `catchdates.com` keeps
+server-rendered public pages; `admin.catchdates.com` keeps its signed-in
+single-page app with its own security headers, App Check settings and Firebase
+Auth origin, so a script injected into a public page cannot reach an operator
+session. Everything above the deployable is shared rather than duplicated:
+styled components and layout primitives in `@catch/web-ui` (UI blueprint Phase
+7e), tokens and one stylelint and ESLint preset in `@catch/web-config`, and a
+planned `@catch/web-data` for the Firebase bootstrap, the contract-validated
+callable client and query helpers. Each app owns only its routes, screens and
+feature controllers. Raw values and component placement are enforced by
+stylelint and ESLint rules with shrink-only debt lists; each hand-written web
+scanner retires in the same change that lands the rule replacing it.
+
 The no-download `/f/:publicFormId/` respondent route is also owned by the
 public React website. It loads a callable-projected immutable form version,
 supports policy-specific identity verification, revisioned autosave, review,
