@@ -139,10 +139,10 @@ its PR shows all four of these:
 3. **What was salvaged.** Reusable logic, fixtures, tests, data shapes and
    lessons move into the code that lives on (a shared library, the replacement
    feature, its tests or its doc) before the old code is deleted.
-4. **Where it went.** A short entry in the retirement ledger (an appendix of
-   this plan) with the deleted path, the reason, where its value moved, and the
-   last commit that contained it, so it can be restored with one `git`
-   command.
+4. **Where it went.** The retirement PR's description lists each deleted path,
+   the reason, where its value moved, and the last commit that contained it, so
+   it can be restored with one `git` command. The PR stays in Git history; there
+   is no tracked ledger file, per the `tool/README.md` rule against them.
 
 Anything that fails a check stays until it passes. Code that still has value
 but no current user gets an owner and a home, not a deletion.
