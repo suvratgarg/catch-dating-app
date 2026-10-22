@@ -7,7 +7,7 @@ import test from "node:test";
 import {planCommittedWindow, projectPlanOutputs} from "../harness.mjs";
 import {planAffected} from "../harness/lib/component_graph.mjs";
 import {changedPathsSince} from "../harness/lib/git_changes.mjs";
-import {finalizeCiPlan, requireCoveredPlan, requireValidationLanes, verifyValidationPlan} from "./finalize_ci_plan.mjs";
+import {finalizeCiPlan, queueReusableLanes, requireCoveredPlan, requireValidationLanes, verifyValidationPlan} from "./finalize_ci_plan.mjs";
 import {resolveMainBaseline} from "./main_ci_baseline.mjs";
 
 const read = (file) => JSON.parse(fs.readFileSync(new URL(file, import.meta.url), "utf8"));
@@ -230,5 +230,28 @@ test("capture freshness must execute successfully when selected", () => {
     const incomplete = structuredClone(needs);
     incomplete["capture-freshness"] = {result};
     assert.throws(() => requireValidationLanes(plan, incomplete), /capture_freshness did not succeed/);
+  }
+});
+
+test("merge-queue reuse accepts only skipped pure-validation lanes with a queue run", () => {
+  const plan = {operations: {ciTargets: ["flutter", "functions", "tools", "visual_integration"]}};
+  const needs = {plan: {result: "success"}, flutter: {result: "skipped"}, functions: {result: "success"},
+    tools: {result: "skipped"}, "visual-integration": {result: "skipped"}};
+  assert.doesNotThrow(() => requireValidationLanes(plan, needs, {queueVerifiedRun: "39822205436"}));
+  assert.throws(() => requireValidationLanes(plan, needs), /Selected lane flutter did not succeed/u);
+  assert.throws(() => requireValidationLanes(plan, needs, {queueVerifiedRun: "abc"}), /Invalid merge-queue run/u);
+  const delivery = structuredClone(needs);
+  delivery.functions.result = "skipped";
+  assert.throws(() => requireValidationLanes(plan, delivery, {queueVerifiedRun: "39822205436"}),
+    /Selected lane functions did not succeed/u);
+  const failed = structuredClone(needs);
+  failed.flutter.result = "failure";
+  assert.throws(() => requireValidationLanes(plan, failed, {queueVerifiedRun: "39822205436"}));
+});
+
+test("jobs that produce delivery evidence are never merge-queue reusable", () => {
+  for (const lane of ["functions", "firestore_rules", "contracts", "marketing", "capture_freshness",
+    "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke"]) {
+    assert.ok(!queueReusableLanes.includes(lane), `${lane} feeds delivery and must always run on main`);
   }
 });

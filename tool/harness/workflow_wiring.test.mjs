@@ -1608,3 +1608,51 @@ test("Tools check shells independently request capture and inventory producer pr
   }
   assert.doesNotMatch(extractSteps(source).find(step => step.name === "Resolve affected tool checks").run, /--marketing-captures-imported|--generated-inventories-materialized/u);
 });
+
+
+test("main reuses a successful merge-queue run of the exact source for pure-validation lanes only", (t) => {
+  const ci = workflow("ci.yml");
+  const plan = ci.slice(ci.indexOf("\n  plan:\n"), ci.indexOf("\n  source-preflight:\n"));
+  assert.match(plan, /queue_verified_run: \$\{\{ steps\.queue\.outputs\.run_id \}\}/u);
+  const lookup = extractSteps(ci).find((entry) => entry.name === "Find the merge-queue validation of this exact source");
+  assert.ok(lookup?.run, "missing merge-queue lookup step");
+  assert.match(lookup.if, /github\.event_name == 'push'/u);
+  const job = (id) => ci.slice(ci.indexOf(`\n  ${id}:\n`) + 1).split(/\n  [a-z-]+:\n/u)[0];
+  for (const id of ["flutter", "visual-integration", "tools", "admin", "operations", "docs-policy"]) {
+    assert.match(job(id), /!needs\.plan\.outputs\.queue_verified_run/u, `${id} skips when the queue proved main`);
+  }
+  for (const id of ["functions", "firestore-rules", "contracts", "marketing", "capture-freshness",
+    "app-builds", "finalize-plan", "package-firebase", "required"]) {
+    assert.doesNotMatch(job(id).split("\n    steps:")[0], /queue_verified_run/u,
+      `${id} produces or checks delivery evidence and always runs`);
+  }
+  // Execute the actual lookup against a fake GitHub API.
+  const step = extractSteps(ci).find((entry) => entry.name === "Find the merge-queue validation of this exact source");
+  const sha = "a".repeat(40);
+  const runLookup = (runs, jobs, failRuns = false) => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "queue-lookup-"));
+    t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+    const bin = path.join(root, "bin"); fs.mkdirSync(bin);
+    fs.writeFileSync(path.join(bin, "gh"), `#!/usr/bin/env node
+const endpoint = process.argv[3];
+if (endpoint.includes("/workflows/ci.yml/runs")) {
+  if (${failRuns}) process.exit(1);
+  console.log(JSON.stringify({workflow_runs: ${JSON.stringify(runs)}}));
+} else console.log(JSON.stringify({jobs: ${JSON.stringify(jobs)}}));
+`, {mode: 0o755});
+    const output = path.join(root, "out"); fs.writeFileSync(output, "");
+    const result = spawnSync("bash", ["-c", step.run], {encoding: "utf8", env: {...process.env,
+      PATH: `${bin}${path.delimiter}${process.env.PATH}`, GITHUB_REPOSITORY: "owner/repo", SOURCE_SHA: sha,
+      GITHUB_OUTPUT: output, GITHUB_STEP_SUMMARY: path.join(root, "summary")}});
+    assert.equal(result.status, 0, result.stderr);
+    return fs.readFileSync(output, "utf8").trim();
+  };
+  const good = {id: 41, event: "merge_group", head_sha: sha, conclusion: "success", path: ".github/workflows/ci.yml"};
+  const required = [{name: "Required CI", conclusion: "success"}];
+  assert.equal(runLookup([good], required), "run_id=41");
+  assert.equal(runLookup([{...good, conclusion: "failure"}], required), "run_id=");
+  assert.equal(runLookup([{...good, head_sha: "b".repeat(40)}], required), "run_id=");
+  assert.equal(runLookup([{...good, event: "pull_request"}], required), "run_id=");
+  assert.equal(runLookup([good], [{name: "Required CI", conclusion: "failure"}]), "run_id=");
+  assert.equal(runLookup([good], required, true), "run_id=", "API failure keeps the full run");
+});

@@ -71,6 +71,7 @@ jobs:
       tools_owns_ui_lint_smoke: ${{ steps.plan.outputs.tools_owns_ui_lint_smoke }}
       tools_owns_design_parity: ${{ steps.plan.outputs.tools_owns_design_parity }}
       tools_owns_design_handoff: ${{ steps.plan.outputs.tools_owns_design_handoff }}
+      queue_verified_run: ${{ steps.queue.outputs.run_id }}
 
     steps:
       - name: Checkout planner closure
@@ -221,6 +222,32 @@ jobs:
             `tools_owns_design_parity=${design.parity}\ntools_owns_design_handoff=${design.handoff}\n`);
           NODE
 
+      - id: queue
+        name: Find the merge-queue validation of this exact source
+        if: ${{ github.event_name == 'push' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -uo pipefail
+          # The merge queue validated this exact commit before main moved to
+          # it. Reuse covers only pure-validation lanes; every delivery
+          # producer still runs. Any lookup failure keeps the full run.
+          run_id=""
+          if runs="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?event=merge_group&head_sha=$SOURCE_SHA&per_page=20")"; then
+            run_id="$(jq -r --arg sha "$SOURCE_SHA" '[.workflow_runs[]? | select(.event == "merge_group" and
+              .head_sha == $sha and .conclusion == "success" and .path == ".github/workflows/ci.yml")] |
+              max_by(.id) | .id // empty' <<< "$runs" || true)"
+          fi
+          if [[ -n "$run_id" ]]; then
+            jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" || echo '{}')"
+            jq -e '[.jobs[]? | select(.name == "Required CI" and .conclusion == "success")] | length == 1' \
+              <<< "$jobs" > /dev/null || run_id=""
+          fi
+          [[ -z "$run_id" || "$run_id" =~ ^[1-9][0-9]*$ ]] || run_id=""
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          echo "Merge-queue validation reused: ${run_id:-none}" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Report Audience documentation impact
         env:
           BASE_SHA: ${{ steps.plan.outputs.base_sha }}
@@ -326,7 +353,7 @@ jobs:
     if: >-
       ${{ !cancelled() && needs.source-preflight.result == 'success' &&
           needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
-          needs.plan.outputs.tools == 'true' &&
+          needs.plan.outputs.tools == 'true' && !needs.plan.outputs.queue_verified_run &&
           (needs.capture-freshness.result == 'success' || needs.capture-freshness.result == 'skipped') }}
     uses: ./.github/workflows/tools-ci.yml
     with:
@@ -370,7 +397,7 @@ jobs:
 
   flutter:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.flutter == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.flutter == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/flutter-ci.yml
     with:
       base_sha: ${{ needs.plan.outputs.base_sha }}
@@ -383,13 +410,13 @@ jobs:
 
   visual-integration:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.visual_integration == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.visual_integration == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/visual-integration-ci.yml
     secrets: inherit
 
   admin:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.admin == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.admin == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: admin
@@ -413,7 +440,7 @@ jobs:
 
   operations:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.operations == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.operations == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/operations-ci.yml
     secrets: inherit
 
@@ -422,7 +449,8 @@ jobs:
     if: >-
       needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) &&
       (needs.plan.outputs.docs == 'true' ||
-       needs.plan.outputs.policy_docs == 'true')
+       needs.plan.outputs.policy_docs == 'true') &&
+      !needs.plan.outputs.queue_verified_run
     runs-on: ubuntu-latest
     # A policy-doc change needs the complete history for Git-backed metadata
     # validation. Full checkout is normally fast, but a three-minute action
@@ -588,6 +616,7 @@ jobs:
           NEEDS_JSON: ${{ toJSON(needs) }}
           SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
           FLUTTER_SELECTED: ${{ needs.plan.outputs.flutter }}
+          QUEUE_RUN: ${{ needs.plan.outputs.queue_verified_run }}
         run: |
           set -euo pipefail
           printf '%s\n' "$NEEDS_JSON" > build/ci/validation-needs.json
@@ -597,6 +626,7 @@ jobs:
             --source-sha "$SOURCE_SHA"
             --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT"
           )
+          [[ -z "${QUEUE_RUN:-}" ]] || proof_args+=(--queue-verified-run "$QUEUE_RUN")
           # Fail before waiting when a selected lane or this attempt's proof is missing.
           node tool/ci/finalize_ci_plan.mjs validate "${proof_args[@]}"
           validation_base_sha="$(jq -er '.baseSha' build/ci/validation/impact-plan.json)"
@@ -803,6 +833,7 @@ jobs:
         env:
           DEPLOY_REQUIRED: ${{ needs.finalize-plan.outputs.deploy_required || needs.plan.outputs.deploy_required }}
           EVENT_NAME: ${{ github.event_name }}
+          QUEUE_RUN: ${{ needs.plan.outputs.queue_verified_run }}
           GH_TOKEN: ${{ github.token }}
           NEEDS_JSON: ${{ toJSON(needs) }}
           SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
@@ -820,8 +851,10 @@ jobs:
           test "$(jq -er '.plan.result' <<< "$NEEDS_JSON")" = success
           test "$(jq -er '.["source-preflight"].result' <<< "$NEEDS_JSON")" = success
           # Selection only counts when its owning job actually succeeded.
-          jq -e '
+          jq -e --arg queue "${QUEUE_RUN:-}" '
             . as $needs |
+            # Pure-validation lanes the merge queue proved on this exact source.
+            ["admin", "docs", "flutter", "operations", "policy_docs", "tools", "visual_integration"] as $reusable |
             {admin: "admin", capture_freshness: "capture-freshness", contracts: "contracts",
              docs: "docs-policy", policy_docs: "docs-policy", firestore_rules: "firestore-rules",
              flutter: "flutter", functions: "functions", marketing: "marketing",
@@ -832,6 +865,8 @@ jobs:
               . as $lane | $needs.plan.outputs[$lane.key] as $selected |
               if $selected == "false" then true
               elif $selected == "true" and $needs[$lane.value].result == "success" then true
+              elif $selected == "true" and $queue != "" and ($reusable | index($lane.key)) != null and
+                $needs[$lane.value].result == "skipped" then true
               else error("Selected lane " + $lane.key + " lacks successful execution or selection output")
               end)
           ' <<< "$NEEDS_JSON" > /dev/null
