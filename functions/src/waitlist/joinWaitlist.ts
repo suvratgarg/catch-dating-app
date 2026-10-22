@@ -1,4 +1,6 @@
+import {randomUUID} from "node:crypto";
 import * as admin from "firebase-admin";
+import type {Request, Response} from "express";
 import * as logger from "firebase-functions/logger";
 import {HttpsError, onRequest} from "firebase-functions/v2/https";
 import {checkIpRateLimit} from "../shared/rateLimit";
@@ -13,6 +15,14 @@ import {
 } from "../shared/generated/validators/joinWaitlistHttpResponse";
 
 import {hostSalesIntentReplay, prepareHostSalesIntent} from "./hostSalesIntent";
+import {hostConsentKey} from "../acquisition/consentPolicy";
+import {HOST_CONSENT_COLLECTION} from "../acquisition/consentStore";
+import {
+  hostConsentAllowedOrigin, hostServerMeasurementEnabled,
+} from "../acquisition/consentHttp";
+import {
+  HOST_DELIVERY_COLLECTION, prepareHostMetaDelivery,
+} from "../acquisition/metaDelivery";
 
 interface NormalizedMarketingAnalytics {
   consent: Record<string, unknown> | null;
@@ -263,6 +273,11 @@ export function normalizeHostApplication(
     communityLink: normalizeOptionalMarketingText(raw.communityLink, 512),
     formats: normalizeMarketingStringArray(raw.formats, 10, 80),
     eventCadence: normalizeOptionalMarketingText(raw.eventCadence, 80),
+    // Preserve old normalized packets (and their replay hashes) when the
+    // optional new question was absent in an older client submission.
+    ...(raw.eventPricing === undefined ? {} : {
+      eventPricing: normalizeOptionalMarketingText(raw.eventPricing, 20),
+    }),
     nextEventName: normalizeOptionalMarketingText(raw.nextEventName, 160),
     nextEventDate: normalizeOptionalMarketingText(raw.nextEventDate, 80),
     eventLocation: normalizeOptionalMarketingText(raw.eventLocation, 180),
@@ -435,9 +450,10 @@ function setCorsHeaders(request: {
 /**
  * Stores a waitlist submission for catchdates.com launch access.
  */
-export const joinWaitlist = onRequest(
-  {region: "asia-south1"},
-  async (request, response) => {
+export function createJoinWaitlistHandler(options: {
+  measurementEnabled: boolean;
+}) {
+  return async (request: Request, response: Response): Promise<void> => {
     if (!setCorsHeaders(request, response)) {
       sendWaitlistJson(response, 403, {error: "Origin not allowed."});
       return;
@@ -551,19 +567,63 @@ export const joinWaitlist = onRequest(
     const intentRef = intent ? admin.firestore()
       .collection("salesInboundIntents").doc(intent.intentId) : null;
     let alreadyJoined = false;
+    let hostLead: {eventId: string; isNew: boolean} | undefined;
+    // Generate outside the transaction so Firestore retries keep one identity.
+    const proposedHostEventId = `host_lead_${Date.now()}_${randomUUID()}`;
+    // Old analytics metadata never grants server advertising permission.
+    // Do not retain the raw capability in intake, Sales or diagnostics.
+    const measurement = options.measurementEnabled && intent &&
+      hostConsentAllowedOrigin(request.get("origin"),
+        process.env.GCLOUD_PROJECT ?? process.env.GCP_PROJECT ?? "") ?
+      body.hostMeasurement : undefined;
+    const consentId = measurement ?
+      hostConsentKey(measurement.capability) : null;
 
     try {
       await admin.firestore().runTransaction(async (transaction) => {
         const existing = await transaction.get(waitlistRef);
         const priorIntent = intentRef ? await transaction.get(intentRef) : null;
+        const priorLead = existing.data()?.hostLead as
+          {eventId: string; isNew: boolean} | undefined;
+        // Legacy Host enquiries predate receipts. Do not turn them into new
+        // acquisitions, even if a later member submission changed their role.
+        const legacyHost = intent && existing.exists && !priorLead ?
+          await transaction.get(admin.firestore()
+            .collection("salesInboundIntents")
+            .where("waitlistId", "==", waitlistRef.id).limit(1)) : null;
+        const permission = consentId ? await transaction.get(admin.firestore()
+          .collection(HOST_CONSENT_COLLECTION).doc(consentId)) : null;
         if (intent && intentRef) {
           const replay = hostSalesIntentReplay(priorIntent?.data(), intent);
           if (replay !== null) {
             alreadyJoined = replay;
+            hostLead = priorIntent?.data()?.hostLead;
             return;
+          }
+          hostLead = {
+            eventId: priorLead?.eventId ?? proposedHostEventId,
+            isNew: !priorLead && !legacyHost?.size &&
+              !["host", "both"].includes(existing.data()?.role),
+          };
+          const delivery = measurement && consentId ?
+            prepareHostMetaDelivery({
+              enabled: options.measurementEnabled,
+              ...hostLead, intentId: intent.intentId, consentId,
+              consentDocument: permission?.data(),
+              context: {clientId: measurement.clientId, userAgent,
+                ...(measurement.fbclid ? {fbclid: measurement.fbclid} : {}),
+                ...(measurement.clickCapturedAt ?
+                  {clickCapturedAt: measurement.clickCapturedAt} : {})},
+              now: Date.now(),
+            }) : null;
+          if (delivery) {
+            transaction.create(admin.firestore()
+              .collection(HOST_DELIVERY_COLLECTION).doc(delivery.eventId),
+            delivery);
           }
           transaction.create(intentRef, {
             ...intent,
+            hostLead,
             alreadyJoined: existing.exists,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -581,6 +641,7 @@ export const joinWaitlist = onRequest(
           hostApplication,
           marketingAnalytics,
           marketingAttribution,
+          ...(hostLead ? {hostLead} : {}),
         };
 
         if (existing.exists) {
@@ -638,6 +699,12 @@ export const joinWaitlist = onRequest(
     sendWaitlistJson(response, 200, {
       ok: true,
       alreadyJoined,
+      ...(hostLead ? {hostLead} : {}),
     });
-  }
-);
+  };
+}
+
+export const joinWaitlist = onRequest({region: "asia-south1"},
+  createJoinWaitlistHandler({
+    measurementEnabled: hostServerMeasurementEnabled,
+  }));

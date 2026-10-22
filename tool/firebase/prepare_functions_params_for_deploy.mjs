@@ -14,6 +14,8 @@ function assert(condition, message) {
 // unmaterialized param fails the whole Delivery lane. The colocated coverage
 // scanner fails closed when source declarations drift from this list.
 export const materializedNonSecretParams = [
+  "CATCH_HOST_OPERATOR_ALERTS_ENABLED",
+  "CATCH_HOST_OPERATOR_ALERTS_SINCE",
   "ALGOLIA_APPLICATION_ID",
   "RAZORPAY_PUBLIC_KEY_ID",
   "FORM_RAZORPAY_PARTNER_CONFIG_VERSION",
@@ -207,7 +209,12 @@ function normalizedProviderParams(environment = process.env, projectId) {
       `${name} must pin its expected secret in this project`);
     assistanceReferences[name] = reference || " ";
   }
+  assert(normalizedBooleanParam(environment, "CATCH_HOST_OPERATOR_ALERTS_ENABLED") === "false" &&
+    !environment.CATCH_HOST_OPERATOR_ALERTS_SINCE?.trim(),
+  "Host operator alerts require a separately reviewed runtime activation");
   const params = {
+    CATCH_HOST_OPERATOR_ALERTS_ENABLED: "false",
+    CATCH_HOST_OPERATOR_ALERTS_SINCE: " ",
     // Distinct names coexist with the SecretParams in immutable older packages.
     ALGOLIA_APPLICATION_ID: algoliaApplicationId,
     RAZORPAY_PUBLIC_KEY_ID: razorpayPublicKeyId,

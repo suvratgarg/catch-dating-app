@@ -47,7 +47,7 @@ describe("useHostApplicationController", () => {
   it("submits a complete operating packet and reports success", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ok: true, alreadyJoined: false}),
+      json: async () => ({ok: true, alreadyJoined: true, hostLead: {isNew: true, eventId: "host_lead_1792486200000_00000000-0000-4000-8000-000000000000"}}),
     });
     vi.stubGlobal("fetch", fetchMock);
     const {result} = renderHook(() => useHostApplicationController(), {wrapper: wrapper()});
@@ -57,6 +57,7 @@ describe("useHostApplicationController", () => {
       result.current.updateDraft("email", "host@example.com");
       result.current.updateDraft("organizationName", "Sunday Club");
       result.current.updateDraft("communityLink", "https://example.com");
+      result.current.updateDraft("eventPricing", "paid");
       result.current.updateDraft("nextEventName", "Sunday Dinner");
       result.current.updateDraft("eventLocation", "Delhi");
       result.current.updateDraft("hostGoals", "Create thoughtful introductions");
@@ -67,7 +68,7 @@ describe("useHostApplicationController", () => {
     await waitFor(() => expect(result.current.submitted).toBe(true));
     expect(result.current.status.tone).toBe("is-success");
     expect(trackAcceptedMarketingLead).toHaveBeenCalledExactlyOnceWith("host_lead_event-1", "host_application",
-      false, getMarketingConsent());
+      true, getMarketingConsent(), {isNew: true, eventId: "host_lead_1792486200000_00000000-0000-4000-8000-000000000000"});
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({
       fullName: "A Host",
       email: "host@example.com",
@@ -75,6 +76,7 @@ describe("useHostApplicationController", () => {
       hostApplication: {
         organizationName: "Sunday Club",
         nextEventName: "Sunday Dinner",
+        eventPricing: "paid",
         bookingPlatform: "Luma",
         guestListFormat: "CSV",
       },
@@ -90,6 +92,7 @@ describe("useHostApplicationController", () => {
       result.current.updateDraft("email", "host@example.test");
       result.current.updateDraft("organizationName", "Example Club");
       result.current.updateDraft("communityLink", "https://example.test");
+      result.current.updateDraft("eventPricing", "paid");
       result.current.updateDraft("nextEventName", "Example Dinner");
       result.current.updateDraft("eventLocation", "Example City");
       result.current.updateDraft("hostGoals", "Review applications");
@@ -127,6 +130,7 @@ describe("useHostApplicationController", () => {
       result.current.updateDraft("email", "host@example.com");
       result.current.updateDraft("organizationName", "Sunday Club");
       result.current.updateDraft("communityLink", "https://example.com");
+      result.current.updateDraft("eventPricing", "paid");
       result.current.updateDraft("nextEventName", "Sunday Dinner");
       result.current.updateDraft("eventLocation", "Delhi");
       result.current.updateDraft("hostGoals", "Create thoughtful introductions");

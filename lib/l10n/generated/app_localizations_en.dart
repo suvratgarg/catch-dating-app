@@ -9,6 +9,25 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get hostAnalyticsPrivacyTitle => 'Host app analytics';
+
+  @override
+  String get hostAnalyticsPrivacyBody =>
+      'Help improve Catch Host by sharing sign-in, onboarding and event setup activity with Google Analytics using a random app identifier. Names, contact details, guest data and event details are excluded. This choice applies to this device for 30 days. Advertising measurement stays off. You can turn analytics off here at any time.';
+
+  @override
+  String get hostAnalyticsPrivacyDeny => 'Keep analytics off';
+
+  @override
+  String get hostAnalyticsPrivacyAllow => 'Allow analytics';
+
+  @override
+  String get hostAnalyticsPrivacyOn => 'Allowed on this device';
+
+  @override
+  String get hostAnalyticsPrivacyOff => 'Off';
+
+  @override
   String get eventsEventViewerCheckingBooking =>
       'Checking booking availability…';
 
@@ -977,10 +996,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardEventFocusRailTextEventFocus => 'Event Focus';
-
-  @override
-  String get dashboardEventFocusRailLabelEventFocusCarousel =>
-      'Event focus carousel';
 
   @override
   String get eventSuccessEventSuccessCompanionScreenTitleEventCompanion =>
@@ -3524,6 +3539,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardEventFocusRailLabelReviewPending => 'Review pending';
 
   @override
+  String dashboardEventFocusListLabelTimeLeft({required String timeLeft}) {
+    return '$timeLeft left';
+  }
+
+  @override
+  String dashboardEventFocusListLabelStaticTimeLeft({required int hours}) {
+    return '${hours}h left';
+  }
+
+  @override
+  String dashboardEventFocusListLabelAttendeesCheckedIn({
+    required int attendedCount,
+  }) {
+    return '$attendedCount checked in';
+  }
+
+  @override
   String get eventSuccessEventSuccessSetupBodyLabelNoTimer => 'No timer';
 
   @override
@@ -3892,21 +3924,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object body,
   }) {
     return '$title. $body';
-  }
-
-  @override
-  String dashboardEventFocusRailSemanticlabelEventValue1OfLength({
-    required Object value1,
-    required Object length,
-  }) {
-    return 'Event $value1 of $length';
-  }
-
-  @override
-  String dashboardEventFocusRailLabelCatchSwipecountdown({
-    required Object swipeCountdown,
-  }) {
-    return 'Catch · $swipeCountdown';
   }
 
   @override
@@ -7678,22 +7695,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object length,
   }) {
     return '$length events';
-  }
-
-  @override
-  String dashboardEventFocusRailVisiblecopyEventValue1OfLength({
-    required Object value1,
-    required Object length,
-  }) {
-    return 'Event $value1 of $length';
-  }
-
-  @override
-  String dashboardEventFocusRailVisiblecopyEventSelectedindexOfLength({
-    required Object selectedIndex,
-    required Object length,
-  }) {
-    return 'Event $selectedIndex of $length';
   }
 
   @override

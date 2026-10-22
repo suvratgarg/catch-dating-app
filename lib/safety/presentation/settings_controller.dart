@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
+import 'package:catch_dating_app/core/app_error_context.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
@@ -69,11 +71,23 @@ class SettingsController extends _$SettingsController {
   static final savePreferenceMutation = Mutation<void>();
   static final requestAccountDeletionMutation = Mutation<void>();
   static final unblockUserMutation = Mutation<void>();
+  static final saveHostAnalyticsMutation = Mutation<void>();
 
   Future<void>? _operationInFlight;
 
   @override
   void build() {}
+
+  Future<void> saveHostAnalytics(bool granted) => _trackOperation(
+    () => withAppErrorContext(
+      () => ref.read(appAnalyticsProvider).setHostAnalyticsPermission(granted),
+      context: const AppErrorContext(
+        operation: AppOperation.localPersistence,
+        action: 'save Host analytics choice',
+        resource: 'host_analytics_choice',
+      ),
+    ),
+  );
 
   Future<void> savePreference({
     required SettingsPreference preference,

@@ -6,6 +6,12 @@
  * Version 1 request body for member waitlist and optional Host operating-application submissions.
  */
 export interface JoinWaitlistHTTPRequest {
+  hostMeasurement?: {
+    capability: string;
+    clientId: string;
+    fbclid?: string;
+    clickCapturedAt?: number;
+  };
   fullName: string;
   email: string;
   city: string;
@@ -38,6 +44,7 @@ export interface JoinWaitlistHTTPRequest {
     eventSuccessModules?: string[];
     hostGoals?: string;
     operatingNotes?: string;
+    eventPricing?: "paid" | "free" | "mixed" | "undecided";
   };
   attribution?: {
     firstTouch: {

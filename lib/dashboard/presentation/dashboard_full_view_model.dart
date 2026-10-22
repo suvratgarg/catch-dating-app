@@ -15,6 +15,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'dashboard_full_view_model.g.dart';
 
+const dashboardHomeClockTick = swipeWindowClockTick;
+
 @riverpod
 DateTime dashboardNow(Ref ref) => DateTime.now();
 
@@ -58,7 +60,7 @@ class DashboardFullViewModel {
     required this.upcomingEvents,
     required this.nextEvent,
     required this.arrivalAction,
-    required this.activeSwipeEvent,
+    required this.windowedEvents,
     required this.pendingReviewEvent,
     this.clubPostNotifications = const <ActivityNotification>[],
     required this.attendedEventsSection,
@@ -67,10 +69,40 @@ class DashboardFullViewModel {
   final List<Event> upcomingEvents;
   final Event? nextEvent;
   final EventArrivalAction? arrivalAction;
-  final Event? activeSwipeEvent;
+  final List<DashboardCatchWindow> windowedEvents;
   final Event? pendingReviewEvent;
   final List<ActivityNotification> clubPostNotifications;
   final DashboardSectionModel<List<Event>> attendedEventsSection;
+}
+
+/// The Home presentation of an attended event with an open Catch window.
+class DashboardCatchWindow {
+  const DashboardCatchWindow({
+    required this.event,
+    required this.windowClosesAt,
+  });
+
+  final Event event;
+  final DateTime windowClosesAt;
+  int get attendedCount => event.attendedCount;
+}
+
+List<DashboardCatchWindow> dashboardCatchWindowsFromEvents(
+  Iterable<Event> events, {
+  required DateTime now,
+}) {
+  final items =
+      [
+        for (final event in eventsWithOpenSwipeWindow(events, now: now))
+          DashboardCatchWindow(
+            event: event,
+            windowClosesAt: swipeWindowClosesAt(event),
+          ),
+      ]..sort((a, b) {
+        final expiry = a.windowClosesAt.compareTo(b.windowClosesAt);
+        return expiry != 0 ? expiry : a.event.id.compareTo(b.event.id);
+      });
+  return List.unmodifiable(items);
 }
 
 enum DashboardHomeScreenStatus { loading, error, empty, full }
@@ -200,7 +232,7 @@ DashboardHomeLiveState dashboardHomeLiveStateFor(
 
   final viewModel = state.viewModel;
   if (viewModel == null) return DashboardHomeLiveState.idle;
-  if (viewModel.activeSwipeEvent != null) {
+  if (viewModel.windowedEvents.isNotEmpty) {
     return DashboardHomeLiveState.windowOpen;
   }
   if (viewModel.arrivalAction != null ||
@@ -225,7 +257,7 @@ List<String> dashboardHomeModuleImpressionsFor(DashboardHomeScreenState state) {
   if (viewModel == null) return const ['idle_cta'];
 
   final modules = <String>[];
-  if (viewModel.activeSwipeEvent != null) {
+  if (viewModel.windowedEvents.isNotEmpty) {
     modules.add('catch_window');
   }
   if (viewModel.upcomingEvents.isNotEmpty ||
@@ -297,9 +329,9 @@ DashboardFullViewModel buildDashboardFullViewModel({
     ),
     data: DashboardSectionModel<List<Event>>.data,
   );
-  final activeSwipeEvent = attendedEventsSection.data == null
-      ? null
-      : latestEventWithOpenSwipeWindow(
+  final windowedEvents = attendedEventsSection.data == null
+      ? const <DashboardCatchWindow>[]
+      : dashboardCatchWindowsFromEvents(
           attendedEventsSection.data!,
           now: effectiveNow,
         );
@@ -328,7 +360,7 @@ DashboardFullViewModel buildDashboardFullViewModel({
     upcomingEvents: upcomingEvents,
     nextEvent: nextEvent,
     arrivalAction: arrivalAction,
-    activeSwipeEvent: activeSwipeEvent,
+    windowedEvents: windowedEvents,
     pendingReviewEvent: pendingReviewEvent,
     clubPostNotifications: clubPostNotifications,
     attendedEventsSection: attendedEventsSection,

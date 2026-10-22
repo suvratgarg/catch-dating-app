@@ -25,7 +25,6 @@ export 'presentation/filters_screen.dart'; // public-api: route entry point expo
 export 'presentation/swipe_screen.dart'; // public-api: route entry point exposed to app routing
 
 // ── Presentation — view models & controllers ────────────────────────────────
-export 'presentation/catches_hub_screen_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/event_recap_view_model.dart'; // public-api: read-model seam for route composition
 export 'presentation/filters_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/filters_screen_state.dart'; // public-api: provider-free display state reused by tests and routes

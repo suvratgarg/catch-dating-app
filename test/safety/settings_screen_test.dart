@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
+import 'package:catch_dating_app/core/analytics/host_analytics_choice.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
@@ -25,6 +28,56 @@ import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('Host analytics requires a choice and can be withdrawn', (
+    tester,
+  ) async {
+    String? stored;
+    final analytics = AppAnalytics(
+      reporter: const NoOpAnalyticsReporter(),
+      shouldCollect: false,
+      hostRole: true,
+      hostChoiceStore: HostAnalyticsChoiceStore(
+        read: () async => stored,
+        write: (value) async {
+          stored = value;
+          return true;
+        },
+      ),
+    );
+    await analytics.initialize();
+    final container = _settingsContainer(
+      user: buildUser(),
+      blockedUsers: const [],
+      analytics: analytics,
+    );
+    addTearDown(container.dispose);
+    await _pumpSettings(tester, container);
+    final row = find.byKey(const ValueKey('host-analytics-privacy'));
+    if (!AppConfig.appRole.isHost) {
+      expect(row, findsNothing);
+      expect(stored, isNull);
+      return;
+    }
+    await tester.scrollUntilVisible(row, 300);
+    await tester.tap(row);
+    await pumpFeatureUi(tester);
+    expect(stored, isNull);
+    expect(
+      find.textContaining('Names, contact details, guest data'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Allow analytics'));
+    await pumpFeatureUi(tester);
+    expect(analytics.hostAnalyticsChoiceGranted, isTrue);
+    expect(find.text('Allowed on this device'), findsOneWidget);
+    await tester.tap(row);
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Keep analytics off'));
+    await pumpFeatureUi(tester);
+    expect(analytics.hostAnalyticsChoiceGranted, isFalse);
+    expect(stored, contains('"analytics":false'));
+  });
+
   for (final entry in <String, Stream<UserProfile?>>{
     'missing': Stream.value(null),
     'loading': const Stream.empty(),
@@ -496,10 +549,13 @@ ProviderContainer _settingsContainer({
   SafetyRepository? safetyRepository,
   AuthRepository? authRepository,
   ExternalUrlLauncher? externalUrlLauncher,
+  AppAnalytics? analytics,
   Map<String, PublicProfile> publicProfiles = const {},
 }) {
   final container = ProviderContainer(
     overrides: [
+      if (analytics != null)
+        appAnalyticsProvider.overrideWith((ref) => analytics),
       uidProvider.overrideWith((ref) => Stream.value(user.uid)),
       appPackageInfoProvider.overrideWith(
         (ref) async => (version: '1.0.1', buildNumber: '3'),

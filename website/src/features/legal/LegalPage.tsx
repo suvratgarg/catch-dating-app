@@ -1,5 +1,6 @@
 import type {PublishedLegalPage} from "../../content/types";
 import {publishedLegalContent} from "../../content/legal";
+import {fallbackPublicContact, renderContactText, type PublicContact} from "../../content/publicContact";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {
   LegalDocument,
@@ -12,11 +13,12 @@ import {
   PlainLink,
 } from "../../shared/ui/primitives";
 
-export function LegalPage({page, effectiveDate}: {
+export function LegalPage({page, effectiveDate, contact = fallbackPublicContact}: {
   page: PublishedLegalPage;
   effectiveDate: string;
+  contact?: PublicContact;
 }) {
-  const {operator, ui} = publishedLegalContent;
+  const {ui} = publishedLegalContent;
   return (
     <>
       <PublicSiteHeader
@@ -25,7 +27,7 @@ export function LegalPage({page, effectiveDate}: {
           {href: "/organizers/", label: ui.organizersLabel},
           {href: "/host/", label: ui.hostsLabel},
         ]}
-        localActions={[{href: `mailto:${operator.supportEmail}`, label: ui.contactLabel}]}
+        localActions={[{href: `mailto:${contact.supportEmail}`, label: ui.contactLabel}]}
       />
       <WebsitePageMain id="top">
         <LegalDocument>
@@ -40,11 +42,11 @@ export function LegalPage({page, effectiveDate}: {
               <section key={section.heading}>
                 <h2>{section.heading}</h2>
                 {section.paragraphs.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
+                  <p key={paragraph}>{renderContactText(paragraph, contact)}</p>
                 ))}
                 {section.bullets ? (
                   <ul>
-                    {section.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}
+                    {section.bullets.map((bullet) => <li key={bullet}>{renderContactText(bullet, contact)}</li>)}
                   </ul>
                 ) : null}
               </section>
@@ -52,7 +54,7 @@ export function LegalPage({page, effectiveDate}: {
           </LegalDocumentSections>
           <LegalDocumentContact>
             <p>{ui.contactPrompt}</p>
-            <PlainLink href={`mailto:${operator.supportEmail}`}>{operator.supportEmail}</PlainLink>
+            <PlainLink href={`mailto:${contact.supportEmail}`}>{contact.supportEmail}</PlainLink>
           </LegalDocumentContact>
         </LegalDocument>
       </WebsitePageMain>

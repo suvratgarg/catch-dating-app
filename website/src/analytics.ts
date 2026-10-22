@@ -2,6 +2,8 @@ import {acquisitionRoute, approvedCampaignLabels, createCatchMeasurementControll
   type CatchAcquisitionEvent, type AcquisitionForm, type MeasurementConsent} from "./analytics/catchMeasurement.ts";
 import {browserAttribution, catchAttributionKey} from "./analytics/catchMeasurement.ts";
 import {catchMeasurementMode, type CatchMeasurementMode, configuredCatchTransport} from "./analytics/catchLiveTransport.ts";
+import {createHostServerConsent, postHostServerConsent} from "./analytics/hostServerConsent.ts";
+import type {JoinWaitlistHTTPRequest} from "./shared/contracts/generated/joinWaitlistHttpRequest";
 export type {CatchProviderSession, SafeAcquisitionEvent} from "./analytics/catchMeasurement.ts";
 
 type ConsentChoice = "accepted" | "analytics" | "essential";
@@ -10,7 +12,7 @@ type FormVariant = "member" | "host";
 export const marketingContentVersion = "website_copy_v2" as const;
 
 export interface MarketingConsent extends MeasurementConsent {
-  version: 1 | 2 | 3;
+  version: 1 | 2 | 3 | 4;
   measurementMode?: CatchMeasurementMode;
   choice: ConsentChoice;
   analytics: boolean;
@@ -32,6 +34,7 @@ interface StoredAttribution {
 }
 
 export interface WaitlistAnalyticsPayload {
+  hostMeasurement?: JoinWaitlistHTTPRequest["hostMeasurement"];
   attribution: StoredAttribution | null;
   analytics: {
     consent: Omit<MarketingConsent, "version"> | null;
@@ -51,16 +54,34 @@ declare global {
 }
 
 const legacyAttributionStorageKey = "catch_marketing_attribution_v1";
-const attributionStorageKey = "catch_marketing_attribution_v2";
-const attributionMaxAgeMs = 24 * 60 * 60 * 1000;
+const attributionStorageKey = "catch_marketing_attribution_v3";
+const attributionMaxAgeMs = 30 * 24 * 60 * 60 * 1000;
 export const marketingConsentChangedEvent = "catch:marketing-consent-changed";
 const legacyConsentStorageKey = "catch_marketing_consent_v1";
 const previousConsentStorageKey = "catch_marketing_consent_v2";
-const consentStorageKey = "catch_marketing_consent_v3";
+const consentStorageKey = "catch_marketing_consent_v4";
 const measurement = createCatchMeasurementController(configuredCatchTransport);
 let lastPageKey: string | null = null;
 let consentRevisionMs = 0;
 let clientErrorMonitoringInstalled = false;
+let serverConsent: ReturnType<typeof createHostServerConsent> | null = null;
+let attributionContext: ReturnType<typeof browserAttribution> = null;
+
+function serverConsentOwner() {
+  if (!serverConsent) serverConsent = createHostServerConsent({
+    storage: window.localStorage, request: postHostServerConsent, now: Date.now,
+    withLock: run => navigator.locks.request("catch-host-server-consent-v1", run),
+    isCurrentChoice: choice => {
+      const current = getMarketingConsent();
+      return current?.version === choice?.version &&
+        current?.updatedAt === choice?.updatedAt && current?.analytics === choice?.analytics &&
+        current?.marketing === choice?.marketing;
+    },
+    randomCapability: () => Array.from(crypto.getRandomValues(new Uint8Array(32)),
+      byte => byte.toString(16).padStart(2, "0")).join(""),
+  });
+  return serverConsent;
+}
 
 const attributionKeys = [
   "utm_source",
@@ -101,7 +122,7 @@ export function trackClientErrorSignal(errorSource: "window_error" | "unhandled_
 export function getMarketingConsent(): MarketingConsent | null {
   const stored = readJson<MarketingConsent>(consentStorageKey);
   if (stored) {
-    if (stored.version !== 3 || !validConsent(stored)) { clearAttribution(); return null; }
+    if (stored.version !== 4 || !validConsent(stored)) { clearAttribution(); return null; }
     if (stored.measurementMode !== catchMeasurementMode()) {
       clearAttribution();
       return {...stored, version: 2, choice: stored.analytics ? "analytics" : "essential", marketing: false};
@@ -109,11 +130,11 @@ export function getMarketingConsent(): MarketingConsent | null {
     if (!stored.analytics) clearAttribution();
     return stored;
   }
-  const previous = readJson<MarketingConsent>(previousConsentStorageKey);
+  const previous = readJson<MarketingConsent>("catch_marketing_consent_v3") ?? readJson<MarketingConsent>(previousConsentStorageKey);
   if (previous) {
     clearAttribution();
-    if (previous.version !== 2 || !validConsent(previous)) return null;
-    return {...previous, choice: previous.analytics ? "analytics" : "essential", marketing: false};
+    if (![2, 3].includes(previous.version) || !validConsent(previous)) return null;
+    return {...previous, version: 2, choice: previous.analytics ? "analytics" : "essential", marketing: false};
   }
   const legacy = readJson<Omit<MarketingConsent, "version">>(legacyConsentStorageKey);
   if (!legacy || !validConsent(legacy)) { clearAttribution(); return null; }
@@ -131,7 +152,7 @@ function validConsent(stored: Omit<MarketingConsent, "version">) {
 }
 
 export function shouldShowMarketingConsentBanner(consent = getMarketingConsent()) {
-  return consent?.version !== 3;
+  return consent?.version !== 4;
 }
 
 export function setMarketingConsent(choice: ConsentChoice) {
@@ -139,20 +160,20 @@ export function setMarketingConsent(choice: ConsentChoice) {
   // A new revision cancels in-flight conversion permission, including same-ms revoke/accept.
   consentRevisionMs = Math.max(Date.now(), consentRevisionMs + 1);
   const consent: MarketingConsent = {
-    version: 3, choice,
+    version: 4, choice,
     measurementMode: catchMeasurementMode(),
     analytics: choice === "analytics" || choice === "accepted",
     marketing: choice === "accepted",
     updatedAt: new Date(consentRevisionMs).toISOString(),
   };
   writeJson(consentStorageKey, consent);
-  try { window.localStorage.removeItem(legacyConsentStorageKey); window.localStorage.removeItem(previousConsentStorageKey); } catch { /* Optional storage. */ }
+  try { window.localStorage.removeItem(legacyConsentStorageKey); window.localStorage.removeItem(previousConsentStorageKey); window.localStorage.removeItem("catch_marketing_consent_v3"); } catch { /* Optional storage. */ }
   updateConsentMode(consent);
   captureAttribution();
   refreshMeasurementContext();
   // Begin a current-page visit after first permission; never replay earlier pages
   // or produce another view for an analytics-to-marketing upgrade.
-  if (consent.analytics && (previous?.version !== 3 || !previous.analytics)) {
+  if (consent.analytics && (previous?.version !== 4 || !previous.analytics)) {
     measurement.track({name: "page_view", visitId: createMarketingEventId("catch")});
   }
   trackMarketingEvent("consent_updated", {
@@ -181,10 +202,15 @@ function refreshMeasurementContext() {
   try {
     attribution = browserAttribution({enabled: catchMeasurementMode() !== "disabled",
       path: window.location.pathname, search: window.location.search, consent: getMarketingConsent(),
-      storage: window.sessionStorage, now: Date.now(), random: () => crypto.getRandomValues(new Uint32Array(1))[0]});
+      storage: window.localStorage, now: Date.now(), random: () => crypto.getRandomValues(new Uint32Array(1))[0]});
   } catch { /* Storage/crypto restrictions cannot block the application. */ }
   measurement.update({path: window.location.pathname, consent: getMarketingConsent(),
     campaign: readAttribution()?.lastTouch.values, attribution});
+  attributionContext = attribution;
+  try {
+    void serverConsentOwner().sync({enabled: catchMeasurementMode() === "host-server-live-v1",
+      path: window.location.pathname, consent: getMarketingConsent()});
+  } catch { /* Optional permission storage must not block the application. */ }
 }
 
 export function trackCatchAcquisitionEvent(event: CatchAcquisitionEvent) {
@@ -193,10 +219,17 @@ export function trackCatchAcquisitionEvent(event: CatchAcquisitionEvent) {
 }
 
 export function trackAcceptedMarketingLead(eventId: string | undefined,
-  form: Exclude<AcquisitionForm, "claim">, alreadyJoined: boolean, submissionConsent: MarketingConsent | null) {
+  form: Exclude<AcquisitionForm, "claim">, alreadyJoined: boolean, submissionConsent: MarketingConsent | null,
+  hostLead?: {eventId: string; isNew: boolean}) {
+  // Host acquisition is a separate server outcome from an email joining Catch.
+  if (form !== "member_waitlist") {
+    if (!hostLead?.isNew) return false;
+    eventId = hostLead.eventId;
+    alreadyJoined = false;
+  }
   const current = getMarketingConsent();
-  if (!eventId || submissionConsent?.version !== 3 || !submissionConsent.analytics ||
-      current?.version !== 3 || current.updatedAt !== submissionConsent.updatedAt || alreadyJoined) return false;
+  if (!eventId || submissionConsent?.version !== 4 || !submissionConsent.analytics ||
+      current?.version !== 4 || current.updatedAt !== submissionConsent.updatedAt || alreadyJoined) return false;
   return trackCatchAcquisitionEvent({name: "lead_accepted", eventId, form,
     receipt: {ok: true, alreadyJoined: false}});
 }
@@ -250,7 +283,9 @@ export function waitlistAnalyticsPayload(
   eventId: string,
   formVariant: FormVariant
 ): WaitlistAnalyticsPayload {
+  const hostMeasurement = formVariant === "host" ? hostMeasurementPayload() : undefined;
   return {
+    ...(hostMeasurement ? {hostMeasurement} : {}),
     attribution: readAttribution(),
     analytics: {
       consent: submissionWireConsent(),
@@ -261,6 +296,19 @@ export function waitlistAnalyticsPayload(
       submittedAt: new Date().toISOString(),
     },
   };
+}
+
+function hostMeasurementPayload(): JoinWaitlistHTTPRequest["hostMeasurement"] | undefined {
+  if (catchMeasurementMode() !== "host-server-live-v1") return undefined;
+  refreshMeasurementContext();
+  const consent = getMarketingConsent();
+  if (consent?.version !== 4 || !consent.analytics || !consent.marketing || !attributionContext) return undefined;
+  const capability = serverConsent?.snapshot(consent.updatedAt);
+  if (!capability) return undefined;
+  const {clientId, fbclid, fbclidCapturedAt} = attributionContext;
+  return {capability, clientId,
+    ...(fbclid && fbclidCapturedAt && fbclidCapturedAt <= Date.now() ?
+      {fbclid, clickCapturedAt: fbclidCapturedAt} : {})};
 }
 
 function submissionWireConsent(): WaitlistAnalyticsPayload["analytics"]["consent"] {
@@ -288,7 +336,7 @@ function installConsentDefaults() {
 function updateConsentMode(consent: MarketingConsent) {
   // Keep consent compatibility events local; never call an externally supplied gtag.
   gtag("consent", "update", {
-    ad_personalization: consent.marketing ? "granted" : "denied",
+    ad_personalization: "denied",
     ad_storage: consent.marketing ? "granted" : "denied",
     ad_user_data: consent.marketing ? "granted" : "denied",
     analytics_storage: consent.analytics ? "granted" : "denied",
@@ -299,7 +347,7 @@ function installClientErrorMonitoring() {
   if (clientErrorMonitoringInstalled) return;
   clientErrorMonitoringInstalled = true;
   window.addEventListener("storage", (event) => {
-    if (event.key === consentStorageKey || event.key === legacyConsentStorageKey || event.key === previousConsentStorageKey || event.key === null) {
+    if (event.key === consentStorageKey || event.key === legacyConsentStorageKey || event.key === previousConsentStorageKey || event.key === "catch_marketing_consent_v3" || event.key === null) {
       captureAttribution(); refreshMeasurementContext();
       window.dispatchEvent(new Event(marketingConsentChangedEvent));
     }
@@ -313,7 +361,8 @@ function installClientErrorMonitoring() {
 }
 
 function canCaptureAttribution() {
-  return acquisitionRoute(window.location.pathname) !== null && getMarketingConsent()?.analytics === true;
+  const consent = getMarketingConsent();
+  return window.location.pathname !== "/" && acquisitionRoute(window.location.pathname) !== null && consent?.version === 4 && consent.analytics === true;
 }
 
 function clearLegacyAttribution() {
@@ -322,7 +371,12 @@ function clearLegacyAttribution() {
 
 function clearAttribution() {
   clearLegacyAttribution();
-  try { window.sessionStorage?.removeItem(attributionStorageKey); window.sessionStorage?.removeItem(catchAttributionKey); } catch { /* Optional storage. */ }
+  try {
+    window.localStorage.removeItem(attributionStorageKey);
+    window.localStorage.removeItem(catchAttributionKey);
+    window.sessionStorage?.removeItem("catch_marketing_attribution_v2");
+    window.sessionStorage?.removeItem("catch_acquisition_context_v1");
+  } catch { /* Optional storage. */ }
 }
 
 function captureAttribution() {
@@ -332,7 +386,7 @@ function captureAttribution() {
   const stored = readAttribution();
   if (stored && Object.keys(current.values).length === 0) return;
   try {
-    window.sessionStorage.setItem(attributionStorageKey, JSON.stringify({
+    window.localStorage.setItem(attributionStorageKey, JSON.stringify({
       firstTouch: stored?.firstTouch ?? current, lastTouch: current,
     }));
   } catch { /* Attribution must not block a submission. */ }
@@ -342,7 +396,7 @@ function readAttribution(): StoredAttribution | null {
   clearLegacyAttribution();
   if (!canCaptureAttribution()) { clearAttribution(); return null; }
   try {
-    const stored = JSON.parse(window.sessionStorage.getItem(attributionStorageKey) ?? "null") as StoredAttribution | null;
+    const stored = JSON.parse(window.localStorage.getItem(attributionStorageKey) ?? "null") as StoredAttribution | null;
     const firstTouch = safeStoredTouch(stored?.firstTouch);
     const lastTouch = safeStoredTouch(stored?.lastTouch);
     if (!firstTouch || !lastTouch) { clearAttribution(); return null; }

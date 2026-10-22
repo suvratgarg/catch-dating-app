@@ -154,7 +154,7 @@ export function useWaitlistFormController(variant: FormVariant) {
         }
       );
       trackAcceptedMarketingLead(eventId, variant === "host" ? "host_lead" : "member_waitlist",
-        data.alreadyJoined, submissionConsent);
+        data.alreadyJoined, submissionConsent, data.hostLead);
       trackMarketingEvent("generate_lead", {
         city: body.city,
         event_id: eventId,

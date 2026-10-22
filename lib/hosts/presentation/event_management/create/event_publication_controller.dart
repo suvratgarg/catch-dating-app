@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/hosts/data/event_publication_journal.dart';
 import 'package:catch_dating_app/hosts/data/event_publication_repository.dart';
@@ -201,6 +202,9 @@ class EventPublicationController extends _$EventPublicationController {
 
   Future<void> _send(EventPublicationRequest request) async {
     if (!_actorAvailable) return;
+    final reportPublished = ref
+        .read(appAnalyticsProvider)
+        .hostEventCompletion(AnalyticsEvents.hostEventPublished);
     EventPublicationReceipt result;
     try {
       result = await _write(request);
@@ -220,6 +224,9 @@ class EventPublicationController extends _$EventPublicationController {
         result.publicationState != request.publicationState ||
         result.setupRevision != request.expectedSetupRevision + 1) {
       throw const FormatException('Invalid publication receipt');
+    }
+    if (!result.replayed && result.publicationState == 'published') {
+      reportPublished();
     }
     await _journal.clear(userId: _userId, request: request);
     if (!_actorAvailable) return;

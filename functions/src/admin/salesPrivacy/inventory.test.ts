@@ -157,3 +157,17 @@ test("assistant delegation scopes remain unresolved and shared clients are untou
   assert.equal(result.items.some((item) =>
     item.path.startsWith("assistant")), false);
 });
+
+
+test("Host activation cleanup selects only the requested organiser", async () => {
+  const result = await inventorySalesOrganizer(memory([
+    privateRow("hostPilotEventReviews/event-a", {organizerId: "org-a"}),
+    privateRow("hostOrganizerActivations/org-a", {organizerId: "org-a"}),
+    privateRow("hostPilotEventReviews/event-b", {organizerId: "org-b"}),
+    privateRow("hostOrganizerActivations/org-b", {organizerId: "org-b"}),
+  ]), "org-a");
+  assert.deepEqual(result.items.map((item) => [item.path, item.disposition]), [
+    ["hostOrganizerActivations/org-a", "delete"],
+    ["hostPilotEventReviews/event-a", "delete"],
+  ]);
+});

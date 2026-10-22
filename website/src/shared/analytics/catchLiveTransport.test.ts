@@ -1,119 +1,122 @@
 import {readFileSync} from "node:fs";
 import {resolve} from "node:path";
 import {runInNewContext} from "node:vm";
-import {describe, expect, it, vi} from "vitest";
-import {safeAcquisitionEvent} from "../../analytics/catchMeasurement";
+import {afterEach, describe, expect, it, vi} from "vitest";
 import {catchLiveDestinations, catchMeasurementMode, configuredCatchTransport, createCatchLiveGoogleSession} from "../../analytics/catchLiveTransport";
 
 const channel = "00000000-0000-4000-8000-000000000000";
-const lead = safeAcquisitionEvent({name: "lead_accepted", form: "host_application",
-  eventId: `catch_1792486200000_${channel}`, receipt: {ok: true, alreadyJoined: false}},
-{path: "/host/apply/", consent: {version: 3, analytics: true, marketing: true, updatedAt: "2026-10-20T00:00:00Z"}})!;
+const now = 1792572000000;
+const lead = {name: "lead_accepted", consent: {analytics: true, marketing: true},
+  parameters: {page_path: "/host/apply/", audience: "organizer", form: "host_application",
+    event_id: `host_lead_${now}_${channel}`},
+  attribution: {clientId: "12345.1792485600", sessionId: 1792572000}} as const;
+const source = readFileSync(resolve(process.cwd(), "measurement-runtime/catch-acquisition-runtime.js"), "utf8");
+function fixture(origin: string = catchLiveDestinations.runtimeOrigin) {
+  const listeners = new Map<string, (value: any) => void>();
+  const parent = {postMessage: vi.fn()};
+  const appended: any[] = [];
+  const cookies = new Map([["catch_host_ga", "old"], ["catch_host_ga_HZFG0DL2DK", "old"], ["unrelated", "keep"]]);
+  const runtime: Record<string, any> = {location: {origin},
+    addEventListener: (name: string, listener: (value: any) => void) => listeners.set(name, listener)};
+  const document = {createElement: (tag: string) => ({tag}), head: {appendChild: (node: any) => appended.push(node)},
+    get cookie() { return [...cookies].map(([key, value]) => `${key}=${value}`).join("; "); },
+    set cookie(value: string) { const key = value.split("=")[0]; if (value.includes("Max-Age=0")) cookies.delete(key); }};
+  class Clock extends Date { static now() { return now; } }
+  runInNewContext(source, {window: runtime, parent, document, Date: Clock});
+  const dispatch = (data: unknown, messageOrigin: string = catchLiveDestinations.previewOrigin, sender = parent) =>
+    listeners.get("message")?.({data, origin: messageOrigin, source: sender});
+  const init = () => dispatch({type: "catch:acquisition-init", channel,
+    measurementId: catchLiveDestinations.googleMeasurementId});
+  const send = (event: unknown = lead) => dispatch({type: "catch:acquisition-event", channel, event});
+  const rows = () => (runtime.dataLayer ?? []).map((row: ArrayLike<unknown>) => Array.from(row));
+  return {runtime, parent, appended, cookies, dispatch, init, send, rows};
+}
+afterEach(() => { vi.useRealTimers(); document.querySelectorAll("iframe").forEach(frame => frame.remove()); });
 
-describe("Catch controlled Google transport", () => {
-  it("keeps production disabled and does not create frames for either provider", () => {
+describe("Catch isolated Google preview transport", () => {
+  it("keeps production and Meta disabled and requires a fresh preview mode", () => {
     const create = vi.spyOn(document, "createElement");
     expect(catchLiveDestinations.enabled).toBe(false);
     expect(catchMeasurementMode("https://catchdates.com")).toBe("disabled");
-    expect(catchMeasurementMode(catchLiveDestinations.previewOrigin)).toBe("google-preview-v1");
+    expect(catchMeasurementMode(catchLiveDestinations.previewOrigin)).toBe("google-preview-v2");
     expect(catchMeasurementMode("https://unreviewed-preview.example")).toBe("disabled");
     for (const provider of ["google", "meta"] as const) configuredCatchTransport(provider).send(lead);
     expect(create).not.toHaveBeenCalled();
   });
-
-  it("removes the opaque frame and cancels pending events after consent withdrawal", () => {
+  it("cancels an unloaded session without replaying queued events", () => {
     let onload: (() => void) | undefined;
     const postMessage = vi.fn();
     const frame = {contentWindow: {postMessage}, remove: vi.fn(), removeEventListener: vi.fn(),
       addEventListener: vi.fn((_name, handler) => {onload = handler;})};
-    const session = createCatchLiveGoogleSession({create: () => frame as never,
-      mount: vi.fn(), channel: () => channel});
-    session.send(lead);
-    session.destroy();
-    onload!();
-    session.send(lead);
+    const session = createCatchLiveGoogleSession({create: () => frame as never, mount: vi.fn(), channel: () => channel});
+    session.send(lead); session.destroy(); onload!(); session.send(lead);
     expect(postMessage).not.toHaveBeenCalled();
     expect(frame.remove).toHaveBeenCalledOnce();
   });
-
-  it("uses a storage-isolated frame with no parent referrer", () => {
+  it("uses a distinct origin and waits for authenticated shutdown before removal", () => {
+    vi.useFakeTimers();
     const session = createCatchLiveGoogleSession();
     const frame = document.querySelector("iframe")!;
-    expect(frame.getAttribute("sandbox")).toBe("allow-scripts");
+    expect(frame.getAttribute("sandbox")).toBe("allow-scripts allow-same-origin");
     expect(frame.referrerPolicy).toBe("no-referrer");
-    expect(frame.getAttribute("src")).toBe("/catch-acquisition-runtime.html");
+    expect(frame.src).toBe(`${catchLiveDestinations.runtimeOrigin}/catch-acquisition-runtime.html`);
+    frame.dispatchEvent(new Event("load"));
     session.destroy();
-    expect(document.querySelector("iframe")).toBeNull();
+    const ack = {type: "catch:acquisition-stopped", channel: "wrong"};
+    window.dispatchEvent(new MessageEvent("message", {source: frame.contentWindow, origin: catchLiveDestinations.runtimeOrigin, data: ack}));
+    expect(frame.isConnected).toBe(true);
+    vi.advanceTimersByTime(1000);
+    expect(frame.isConnected).toBe(false);
   });
-
-  it("marks the exact preview as internal debug traffic and never sends Ads conversions", () => {
-    const parent = {};
-    let listener: (message: unknown) => void;
-    const runtime: Record<string, any> = {addEventListener: (_: string, fn: typeof listener) => {listener = fn;}};
-    runInNewContext(readFileSync(resolve(process.cwd(), "public/catch-acquisition-runtime.js"), "utf8"), {
-      parent, URLSearchParams, window: runtime,
-      document: {createElement: () => ({}), head: {appendChild() {}}},
-    });
-    const origin = catchLiveDestinations.previewOrigin;
-    listener!({source: parent, origin, data: {type: "catch:acquisition-init", channel,
-      measurementId: catchLiveDestinations.googleMeasurementId, leadDestination: catchLiveDestinations.googleAdsLeadDestination}});
-    listener!({source: parent, origin, data: {type: "catch:acquisition-event", channel, event: lead}});
-    const rows = runtime.dataLayer.map((row: ArrayLike<unknown>) => Array.from(row));
-    expect(rows.filter((r: unknown[]) => r[1] === "conversion")).toHaveLength(0);
-    expect(rows.find((r: unknown[]) => r[1] === "generate_lead")[2]).toMatchObject({debug_mode: true, traffic_type: "internal"});
+  it("rejects a copied runtime, untrusted parent, production parent and wrong channel", () => {
+    const copied = fixture("https://catchdates.com"); copied.init(); copied.send(); expect(copied.appended).toEqual([]);
+    const f = fixture();
+    const init = {type: "catch:acquisition-init", channel, measurementId: catchLiveDestinations.googleMeasurementId};
+    f.dispatch(init, "https://catchdates.com");
+    f.dispatch(init, catchLiveDestinations.previewOrigin, {postMessage: vi.fn()});
+    f.send(); expect(f.appended).toEqual([]);
+    f.init(); f.dispatch({type: "catch:acquisition-event", channel: "wrong", event: lead});
+    expect(f.appended).toEqual([]);
   });
-
-  it("binds messages to the parent/channel, suppresses automatic collection, and separates Ads consent", () => {
-    const parent = {};
-    const loaded: unknown[] = [];
-    let listener: (message: unknown) => void;
-    const runtime: Record<string, any> = {addEventListener: (_: string, fn: typeof listener) => {listener = fn;}};
-    runInNewContext(readFileSync(resolve(process.cwd(), "public/catch-acquisition-runtime.js"), "utf8"), {
-      parent, URLSearchParams, window: runtime, document: {createElement: () => ({}), head: {appendChild: (script: unknown) => loaded.push(script)}},
-    });
-    const init = {type: "catch:acquisition-init", channel,
-      measurementId: catchLiveDestinations.googleMeasurementId,
-      leadDestination: catchLiveDestinations.googleAdsLeadDestination};
-    const dispatch = (data: unknown, source = parent, origin = "https://catchdates.com") =>
-      listener!({data, source, origin});
-    dispatch(init, {});
-    expect(loaded).toHaveLength(0);
-    dispatch(init);
-    expect(loaded).toHaveLength(1);
-    const rows = () => runtime.dataLayer.map((row: ArrayLike<unknown>) => Array.from(row));
-    expect(rows()[0]).toEqual(["consent", "default", {analytics_storage: "denied",
-      ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied"}]);
-    dispatch({type: "catch:acquisition-event", channel: "wrong", event: lead});
-    expect(rows().filter((r: unknown[]) => r[0] === "event")).toHaveLength(0);
-    dispatch({type: "catch:acquisition-event", channel,
-      event: {...lead, consent: {analytics: true, marketing: false},
-        parameters: {...lead.parameters, event_id: `catch_1792486200001_${channel}`}}});
-    expect(rows().filter((r: unknown[]) => r[1] === "conversion")).toHaveLength(0);
-    dispatch({type: "catch:acquisition-event", channel, event: lead});
-    expect(rows().find((r: unknown[]) => r[0] === "config")?.[2]).toMatchObject({send_page_view: false,
-      allow_google_signals: false, page_referrer: "", page_title: "Catch"});
-    const conversions = rows().filter((r: unknown[]) => r[1] === "conversion");
-    expect(conversions).toHaveLength(1);
-    expect(conversions[0][2]).toMatchObject({send_to: catchLiveDestinations.googleAdsLeadDestination,
-      transaction_id: lead.parameters.event_id});
-    dispatch({type: "catch:acquisition-event", channel, event: {...lead,
-      parameters: {...lead.parameters, event_id: `catch_1792486200002_${channel}`,
-        utm_source: "google", utm_medium: "cpc", utm_campaign: "host_acquisition_2026"},
-      attribution: {clientId: "12345.1792486200", sessionId: 1792486200,
-        gclid: "SyntheticClick12345", fbclid: "MetaOnlyClick12345", email: "private@example.test"}}});
-    const attributed = rows().filter((r: unknown[]) => r[1] === "conversion").at(-1)[2];
-    expect(attributed).toMatchObject({client_id: "12345.1792486200", session_id: 1792486200,
-      campaign_source: "google", campaign_medium: "cpc", campaign_name: "host_acquisition_2026",
-      page_location: "https://catchdates.com/host/apply/?gclid=SyntheticClick12345"});
-    expect(JSON.stringify(attributed)).not.toMatch(/MetaOnly|private@example|fbclid|email/u);
-    dispatch({type: "catch:acquisition-event", channel, event: {...lead,
-      name: "cta_click", consent: {analytics: true, marketing: false},
-      attribution: {clientId: "12345.1792486200", sessionId: 1792486200, gclid: "SyntheticClick12345"}}});
-    expect(rows().filter((r: unknown[]) => r[1] === "cta_click").at(-1)[2].page_location)
-      .toBe("https://catchdates.com/host/apply/");
-    const count = rows().length;
-    dispatch({type: "catch:acquisition-event", channel,
-      event: {...lead, parameters: {...lead.parameters, page_path: "/booking/private/"}}});
-    expect(rows()).toHaveLength(count);
+  it("requires current analytics identity and keeps cookies within its original expiry", () => {
+    const f = fixture(); f.init();
+    expect(f.appended).toEqual([]);
+    f.send({...lead, attribution: undefined});
+    f.send({...lead, consent: {analytics: false, marketing: false}});
+    f.send({...lead, attribution: {clientId: "12345.1789979999", sessionId: 1792572000}});
+    f.send({...lead, attribution: {clientId: "12345.1792572001", sessionId: 1792572000}});
+    expect(f.appended).toEqual([]);
+    f.send();
+    expect(f.appended).toHaveLength(1);
+    expect(f.rows().find((r: unknown[]) => r[0] === "config")[2]).toMatchObject({
+      cookie_domain: "none", cookie_prefix: "catch_host", cookie_flags: "SameSite=None;Secure",
+      cookie_expires: 29 * 24 * 60 * 60, cookie_update: false, send_page_view: false,
+      allow_google_signals: false, allow_ad_personalization_signals: false});
+  });
+  it("projects only reviewed fields, deduplicates leads and never sends Ads or click IDs", () => {
+    const f = fixture(); f.init();
+    f.send({...lead, parameters: {...lead.parameters, email: "private@example.test", utm_source: "google"},
+      attribution: {...lead.attribution, gclid: "NotForPreview12345", fbclid: "NotForPreview67890"}});
+    f.send();
+    const rows = f.rows();
+    expect(rows.filter((r: unknown[]) => r[0] === "event")).toHaveLength(1);
+    expect(rows.find((r: unknown[]) => r[0] === "event")[2]).toMatchObject({debug_mode: true,
+      traffic_type: "internal", campaign_source: "google", page_location: "https://catchdates.com/host/apply/"});
+    expect(JSON.stringify(rows)).not.toMatch(/private@example|NotForPreview|AW-/u);
+    expect(rows.filter((r: unknown[]) => r[0] === "consent").every((r: any[]) => r[2].ad_user_data === "denied")).toBe(true);
+    f.send({...lead, name: "page_view", parameters: {...lead.parameters, page_path: "/booking/private/"}});
+    expect(f.rows()).toHaveLength(rows.length);
+  });
+  it("blocks further network, clears owned cookies and acknowledges withdrawal", () => {
+    const f = fixture(); f.init(); f.send();
+    f.cookies.set("catch_host_ga", "new");
+    f.cookies.set("catch_host_ga_HZFG0DL2DK", "new");
+    f.dispatch({type: "catch:acquisition-stop", channel});
+    expect(f.runtime["ga-disable-G-HZFG0DL2DK"]).toBe(true);
+    expect(f.cookies).toEqual(new Map([["unrelated", "keep"]]));
+    expect(f.appended.at(-1)).toMatchObject({httpEquiv: "Content-Security-Policy",
+      content: "default-src 'none'; connect-src 'none'; img-src 'none'; script-src 'none'"});
+    expect(f.parent.postMessage).toHaveBeenCalledWith({type: "catch:acquisition-stopped", channel}, catchLiveDestinations.previewOrigin);
+    const rows = f.rows(); f.send({...lead, name: "page_view"}); expect(f.rows()).toEqual(rows);
   });
 });

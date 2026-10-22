@@ -38,6 +38,12 @@ test("nested umbrella execution is rejected instead of hiding duplicate scanners
   assert.throws(() => designParityCommands(broken), /must be flat/);
 });
 
+test("widget dedupe probes resolve their standalone Dart package", () => {
+  const source = fs.readFileSync(new URL("./check_widget_dedupe_probes.mjs", import.meta.url), "utf8");
+  assert.match(source,
+    /"run",\s*"--packages=tool\/widget_dedupe\/\.dart_tool\/package_config\.json",\s*"tool\/widget_dedupe\/bin\/extract_fingerprints\.dart"/u);
+});
+
 test("advisory all-pairs generation and handoff snapshots are absent from ordinary parity execution", () => {
   for (const path of ["build_widget_similarity.mjs", "import_figma_library_snapshot.mjs",
     "build_design_sync_manifest.mjs", "build_context_pack.mjs"]) {

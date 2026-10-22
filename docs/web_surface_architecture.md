@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.33.0
+version: 0.33.1
 updated: 2026-10-20
 owner: web_platform
 status: active
@@ -162,6 +162,47 @@ the expected runtime service, region and pinned tag. Preview runs must pass the
 deployed public-route smoke check. Promotion records the production candidate
 version before smoke checks and rechecks it immediately before cloning that
 exact version; an absent, changed or unrelated release fails closed.
+
+### Public contact configuration
+
+The Next server reads only `config/publicContact` for `/help/`, `/privacy/`, and
+`/terms/`. The exact document shape is `{schemaVersion: 1, revision: positive
+integer, supportEmail: lowercase email}` with no additional fields. The server
+projects only `supportEmail` into rendered public pages, replacing the canonical
+address in source-controlled legal prose and using the same value for both
+mailto links. Legal wording, operator name, postal address and policy dates
+remain in source control. Other public routes make no contact-config read. The
+legacy Vite artifact uses the source-controlled Gmail fallback.
+
+The existing `github-actions-web-reader` runtime identity is checked by the
+website preview workflow for its sole `roles/datastore.viewer` project role and
+no user-managed keys. Client Firestore rules deny reads and writes for this
+document through `match /config/{docId}`; only `config/cities` is client-readable.
+The server uses application default credentials with that identity and never
+ships them to the browser. Firestore operator writes require separate IAM write
+authority. Do not grant the website identity a writer role or add a client rule.
+
+The route is forced dynamic. Each request makes one bounded Firestore document
+read, shared only within that React render; no process-wide last-good cache is
+kept. A new valid revision appears on the next server request without a rebuild.
+Missing, malformed, timed-out or unavailable config renders the source-controlled
+`suvrat.garg@gmail.com` fallback on the same request. It does not expose raw
+document fields or a private error. Updating this document does not release a
+new policy text or a backend deployment.
+
+Use `node --experimental-strip-types website/scripts/next/publicContactOperator.mjs
+--env dev --email suvrat.garg@gmail.com --expect-revision absent` to inspect the
+DEV plan, then rerun with `--apply` using an authorized Firestore writer after
+DEV tests. The command reads and writes only that one document; it uses a
+transaction and refuses a changed revision or malformed existing document.
+Record the previous revision/email from the dry-run output. After exact source
+CI, accepted website release and a separate production plan, use `--env prod`
+with `--allow-prod` for the intended production write. To roll back a contact
+change, dry-run and apply the previous address with `--expect-revision` set to
+the current revision; rollback creates the next revision, preserving a monotonic
+sequence. Keep the prior output with the release receipt and verify visible
+text and both mailto links on all three routes after either operation. Never
+edit another config document or rely on a stale revision.
 
 ## Form embeds and proposed custom-host activation
 

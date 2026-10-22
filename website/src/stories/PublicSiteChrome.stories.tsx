@@ -58,7 +58,7 @@ function contrastRatio(element: HTMLElement, foreground = getComputedStyle(eleme
 async function exerciseHeaderContrast({canvasElement}: {canvasElement: HTMLElement}) {
   const trigger = canvasElement.querySelector<HTMLButtonElement>(".site-menu-button")!;
   const dialog = canvasElement.querySelector<HTMLElement>(".site-menu")!;
-  const consent = localStorage.getItem("catch_marketing_consent_v3");
+  const consent = localStorage.getItem("catch_marketing_consent_v4");
   const overflow = document.body.style.overflow;
   const scroll = {left: window.scrollX, top: window.scrollY};
   for (const exit of ["Escape", "Close", "Escape"]) {
@@ -102,7 +102,7 @@ async function exerciseHeaderContrast({canvasElement}: {canvasElement: HTMLEleme
     await expect(dialog).toHaveAttribute("inert");
     await expect(document.body.style.overflow).toBe(overflow);
     if (getComputedStyle(trigger).display !== "none") await expect(trigger).toHaveFocus();
-    await expect(localStorage.getItem("catch_marketing_consent_v3")).toBe(consent);
+    await expect(localStorage.getItem("catch_marketing_consent_v4")).toBe(consent);
   }
   trigger.blur();
   window.scrollTo({...scroll, behavior: "instant"});

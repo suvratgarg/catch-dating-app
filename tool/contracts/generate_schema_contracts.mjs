@@ -305,6 +305,11 @@ const schemaSpecs = [
   {name: "SalesDemoSetupCallableResponse", source: "callable_responses/sales_demo_setup_response.schema.json", typeOutput: "functions/src/shared/generated/salesDemoSetupCallableResponse.ts"},
   {"name": "SalesDemoSessionsDocument", "source": "firestore/sales_demo_sessions.schema.json", "typeOutput": "functions/src/shared/generated/salesDemoSessionsDocument.ts"},
   {"name": "SalesEvidenceProposalsDocument", "source": "firestore/sales_evidence_proposals.schema.json", "typeOutput": "functions/src/shared/generated/salesEvidenceProposalsDocument.ts"},
+  {"name": "HostAcquisitionConsentDocument", "source": "firestore/host_acquisition_consents.schema.json", "typeOutput": "functions/src/shared/generated/hostAcquisitionConsentDocument.ts"},
+  {"name": "HostPilotEventReviewDocument", "source": "firestore/host_pilot_event_reviews.schema.json", "typeOutput": "functions/src/shared/generated/hostPilotEventReviewDocument.ts"},
+  {"name": "HostOrganizerActivationDocument", "source": "firestore/host_organizer_activations.schema.json", "typeOutput": "functions/src/shared/generated/hostOrganizerActivationDocument.ts"},
+  {"name": "HostOperatorAlertDocument", "source": "firestore/host_operator_alerts.schema.json", "typeOutput": "functions/src/shared/generated/hostOperatorAlertDocument.ts"},
+  {"name": "HostAcquisitionDeliveryDocument", "source": "firestore/host_acquisition_deliveries.schema.json", "typeOutput": "functions/src/shared/generated/hostAcquisitionDeliveryDocument.ts"},
   {"name": "SalesInboundIntentsDocument", "source": "firestore/sales_inbound_intents.schema.json", "typeOutput": "functions/src/shared/generated/salesInboundIntentsDocument.ts"},
   {"name": "SalesIntelligenceAssessmentDocument", "source": "firestore/sales_intelligence_assessments.schema.json", "typeOutput": "functions/src/shared/generated/salesIntelligenceAssessmentsDocument.ts"},
   {"name": "SalesIntelligenceClauseDocument", "source": "firestore/sales_intelligence_clauses.schema.json", "typeOutput": "functions/src/shared/generated/salesIntelligenceClausesDocument.ts"},
@@ -6341,6 +6346,24 @@ const schemaSpecs = [
     additionalTypeOutputs: [
       "admin/src/generated/contracts/" +
       "adminSetCrossPathsShowcaseEligibilityCallableResponse.ts",
+    ],
+  },
+  {
+    name: "HostAcquisitionConsentHTTPRequest",
+    source: "http/host_acquisition_consent_request.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/hostAcquisitionConsentHttpRequest.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/hostAcquisitionConsentHttpRequest.ts",
+    ],
+  },
+  {
+    name: "HostAcquisitionConsentHTTPResponse",
+    source: "http/host_acquisition_consent_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/hostAcquisitionConsentHttpResponse.ts",
+    additionalTypeOutputs: [
+      "website/src/shared/contracts/generated/hostAcquisitionConsentHttpResponse.ts",
     ],
   },
   {

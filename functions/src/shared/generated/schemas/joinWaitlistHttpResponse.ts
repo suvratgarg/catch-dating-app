@@ -21,6 +21,23 @@ export const joinWaitlistHTTPResponseSchema: Record<string, unknown> = {
         },
         "alreadyJoined": {
           "type": "boolean"
+        },
+        "hostLead": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "isNew"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "pattern": "^host_lead_[0-9]{13}_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
+            },
+            "isNew": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },

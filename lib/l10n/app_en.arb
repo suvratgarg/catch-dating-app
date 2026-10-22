@@ -1,4 +1,16 @@
 {
+  "hostAnalyticsPrivacyTitle": "Host app analytics",
+  "@hostAnalyticsPrivacyTitle": {"description": "Host device analytics privacy setting.", "x-audience": "host", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
+  "hostAnalyticsPrivacyBody": "Help improve Catch Host by sharing sign-in, onboarding and event setup activity with Google Analytics using a random app identifier. Names, contact details, guest data and event details are excluded. This choice applies to this device for 30 days. Advertising measurement stays off. You can turn analytics off here at any time.",
+  "@hostAnalyticsPrivacyBody": {"description": "Explicit Host product analytics disclosure before consent.", "x-audience": "host", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
+  "hostAnalyticsPrivacyDeny": "Keep analytics off",
+  "@hostAnalyticsPrivacyDeny": {"description": "Decline or withdraw Host analytics permission.", "x-audience": "host", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
+  "hostAnalyticsPrivacyAllow": "Allow analytics",
+  "@hostAnalyticsPrivacyAllow": {"description": "Grant optional Host analytics permission.", "x-audience": "host", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
+  "hostAnalyticsPrivacyOn": "Allowed on this device",
+  "@hostAnalyticsPrivacyOn": {"description": "Current device has granted Host analytics permission.", "x-audience": "host", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
+  "hostAnalyticsPrivacyOff": "Off",
+  "@hostAnalyticsPrivacyOff": {"description": "Host analytics permission is absent or withdrawn.", "x-audience": "host", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
   "eventsEventViewerCheckingBooking": "Checking booking availability…",
   "@eventsEventViewerCheckingBooking": {"description": "Current event viewer booking facts status.", "x-audience": "consumer", "x-owner": "product", "x-surface": "events.presentation.widgets.event_detail_cta"},
   "eventsEventViewerRetryBooking": "Retry booking availability",
@@ -1926,14 +1938,7 @@
   },
   "dashboardEventFocusRailTextEventFocus": "Event Focus",
   "@dashboardEventFocusRailTextEventFocus": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (Text).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "dashboard.presentation.widgets.event_focus_rail"
-  },
-  "dashboardEventFocusRailLabelEventFocusCarousel": "Event focus carousel",
-  "@dashboardEventFocusRailLabelEventFocusCarousel": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_rail"
@@ -6829,8 +6834,32 @@
     "x-surface": "dashboard.presentation.widgets.dashboard_empty"
   },
   "dashboardEventFocusRailLabelReviewPending": "Review pending",
+  "dashboardEventFocusListLabelTimeLeft": "{timeLeft} left",
+  "@dashboardEventFocusListLabelTimeLeft": {
+    "description": "Live time remaining on an open Catch window card on Home.",
+    "placeholders": {"timeLeft": {"type": "String"}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "dashboard.presentation.widgets.event_focus_list"
+  },
+  "dashboardEventFocusListLabelStaticTimeLeft": "{hours}h left",
+  "@dashboardEventFocusListLabelStaticTimeLeft": {
+    "description": "Static, rounded-up countdown when animations are disabled.",
+    "placeholders": {"hours": {"type": "int"}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "dashboard.presentation.widgets.event_focus_list"
+  },
+  "dashboardEventFocusListLabelAttendeesCheckedIn": "{attendedCount} checked in",
+  "@dashboardEventFocusListLabelAttendeesCheckedIn": {
+    "description": "Attendee count on an open Catch window card; this is not a remaining candidate count.",
+    "placeholders": {"attendedCount": {"type": "int"}},
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "dashboard.presentation.widgets.event_focus_list"
+  },
   "@dashboardEventFocusRailLabelReviewPending": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_rail"
@@ -7597,30 +7626,9 @@
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.activity_section"
   },
-  "dashboardEventFocusRailSemanticlabelEventValue1OfLength": "Event {value1} of {length}",
-  "@dashboardEventFocusRailSemanticlabelEventValue1OfLength": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (semanticLabel).",
-    "placeholders": {
-      "value1": {},
-      "length": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "dashboard.presentation.widgets.event_focus_rail"
-  },
-  "dashboardEventFocusRailLabelCatchSwipecountdown": "Catch · {swipeCountdown}",
-  "@dashboardEventFocusRailLabelCatchSwipecountdown": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).",
-    "placeholders": {
-      "swipeCountdown": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "dashboard.presentation.widgets.event_focus_rail"
-  },
   "dashboardEventFocusRailLabelSignedupcountCapacitylimit": "{signedUpCount}/{capacityLimit}",
   "@dashboardEventFocusRailLabelSignedupcountCapacitylimit": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).",
     "placeholders": {
       "signedUpCount": {},
       "capacityLimit": {}
@@ -12328,7 +12336,7 @@
   },
   "dashboardEventFocusRailLabelShortweekdayDayShortmonthTimerangelabel": "{shortWeekday}, {day} {shortMonth} · {timeRangeLabel}",
   "@dashboardEventFocusRailLabelShortweekdayDayShortmonthTimerangelabel": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).",
     "placeholders": {
       "shortWeekday": {},
       "day": {},
@@ -14073,37 +14081,15 @@
   },
   "dashboardEventFocusRailVisiblecopy1Event": "1 event",
   "@dashboardEventFocusRailVisiblecopy1Event": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (visibleCopy).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_rail"
   },
   "dashboardEventFocusRailVisiblecopyLengthEvents": "{length} events",
   "@dashboardEventFocusRailVisiblecopyLengthEvents": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (visibleCopy).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (visibleCopy).",
     "placeholders": {
-      "length": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "dashboard.presentation.widgets.event_focus_rail"
-  },
-  "dashboardEventFocusRailVisiblecopyEventValue1OfLength": "Event {value1} of {length}",
-  "@dashboardEventFocusRailVisiblecopyEventValue1OfLength": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (visibleCopy).",
-    "placeholders": {
-      "value1": {},
-      "length": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "dashboard.presentation.widgets.event_focus_rail"
-  },
-  "dashboardEventFocusRailVisiblecopyEventSelectedindexOfLength": "Event {selectedIndex} of {length}",
-  "@dashboardEventFocusRailVisiblecopyEventSelectedindexOfLength": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (visibleCopy).",
-    "placeholders": {
-      "selectedIndex": {},
       "length": {}
     },
     "x-audience": "consumer",
@@ -14112,7 +14098,7 @@
   },
   "dashboardEventFocusRailVisiblecopyValue1Cardcount": "{value1}/{cardCount}",
   "@dashboardEventFocusRailVisiblecopyValue1Cardcount": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (visibleCopy).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (visibleCopy).",
     "placeholders": {
       "value1": {},
       "cardCount": {}
@@ -14955,63 +14941,63 @@
   },
   "dashboardEventFocusRailLabelViewEvent": "View event",
   "@dashboardEventFocusRailLabelViewEvent": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_rail"
   },
   "dashboardEventFocusRailLabelCheckIn": "Check in",
   "@dashboardEventFocusRailLabelCheckIn": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_rail"
   },
   "dashboardEventFocusRailLabelDirections": "Directions",
   "@dashboardEventFocusRailLabelDirections": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_rail"
   },
   "dashboardEventFocusRailLabelAddToCalendar": "Add to calendar",
   "@dashboardEventFocusRailLabelAddToCalendar": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_rail"
   },
   "dashboardEventFocusRailLabelStartCatching": "Start catching",
   "@dashboardEventFocusRailLabelStartCatching": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_rail"
   },
   "dashboardEventFocusRailLabelWriteReview": "Write review",
   "@dashboardEventFocusRailLabelWriteReview": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_rail"
   },
   "dashboardEventFocusRailBadgelabelCheckInOpen": "Check-in open",
   "@dashboardEventFocusRailBadgelabelCheckInOpen": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (badgeLabel).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (badgeLabel).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_rail"
   },
   "dashboardEventFocusRailBadgelabelAfterTheEvent": "After the event",
   "@dashboardEventFocusRailBadgelabelAfterTheEvent": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (badgeLabel).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (badgeLabel).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_rail"
   },
   "dashboardEventFocusRailBadgelabelNextEvent": "Next event",
   "@dashboardEventFocusRailBadgelabelNextEvent": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (badgeLabel).",
+    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (badgeLabel).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_rail"
