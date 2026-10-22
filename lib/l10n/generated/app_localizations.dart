@@ -19693,18 +19693,6 @@ abstract class AppLocalizations {
   /// **'Connect your own Meta WhatsApp Business account. Catch never sends from a shared number, and only people with explicit organizer-specific opt-in are eligible.'**
   String get hostsHostAudienceWhatsappOwnedSender;
 
-  /// Missing platform-level Meta setup title.
-  ///
-  /// In en, this message translates to:
-  /// **'WhatsApp setup is not enabled in this environment'**
-  String get hostsHostAudienceProviderUnavailable;
-
-  /// Missing platform-level Meta setup body.
-  ///
-  /// In en, this message translates to:
-  /// **'An administrator must configure the Catch Meta app and Embedded Signup configuration before organizers can connect their own senders.'**
-  String get hostsHostAudienceProviderUnavailableBody;
-
   /// Open Meta Embedded Signup CTA.
   ///
   /// In en, this message translates to:
@@ -20068,18 +20056,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last seen {date}'**
   String hostsHostAudienceLastSeen({required String date});
-
-  /// Confirms the native-to-web WhatsApp Embedded Signup handoff.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue WhatsApp setup in the Host web app.'**
-  String get hostsHostAudienceWebSignupOpened;
-
-  /// Failure shown when native cannot open the Host web WhatsApp setup route.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not open WhatsApp setup in the Host web app.'**
-  String get hostsHostAudienceWebSignupOpenFailed;
 
   /// Campaign provider blocker.
   ///

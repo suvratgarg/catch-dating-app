@@ -12579,14 +12579,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Connect your own Meta WhatsApp Business account. Catch never sends from a shared number, and only people with explicit organizer-specific opt-in are eligible.';
 
   @override
-  String get hostsHostAudienceProviderUnavailable =>
-      'WhatsApp setup is not enabled in this environment';
-
-  @override
-  String get hostsHostAudienceProviderUnavailableBody =>
-      'An administrator must configure the Catch Meta app and Embedded Signup configuration before organizers can connect their own senders.';
-
-  @override
   String get hostsHostAudienceConnectWhatsapp => 'Connect WhatsApp Business';
 
   @override
@@ -12817,14 +12809,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostsHostAudienceLastSeen({required String date}) {
     return 'Last seen $date';
   }
-
-  @override
-  String get hostsHostAudienceWebSignupOpened =>
-      'Continue WhatsApp setup in the Host web app.';
-
-  @override
-  String get hostsHostAudienceWebSignupOpenFailed =>
-      'Could not open WhatsApp setup in the Host web app.';
 
   @override
   String get hostsHostAudienceBlockerProvider =>
