@@ -120,8 +120,7 @@ test("repeated invitation links for one offer keep a recoverable entry",
     h.store.put("organizerEventOfferRecipients/" + "f".repeat(64),
       {...original, issuedAtMillis: now - 1});
     const result = await read({db: h.store.db(), uid, phoneE164: phone,
-      eventId, nowMillis: now + 20, loadCurrentAuthUser: h.auth,
-      offersEnabled: async () => true});
+      eventId, nowMillis: now + 20, loadCurrentAuthUser: h.auth});
     assert.equal(result?.guest.action, "offer");
     assert.equal(result?.guest.offerGrantId, offered.invitation.grantId);
   });

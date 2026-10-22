@@ -40,10 +40,6 @@ export interface ProgressiveSetupResult {
 
 export interface ProgressiveSetupDependencies {
   db: FirebaseFirestore.Firestore;
-  /** Trusted deployment gate; it is never read from a client command. */
-  privacyMigrationReady: () => boolean;
-  /** Server-owned deployment assertion; never accepted from a request. */
-  freshEventSeatWritersReady?: () => boolean;
   timestampFromMillis: (millis: number) => FirebaseFirestore.Timestamp;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   /** Integration must fence roster, offer and payment commitments in tx. */
@@ -65,7 +61,6 @@ export async function createPrivateEventSetup(params: {
   if (!validateCreatePrivateEventSetupCallablePayload(command)) {
     throw new HttpsError("invalid-argument", "Invalid event setup request.");
   }
-  assertPrivacyReady(deps);
   assertCommandIds(actorUid, command.organizerId, command.requestId);
   const db = deps.db;
   const receiptRef = receiptFor(db, actorUid, command.organizerId,
@@ -154,7 +149,6 @@ export async function updatePrivateEventBasics(params: {
   if (!validateUpdatePrivateEventBasicsCallablePayload(command)) {
     throw new HttpsError("invalid-argument", "Invalid event basics request.");
   }
-  assertPrivacyReady(deps);
   assertCommandIds(actorUid, command.organizerId, command.requestId);
   if (!/^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/.test(command.eventId) ||
       !Number.isSafeInteger(command.expectedSetupRevision) ||
@@ -263,13 +257,6 @@ export async function updatePrivateEventBasics(params: {
     return {eventId: command.eventId,
       setupRevision: revision + 1, replayed: false};
   });
-}
-
-export function assertPrivacyReady(deps: ProgressiveSetupDependencies): void {
-  if (!deps.privacyMigrationReady()) {
-    throw new HttpsError("failed-precondition",
-      "Private event privacy migration is not ready.");
-  }
 }
 
 function assertCommandIds(

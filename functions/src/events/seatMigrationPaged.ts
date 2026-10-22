@@ -50,8 +50,6 @@ export interface PagedSeatBootstrapDeps {
   db: FirebaseFirestore.Firestore;
   auth: {getUser: (uid: string) => Promise<{uid: string;
     phoneNumber?: string | null}>};
-  /** Deployment assertion: each seat writer reads this fence in its TX. */
-  allWritersIntegrated?: () => boolean;
   /** Host entry points must recheck current manager/deletion authority inside
    * every page transaction. Internal reviewed migrations may omit this hook.
    */
@@ -272,9 +270,6 @@ async function initialize(command: PagedSeatBootstrapCommand,
     if (base.ledger || base.fence) {
       unavailable("Existing seat authority needs manual reconciliation.");
     }
-    if (deps.allWritersIntegrated?.() !== true) {
-      unavailable("Seat writers are not integrated.");
-    }
     if (base.policy.status !== "active") {
       unavailable("Event capacity is unavailable.");
     }
@@ -314,8 +309,7 @@ async function scanPage(command: PagedSeatBootstrapCommand,
     assertFence(base.fence, run);
     assertLedger(base.ledger, run);
     if (base.policy.status !== "active" ||
-        base.policy.policyHash !== run.policyHash ||
-        deps.allWritersIntegrated?.() !== true) {
+        base.policy.policyHash !== run.policyHash) {
       unavailable("Seat sources changed during migration.");
     }
     if (run.phase !== "scan") return false;
@@ -580,8 +574,7 @@ async function freezePlan(command: PagedSeatBootstrapCommand,
     assertFence(base.fence, run);
     assertLedger(base.ledger, run);
     if (run.phase !== "plan" || base.policy.status !== "active" ||
-        base.policy.policyHash !== run.policyHash ||
-        deps.allWritersIntegrated?.() !== true) {
+        base.policy.policyHash !== run.policyHash) {
       unavailable("Seat migration source is not ready for planning.");
     }
     const computed = await readPlan({command, deps, tx, base, run});
@@ -611,8 +604,7 @@ async function applyPage(command: PagedSeatBootstrapCommand,
     assertFence(base.fence, run);
     assertLedger(base.ledger, run);
     if (base.policy.status !== "active" ||
-        base.policy.policyHash !== run.policyHash ||
-        deps.allWritersIntegrated?.() !== true) {
+        base.policy.policyHash !== run.policyHash) {
       unavailable("Seat sources changed during migration.");
     }
     if (run.phase !== "apply") unavailable("Source scan is incomplete.");
@@ -756,8 +748,7 @@ function validateBootstrap(command: PagedSeatBootstrapCommand,
       (command.reviewedRequestHash !== undefined &&
         (!/^[a-f0-9]{64}$/.test(command.reviewedRequestHash) ||
           deps.prepareReviewedEvent === undefined ||
-          deps.authorizeTransaction === undefined)) ||
-      deps.allWritersIntegrated?.() !== true) {
+          deps.authorizeTransaction === undefined))) {
     unavailable("Seat bootstrap is unavailable.");
   }
 }

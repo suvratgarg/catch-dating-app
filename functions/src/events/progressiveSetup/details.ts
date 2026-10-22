@@ -21,7 +21,7 @@ import {eventSetupDefaultsDependencies} from
 import {assertPrivateEventBasicsEditable} from "./commitments";
 import {eventListingTermsPatch, preparePrivateListingTerms} from
   "./listingTerms";
-import {assertPrivacyReady, authorizeSetupManager, hashRequest, receiptFor,
+import {authorizeSetupManager, hashRequest, receiptFor,
   requireRevision, ProgressiveSetupDependencies,
   ProgressiveSetupResult} from "./service";
 
@@ -67,7 +67,6 @@ export async function updatePrivateEventDetails(params: {
   if (!validateUpdatePrivateEventDetailsCallablePayload(command)) {
     throw new HttpsError("invalid-argument", "Invalid event details.");
   }
-  assertPrivacyReady(deps);
   const {db} = deps;
   const eventRef = db.collection("events").doc(command.eventId);
   const receiptRef = receiptFor(db, actorUid, command.organizerId,
@@ -273,8 +272,7 @@ export async function updatePrivateEventDetails(params: {
     }
     const ledger = terms ? await preparePrivateListingTerms({db, tx,
       eventId: command.eventId, before: event as unknown as EventDocument,
-      after: next as unknown as EventDocument,
-      allWritersIntegrated: deps.freshEventSeatWritersReady}) : null;
+      after: next as unknown as EventDocument}) : null;
     if (ledger?.ledger) {
       tx.set(db.collection("eventSeatLedgers").doc(command.eventId),
         ledger.ledger);

@@ -9,8 +9,6 @@ import {assertProgramGuestDirectoryCurrent, requireProgramAccess,
   "../shared/programAuthority";
 import {validateCallableWithAjv} from "../shared/validation";
 import {hashRequest} from "../shared/programOperationHash";
-import {readWeddingPhoneImportReady} from
-  "../shared/privateEventReleaseConfig";
 import type {ImportProgramManifestCallablePayload} from
   "../shared/generated/importProgramManifestCallablePayload";
 import type {ProgramManifestImportCallableResponse} from
@@ -279,14 +277,9 @@ export const importProgramManifest = onCall(
  * manifest-import callable retains its existing authorized workflows. */
 export async function importWeddingPhoneContactsHandler(
   request: CallableRequest<unknown>,
-  deps: ImportDeps = defaultDeps,
-  readReady: () => Promise<boolean> = readWeddingPhoneImportReady
+  deps: ImportDeps = defaultDeps
 ): Promise<ProgramManifestImportCallableResponse> {
   requireAuth(request);
-  if (!await readReady()) {
-    throw new HttpsError("failed-precondition",
-      "Wedding phone import is not available.");
-  }
   return importProgramManifestHandler(request, deps, true);
 }
 

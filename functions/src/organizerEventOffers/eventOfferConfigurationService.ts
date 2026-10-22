@@ -30,8 +30,6 @@ export type ConfigureEventOfferPreferencesCommand =
 export interface EventOfferConfigurationDependencies {
   db: FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  /** A trusted deployment dependency, never a client-supplied switch. */
-  configurationReady?: () => boolean;
 }
 
 export interface EventOfferConfigurationResult {
@@ -73,10 +71,6 @@ export async function configureEventOfferPreferences(params:
     throw new HttpsError("unauthenticated", "Sign in first.");
   }
   validateCommand(command);
-  if (deps.configurationReady?.() !== true) {
-    throw new HttpsError("failed-precondition",
-      "Event offer configuration is not ready.");
-  }
   if (command.expectedActorUid && command.expectedActorUid !== actorUid) {
     throw new HttpsError("permission-denied", "The signed-in account changed.");
   }
