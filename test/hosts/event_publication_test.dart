@@ -1,11 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/hosts/data/event_publication_journal.dart';
 import 'package:catch_dating_app/hosts/data/event_publication_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'event_controller_test_support.dart';
 
 PrivateEventBasicSummary publicationEvent({
@@ -35,6 +40,55 @@ PrivateEventBasicSummary publicationEvent({
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  test(
+    'publication diagnostics require a new validated success receipt',
+    () async {
+      for (final outcome in ['new', 'replay', 'wrong-identity', 'failure']) {
+        SharedPreferences.setMockInitialValues({});
+        final analytics = _PublicationAnalytics();
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('host1')),
+            appAnalyticsProvider.overrideWith((ref) => analytics),
+            eventPublicationDependenciesProvider.overrideWithValue(
+              EventPublicationDependencies(
+                read: ({required organizerId, required eventId}) async =>
+                    publicationEvent(),
+                currentUserId: () => 'host1',
+                write: (_) async {
+                  if (outcome == 'failure') throw StateError('unavailable');
+                  return EventPublicationReceipt(
+                    eventId: outcome == 'wrong-identity' ? 'foreign' : 'event1',
+                    setupRevision: 3,
+                    publicationState: 'published',
+                    replayed: outcome == 'replay',
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+        const scope = (userId: 'host1', organizerId: 'org1', eventId: 'event1');
+        final subscription = container.listen(
+          eventPublicationControllerProvider(scope),
+          (_, _) {},
+        );
+        final controller = container.read(
+          eventPublicationControllerProvider(scope).notifier,
+        );
+        await controller.load();
+        await controller.changeTo('published');
+        expect(
+          analytics.events,
+          outcome == 'new' ? ['host_event_published'] : [],
+          reason: outcome,
+        );
+        subscription.close();
+        container.dispose();
+      }
+    },
+  );
 
   test(
     'lost response replays exact intent and rereads current visibility',
@@ -246,4 +300,13 @@ void main() {
       throwsFormatException,
     );
   });
+}
+
+final class _PublicationAnalytics extends AppAnalytics {
+  _PublicationAnalytics()
+    : super(reporter: const NoOpAnalyticsReporter(), shouldCollect: false);
+  final events = <String>[];
+  @override
+  void Function() hostEventCompletion(String name) =>
+      () => events.add(name);
 }

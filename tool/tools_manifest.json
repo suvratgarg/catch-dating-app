@@ -615,6 +615,80 @@
       }
     },
     {
+      "id": "ci:host-acquisition-release",
+      "category": "ci",
+      "path": "tool/ci/host_acquisition_release.mjs",
+      "command": "node --test tool/ci/host_acquisition_release.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/host_acquisition_release.test.mjs",
+        ".github/workflows/host-acquisition-release.yml",
+        ".github/workflows/_host-acquisition-promote.yml",
+        "tool/ci/delivery_core.mjs",
+        "tool/ci/firebase_functions_checkpoint.mjs",
+        "tool/firebase/prepare_functions_params_for_deploy.mjs",
+        "tool/firebase/wait_firestore_indexes_ready.mjs",
+        "tool/harness/lib/workflow_steps.mjs"
+      ],
+      "description": "Verifies the fixed Host acquisition intake release, immutable CI package, exact DEV receipt, human PROD approval, and preservation of retained runtime, provider configuration and unrelated indexes.",
+      "checks": [
+        "node --check tool/ci/host_acquisition_release.mjs",
+        "node --test tool/ci/host_acquisition_release.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/host_acquisition_release.test.mjs",
+        "contains": [
+          "Host acquisition artifact metadata rejects wrong producer, source, archive and expired evidence",
+          "Host acquisition completion and DEV admission reject cross-environment or partial deployment evidence",
+          "Host acquisition caller scope predicate rejects mixed profiles and missing DEV evidence"
+        ]
+      }
+    },
+    {
+      "id": "ci:host-measurement-preview",
+      "category": "ci",
+      "path": "tool/ci/host_measurement_preview.mjs",
+      "command": "node --test tool/ci/host_measurement_preview.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/ci/host_measurement_preview.test.mjs",
+        ".github/workflows/host-measurement-preview.yml",
+        "website/measurement-hosting.json",
+        "website/measurement-runtime/**"
+      ],
+      "description": "Verifies the fixed preview-only measurement runtime, accepted main CI, exact static bytes and serving privacy headers; production tracking remains disabled.",
+      "checks": [
+        "node --check tool/ci/host_measurement_preview.mjs",
+        "node --test tool/ci/host_measurement_preview.test.mjs website/scripts/next/measurementRuntime.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/ci/host_measurement_preview.test.mjs",
+        "contains": [
+          "measurement preview rejects other callers, reruns and unaccepted CI",
+          "measurement package rejects tampering, added files, links and source substitution",
+          "measurement serving acceptance requires exact bytes and all privacy headers"
+        ]
+      }
+    },
+    {
       "id": "ci:cat151-receipt-release",
       "category": "ci",
       "path": "tool/ci/cat151_receipt_release.mjs",

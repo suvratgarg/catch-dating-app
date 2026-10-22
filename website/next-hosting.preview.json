@@ -182,6 +182,13 @@
         }
       },
       {
+        "source": "/api/host-acquisition-consent",
+        "function": {
+          "functionId": "hostAcquisitionConsent",
+          "region": "asia-south1"
+        }
+      },
+      {
         "source": "**",
         "run": {
           "serviceId": "catch-website-next-preview",

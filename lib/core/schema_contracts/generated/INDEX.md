@@ -248,6 +248,11 @@ Do not edit it by hand.
 | SalesDemoSetupCallableResponse | `callable_responses/sales_demo_setup_response.schema.json` | `functions/src/shared/generated/salesDemoSetupCallableResponse.ts` |
 | SalesDemoSessionsDocument | `firestore/sales_demo_sessions.schema.json` | `functions/src/shared/generated/salesDemoSessionsDocument.ts` |
 | SalesEvidenceProposalsDocument | `firestore/sales_evidence_proposals.schema.json` | `functions/src/shared/generated/salesEvidenceProposalsDocument.ts` |
+| HostAcquisitionConsentDocument | `firestore/host_acquisition_consents.schema.json` | `functions/src/shared/generated/hostAcquisitionConsentDocument.ts` |
+| HostPilotEventReviewDocument | `firestore/host_pilot_event_reviews.schema.json` | `functions/src/shared/generated/hostPilotEventReviewDocument.ts` |
+| HostOrganizerActivationDocument | `firestore/host_organizer_activations.schema.json` | `functions/src/shared/generated/hostOrganizerActivationDocument.ts` |
+| HostOperatorAlertDocument | `firestore/host_operator_alerts.schema.json` | `functions/src/shared/generated/hostOperatorAlertDocument.ts` |
+| HostAcquisitionDeliveryDocument | `firestore/host_acquisition_deliveries.schema.json` | `functions/src/shared/generated/hostAcquisitionDeliveryDocument.ts` |
 | SalesInboundIntentsDocument | `firestore/sales_inbound_intents.schema.json` | `functions/src/shared/generated/salesInboundIntentsDocument.ts` |
 | SalesIntelligenceAssessmentDocument | `firestore/sales_intelligence_assessments.schema.json` | `functions/src/shared/generated/salesIntelligenceAssessmentsDocument.ts` |
 | SalesIntelligenceClauseDocument | `firestore/sales_intelligence_clauses.schema.json` | `functions/src/shared/generated/salesIntelligenceClausesDocument.ts` |
@@ -1249,6 +1254,8 @@ Do not edit it by hand.
 | AdminRecordMarketingReviewDecisionCallableResponse | `callable_responses/admin_record_marketing_review_decision_response.schema.json` | `functions/src/shared/generated/adminRecordMarketingReviewDecisionCallableResponse.ts` |
 | AdminListCrossPathsShowcaseCandidatesCallableResponse | `callable_responses/admin_list_cross_paths_showcase_candidates_response.schema.json` | `functions/src/shared/generated/adminListCrossPathsShowcaseCandidatesCallableResponse.ts` |
 | AdminSetCrossPathsShowcaseEligibilityCallableResponse | `callable_responses/admin_set_cross_paths_showcase_eligibility_response.schema.json` | `functions/src/shared/generated/adminSetCrossPathsShowcaseEligibilityCallableResponse.ts` |
+| HostAcquisitionConsentHTTPRequest | `http/host_acquisition_consent_request.schema.json` | `functions/src/shared/generated/hostAcquisitionConsentHttpRequest.ts` |
+| HostAcquisitionConsentHTTPResponse | `http/host_acquisition_consent_response.schema.json` | `functions/src/shared/generated/hostAcquisitionConsentHttpResponse.ts` |
 | JoinWaitlistHTTPRequest | `http/join_waitlist_request.schema.json` | `functions/src/shared/generated/joinWaitlistHttpRequest.ts` |
 | JoinWaitlistHTTPResponse | `http/join_waitlist_response.schema.json` | `functions/src/shared/generated/joinWaitlistHttpResponse.ts` |
 
@@ -1492,6 +1499,11 @@ Do not edit it by hand.
 | `schemaSalesDemoSetupCallableResponseSchema` | SalesDemoSetupCallableResponse | `callable_responses/sales_demo_setup_response.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_setup_callable_response.g.dart` |
 | `schemaSalesDemoSessionsDocumentSchema` | SalesDemoSessionsDocument | `firestore/sales_demo_sessions.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_demo_sessions_document.g.dart` |
 | `schemaSalesEvidenceProposalsDocumentSchema` | SalesEvidenceProposalsDocument | `firestore/sales_evidence_proposals.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_evidence_proposals_document.g.dart` |
+| `schemaHostAcquisitionConsentDocumentSchema` | HostAcquisitionConsentDocument | `firestore/host_acquisition_consents.schema.json` | `lib/core/schema_contracts/generated/schemas/host_acquisition_consent_document.g.dart` |
+| `schemaHostPilotEventReviewDocumentSchema` | HostPilotEventReviewDocument | `firestore/host_pilot_event_reviews.schema.json` | `lib/core/schema_contracts/generated/schemas/host_pilot_event_review_document.g.dart` |
+| `schemaHostOrganizerActivationDocumentSchema` | HostOrganizerActivationDocument | `firestore/host_organizer_activations.schema.json` | `lib/core/schema_contracts/generated/schemas/host_organizer_activation_document.g.dart` |
+| `schemaHostOperatorAlertDocumentSchema` | HostOperatorAlertDocument | `firestore/host_operator_alerts.schema.json` | `lib/core/schema_contracts/generated/schemas/host_operator_alert_document.g.dart` |
+| `schemaHostAcquisitionDeliveryDocumentSchema` | HostAcquisitionDeliveryDocument | `firestore/host_acquisition_deliveries.schema.json` | `lib/core/schema_contracts/generated/schemas/host_acquisition_delivery_document.g.dart` |
 | `schemaSalesInboundIntentsDocumentSchema` | SalesInboundIntentsDocument | `firestore/sales_inbound_intents.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_inbound_intents_document.g.dart` |
 | `schemaSalesIntelligenceAssessmentDocumentSchema` | SalesIntelligenceAssessmentDocument | `firestore/sales_intelligence_assessments.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_assessment_document.g.dart` |
 | `schemaSalesIntelligenceClauseDocumentSchema` | SalesIntelligenceClauseDocument | `firestore/sales_intelligence_clauses.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_intelligence_clause_document.g.dart` |
@@ -2493,6 +2505,8 @@ Do not edit it by hand.
 | `schemaAdminRecordMarketingReviewDecisionCallableResponseSchema` | AdminRecordMarketingReviewDecisionCallableResponse | `callable_responses/admin_record_marketing_review_decision_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_record_marketing_review_decision_callable_response.g.dart` |
 | `schemaAdminListCrossPathsShowcaseCandidatesCallableResponseSchema` | AdminListCrossPathsShowcaseCandidatesCallableResponse | `callable_responses/admin_list_cross_paths_showcase_candidates_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_cross_paths_showcase_candidates_callable_response.g.dart` |
 | `schemaAdminSetCrossPathsShowcaseEligibilityCallableResponseSchema` | AdminSetCrossPathsShowcaseEligibilityCallableResponse | `callable_responses/admin_set_cross_paths_showcase_eligibility_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_set_cross_paths_showcase_eligibility_callable_response.g.dart` |
+| `schemaHostAcquisitionConsentHTTPRequestSchema` | HostAcquisitionConsentHTTPRequest | `http/host_acquisition_consent_request.schema.json` | `lib/core/schema_contracts/generated/schemas/host_acquisition_consent_http_request.g.dart` |
+| `schemaHostAcquisitionConsentHTTPResponseSchema` | HostAcquisitionConsentHTTPResponse | `http/host_acquisition_consent_response.schema.json` | `lib/core/schema_contracts/generated/schemas/host_acquisition_consent_http_response.g.dart` |
 | `schemaJoinWaitlistHTTPRequestSchema` | JoinWaitlistHTTPRequest | `http/join_waitlist_request.schema.json` | `lib/core/schema_contracts/generated/schemas/join_waitlist_http_request.g.dart` |
 | `schemaJoinWaitlistHTTPResponseSchema` | JoinWaitlistHTTPResponse | `http/join_waitlist_response.schema.json` | `lib/core/schema_contracts/generated/schemas/join_waitlist_http_response.g.dart` |
 

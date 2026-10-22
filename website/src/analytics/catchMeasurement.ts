@@ -195,8 +195,8 @@ export function createCatchMeasurementController(transport?: CatchProviderTransp
 }
 
 
-/** Browser-only measurement context. Never include this in the diagnostic bus or
- * existing lead HTTP payload: that endpoint has no server marketing permission. */
+/** Closed browser context. The consented server intake uses a separate explicit
+ * projection; this object never belongs in the diagnostic bus. */
 export interface CatchBrowserAttribution {
   clientId: string;
   sessionId: number;
@@ -204,6 +204,7 @@ export interface CatchBrowserAttribution {
   gbraid?: string;
   wbraid?: string;
   fbclid?: string;
+  fbclidCapturedAt?: number;
 }
 interface StoredContext extends CatchBrowserAttribution {
   createdAt: number;
@@ -225,6 +226,9 @@ export function safeBrowserAttribution(value: unknown, marketing: boolean): Catc
       Number(input.sessionId) > 9_999_999_999) return null;
   const result: CatchBrowserAttribution = {clientId: input.clientId, sessionId: Number(input.sessionId)};
   if (marketing) for (const key of clickKeys) if (clickId(input[key])) result[key] = input[key];
+  if (result.fbclid && Number.isSafeInteger(input.fbclidCapturedAt) && Number(input.fbclidCapturedAt) > 0) {
+    result.fbclidCapturedAt = Number(input.fbclidCapturedAt);
+  }
   return result;
 }
 
@@ -259,7 +263,11 @@ export function browserAttribution(input: {
         delete context.gclid; delete context.gbraid; delete context.wbraid;
         for (const key of google) context[key] = params.get(key)!;
       }
-      if (clickId(params.get("fbclid"))) context.fbclid = params.get("fbclid")!;
+      const metaClick = params.get("fbclid");
+      if (clickId(metaClick) && metaClick !== context.fbclid) {
+        context.fbclid = metaClick;
+        context.fbclidCapturedAt = now;
+      }
     }
     storage.setItem(catchAttributionKey, JSON.stringify(context));
     return safeBrowserAttribution(context, consent.marketing);

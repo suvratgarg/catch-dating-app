@@ -24,8 +24,15 @@ describe("consented 30-day attribution", () => {
   it("retains only valid click identifiers and replaces a new Google touch", () => {
     expect(browserAttribution(base)).toMatchObject({gclid: "SyntheticGoogle123", fbclid: "SyntheticMeta123"});
     expect(browserAttribution({...base, path: "/host/apply/", search: "?wbraid=SecondGoogle123&gclid=person%40example.test"}))
-      .toEqual({clientId: "12345.1792486200", sessionId: 1792486200, wbraid: "SecondGoogle123", fbclid: "SyntheticMeta123"});
+      .toEqual({clientId: "12345.1792486200", sessionId: 1792486200, wbraid: "SecondGoogle123",
+        fbclid: "SyntheticMeta123", fbclidCapturedAt: now});
     expect(localStorage.getItem(catchAttributionKey)).not.toMatch(/email|secret|person|landingUrl/u);
+  });
+  it("keeps the real Meta click timestamp stable across refreshes", () => {
+    browserAttribution(base);
+    expect(browserAttribution({...base, now: now + 5000})?.fbclidCapturedAt).toBe(now);
+    expect(browserAttribution({...base, now: now + 6000, search: "?fbclid=AnotherRealClick123"})?.fbclidCapturedAt)
+      .toBe(now + 6000);
   });
   it("resets expired or withdrawn context and rejects private routes", () => {
     browserAttribution(base);

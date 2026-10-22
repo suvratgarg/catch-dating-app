@@ -962,6 +962,8 @@ export interface AdminEventFormat {
 }
 
 export interface AdminEventDetails {
+  hostActivation?: {activatedAt: number; eventId: string} | null;
+  hostPilotReview?: {realEvent: boolean; revision: number; reviewedAt: number} | null;
   eventId: string;
   clubId: string;
   organizerName: string | null;
@@ -1350,6 +1352,7 @@ export interface AdminListExternalEventDetailsResponse {
 export interface AdminUpdateEventDetailsPayload {
   eventId: string;
   fields: {
+    hostPilotReview?: {realEvent: boolean; expectedRevision: number};
     description?: string;
     photoUrl?: string | null;
     distanceKm?: number;

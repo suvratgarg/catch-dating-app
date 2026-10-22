@@ -241,6 +241,11 @@ export {salesDemoSetupCallablePayloadSchema} from "./schemas/salesDemoSetupInput
 export {salesDemoSetupCallableResponseSchema} from "./schemas/salesDemoSetupOutput";
 export {salesDemoSessionsDocumentSchema} from "./schemas/salesDemoSessionsDocument";
 export {salesEvidenceProposalsDocumentSchema} from "./schemas/salesEvidenceProposalsDocument";
+export {hostAcquisitionConsentDocumentSchema} from "./schemas/hostAcquisitionConsentDocument";
+export {hostPilotEventReviewDocumentSchema} from "./schemas/hostPilotEventReviewDocument";
+export {hostOrganizerActivationDocumentSchema} from "./schemas/hostOrganizerActivationDocument";
+export {hostOperatorAlertDocumentSchema} from "./schemas/hostOperatorAlertDocument";
+export {hostAcquisitionDeliveryDocumentSchema} from "./schemas/hostAcquisitionDeliveryDocument";
 export {salesInboundIntentsDocumentSchema} from "./schemas/salesInboundIntentsDocument";
 export {salesIntelligenceAssessmentDocumentSchema} from "./schemas/salesIntelligenceAssessmentsDocument";
 export {salesIntelligenceClauseDocumentSchema} from "./schemas/salesIntelligenceClausesDocument";
@@ -1242,6 +1247,8 @@ export {adminRecordMarketingReviewDecisionCallablePayloadSchema} from "./schemas
 export {adminRecordMarketingReviewDecisionCallableResponseSchema} from "./schemas/adminRecordMarketingReviewDecisionOutput";
 export {adminListCrossPathsShowcaseCandidatesCallableResponseSchema} from "./schemas/adminListCrossPathsShowcaseCandidatesOutput";
 export {adminSetCrossPathsShowcaseEligibilityCallableResponseSchema} from "./schemas/adminSetCrossPathsShowcaseEligibilityOutput";
+export {hostAcquisitionConsentHTTPRequestSchema} from "./schemas/hostAcquisitionConsentHttpRequest";
+export {hostAcquisitionConsentHTTPResponseSchema} from "./schemas/hostAcquisitionConsentHttpResponse";
 export {joinWaitlistHTTPRequestSchema} from "./schemas/joinWaitlistHttpRequest";
 export {joinWaitlistHTTPResponseSchema} from "./schemas/joinWaitlistHttpResponse";
 export {eventAssistanceWorkflowCatalog} from "./catalogs/eventAssistanceWorkflowCatalog";

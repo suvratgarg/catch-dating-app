@@ -18,6 +18,32 @@ const schemaJoinWaitlistHTTPRequestSchema = <String, Object?>{
     'role',
   ],
   'properties': <String, Object?>{
+    'hostMeasurement': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'capability',
+        'clientId',
+      ],
+      'properties': <String, Object?>{
+        'capability': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+        'clientId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[0-9]{1,10}\\.[0-9]{10}\$',
+        },
+        'fbclid': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[A-Za-z0-9_-]{10,512}\$',
+        },
+        'clickCapturedAt': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+        },
+      },
+    },
     'fullName': <String, Object?>{
       'type': 'string',
       'minLength': 2,

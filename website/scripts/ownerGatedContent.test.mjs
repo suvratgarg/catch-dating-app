@@ -17,8 +17,8 @@ test("confirmed legal, help, and contact contracts are publication-ready", () =>
     ["/help/", "/privacy/", "/terms/"]
   );
   assert.equal(publishedLegalContent.operator.name, "Torana");
-  assert.equal(publishedLegalContent.operator.supportEmail, "suvrat@catchdates.com");
-  assert.equal(ownerGatedSiteDestinations.contactHref, "mailto:suvrat@catchdates.com");
+  assert.equal(publishedLegalContent.operator.supportEmail, "suvrat.garg@gmail.com");
+  assert.equal(ownerGatedSiteDestinations.contactHref, "mailto:suvrat.garg@gmail.com");
   assert.deepEqual(
     siteFooterLegalLinks.map((link) => link.href).sort(),
     ["/help/", "/privacy/", "/terms/"]
@@ -30,6 +30,9 @@ test("confirmed legal, help, and contact contracts are publication-ready", () =>
     assert.ok(page.title.trim());
     assert.ok(page.summary.trim());
     assert.ok(page.sections.length >= 6);
+    const pageCopy = page.sections.flatMap((section) => section.paragraphs).join("\n");
+    assert.match(pageCopy, /suvrat\.garg@gmail\.com/u, `${page.path} must publish the contact address`);
+    assert.doesNotMatch(pageCopy, /suvrat@catchdates\.com/u, `${page.path} must not publish the inactive address`);
     for (const section of page.sections) {
       assert.ok(section.heading.trim());
       assert.ok(section.paragraphs.every((paragraph) => paragraph.trim().length > 0));

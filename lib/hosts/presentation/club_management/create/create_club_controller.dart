@@ -5,6 +5,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -154,6 +155,9 @@ class CreateClubController extends _$CreateClubController {
         selectedClubPhotoInputs.isNotEmpty || profileImage != null
         ? clubsRepo.generateId()
         : null;
+    final reportCreated = ref
+        .read(appAnalyticsProvider)
+        .hostEventCompletion(AnalyticsEvents.hostClubCreated);
     final createdClubId = await clubsRepo.createClub(
       clubId: reservedClubId,
       name: name,
@@ -167,6 +171,7 @@ class CreateClubController extends _$CreateClubController {
       hostDefaults: hostDefaults,
     );
 
+    reportCreated();
     final newStoragePaths = <String>[];
     try {
       String? uploadedPrimaryPhoto;

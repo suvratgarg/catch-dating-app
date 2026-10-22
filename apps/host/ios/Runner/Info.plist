@@ -59,6 +59,23 @@
 		<string>$(FLUTTER_TARGET)</string>
 		<key>FirebaseCrashlyticsCollectionEnabled</key>
 		<false/>
+		<!-- Release hold: overrides persisted SDK grants before Dart starts. -->
+		<key>FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED</key>
+		<true/>
+		<key>GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED</key>
+		<false/>
+		<key>FIREBASE_ANALYTICS_COLLECTION_ENABLED</key>
+		<false/>
+		<key>GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE</key>
+		<false/>
+		<key>GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE</key>
+		<false/>
+		<key>GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA</key>
+		<false/>
+		<key>GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS</key>
+		<false/>
+		<key>FirebaseAutomaticScreenReportingEnabled</key>
+		<false/>
 		<key>FirebaseMessagingAutoInitEnabled</key>
 		<false/>
 		<key>GoogleMapsApiKey</key>

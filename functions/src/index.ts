@@ -480,6 +480,9 @@ export {
   generateOrganizerMediaThumbnails,
 } from "./media/generateAttachedMediaThumbnails";
 export {joinWaitlist} from "./waitlist/joinWaitlist";
+export {
+  hostAcquisitionConsent, expireHostAcquisitionConsent,
+} from "./acquisition/consentHttp";
 export {blockUser, unblockUser, onBlockCreated} from "./safety/blocking";
 export {requestAccountDeletion} from "./safety/accountDeletion";
 export {reportUser} from "./safety/reporting";
@@ -925,3 +928,5 @@ export {onEventApplicationApprovalNotification,
   "./events/approvalNotifications/triggers";
 
 export {manageWebsiteAccount} from "./profiles/websiteAccount";
+
+export {onHostPilotCheckIn} from "./acquisition/pilotActivation";

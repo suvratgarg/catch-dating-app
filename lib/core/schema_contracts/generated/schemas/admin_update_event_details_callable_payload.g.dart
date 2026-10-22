@@ -426,6 +426,23 @@ const schemaAdminUpdateEventDetailsCallablePayloadSchema = <String, Object?>{
             },
           },
         },
+        'hostPilotReview': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'realEvent',
+            'expectedRevision',
+          ],
+          'properties': <String, Object?>{
+            'realEvent': <String, Object?>{
+              'type': 'boolean',
+            },
+            'expectedRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+          },
+        },
       },
     },
   },

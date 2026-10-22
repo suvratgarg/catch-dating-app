@@ -171,6 +171,24 @@ function EventEditor({
             </AdminEditorSection>
 
             <AdminEditorSection>
+              <legend>Supported Host pilot</legend>
+              <StateRow label="Organiser activation" value={event?.hostActivation ?
+                formatDateTime(new Date(event.hostActivation.activatedAt).toISOString()) :
+                "No confirmed activation"} />
+              <CheckboxField
+                checked={form.hostPilotRealEvent}
+                label="I reviewed this as a real pilot event, not a test"
+                onChange={(checked) => update("hostPilotRealEvent", checked)}
+              />
+              <AdminWorkbenchNote>
+                Admin or Admin Owner only. Save with a review note before the
+                first check-in. A successful check-in at a published event then
+                records the organiser’s first activation once. Earlier check-ins
+                are excluded. This does not enable advertising or send guest data.
+              </AdminWorkbenchNote>
+            </AdminEditorSection>
+
+            <AdminEditorSection>
               <legend>Cross Paths pilot</legend>
               <CheckboxField
                 checked={form.crossPathsDiscoveryEnabled}
