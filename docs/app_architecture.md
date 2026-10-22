@@ -2935,8 +2935,9 @@ ratchet. ICU apostrophes are doubled because `l10n.yaml` enables escaping.
 Copy outside Flutter has explicit catalogs rather than being forced through a
 runtime Flutter dependency:
 
-- iOS permission prose is owned by `copy/native_en.json`; the native sync writes
-  the base plist values and the localized `InfoPlist.strings` resource;
+- iOS permission prose is owned by `copy/native_en.json`, one key set per app
+  role; the native sync writes each iOS project's plist values and localized
+  `InfoPlist.strings`, and removes any purpose string its role does not declare;
 - server notification templates are owned by `copy/notifications_en.json`; the
   notification sync generates the typed Functions catalog; and
 - synchronous structured domain content is owned by
