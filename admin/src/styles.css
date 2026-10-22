@@ -3758,7 +3758,7 @@ th {
 }
 
 .intake-boundary-notice span {
-  color: var(--positive);
+  color: var(--muted);
   font-size: 12px;
 }
 
