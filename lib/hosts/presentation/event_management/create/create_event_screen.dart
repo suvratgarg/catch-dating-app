@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
@@ -7,6 +8,7 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
@@ -116,7 +118,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   late bool _externalBookingMode;
   bool _allowRoutePop = false;
   bool _showValidationErrors = false;
-  Event? _createdEvent;
+  bool _sessionReplaced = false;
   HostRosterImportPlan? _pendingRosterImport;
   EventAttendeeImportResult? _rosterImportResult;
   bool _rosterImportFailed = false;
@@ -311,7 +313,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     }
     _initialDraftContentSignature = _currentDraftContentSignature;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkForDrafts();
+      _restorePhotoRecovery();
     });
   }
 
@@ -346,6 +348,45 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final recovery = ref.watch(
+      createEventPhotoRecoveryControllerProvider(widget.club.id),
+    );
+    ref.listen(authenticatedSessionProvider, (previous, next) {
+      final before = previous?.asData?.value;
+      final after = next.asData?.value;
+      if (before != null && !identical(before, after)) {
+        _setLocalState(() => _sessionReplaced = true);
+      } else if (after != null && !_sessionReplaced) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _restorePhotoRecovery();
+        });
+      }
+    });
+    if (_sessionReplaced) {
+      return CatchScaffold.stepFlow(
+        body: CatchErrorState(
+          title:
+              context.l10n.hostsHostCreateEventScreenTitleEventSetupUnavailable,
+          message: context.l10n.hostsEventPhotoRecoverySession,
+          actions: [
+            CatchButton(
+              label: context.l10n.hostsCreateEventSuccessScreenLabelBackToClub,
+              onPressed: () => Navigator.of(context).maybePop(),
+            ),
+          ],
+        ),
+      );
+    }
+    if (recovery.restored is! AsyncData<void>) {
+      return CatchScaffold.stepFlow(
+        body: CatchAsyncBoundary<void>(
+          value: recovery.restored,
+          onRetry: _restorePhotoRecovery,
+          errorContext: AppErrorContext.event,
+          builder: (context, _) => const SizedBox.shrink(),
+        ),
+      );
+    }
     final submitMutation = ref.watch(CreateEventController.submitMutation);
     final saveDraftMutation = ref.watch(
       CreateEventDraftController.saveDraftMutation,
@@ -371,7 +412,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       submitPending: submitMutation.isPending,
       saveDraftPending: saveDraftMutation.isPending,
       mutationError: mutationError,
-      createdEvent: _createdEvent,
+      createdEvent: recovery.event,
       inviteCode: _externalBookingMode
           ? null
           : _trimmedTextOrNull(_inviteCodeController),
@@ -382,20 +423,49 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
     final successNavigation = wizardState.successNavigation;
     if (successNavigation != null) {
-      return CreateEventSuccessScreen(
-        club: successNavigation.club,
-        event: successNavigation.event,
-        inviteCode: successNavigation.inviteCode,
-        onManageEvent: () => _handleSuccessNavigationIntent(
-          CreateEventSuccessNavigationIntent.manageEvent,
-          successNavigation,
+      return PopScope(
+        canPop:
+            recovery.isDurable || !recovery.hasPhotoRecovery || _allowRoutePop,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) {
+            _handleSuccessNavigationIntent(
+              CreateEventSuccessNavigationIntent.backToClub,
+              successNavigation,
+            ).ignore();
+          }
+        },
+        child: CreateEventSuccessScreen(
+          club: successNavigation.club,
+          event: successNavigation.event,
+          inviteCode: successNavigation.inviteCode,
+          onManageEvent: () => _handleSuccessNavigationIntent(
+            CreateEventSuccessNavigationIntent.manageEvent,
+            successNavigation,
+          ).ignore(),
+          onDone: () => _handleSuccessNavigationIntent(
+            CreateEventSuccessNavigationIntent.backToClub,
+            successNavigation,
+          ).ignore(),
+          rosterImportResult: _rosterImportResult,
+          rosterImportFailed: _rosterImportFailed,
+          photoRecovery: recovery,
+          onRetryPhotos: () => ref
+              .read(
+                createEventPhotoRecoveryControllerProvider(
+                  widget.club.id,
+                ).notifier,
+              )
+              .retryPhotos()
+              .ignore(),
+          onReselectPhotos: () => ref
+              .read(
+                createEventPhotoRecoveryControllerProvider(
+                  widget.club.id,
+                ).notifier,
+              )
+              .retryPhotos(reselect: true)
+              .ignore(),
         ),
-        onDone: () => _handleSuccessNavigationIntent(
-          CreateEventSuccessNavigationIntent.backToClub,
-          successNavigation,
-        ),
-        rosterImportResult: _rosterImportResult,
-        rosterImportFailed: _rosterImportFailed,
       );
     }
 
