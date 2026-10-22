@@ -1,136 +1,125 @@
-# Catch Host App Store Metadata
+# Catch Host Store Metadata
 
-Draft App Store Connect metadata for `Catch Host`. Copy fields are ready to
-paste. Fields marked **Pending** wait on the owner decision named in the row.
+This is the record of the store metadata submitted for `Catch Host` on the App
+Store and Google Play. Evidence is the ignored local folder
+`build/store-upload/`, captured on 2026-10-20 and 2026-10-21:
 
-## App identity
+- `host-store-progress-20261020.json`
+- `host-listing-copy-draft.json`
+- `catch-host-closed-test-brief.txt`
+- the `apple-*.png` and `google-*.png` console screenshots
 
-| Field | Draft value | Notes |
-| --- | --- | --- |
-| App name | Catch Host | 10 characters |
-| Bundle ID | `com.catchdates.host` | Matches the `host-prod` target in `apps/host` |
-| Apple app ID | `6778927317` | Existing App Store Connect record |
-| SKU | `catch-host-ios` | Existing App Store Connect record |
-| Primary language | English (U.S.) | Existing App Store Connect record |
-| Primary category | Business | Organizer operations tool |
-| Secondary category | Productivity (recommended) | Social Networking would frame the app as consumer social and invite stricter content review. Lifestyle is a neutral alternative. |
-| Price | Free | No in-app purchases. See the payment posture in `review_notes.md`. |
-| Seller name | **Pending**: individual vs organization account | Apple shows the developer account holder. The account is individual today. |
-| Copyright | **Pending**: same decision | `2026 Torana` if the account becomes an organization; `2026 Suvrat Garg` if it stays individual |
-| Age rating | See the questionnaire below | The rating Apple calculates from the answers is likely below the 18+ that the Terms require |
+The reviewer credential files in that folder are private and are never copied
+here.
 
-### Seller-dependent facts
+## App Store (iOS)
 
-- The public Terms and Privacy policy name **Torana** as the operator of
-  Catch, and require users to be 18 or older.
-- An organization enrollment needs a legal entity with a D-U-N-S number. Apple
-  enrolls sole proprietors and trade names as individuals, so if Torana is not
-  a separate legal entity, the seller stays the individual account holder.
-- The seller decision also determines:
-  - the copyright line
-  - the name on the store page
-  - the EU Digital Services Act trader contact details, which App Store
-    Connect requires only when the app is offered in EU storefronts
+### Submission
 
-## URLs
-
-All four returned HTTP 200 on 2026-10-22. A nonexistent path returns 404, so
-the 200 responses are real pages.
-
-| Field | Value |
+| Field | Live value |
 | --- | --- |
+| Apple app ID | `6778927317` |
+| Bundle ID / SKU | `com.catchdates.host` / `catch-host-ios` |
+| Version / build | `1.0.1` / `202610200000357901` (source `171c1cb07`) |
+| Status | Submitted 2026-10-21; Waiting for Review |
+| Developer account (seller) | Individual: Suvrat Garg |
+| Copyright | `2026 Torana` |
+| Primary language | English (U.S.) |
+| Price / in-app purchases | Free / none |
+
+### Product page
+
+| Field | Live value |
+| --- | --- |
+| Name | Catch Host |
+| Subtitle | Events and guest management |
+| Promotional text | Create events, manage guests, check people in, and review private post-event signals from one host workspace. |
+| Keywords | `events,organizer,guests,attendance,check-in,event management` |
 | Privacy Policy URL | `https://catchdates.com/privacy/` |
 | Support URL | `https://catchdates.com/help/` |
-| Marketing URL | `https://catchdates.com/host/` |
-| Terms (custom EULA or description link, optional) | `https://catchdates.com/terms/` |
+| Screenshots | 3 iPhone (6.3-inch, 1206×2622: Today, Rehearsal, Room) and 2 iPad (13-inch landscape, 2752×2064: Rehearsal, Room). Validation passed. Source files are in `build/store-upload/listing-assets/`. |
 
-## Copy fields
+The App Store screenshot of the version page shows the promotional text. The
+other product-page values come from the listing copy record.
 
-| Field | Draft value | Limit check |
-| --- | --- | --- |
-| Subtitle | Tools for event hosts | 21 of 30 characters |
-| Promotional text | Create events, manage guests, check people in, and review private post-event signals from one host workspace. | 109 of 170 characters |
-| Keywords | events,hosts,organizers,checkin,guestlist,clubs,waitlist,tickets,attendance,runclubs | 84 of 100 bytes |
+Description, from the listing copy record (`host-listing-copy-draft.json`):
 
-## Description
+```text
+Catch Host helps organizers prepare events and manage the people attending them.
 
-Catch Host is the operator app for approved Catch organizers and partners.
+Use your organizer workspace to:
+• Create and update event details.
+• Keep your events and guest information together.
+• Manage attendance and event check-in.
+• Communicate through event conversations and announcements.
+• Work across the organizers you have access to.
 
-Create clubs and events, publish guest-facing details, configure admission and
-waitlist rules, and manage the event from one host workspace. During an event,
-hosts can check people in, review attendance and payout state, and use Event
-Success tools to keep the experience on track.
+Sign in with your phone number to access your Host account. Available tools depend on your organizer access and event setup.
 
-After the event, Catch Host summarizes aggregate operational signals and
-follow-up items while keeping private attendee matching choices and safety
-details out of host reports. Host identity stays professional and separate from
-consumer dating profiles.
+Catch Host is for adults aged 18 and over. Catch Host is operated by Torana.
 
-Use Catch Host to:
+Support: https://catchdates.com/help/
+Privacy: https://catchdates.com/privacy/
+```
 
-- Build a professional host profile
-- Create clubs and event listings
-- Configure capacity, approvals, payments, waitlists, and invite links
-- Manage check-in and attendance
-- Review aggregate post-event reporting
-- Keep organizer tools separate from the Catch dating experience
+The description mentions no price, subscription, trial, or purchase outside the
+app.
 
-### Copy facts
+### Other App Store Connect declarations
 
-- The copy contains no price, subscription, trial, or reference to paying
-  Catch outside the app. Guideline 3.1.1 and 3.1.3(f) depend on that staying
-  true. "Payments" in the bullet list refers to guests paying organizers for
-  in-person events.
-- Two lines mention the consumer dating experience, but the consumer Catch app
-  is not on the App Store.
-- The first line says "approved … organizers", but any signed-in user can
-  create an organizer in the Host app today.
+| Declaration | Live value |
+| --- | --- |
+| App Review contact, reviewer sign-in and notes | Saved. Values live only in App Store Connect and the private local credential file. |
+| Content rights | Saved |
+| App Privacy | Published 2026-10-20: 18 data types, all linked, tracking No. See `privacy_inventory.md`. |
+| EU Digital Services Act trader status | Trader declaration submitted. Status In Review, last updated 2026-10-21. |
+| Export compliance | `ITSAppUsesNonExemptEncryption` = `false` in the submitted `apps/host/ios/Runner/Info.plist`. Standard TLS and Apple platform crypto only; `package:crypto` is used for SHA-256 hashing only. |
 
-## Age rating questionnaire
+### Age rating
 
-These are the answers for the App Store Connect age rating questionnaire, in
-the version Apple introduced in 2025 with 4+, 9+, 13+, 16+ and 18+ ratings.
-Check the question labels against the live form when entering them.
+| Item | Live value |
+| --- | --- |
+| Calculated rating | 13+ |
+| Override | 18+. Read back as 18+ in 173 countries or regions and 19+ in Korea; older OS versions show 17+ with regional exceptions. |
+| Alcohol, tobacco, or drug use or references | Infrequent. The owner confirmed occasional alcohol-related events, and "Pub quiz" and "Bar crawl" are selectable activity types. |
+| Violence (all four questions) | None, confirmed by the owner |
+| Age suitability URL | `https://catchdates.com/terms/` |
 
-| Section | Question | Answer | Basis |
-| --- | --- | --- | --- |
-| In-app controls | Parental controls | No | — |
-| In-app controls | Age assurance | No | The 18+ requirement is contractual (Terms). Host does no age verification. |
-| Capabilities | Unrestricted web access | No | External links open in Safari. The app has no general-purpose browser. |
-| Capabilities | User-generated content | Yes | Organizer pages, event listings and photos are public on the website |
-| Capabilities | Messaging and chat | Yes | Inbox conversations and broadcasts with guests |
-| Capabilities | Advertising | No | No ad SDK or ad placements |
-| Mature themes | Profanity or crude humor | None | — |
-| Mature themes | Horror or fear themes | None | — |
-| Mature themes | Alcohol, tobacco, or drug use or references | Infrequent | "Pub quiz" and "Bar crawl" are selectable event activity types (`lib/activity/domain/activity_taxonomy.dart`) |
-| Medical or wellness | Medical or treatment information | None | — |
-| Medical or wellness | Health or wellness topics | No | Fitness activities are event types, not health content |
-| Sexuality or nudity | Mature or suggestive themes | Infrequent | Tooling for singles events: mixer reveals, pairing, and cohort caps by gender and orientation |
-| Sexuality or nudity | Sexual content or nudity | None | — |
-| Sexuality or nudity | Graphic sexual content and nudity | None | — |
-| Violence | Cartoon or fantasy, realistic, prolonged graphic, guns or weapons | None | — |
-| Chance-based | Simulated gambling, contests, gambling, loot boxes | None / No | — |
-| Other | Made for Kids | No | — |
+The remaining questionnaire answers are not captured in the local evidence.
+The source supports a 13+ calculation from these answers:
 
-The recommended age rating is **18+**, set with the questionnaire's option to
-choose a higher rating than the calculated one. Three facts support 18+: the
-Terms require users to be 18 or older; payouts need legal capacity for
-Razorpay or Stripe KYC; and the app operates singles events. This is an
-owner decision.
+- User-generated content: Yes. Organizer pages and events are public.
+- Messaging and chat: Yes. Hosts have inbox conversations with guests.
+- Mature or suggestive themes: likely Infrequent, because the app includes
+  tooling for singles events.
+- Everything else: None.
 
-## Export compliance
+## Google Play (Android)
 
-| Item | Value | Evidence |
-| --- | --- | --- |
-| `ITSAppUsesNonExemptEncryption` | `false` | `apps/host/ios/Runner/Info.plist`, so App Store Connect skips the per-build encryption question |
-| Encryption in use | Standard TLS only: URLSession, Firebase SDKs, and Firestore gRPC with BoringSSL. Apple platform crypto: App Attest and Keychain. | No custom encryption. `package:crypto` is used only for SHA-256 hashing. No SQLCipher. |
-| Basis | Exempt: encryption used only for authentication and standard secure transport | Revisit if end-to-end message encryption or custom ciphers are added |
+| Field | Live value |
+| --- | --- |
+| App ID / package | `4972959437074694171` / `com.catchdates.host` |
+| Internal testing | `1.0.1 (452901)` "Host initial testing", available to internal testers since 2026-10-20 (not reviewed). Draft `1.0.1 (457901)` "Host store candidate" kept as a draft. |
+| Closed testing | Alpha track, India, `1.0.1 (457901)`. Submitted 2026-10-21 with 14 publishing changes; automated checks passed. |
+| Production access | Needs at least 12 opted-in testers for 14 continuous days, then a production-access application |
+| Title | Catch Host |
+| Short description | Plan events and manage guests in one organizer workspace. |
+| Full description | Same text as the App Store description above |
+| Graphics | 512 icon. 1024×500 feature graphic, image-generated and labelled AI-created. 3 phone screenshots. |
+| Content rating (IARC) | Category "All Other App Types". Teen in North America; 12+ in several other regions. Location sharing: Yes. |
+| Target audience | 18 and over |
+| App access | Reviewer access saved |
+| Advertising ID | Yes, for Analytics |
+| Data safety | Saved and submitted: no data shared with third parties |
+| Other declarations | No ads; not a government app; no health features; no financial-services features. Content declarations show "All caught up" (10 actioned). |
+| Privacy URL | `https://catchdates.com/privacy/` |
 
-## Other App Store Connect answers
+## Seller and copyright facts
 
-| Item | Draft answer | Notes |
-| --- | --- | --- |
-| Content rights | Contains third-party content, with rights held | Organizer-supplied text and photos, and Google Maps tiles |
-| Sign-in required for review | Yes | See `review_notes.md` |
-| App privacy | See `privacy_inventory.md` | — |
-| Availability | **Pending**: owner territory choice | The pilot is India-first. Excluding EU storefronts avoids the DSA trader-status display until the seller decision is made. |
+- **Seller and copyright differ.** The App Store seller is the individual
+  account holder, Suvrat Garg. The copyright line and the listing description
+  name Torana, which is also the operator in the public Terms and Privacy
+  policy.
+- **Organization accounts need a legal entity.** Apple enrolls an organization
+  only as a legal entity with a D-U-N-S number. A move to an organization
+  account would change the seller name shown on the store.

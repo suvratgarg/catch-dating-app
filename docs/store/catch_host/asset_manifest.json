@@ -15,10 +15,81 @@
     "infoPlist": "apps/host/ios/Runner/Info.plist",
     "entitlements": "apps/host/ios/Runner/RunnerHost.entitlements"
   },
-  "preparedAt": "2026-06-22",
-  "updatedAt": "2026-10-22",
-  "status": "screenshot_revision_required",
-  "screenshotProductionBrief": "docs/store/app_listing_screenshot_production_brief.md",
+  "liveSubmission": {
+    "recordedAt": "2026-10-22",
+    "evidence": "build/store-upload/ (ignored local console evidence; private credential files excluded)",
+    "sourceSha": "171c1cb07e5b8b405904ad8e3504b6e1ea93607b",
+    "apple": {
+      "version": "1.0.1",
+      "build": "202610200000357901",
+      "status": "waiting_for_review",
+      "submittedOn": "2026-10-21",
+      "seller": "Suvrat Garg (individual account)",
+      "copyright": "2026 Torana",
+      "name": "Catch Host",
+      "subtitle": "Events and guest management",
+      "keywords": "events,organizer,guests,attendance,check-in,event management",
+      "privacyPolicyUrl": "https://catchdates.com/privacy/",
+      "supportUrl": "https://catchdates.com/help/",
+      "ageRating": {
+        "calculated": "13+",
+        "override": "18+",
+        "alcohol": "infrequent",
+        "ageSuitabilityUrl": "https://catchdates.com/terms/"
+      },
+      "appPrivacy": {
+        "publishedOn": "2026-10-20",
+        "dataTypes": 18,
+        "allLinked": true,
+        "tracking": false
+      },
+      "dsaTraderStatus": "submitted_in_review",
+      "usesNonExemptEncryption": false,
+      "screenshots": {
+        "iphone63": {
+          "count": 3,
+          "dimensions": "1206x2622",
+          "scenes": [
+            "Today",
+            "Rehearsal",
+            "Room"
+          ]
+        },
+        "ipad13": {
+          "count": 2,
+          "dimensions": "2752x2064",
+          "scenes": [
+            "Rehearsal",
+            "Room"
+          ]
+        },
+        "sourceDirectory": "build/store-upload/listing-assets/"
+      }
+    },
+    "google": {
+      "appId": "4972959437074694171",
+      "package": "com.catchdates.host",
+      "internalRelease": {
+        "versionCode": 452901,
+        "status": "available_to_internal_testers"
+      },
+      "closedTest": {
+        "track": "Alpha",
+        "countries": [
+          "India"
+        ],
+        "versionCode": 457901,
+        "status": "submitted",
+        "submittedOn": "2026-10-21",
+        "publishingChanges": 14
+      },
+      "contentRating": "IARC Teen (North America); 12+ in several other regions",
+      "targetAudience": "18 and over",
+      "advertisingId": "yes_analytics",
+      "dataSafetySharing": "no_data_shared_with_third_parties",
+      "reviewerAccess": "saved"
+    }
+  },
   "icon": {
     "path": "docs/store/catch_host/icon/app-icon-1024.png",
     "sourcePath": "ios/Runner/Assets.xcassets/AppIcon-host-prod.appiconset/Icon-App-host-prod-1024x1024@1x.png",
@@ -28,85 +99,70 @@
     },
     "status": "ready"
   },
-  "metadata": {
-    "path": "docs/store/catch_host/metadata.md",
-    "subtitle": "Tools for event hosts",
-    "subtitleCharacters": 21,
-    "promotionalTextCharacters": 109,
-    "keywordsBytes": 84,
-    "privacyPolicyUrl": "https://catchdates.com/privacy/",
-    "supportUrl": "https://catchdates.com/help/",
-    "termsUrl": "https://catchdates.com/terms/",
-    "marketingUrl": "https://catchdates.com/host/",
-    "urlsVerifiedAt": "2026-10-22"
+  "repositoryScreenshotDrafts": {
+    "status": "not_uploaded_superseded_by_live_listing_assets",
+    "productionBrief": "docs/store/app_listing_screenshot_production_brief.md",
+    "drafts": [
+      {
+        "path": "docs/store/catch_host/screenshots/iphone_6_9/01-event-setup.png",
+        "sourcePath": "artifacts/marketing/app-screenshots/host-create-basics.png",
+        "device": "iPhone 6.9-inch",
+        "dimensions": {
+          "width": 1320,
+          "height": 2868
+        },
+        "headline": "Build your host profile",
+        "status": "replace_draft_alpha_channel"
+      },
+      {
+        "path": "docs/store/catch_host/screenshots/iphone_6_9/02-admission-rules.png",
+        "sourcePath": "artifacts/marketing/app-screenshots/host-create-policy.png",
+        "device": "iPhone 6.9-inch",
+        "dimensions": {
+          "width": 1320,
+          "height": 2868
+        },
+        "headline": "Control admission",
+        "status": "retain_source_move_to_h03_refresh_alpha_channel"
+      },
+      {
+        "path": "docs/store/catch_host/screenshots/iphone_6_9/03-live-event-flow.png",
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-console.png",
+        "device": "iPhone 6.9-inch",
+        "dimensions": {
+          "width": 1320,
+          "height": 2868
+        },
+        "headline": "Run live event flow",
+        "status": "retain_source_promote_to_h01_refresh_alpha_channel"
+      },
+      {
+        "path": "docs/store/catch_host/screenshots/iphone_6_9/04-post-event-report.png",
+        "sourcePath": "artifacts/marketing/app-screenshots/host-post-event-report.png",
+        "device": "iPhone 6.9-inch",
+        "dimensions": {
+          "width": 1320,
+          "height": 2868
+        },
+        "headline": "Review the outcome",
+        "status": "retain_event_report_evidence_refresh_alpha_channel"
+      },
+      {
+        "path": "docs/store/catch_host/screenshots/iphone_6_9/05-guest-details.png",
+        "sourcePath": "artifacts/marketing/app-screenshots/host-create-location.png",
+        "device": "iPhone 6.9-inch",
+        "dimensions": {
+          "width": 1320,
+          "height": 2868
+        },
+        "headline": "Plan guest details",
+        "status": "replace_draft_alpha_channel"
+      }
+    ]
   },
-  "screenshots": [
-    {
-      "path": "docs/store/catch_host/screenshots/iphone_6_9/01-event-setup.png",
-      "sourcePath": "artifacts/marketing/app-screenshots/host-create-basics.png",
-      "device": "iPhone 6.9-inch",
-      "dimensions": {
-        "width": 1320,
-        "height": 2868
-      },
-      "headline": "Build your host profile",
-      "status": "replace_draft_alpha_channel"
-    },
-    {
-      "path": "docs/store/catch_host/screenshots/iphone_6_9/02-admission-rules.png",
-      "sourcePath": "artifacts/marketing/app-screenshots/host-create-policy.png",
-      "device": "iPhone 6.9-inch",
-      "dimensions": {
-        "width": 1320,
-        "height": 2868
-      },
-      "headline": "Control admission",
-      "status": "retain_source_move_to_h03_refresh_alpha_channel"
-    },
-    {
-      "path": "docs/store/catch_host/screenshots/iphone_6_9/03-live-event-flow.png",
-      "sourcePath": "artifacts/marketing/app-screenshots/host-live-console.png",
-      "device": "iPhone 6.9-inch",
-      "dimensions": {
-        "width": 1320,
-        "height": 2868
-      },
-      "headline": "Run live event flow",
-      "status": "retain_source_promote_to_h01_refresh_alpha_channel"
-    },
-    {
-      "path": "docs/store/catch_host/screenshots/iphone_6_9/04-post-event-report.png",
-      "sourcePath": "artifacts/marketing/app-screenshots/host-post-event-report.png",
-      "device": "iPhone 6.9-inch",
-      "dimensions": {
-        "width": 1320,
-        "height": 2868
-      },
-      "headline": "Review the outcome",
-      "status": "retain_event_report_evidence_refresh_alpha_channel"
-    },
-    {
-      "path": "docs/store/catch_host/screenshots/iphone_6_9/05-guest-details.png",
-      "sourcePath": "artifacts/marketing/app-screenshots/host-create-location.png",
-      "device": "iPhone 6.9-inch",
-      "dimensions": {
-        "width": 1320,
-        "height": 2868
-      },
-      "headline": "Plan guest details",
-      "status": "replace_draft_alpha_channel"
-    }
-  ],
   "submissionDocs": {
     "privacy": "docs/store/catch_host/privacy_inventory.md",
     "reviewNotes": "docs/store/catch_host/review_notes.md",
     "metadata": "docs/store/catch_host/metadata.md"
-  },
-  "decisionDependentFields": {
-    "sellerName": "developer account type: individual or organization",
-    "copyright": "developer account type: individual or organization",
-    "ageRating": "owner choice of 18+ override",
-    "territories": "owner territory choice",
-    "secondaryCategory": "owner category choice"
   }
 }
