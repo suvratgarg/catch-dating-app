@@ -3,9 +3,171 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {resolveFirebaseProjectId} from "./firebase_project_resolver.mjs";
+import {
+  listFirebaseFunctionExports,
+  listFirebaseFunctionTargets,
+} from "./list_firebase_function_targets.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../..");
+
+/**
+ * Client source roots whose Function references a deployed backend must
+ * serve. `app` is the shared Flutter source of the Consumer and Host apps.
+ */
+export const clientCallableSurfaces = Object.freeze({
+  app: Object.freeze({root: "lib", extensions: Object.freeze([".dart"])}),
+  website: Object.freeze({
+    root: "website/src",
+    extensions: Object.freeze([".ts", ".tsx"]),
+  }),
+  admin: Object.freeze({
+    root: "admin/src",
+    extensions: Object.freeze([".ts", ".tsx"]),
+  }),
+});
+
+// Generated contract registries and l10n name every callable whether or not
+// a client calls it, so only authored source counts as a reference.
+const skippedSourceDirectories = new Set([
+  "generated",
+  "node_modules",
+  "__tests__",
+]);
+const skippedSourceFile =
+  /(?:\.g|\.freezed)\.dart$|\.(?:test|spec|stories)\.tsx?$/u;
+const identifierLiteral = /(["'`])([a-z][A-Za-z0-9]{2,127})\1/gu;
+const literalCallableInvocation =
+  /httpsCallable(?:<[^()]*>)?\(\s*(?:[\w.]+\s*,\s*)?(["'`])([^"'`$\s]+)\1/gu;
+
+/**
+ * Lists one source file's identifier-shaped string literals and the literal
+ * names passed straight to `httpsCallable`. Repositories often pass a name
+ * through a variable, so a callable reference is any literal naming a
+ * Function export; the direct call sites additionally prove no client calls
+ * a name the backend does not export.
+ */
+export function scanClientCallableSource(contents) {
+  return {
+    literals: new Set(
+      [...contents.matchAll(identifierLiteral)].map((match) => match[2]),
+    ),
+    invocations: [...contents.matchAll(literalCallableInvocation)].map(
+      (match) => match[2],
+    ),
+  };
+}
+
+/**
+ * Derives the Functions each client surface references from source files
+ * (`{surface, path, contents}`) and the repository's Function exports.
+ */
+export function collectClientCallableReferences({files, exportNames}) {
+  const exported = new Set(exportNames);
+  const references = new Map();
+  const undeclaredInvocations = [];
+  for (const file of files) {
+    const {literals, invocations} = scanClientCallableSource(file.contents);
+    for (const literal of literals) {
+      if (!exported.has(literal)) continue;
+      const reference = references.get(literal) ??
+        {surfaces: new Set(), paths: new Set()};
+      reference.surfaces.add(file.surface);
+      reference.paths.add(file.path);
+      references.set(literal, reference);
+    }
+    for (const callable of invocations) {
+      if (!exported.has(callable)) {
+        undeclaredInvocations.push({
+          surface: file.surface,
+          path: file.path,
+          callable,
+        });
+      }
+    }
+  }
+  return {references, undeclaredInvocations};
+}
+
+/**
+ * A client may only reference Functions the bounded deploy path creates: an
+ * undeclared call site or a dormant export would be NOT_FOUND in every
+ * environment.
+ */
+export function validateClientCallableReferences({
+  references,
+  undeclaredInvocations,
+  deployableNames,
+}) {
+  const deployable = new Set(deployableNames);
+  const dormantReferences = [...references.keys()]
+    .filter((name) => !deployable.has(name))
+    .sort();
+  return {
+    ok: undeclaredInvocations.length === 0 && dormantReferences.length === 0,
+    callables: [...references.keys()]
+      .filter((name) => deployable.has(name))
+      .sort(),
+    dormantReferences,
+    undeclaredInvocations,
+  };
+}
+
+export function readClientCallableSources(
+  root,
+  surfaces = Object.keys(clientCallableSurfaces),
+) {
+  const files = [];
+  for (const surface of surfaces) {
+    const definition = clientCallableSurfaces[surface];
+    if (!definition) {
+      throw new Error(
+        `Unknown client surface ${surface}; expected one of ` +
+          `${Object.keys(clientCallableSurfaces).join(", ")}.`,
+      );
+    }
+    const walk = (directory) => {
+      for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
+        const entryPath = path.join(directory, entry.name);
+        if (entry.isDirectory()) {
+          if (!skippedSourceDirectories.has(entry.name)) walk(entryPath);
+        } else if (
+          entry.isFile() &&
+          definition.extensions.some((ext) => entry.name.endsWith(ext)) &&
+          !skippedSourceFile.test(entry.name)
+        ) {
+          files.push({
+            surface,
+            path: path.relative(root, entryPath),
+            contents: fs.readFileSync(entryPath, "utf8"),
+          });
+        }
+      }
+    };
+    walk(path.join(root, definition.root));
+  }
+  return files;
+}
+
+/** Client-referenced, deployable Function names for [surfaces]. */
+export function deriveClientCallables({
+  root = repoRoot,
+  surfaces = Object.keys(clientCallableSurfaces),
+} = {}) {
+  const strip = (target) => target.replace(/^functions:/u, "");
+  const {references, undeclaredInvocations} = collectClientCallableReferences({
+    files: readClientCallableSources(root, surfaces),
+    exportNames: listFirebaseFunctionExports(root).map(strip),
+  });
+  return {
+    references,
+    ...validateClientCallableReferences({
+      references,
+      undeclaredInvocations,
+      deployableNames: listFirebaseFunctionTargets(root).map(strip),
+    }),
+  };
+}
 
 export function validateClientCallableDependencies({
   manifest,
@@ -100,7 +262,7 @@ function parseArgs(argv) {
   const flags = new Set();
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
-    if (arg === "--verify-live") {
+    if (["--verify-live", "--from-source", "--json"].includes(arg)) {
       flags.add(arg);
     } else if (arg.startsWith("--")) {
       values[arg.slice(2)] = argv[index + 1];
@@ -110,15 +272,61 @@ function parseArgs(argv) {
   return {values, flags};
 }
 
+export function formatClientCallableReport(report, surfaces) {
+  const lines = [
+    `${report.ok ? "PASS" : "FAIL"} client callable references ` +
+      `(${surfaces.join(", ")}): ${report.callables.length} deployable ` +
+      "Function(s) referenced from source",
+  ];
+  for (const name of report.dormantReferences) {
+    lines.push(`  Dormant (never deployed) but referenced: ${name}`);
+  }
+  for (const site of report.undeclaredInvocations) {
+    lines.push(
+      `  ${site.path} calls ${site.callable}, which functions/src/index.ts ` +
+        "does not export",
+    );
+  }
+  return lines.join("\n");
+}
+
+function runFromSource({values, flags}) {
+  const surfaces = values.surface ?
+    values.surface.split(",") :
+    Object.keys(clientCallableSurfaces);
+  const report = deriveClientCallables({surfaces});
+  if (flags.has("--json")) {
+    process.stdout.write(`${JSON.stringify({
+      ok: report.ok,
+      surfaces,
+      callables: report.callables.map((name) => ({
+        name,
+        surfaces: [...report.references.get(name).surfaces].sort(),
+      })),
+      dormantReferences: report.dormantReferences,
+      undeclaredInvocations: report.undeclaredInvocations,
+    }, null, 2)}\n`);
+  } else {
+    process.stdout.write(`${formatClientCallableReport(report, surfaces)}\n`);
+  }
+  if (!report.ok) process.exitCode = 1;
+}
+
 async function main() {
   const {values, flags} = parseArgs(process.argv.slice(2));
+  if (flags.has("--from-source")) {
+    runFromSource({values, flags});
+    return;
+  }
   const appRole = values.role;
   const environment = values.environment;
   if (!appRole || !environment) {
     throw new Error(
       "Usage: check_client_callable_dependencies.mjs " +
         "--role <consumer|host> --environment <dev|staging|prod> " +
-        "[--verify-live] [--project <id>]",
+        "[--verify-live] [--project <id>]\n" +
+        "       check_client_callable_dependencies.mjs --from-source " +
+        "[--surface app,website,admin] [--json]",
     );
   }
   const dependencies = validateClientCallableDependencies({
