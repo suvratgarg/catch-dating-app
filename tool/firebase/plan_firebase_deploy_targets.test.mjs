@@ -347,10 +347,11 @@ function executorFixture(t) {
   write("bin/npm", '#!/bin/sh\nprintf \'sync:%s\\n\' "$*" >> "$EXECUTOR_EVENTS"\n', 0o755);
   write("bin/sleep", "#!/bin/sh\nexit 0\n", 0o755);
   const eventsFile = path.join(directory, "events");
-  const run = (targets = "firestore:indexes,functions:alpha,functions:beta,firestore:rules", environment = "dev", preflight = false) => {
+  const run = (targets = "firestore:indexes,functions:alpha,functions:beta,firestore:rules", environment = "dev", preflight = false,
+    firebaseArgs = []) => {
     fs.rmSync(eventsFile, {force: true});
     const mode = preflight === true ? ["--preflight"] : typeof preflight === "string" ? [preflight] : [];
-    const result = spawnSync("bash", ["tool/deploy_firebase_targets.sh", ...mode, environment, targets], {
+    const result = spawnSync("bash", ["tool/deploy_firebase_targets.sh", ...mode, environment, targets, ...firebaseArgs], {
       cwd: directory,
       encoding: "utf8",
       env: {...process.env,
@@ -435,6 +436,50 @@ test("a failed Function batch cannot execute later batches or callable postcondi
       "The exhausted final attempt must not spend another minute waiting for a retry that cannot happen.");
     assert.match(result.stderr, /exhausted all three attempts/);
   }
+});
+
+test("--force reaches only exact Function batches while other arguments reach every phase", (t) => {
+  const fixture = executorFixture(t);
+  for (const force of ["--force", "-f"]) {
+    const result = fixture.run(undefined, "dev", false, [force, "--debug"]);
+    assert.equal(result.status, 0, result.stderr);
+    assert.deepEqual(result.events.filter((event) => event.startsWith("deploy:")), [
+      "deploy:--project dev deploy --only firestore:indexes --non-interactive --debug",
+      "deploy:--project dev deploy --only functions:alpha,functions:beta --non-interactive --debug --force",
+      "deploy:--project dev deploy --only firestore:rules --non-interactive --debug",
+    ], "Index deletion must never ride along with the Function failure-policy acknowledgement.");
+    assert.match(result.stdout, /deploying firestore:indexes without it/);
+  }
+  const deployOnly = fixture.run("functions:alpha,functions:beta", "dev", "--functions-deploy-only", ["--force"]);
+  assert.equal(deployOnly.status, 0, deployOnly.stderr);
+  assert.deepEqual(deployOnly.events.filter((event) => event.startsWith("deploy:")), [
+    "deploy:--project dev deploy --only functions:alpha,functions:beta --non-interactive --force",
+  ]);
+});
+
+test("--force is refused before any mutation when a Function batch is not exact", (t) => {
+  const fixture = executorFixture(t);
+  fixture.write("tool/firebase/plan_firebase_deploy_targets.mjs",
+    'process.stdout.write(process.argv.includes("--tsv") ? "firestore:indexes\\tfirestore:indexes\\nfunctions\\tfunctions\\n" : "functions\\n");\n');
+  const result = fixture.run("firestore:indexes,functions", "dev", false, ["--force"]);
+  assert.equal(result.status, 64);
+  assert.match(result.stderr, /Refusing --force without an exact named Function target: functions$/m);
+  assert.deepEqual(result.events.filter((event) => /^(deploy|sync):/.test(event)), []);
+});
+
+test("a missing failure-policy acknowledgement stops at once instead of retrying", (t) => {
+  const fixture = executorFixture(t);
+  fixture.write("bin/firebase", '#!/bin/sh\nprintf \'deploy:%s\\n\' "$*" >> "$EXECUTOR_EVENTS"\n' +
+    'case "$*" in *functions:*) echo "Error: Pass the --force option to deploy functions with a failure policy"; exit 1 ;; esac\n', 0o755);
+  fixture.write("bin/sleep", '#!/bin/sh\nprintf \'sleep:%s\\n\' "$*" >> "$EXECUTOR_EVENTS"\n', 0o755);
+  const result = fixture.run();
+  assert.equal(result.status, 1);
+  assert.deepEqual(result.events.filter((event) => event.startsWith("deploy:")), [
+    "deploy:--project dev deploy --only firestore:indexes --non-interactive",
+    "deploy:--project dev deploy --only functions:alpha,functions:beta --non-interactive",
+  ], "One attempt, then stop: no retries, no rules, no callable postconditions.");
+  assert.deepEqual(result.events.filter((event) => event.startsWith("sleep:") || event.startsWith("sync:")), []);
+  assert.match(result.stderr, /Re-run with --force/);
 });
 
 test("failed callable postconditions propagate without running parity or subsequent rules", (t) => {
