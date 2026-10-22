@@ -274,8 +274,11 @@ class EventFocusCard extends StatelessWidget {
     final actions = [item.primaryAction, ...item.secondaryActions];
     final activity = ActivityPalette.resolve(context, item.event.activityKind);
 
-    final card = EventActionCard(
+    return EventActionCard(
       event: item.event,
+      onTap: item.canSwipe
+          ? () => onActionPressed(EventFocusAction.swipe)
+          : null,
       topAccentColors: [activity.accent, activity.deep],
       subtitle: item.clubName,
       urgent: item.isUrgent,
@@ -385,13 +388,6 @@ class EventFocusCard extends StatelessWidget {
                 : () => onActionPressed(actions[index]),
           ),
       ],
-    );
-    if (!item.canSwipe) return card;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      excludeFromSemantics: true,
-      onTap: () => onActionPressed(EventFocusAction.swipe),
-      child: card,
     );
   }
 }
