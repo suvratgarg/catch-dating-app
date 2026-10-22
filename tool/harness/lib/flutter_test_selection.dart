@@ -220,7 +220,8 @@ const _probeOnlyFiles = {
 };
 
 bool _probeOnlyInput(String name) =>
-    name.endsWith('.md') ||
+    (name.endsWith('.md') &&
+        !RegExp(r'(^|/)(assets|test|integration_test)/').hasMatch(name)) ||
     _probeOnlyFiles.contains(name) ||
     _probeOnlyDirectories.any(name.startsWith);
 
