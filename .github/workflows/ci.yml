@@ -1,10 +1,10 @@
 name: CI
 run-name: >-
-  ${{ github.event_name == 'pull_request' && (!contains(fromJSON('["labeled","unlabeled"]'), github.event.action) || github.event.label.name == 'ci:admitted') && format('CI PR #{0}', github.event.pull_request.number) || (github.event_name == 'pull_request' && 'CI pull_request' || 'CI') }}
+  ${{ github.event_name == 'pull_request' && format('CI PR #{0}', github.event.pull_request.number) || 'CI' }}
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled, ready_for_review, converted_to_draft]
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
   push:
     branches: [main]
   merge_group:
@@ -25,40 +25,18 @@ permissions:
   issues: read
 
 concurrency:
-  # Full PR validation holds one slot through selected checks. Admission chooses
-  # the dependency-ready PR; queue ordering alone is not dependency ordering.
-  # Every main push retains its own key and immutable delivery evidence.
-  group: ci-${{ github.event_name }}-${{ github.event_name == 'pull_request' && 'admitted' || github.event_name == 'push' && github.run_id || github.event.merge_group.head_sha || github.ref }}
-  queue: max
-  cancel-in-progress: false
+  # Every ready PR validates in parallel; a newer push or draft conversion
+  # cancels that PR's older run. The merge queue validates the exact combined
+  # source before anything reaches main, so a PR result never needs to stay
+  # current with main. Merge-queue groups key on their exact head, and every
+  # main push retains its own key and immutable delivery evidence.
+  group: ci-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.event_name == 'push' && github.run_id || github.event.merge_group.head_sha || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  admission:
-    name: Check PR admission
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    outputs:
-      admitted: ${{ github.event_name != 'pull_request' || steps.check.outputs.admitted == 'true' }}
-      reason_code: ${{ steps.check.outputs.reason_code }}
-    steps:
-      - name: Preserve non-PR validation
-        if: ${{ github.event_name != 'pull_request' }}
-        run: echo 'Non-PR validation retains its existing authority.'
-      - uses: actions/checkout@v6
-        if: ${{ github.event_name == 'pull_request' }}
-        with:
-          fetch-depth: 2
-          sparse-checkout-cone-mode: false
-          sparse-checkout: /tool/ci/pr_ci_admission.mjs
-      - id: check
-        if: ${{ github.event_name == 'pull_request' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: node tool/ci/pr_ci_admission.mjs
-
   plan:
-    needs: admission
-    if: ${{ !cancelled() && (github.event_name != 'pull_request' || needs.admission.outputs.admitted == 'true') }}
+    # Drafts are not ready for review; marking one ready starts its validation.
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}
     name: Plan affected targets
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -376,6 +354,7 @@ jobs:
     needs: [plan, source-preflight]
     if: >-
       !cancelled() && !failure() &&
+      !(github.event_name == 'pull_request' && github.event.pull_request.draft) &&
       needs.plan.result != 'failure' && needs.plan.result != 'cancelled' &&
       needs.source-preflight.result != 'failure' && needs.source-preflight.result != 'cancelled' &&
       (needs.plan.outputs.producer_attempt != format('{0}', github.run_attempt) ||
@@ -785,11 +764,10 @@ jobs:
           retention-days: 90
 
   required:
-    # Metadata notifications never publish a replacement Required CI context.
-    name: ${{ github.event_name == 'pull_request' && contains(fromJSON('["labeled","unlabeled"]'), github.event.action) && github.event.label.name != 'ci:admitted' && 'Ignored PR metadata' || 'Required CI' }}
-    if: ${{ !cancelled() && !(github.event_name == 'pull_request' && contains(fromJSON('["labeled","unlabeled"]'), github.event.action) && github.event.label.name != 'ci:admitted') }}
+    name: Required CI
+    # A draft cannot merge or enter the merge queue; it validates once ready.
+    if: ${{ !cancelled() && !(github.event_name == 'pull_request' && github.event.pull_request.draft) }}
     needs:
-      - admission
       - plan
       - source-preflight
       - finalize-plan
@@ -809,16 +787,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Refuse deferred PR validation
-        if: ${{ github.event_name == 'pull_request' }}
-        env:
-          ADMITTED: ${{ needs.admission.outputs.admitted }}
-          REASON_CODE: ${{ needs.admission.outputs.reason_code }}
-        run: |
-          if [[ "$ADMITTED" != "true" ]]; then
-            echo "Admission status: ${REASON_CODE:-unavailable}. Full validation did not run."
-            exit 1
-          fi
       - name: Require this attempt's planner
         env:
           PRODUCER_ATTEMPT: ${{ needs.plan.outputs.producer_attempt }}
@@ -830,18 +798,6 @@ jobs:
             echo 'This CI attempt has no matching planner execution. Use Re-run all jobs; partial retries cannot reuse an older plan.'
             exit 64
           fi
-      - name: Checkout admission verifier
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 2
-          sparse-checkout-cone-mode: false
-          sparse-checkout: /tool/ci/pr_ci_admission.mjs
-      - name: Recheck live PR admission and tested source
-        if: ${{ github.event_name == 'pull_request' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: node tool/ci/pr_ci_admission.mjs --require
       - id: artifact_guard
         name: Require every selected lane
         env:
