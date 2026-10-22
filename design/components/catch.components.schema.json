@@ -744,6 +744,10 @@
           "type": ["string", "null"],
           "description": "TypeScript type of the prop in the React implementation (blueprint D9). Required on T1 and T2 contracts at L2-L4 and absent elsewhere; null marks a Flutter framework mechanism with no React prop."
         },
+        "token": {
+          "enum": ["gap", "inset", "space"],
+          "description": "The token family whose constant Flutter callers pass (CatchGaps, CatchInsets, CatchSpacing). React takes that token's name instead of a raw length, so tsType is CatchGapSize, CatchInsetPadding or CatchSpacingStep."
+        },
         "values": {
           "type": "array",
           "items": {
