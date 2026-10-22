@@ -2327,6 +2327,15 @@ checkpointing, and the index-`READY` wait; invoking this helper directly is not
 normal promotion.
 Do not use a broad `firebase deploy --only functions --force` unless deleting
 legacy Functions is the intended release action.
+The helper passes extra Firebase arguments to every phase except `--force`
+(or `-f`), which reaches only the exact `functions:<name>` batches. Firebase
+needs it there when a target newly enables retry on failure; on
+`firestore:indexes` the same flag would delete every live index missing from
+`firestore.indexes.json`, so index, rules and Storage phases always deploy
+without it. With `--force`, a non-exact Function batch is refused before any
+mutation. When a batch fails because it lacks that acknowledgement, the helper
+stops after the first attempt and asks for a re-run with `--force` instead of
+spending its retries.
 
 Typical commands:
 
