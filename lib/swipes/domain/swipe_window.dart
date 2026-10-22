@@ -2,6 +2,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:collection/collection.dart';
 
 const swipeWindowDuration = Duration(hours: 24);
+const swipeWindowClockTick = Duration(seconds: 30);
 
 DateTime swipeWindowClosesAt(Event event) =>
     event.endTime.add(swipeWindowDuration);

@@ -34,6 +34,26 @@ Widget dashboardEmptySliverBodyReview(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Idle explainer',
+  type: HowCatchWorksSection,
+  path: '[P1 product surfaces]/Dashboard home',
+)
+Widget dashboardHowCatchWorksSectionReview(BuildContext context) {
+  return const WidgetbookPageCatalogFrame(
+    title: 'HowCatchWorksSection',
+    contractId: 'dashboard.home.how_catch_works',
+    children: [
+      WidgetbookPageStateCard(
+        label: 'signed-in idle explainer',
+        child: WidgetbookDashboardPrimitiveFrame(
+          child: HowCatchWorksSection(),
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Full home',
   type: DashboardHomeScreen,
   path: '[P1 product surfaces]/Dashboard home',
@@ -105,6 +125,27 @@ Widget dashboardFullSliverBodyReview(BuildContext context) {
           ),
         ),
       ),
+      for (final count in [1, 2])
+        WidgetbookPageStateCard(
+          label: '$count open Catch ${count == 1 ? 'window' : 'windows'}',
+          child: WidgetbookDashboardDeviceFrame(
+            child: WidgetbookDashboardScope(
+              child: CustomScrollView(
+                slivers: [
+                  CatchPageBody.slivers(
+                    mode: CatchPageBodyMode.standard,
+                    children: [
+                      DashboardFullSliverBody(
+                        viewModel: _dashboardWindowedViewModel(count),
+                        user: widgetbookDashboardViewer,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
     ],
   );
 }
@@ -114,10 +155,41 @@ DashboardFullViewModel _dashboardFullViewModel() {
     upcomingEvents: [widgetbookDashboardNextEvent],
     nextEvent: widgetbookDashboardNextEvent,
     arrivalAction: null,
-    activeSwipeEvent: null,
+    windowedEvents: const [],
     pendingReviewEvent: null,
     attendedEventsSection: DashboardSectionModel.data([
       DashboardSurfaceFixtures.attendedEvent,
     ]),
+  );
+}
+
+DashboardFullViewModel _dashboardWindowedViewModel(int count) {
+  final windows = [
+    for (var index = 0; index < count; index++)
+      DashboardCatchWindow(
+        event: DashboardSurfaceFixtures.attendedEvent.copyWith(
+          id: 'dashboard-preview-window-$index',
+          name: 'Catch after ${index == 0 ? 'Sunday Social' : 'Coffee Run'}',
+          startTime: DashboardSurfaceFixtures.now.subtract(
+            Duration(hours: index == 0 ? 5 : 3),
+          ),
+          endTime: DashboardSurfaceFixtures.now.subtract(
+            Duration(hours: index == 0 ? 4 : 2),
+          ),
+        ),
+        windowClosesAt: DashboardSurfaceFixtures.now.add(
+          Duration(hours: index == 0 ? 20 : 22),
+        ),
+      ),
+  ];
+  return DashboardFullViewModel(
+    upcomingEvents: [widgetbookDashboardNextEvent],
+    nextEvent: widgetbookDashboardNextEvent,
+    arrivalAction: null,
+    windowedEvents: windows,
+    pendingReviewEvent: null,
+    attendedEventsSection: DashboardSectionModel.data(
+      windows.map((window) => window.event).toList(),
+    ),
   );
 }
