@@ -18,7 +18,8 @@
     ],
     "capabilities": [
       "cross-paths",
-      "host-acquisition-meta"
+      "host-acquisition-meta",
+      "host-operator-alerts"
     ]
   },
   "requirements": [
@@ -790,6 +791,36 @@
       "owner": "host-acquisition",
       "sourcePaths": [
         "functions/src/acquisition/metaDispatcher.ts"
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
+    },
+    {
+      "id": "functions.secret.catch-host-operator-alerts-resend-key",
+      "kind": "secret-version",
+      "name": "CATCH_HOST_OPERATOR_ALERTS_RESEND_KEY",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyCapability": [
+          "host-operator-alerts"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "host-acquisition",
+      "sourcePaths": [
+        "functions/src/hostAlerts/runtime.ts"
       ],
       "credentialClass": "provider-secret",
       "binding": {

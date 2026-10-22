@@ -3680,6 +3680,22 @@ export interface HostOrganizerActivationDocument {
 }
 
 /**
+ * Private operator notice receipt keyed by the original accepted Host lead. No applicant details or contact data.
+ */
+export interface HostOperatorAlertDocument {
+  schemaVersion: 1;
+  classification: "sales_private";
+  eventId: string;
+  intentId: string;
+  acceptedAt: number;
+  status: "pending" | "sending" | "accepted" | "failed" | "unknown" | "stopped";
+  attempts: number;
+  attemptId: string | null;
+  providerMessageId: string | null;
+  nextAttemptAt?: number;
+}
+
+/**
  * Private, bounded Meta Lead delivery. Current consent and the original Sales intent are rechecked before dispatch. Contact data and form answers are excluded.
  */
 export interface HostAcquisitionDeliveryDocument {

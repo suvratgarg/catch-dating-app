@@ -9,6 +9,8 @@ import {recordHostConsent} from "./consentStore";
 import {deliverHostMetaLead, prepareHostMetaDelivery,
   stopHostMetaDeliveriesForConsent} from "./metaDelivery";
 import {nextPilotReview, recordHostPilotActivation} from "./pilotActivation";
+import {enqueueHostAlert, deliverHostAlert, dispatchHostAlerts} from
+  "../hostAlerts/delivery";
 
 const enabled = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
 const now = 1792512000000;
@@ -29,6 +31,37 @@ const grant = (capability: string) => ({
     analytics: true as const, advertising: true, chosenAt: now,
   },
 });
+
+test("real Host alert transactions deduplicate and remove terminal due-work",
+  {skip: !enabled}, async () => {
+    const intentId = randomBytes(32).toString("hex");
+    const eventId = `host_lead_${now}_${randomUUID()}`;
+    const source = db.doc(`salesInboundIntents/${intentId}`);
+    const receipt = db.doc(`hostOperatorAlerts/${eventId}`);
+    await source.create({source: "website", classification: "sales_private",
+      hostLead: {eventId, isNew: true}, status: "needs_identity_review",
+      hostApplication: {organizationName: "Emulator only"},
+      fullName: "Synthetic local test", email: "fixture@organizer.in",
+      submissionId: "emulator-only"});
+    const input = {enabled: true, since: now, db, now: () => now};
+    const enqueue = () => enqueueHostAlert({...input, intentId});
+    assert.equal((await Promise.all([enqueue(), enqueue(), enqueue()]))
+      .filter(Boolean).length, 1);
+    let sends = 0;
+    const provider = {id: "fake", submit: async () => {
+      sends++;
+      return {kind: "accepted" as const, providerMessageId: "synthetic-mail"};
+    }};
+    const deliver = () => deliverHostAlert({...input, eventId, provider});
+    await Promise.all([deliver(), deliver(), deliver()]);
+    assert.equal(sends, 1);
+    assert.equal((await receipt.get()).data()?.status, "accepted");
+    assert.equal((await receipt.get()).data()?.nextAttemptAt, undefined);
+    assert.equal(await dispatchHostAlerts({...input, provider}), 0);
+    assert.equal(await enqueue(), false);
+    await source.delete();
+    await receipt.delete();
+  });
 
 test("real transactions converge to revoked despite concurrent grants",
   {skip: !enabled}, async () => {
