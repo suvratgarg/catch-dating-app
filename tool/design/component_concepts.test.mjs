@@ -12,6 +12,7 @@ import {
   newWidgetPolicyIssues,
   normalizeSymbol,
   publicWidgetNamingProblems,
+  reactSymbolFiles,
 } from "./component_concepts.mjs";
 
 const primary = (id, symbol) => ({
@@ -365,6 +366,23 @@ test("parity tiers are required, keep React implementations off Flutter-only ent
   assert.deepEqual(componentTierProblems([entry("catch.badge", "T2"), member]),
     ["catch.privacy_badge: member tier T1 is wider than parent catch.badge tier T2"]);
   assert.deepEqual(componentTierProblems([entry("catch.badge", "T1"), {...member, tier: "T3"}]), []);
+});
+
+test("styled React records find each additional symbol in its own file", () => {
+  assert.deepEqual(reactSymbolFiles({
+    symbol: "CatchPageBody", file: "packages/web-ui/src/components/CatchPageBody.tsx",
+    api: "styled", additionalSymbols: ["CatchGap"],
+  }), [
+    ["CatchPageBody", "packages/web-ui/src/components/CatchPageBody.tsx"],
+    ["CatchGap", "packages/web-ui/src/components/CatchGap.tsx"],
+  ]);
+  assert.deepEqual(reactSymbolFiles({
+    symbol: "TextInputControl", file: "packages/web-ui/src/primitives.tsx",
+    api: "headless-control", additionalSymbols: ["SelectControl"],
+  }), [
+    ["TextInputControl", "packages/web-ui/src/primitives.tsx"],
+    ["SelectControl", "packages/web-ui/src/primitives.tsx"],
+  ]);
 });
 
 test("T1 and T2 design-system props declare a React type beside the Dart one", () => {

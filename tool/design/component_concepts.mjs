@@ -306,6 +306,20 @@ export const tokenPropTsTypes = Object.freeze({
   space: "CatchSpacingStep",
 });
 
+/**
+ * Files of a contract's React symbols. A headless record keeps every symbol in
+ * its one primitives file; a styled record's additional symbols each live in
+ * their own file beside the primary one (one public component per file).
+ */
+export function reactSymbolFiles(react) {
+  const directory = react.file.slice(0, react.file.lastIndexOf("/") + 1);
+  return [
+    [react.symbol, react.file],
+    ...(react.additionalSymbols ?? []).map((symbol) =>
+      [symbol, react.api === "styled" ? `${directory}${symbol}.tsx` : react.file]),
+  ];
+}
+
 export function componentTierProblems(components) {
   const problems = [];
   const tierById = new Map(components.map((component) => [component.id, component.tier]));
