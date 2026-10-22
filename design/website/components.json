@@ -1756,11 +1756,8 @@
           "disabled"
         ]
       },
-      "notes": "Shared website operational step rail primitive used by host application and claim flows; raw operational-step-rail shells are blocked by web:react-component-governance.",
-      "comparedWith": [
-        "catch.button"
-      ],
-      "comparisonReason": "Numbered step navigation rail that renders one button per step. It is a web port of Flutter's CatchFormStepList. The owner decided on 2026-10-19 to promote that list to a T2 contract; the follow-up that registers catch.form_step_list points this entry at it, and Phase 7e replaces both rails."
+      "notes": "Shared website operational step rail primitive used by host application and claim flows; raw operational-step-rail shells are blocked by web:react-component-governance. Adapter of catch.form_step_list until Phase 7e replaces it with the @catch/web-ui implementation.",
+      "componentId": "catch.form_step_list"
     },
     {
       "id": "shared_choice_chip_controls",
@@ -2467,9 +2464,10 @@
       "source": "website/src/shared/ui/primitives/host3.tsx",
       "exportName": "HostPreviewFaqList",
       "comparedWith": [
-        "catch.journey_steps"
+        "catch.journey_steps",
+        "catch.form_step_list"
       ],
-      "comparisonReason": "FAQ accordion of details elements; not a numbered journey.",
+      "comparisonReason": "FAQ accordion of details elements; not a numbered journey, and its rows expand answers in place instead of selecting a form section with completion status like CatchFormStepList.",
       "css": [
         "website/src/styles/host.css"
       ],
@@ -2731,9 +2729,10 @@
       "comparedWith": [
         "catch.journey_steps",
         "catch.section",
-        "catch.metric_strip"
+        "catch.metric_strip",
+        "catch.form_step_list"
       ],
-      "comparisonReason": "Layout container with no heading, state or row anatomy of its own; the matched contract owns a different responsibility."
+      "comparisonReason": "Layout container with no heading, state or row anatomy of its own; the matched contracts own different responsibilities, including CatchFormStepList's step selection and completion status."
     },
     {
       "id": "shared_control_row",
