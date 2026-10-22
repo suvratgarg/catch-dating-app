@@ -41,7 +41,9 @@
   --sidebar-bg: var(--catch-color-dark-surface);
   --sidebar-ink: var(--catch-color-dark-ink);
   --sidebar-muted: var(--catch-color-dark-ink2);
-  --sidebar-faint: var(--catch-color-dark-ink3);
+  /* dark-ink3 reaches only about 4:1 on the sidebar; the small group labels
+   * need AA, so faint sidebar text mixes ink toward the surface instead. */
+  --sidebar-faint: color-mix(in srgb, var(--catch-color-dark-ink) 60%, var(--catch-color-dark-surface));
   --sidebar-line: var(--catch-color-dark-line);
   --sidebar-line-strong: var(--catch-color-dark-line2);
   --sidebar-fill: color-mix(in srgb, var(--catch-color-dark-ink) 8%, transparent);
