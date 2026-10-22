@@ -523,7 +523,7 @@ test("adminUpdateClubDetailsHandler saves allowed cleanup fields", async () => {
         },
         publicProfile: {
           headline: "Afterfly Run Club in Indore",
-          missingEvidence: ["Owner contact", "Media permission"],
+          missingEvidence: [],
         },
       },
       reviewNote: "Cleaned up naming and owner contact.",
@@ -545,10 +545,7 @@ test("adminUpdateClubDetailsHandler saves allowed cleanup fields", async () => {
     (club?.provenance as FakeData).lastVerifiedAt,
     "SERVER_TIMESTAMP"
   );
-  assert.deepEqual(
-    (club?.publicProfile as FakeData).missingEvidence,
-    ["Owner contact", "Media permission"]
-  );
+  assert.deepEqual((club?.publicProfile as FakeData).missingEvidence, []);
   assert.equal((club?.adminSearch as FakeData).updatedBySource,
     "adminUpdateClubDetails");
   assert.ok(((club?.adminSearch as FakeData).tokens as string[])
@@ -820,6 +817,105 @@ test("adminUpdateClubDetailsHandler rejects protected index fields",
     );
   }
 );
+
+test("adminUpdateClubDetailsHandler keeps operator text out of public fields",
+  async () => {
+    const before = clubDoc();
+    const h = harness({"organizers/afterfly-run-club-indore": before});
+
+    for (const fields of [
+      {publicProfile: {
+        summary: "This unclaimed profile summarizes verified public facts " +
+          "for owner review and stays out of search until confirmed.",
+      }},
+      {publicProfile: {fitNotes: ["Strong category for the Indore launch."]}},
+      {publicProfile: {missingEvidence: ["Owner verification or claim"]}},
+      {description: "Source-backed seed listing pending admin review."},
+      {publicPage: {seoDescription: "Noindex until verified."}},
+    ]) {
+      await assert.rejects(
+        () => adminUpdateClubDetailsHandler(
+          callableRequest("admin-1", {
+            clubId: "afterfly-run-club-indore",
+            fields,
+            reviewNote: "Recorded intake findings.",
+          }, {admin: true}),
+          h.deps
+        ),
+        (error) => assertHttpsCode(error, "failed-precondition"),
+        JSON.stringify(fields)
+      );
+    }
+    assert.deepEqual(h.firestore.get("organizers/afterfly-run-club-indore"),
+      before);
+    assert.equal(h.firestore.auditLogs().length, 0);
+  });
+
+test("adminUpdateClubDetailsHandler refuses to publish operator content",
+  async () => {
+    const leaked = clubDoc({
+      publicProfile: {
+        ...(clubDoc().publicProfile as FakeData),
+        fitNotes: [],
+        missingEvidence: [],
+        facts: [{label: "Claim state", value: "Unclaimed"}],
+      },
+      publicSources: [{
+        type: "user_supplied",
+        label: "Request",
+        detail: "Requested by a teammate.",
+        href: null,
+        confidence: "medium",
+        lastCheckedAt: null,
+      }],
+    });
+    const h = harness({"organizers/afterfly-run-club-indore": leaked});
+
+    await assert.rejects(
+      () => adminUpdateClubDetailsHandler(
+        callableRequest("admin-1", {
+          clubId: "afterfly-run-club-indore",
+          fields: {publicPage: {publishStatus: "published"}},
+          reviewNote: "Publishing after review.",
+        }, {admin: true}),
+        h.deps
+      ),
+      (error) => {
+        assertHttpsCode(error, "failed-precondition");
+        assert.match((error as Error).message,
+          /publicProfile\.facts\[0\].*publicSources\[0\]\.href/u);
+        return true;
+      }
+    );
+    assert.equal(
+      ((h.firestore.get("organizers/afterfly-run-club-indore")
+        ?.publicPage) as FakeData).publishStatus,
+      "qa"
+    );
+
+    const clean = harness({
+      "organizers/afterfly-run-club-indore": clubDoc({
+        publicProfile: {
+          ...(clubDoc().publicProfile as FakeData),
+          fitNotes: [],
+          missingEvidence: [],
+        },
+      }),
+    });
+    await adminUpdateClubDetailsHandler(
+      callableRequest("admin-1", {
+        clubId: "afterfly-run-club-indore",
+        fields: {publicPage: {publishStatus: "published"}},
+        reviewNote: "Publishing after review.",
+      }, {admin: true}),
+      clean.deps
+    );
+    assert.equal(
+      ((clean.firestore.get("organizers/afterfly-run-club-indore")
+        ?.publicPage) as FakeData).publishStatus,
+      "published"
+    );
+  });
 
 test("adminUpdateClubDetailsHandler requires review notes", async () => {
   const h = harness({

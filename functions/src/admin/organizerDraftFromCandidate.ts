@@ -26,6 +26,8 @@ import {reserveOrganizerCanonicalRoute} from "./organizerPublishingGuards";
 import {organizerDraftOperationId} from "./organizerDraftIdentity";
 import {organizerSupplyCapabilitiesFor} from
   "../shared/organizerSupplyCapabilities";
+import {assertOrganizerPublicContent} from
+  "../organizers/organizerPublicContent";
 
 const organizerIntakeRoles = ["admin", "adminOwner", "support"] as const;
 const curationCollection = "organizerIntakeCurationDecisions";
@@ -182,6 +184,7 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
         candidate.reviewContext?.verifiedAt ?? null
       ),
     });
+    assertOrganizerPublicContent(organizer, "Organizer draft creation");
     organizer.intakeLearningSource = buildIntakeLearningSource({
       candidate,
       workItem,
@@ -296,7 +299,7 @@ function buildOrganizerDraft({
 }): OrganizerDocument {
   const sourceDetail = candidate.snippet ?
     boundedText(candidate.snippet, 600) :
-    "Source captured during reviewed organizer intake.";
+    `Public source page for ${data.name}.`;
   const formats = uniqueStrings(
     candidate.reviewContext?.formats ?? [],
     12,
@@ -385,13 +388,7 @@ function buildOrganizerDraft({
       formats,
       facts: [],
       fitNotes: [],
-      missingEvidence: [
-        "Member-facing description is not established by intake evidence.",
-        "Locality within the launch market is not established.",
-        "Public listing descriptor requires editorial review.",
-        "Organizer ownership is not confirmed.",
-        "Publication evidence requires final admin review.",
-      ],
+      missingEvidence: [],
       eventEvidence: [],
     },
     publicSources: [{

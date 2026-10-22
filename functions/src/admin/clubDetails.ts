@@ -56,6 +56,8 @@ import {
   organizerAdminSearchQueryTokens,
 } from "./organizerAdminSearch";
 import {marketForIdOrAlias} from "../locations/marketConfig";
+import {assertOrganizerPublicContent} from
+  "../organizers/organizerPublicContent";
 
 const clubDetailsRoles = ["admin", "adminOwner", "support"] as const;
 
@@ -379,6 +381,11 @@ export async function adminUpdateClubDetailsHandler(
       "A review note is required for audited organizer edits."
     );
   }
+  assertOrganizerPublicContent({
+    description: data.fields.description,
+    publicPage: data.fields.publicPage,
+    publicProfile: data.fields.publicProfile,
+  }, "This organizer edit");
 
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminUpdateClubDetails");
@@ -429,6 +436,12 @@ export async function adminUpdateClubDetailsHandler(
         {countryName: patch.countryName} :
         {}),
     });
+    if (data.fields.publicPage?.publishStatus === "published") {
+      assertOrganizerPublicContent(
+        nextClubForSearch,
+        "Publishing this organizer"
+      );
+    }
     patch.adminSearch = buildOrganizerAdminSearchProjection(
       data.clubId,
       nextClubForSearch,
