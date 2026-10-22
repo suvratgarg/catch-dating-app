@@ -9,8 +9,8 @@
   opacity: 0;
   transform: translateY(22px);
   transition:
-    opacity var(--catch-motion-slow) var(--catch-ease-standard),
-    transform var(--catch-motion-slow) var(--catch-ease-standard);
+    opacity var(--catch-motion-slow) var(--catch-motion-standard-curve),
+    transform var(--catch-motion-slow) var(--catch-motion-standard-curve);
   transition-delay: var(--reveal-delay, 0ms);
   will-change: opacity, transform;
 }

@@ -6,99 +6,13 @@
  * kickers, dark "wow" surfaces, activity pigments as the only chroma,
  * app motion tokens, and the warm matte photo grade.
  *
- * Everything here derives from generated tokens
- * (packages/web-config/generated/catch-tokens.css) or the canonical derived
- * palette (design_context_pack/design_system/activity_palette.json).
+ * Motion, elevation and activity swatches come from the generated tokens
+ * (packages/web-config/generated/catch-tokens.css); nothing here restates them.
  */
 
 :root {
-  /* Motion (mirrors lib/core/theme CatchMotion). */
-  --catch-motion-fast: 120ms;
-  --catch-motion-micro: 180ms;
-  --catch-motion-base: 220ms;
-  --catch-motion-page: 280ms;
-  --catch-motion-slow: 420ms;
-  --catch-ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --catch-ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
-
   /* Voice type: the 78% width lock is the Catch signature. */
   --catch-voice-stretch: 78%;
-
-  /* Hairline-first elevation (mirrors CatchElevation.card). */
-  --catch-shadow-card:
-    0 4px 14px rgba(26, 20, 16, 0.06),
-    0 1px 2px rgba(26, 20, 16, 0.04);
-  --catch-shadow-raised:
-    0 8px 24px rgba(26, 20, 16, 0.10),
-    0 1px 2px rgba(26, 20, 16, 0.04);
-  --catch-shadow-overlay: 0 16px 40px rgba(26, 20, 16, 0.18);
-
-  /* Activity deep/soft derivations (light surfaces) + lifted dark accents.
-     Values: design_context_pack/design_system/activity_palette.json. */
-  --catch-activity-social-run-deep: #B33B1F;
-  --catch-activity-social-run-soft: #F4E9E7;
-  --catch-activity-social-run-accent-dark: #DE735A;
-  --catch-activity-social-run-soft-dark: #4B2D25;
-  --catch-activity-running-deep: #97321E;
-  --catch-activity-running-soft: #F3E9E7;
-  --catch-activity-running-accent-dark: #D55E46;
-  --catch-activity-running-soft-dark: #4A2C26;
-  --catch-activity-walking-deep: #4F743E;
-  --catch-activity-walking-soft: #ECF0EB;
-  --catch-activity-walking-accent-dark: #81AA6E;
-  --catch-activity-walking-soft-dark: #353F31;
-  --catch-activity-pickleball-deep: #1D6E54;
-  --catch-activity-pickleball-soft: #E8F2EF;
-  --catch-activity-pickleball-accent-dark: #37BA8F;
-  --catch-activity-pickleball-soft-dark: #29473D;
-  --catch-activity-padel-deep: #1C6B6F;
-  --catch-activity-padel-soft: #E8F2F3;
-  --catch-activity-padel-accent-dark: #36B5BC;
-  --catch-activity-padel-soft-dark: #294648;
-  --catch-activity-tennis-deep: #347134;
-  --catch-activity-tennis-soft: #EAF0EA;
-  --catch-activity-tennis-accent-dark: #5EAE5E;
-  --catch-activity-tennis-soft-dark: #2F412F;
-  --catch-activity-badminton-deep: #2E4FA6;
-  --catch-activity-badminton-soft: #E8EBF2;
-  --catch-activity-badminton-accent-dark: #6A86D1;
-  --catch-activity-badminton-soft-dark: #293147;
-  --catch-activity-cycling-deep: #2251A5;
-  --catch-activity-cycling-soft: #E7EBF3;
-  --catch-activity-cycling-accent-dark: #5784D7;
-  --catch-activity-cycling-soft-dark: #273349;
-  --catch-activity-spin-class-deep: #2A3C92;
-  --catch-activity-spin-class-soft: #E8EAF2;
-  --catch-activity-spin-class-accent-dark: #586CC9;
-  --catch-activity-spin-class-soft-dark: #2A2F46;
-  --catch-activity-yoga-deep: #69408D;
-  --catch-activity-yoga-soft: #EDEAF0;
-  --catch-activity-yoga-accent-dark: #9B77BC;
-  --catch-activity-yoga-soft-dark: #392F42;
-  --catch-activity-strength-training-deep: #823D28;
-  --catch-activity-strength-training-soft: #F2EBE8;
-  --catch-activity-strength-training-accent-dark: #C2694D;
-  --catch-activity-strength-training-soft-dark: #46312A;
-  --catch-activity-pub-quiz-deep: #2D3C7C;
-  --catch-activity-pub-quiz-soft: #E9EBF1;
-  --catch-activity-pub-quiz-accent-dark: #5467BB;
-  --catch-activity-pub-quiz-soft-dark: #2C3144;
-  --catch-activity-bar-crawl-deep: #852E64;
-  --catch-activity-bar-crawl-soft: #F2E9EE;
-  --catch-activity-bar-crawl-accent-dark: #BF5999;
-  --catch-activity-bar-crawl-soft-dark: #452C3B;
-  --catch-activity-dinner-deep: #9F2F4B;
-  --catch-activity-dinner-soft: #F2E8EB;
-  --catch-activity-dinner-accent-dark: #CD6880;
-  --catch-activity-dinner-soft-dark: #462A31;
-  --catch-activity-singles-mixer-deep: #C72942;
-  --catch-activity-singles-mixer-soft: #F3E7E9;
-  --catch-activity-singles-mixer-accent-dark: #DF7787;
-  --catch-activity-singles-mixer-soft-dark: #49272C;
-  --catch-activity-open-activity-deep: #595045;
-  --catch-activity-open-activity-soft: #EEEDEC;
-  --catch-activity-open-activity-accent-dark: #8D8377;
-  --catch-activity-open-activity-soft-dark: #3B3836;
 }
 
 /* Voice type: every Archivo role renders at the locked 78% width. */
@@ -164,7 +78,7 @@ h3,
   --website-accent-border: color-mix(in srgb, var(--website-accent) 50%, transparent);
   --website-input-border: color-mix(in srgb, var(--website-text) 24%, transparent);
   --website-card-wash: color-mix(in srgb, var(--website-text) 6%, transparent);
-  --website-shadow-soft: 0 18px 44px rgba(0, 0, 0, 0.35);
+  --website-shadow-soft: 0 18px 44px color-mix(in srgb, var(--catch-color-dark-bg) 35%, transparent);
   background: var(--website-bg);
   color: var(--website-text);
   --catch-focus-ring-color: var(--catch-color-dark-primary);

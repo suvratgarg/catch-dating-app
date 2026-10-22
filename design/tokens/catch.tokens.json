@@ -7719,6 +7719,43 @@
           "decision": "Material standard curve selected on both platforms for Catch transitions; iOS native spring parameters are not equivalent cubic curves."
         }
       }
+    },
+    "springCurve": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.34,
+        1.4,
+        0.64,
+        1
+      ],
+      "$description": "Explicit Catch overshoot curve for press and success feedback; not claimed to be a platform spring."
+    }
+  },
+  "elevation": {
+    "$description": "Hairline-first lift shared by Flutter BoxShadow lists and website box-shadow values. Shadow ink is warm (26, 20, 16), not the text ink.",
+    "card": {
+      "$type": "shadow",
+      "$description": "Content cards that read as above the page while keeping the hairline border style.",
+      "$value": [
+        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.06}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 4, "unit": "px"}, "blur": {"value": 14, "unit": "px"}, "spread": {"value": 0, "unit": "px"}},
+        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.04}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 1, "unit": "px"}, "blur": {"value": 2, "unit": "px"}, "spread": {"value": 0, "unit": "px"}}
+      ]
+    },
+    "raised": {
+      "$type": "shadow",
+      "$description": "Bottom sheets, floating actions and popovers.",
+      "$value": [
+        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.1}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 8, "unit": "px"}, "blur": {"value": 24, "unit": "px"}, "spread": {"value": 0, "unit": "px"}},
+        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.06}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 1, "unit": "px"}, "blur": {"value": 2, "unit": "px"}, "spread": {"value": 0, "unit": "px"}}
+      ]
+    },
+    "overlay": {
+      "$type": "shadow",
+      "$description": "Toasts, snackbars and dropdown overlays.",
+      "$value": [
+        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.18}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 16, "unit": "px"}, "blur": {"value": 40, "unit": "px"}, "spread": {"value": 0, "unit": "px"}},
+        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.08}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 4, "unit": "px"}, "blur": {"value": 8, "unit": "px"}, "spread": {"value": 0, "unit": "px"}}
+      ]
     }
   },
   "accessibility": {
