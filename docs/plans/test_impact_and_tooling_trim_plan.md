@@ -1,6 +1,6 @@
 ---
 doc_id: test_impact_and_tooling_trim_plan
-version: 1.0.0
+version: 1.1.0
 updated: 2026-10-23
 owner: agent_operating_model
 status: proposed
@@ -85,27 +85,33 @@ runs fell from 85 to 20 of 94 replayed commits).
 
 ### Tools lane replay
 
-Replaying the current Tools selector over the last 150 merges on `main`:
+Replaying the Tools selector over the last 150 merges on `main`, before and
+after #742 narrowed which harness files count as shared CI control:
 
-- The Tools lane was selected for 103 merges.
-- 60 of those (58%) ran the full matrix of 724 check commands.
-- The other 43 averaged 36 check commands, about 20 times less.
+| | Before #742 (`cdd7a5fd9`) | After #742 (`9ec40fa7e`) |
+|---|---:|---:|
+| Merges that selected the Tools lane | 103 | 103 |
+| Full matrix (all 724 check commands) | 60 (58%) | 54 (52%) |
+| Selective runs, average check commands | 36 | 40 |
 
-Why the full matrix ran (one run can have several reasons):
+Why the full matrix still runs after #742 (one run can have several reasons):
 
 | Full-matrix trigger | Runs |
 |---|---:|
-| `tool/harness*`, `tool/run.mjs` or `tool/tools_manifest.json` changed | 29 |
-| A `tool/ci/` file changed (shared control plane) | 16 |
-| A workflow file changed | 16 |
-| A Tools-lane path no tool declares | 14 |
+| A Tools-lane path no tool declares | 28 |
+| `tool/harness*`, `tool/run.mjs` or `tool/tools_manifest.json` changed | 25 |
+| A workflow file changed | 8 |
 | `package.json` or `package-lock.json` changed | 8 |
 | Anything under `tool/lib/` changed | 5 |
+| A shared `tool/ci/` file changed | 2 |
 | `pubspec.yaml` or `pubspec.lock` changed | 2 |
 
-The biggest trigger is self-inflicted. Registering or editing one tool edits
-`tool/tools_manifest.json`, and that reruns all 724 commands. The next biggest
-are broad globs (`tool/lib/**`, lockfiles), which stand in for an import graph.
+#742 moved CI-only scripts and tests out of the shared control plane, which
+stops them re-running every CI lane. Inside the Tools lane, most of those paths
+now show up as "no tool declares this path", because the manifest has no owner
+for them. Deriving owners from imports (Phase 1 step 1) closes that gap.
+Registering or editing one tool edits `tool/tools_manifest.json` and reruns all
+724 commands; the manifest diff (Phase 1 step 2) closes that one.
 
 ## Standard Tools: Adopt Versus Keep
 
@@ -119,6 +125,28 @@ are broad globs (`tool/lib/**`, lockfiles), which stand in for an import graph.
 | Result caching across runs | **Evaluate later**: Turborepo first, then Nx | Root `package.json` already declares npm workspaces (admin, website, web-ui, web-config). Turborepo adds input-hash caching with little configuration. Worth it only after layers 1 and 2 are precise; revisit with measured data. |
 | Whole-repo build graph | **Do not adopt** Bazel or Pants now | Highest ceiling, but too much migration and upkeep for the team's size. |
 
+## Retirement Rule: Salvage Before Deleting
+
+The owner's rule for every deletion in this plan: past work must not be lost,
+even when nothing uses it today. A tool, script or folder is retired only when
+its PR shows all four of these:
+
+1. **What it did.** One or two plain sentences, and the data or decisions it
+   produced.
+2. **Why it is no longer needed, or what replaced it.** The replacement must do
+   at least what the old code did. Name the file or feature. If the
+   replacement is missing part of the old behavior, port that part first.
+3. **What was salvaged.** Reusable logic, fixtures, tests, data shapes and
+   lessons move into the code that lives on (a shared library, the replacement
+   feature, its tests or its doc) before the old code is deleted.
+4. **Where it went.** A short entry in the retirement ledger (an appendix of
+   this plan) with the deleted path, the reason, where its value moved, and the
+   last commit that contained it, so it can be restored with one `git`
+   command.
+
+Anything that fails a check stays until it passes. Code that still has value
+but no current user gets an owner and a home, not a deletion.
+
 ## Phases
 
 Every selector change ships as its own PR with a before/after replay over the
@@ -128,18 +156,23 @@ last 150 merges in its description, using the method from #760.
 
 1. Run `capture_freshness` only in the merge queue, like visual-integration and
    app builds. It spends about 393 macOS minutes a week on pull requests.
-2. Delete the 34 tools the manifest already marks `retired`, with their tests,
-   fixtures and manifest entries. Nothing runs them: the Tools lane selects
-   only `active` tools, so their 197 check commands are dead weight. Thirty-two
-   of them are the retired organizer-intake pipeline in `tool/organizer_intake/`
-   (157 files). The organizer-intake product data model in Functions and Admin
-   is live and is not touched.
-3. Delete tools with no caller at all (listed in "Trim Inventory"), each with
-   its evidence in the PR.
+2. Retire the 34 tools the manifest already marks `retired`, under the
+   retirement rule above. The Tools lane selects only `active` tools, so their
+   197 check commands never run. They are the organizer-intake pipeline in
+   `tool/organizer_intake/` (157 files), and they are not cleanly separable:
+   Functions (`functions/src/admin/eventSupplyReadiness.ts`), Admin (the data
+   quality screen), operations tests, `tool/remote_ops_manifest.json` and
+   `tool/lib/cli_args.test.mjs` still reference their files and generated
+   JSON. First map which behaviors the live Functions and Admin features
+   already cover, port the rest (for example the search-capture and
+   URL-normalization logic, the event import planning, and the fixtures), then
+   retire. The live organizer-intake data model is not touched.
+3. Retire tools with no caller at all (listed in "Trim Inventory") under the
+   same rule. A guard that is still wanted gets wired into CI instead.
 
 ### Phase 1: Tools lane selection from real imports
 
-Expected: full-matrix runs fall from 60 to roughly 10–15 of 103, and the
+Expected: full-matrix runs fall from 54 to roughly 10–15 of 103, and the
 Tools lane's PR compute falls by about half (estimate; each PR measures it).
 
 1. **Derived code inputs.** For each active tool, compute the import closure
@@ -265,7 +298,7 @@ Outside `tool/`:
 
 ## Owner Decisions
 
-1. Approve deleting the 34 retired tools (their history stays in Git).
+1. Review the organizer-intake salvage map before its retirement PR lands.
 2. Decide on the one-time data tools: retire them now, or keep any you still
    run.
 3. Decide on the two proofs of concept.
