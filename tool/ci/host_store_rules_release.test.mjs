@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import {CANONICAL_REPOSITORY_ID} from "../lib/canonical_repository.mjs";
 import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -23,7 +24,7 @@ test("service identity uses its default quota project; local user opt-in is fixe
 const source = () => execFileSync("git", ["show", `${RELEASE.sourceSha}:firestore.rules`]);
 const run = () => ({id: RELEASE.runId, run_attempt: 1, workflow_id: 320377139,
   event: "push", head_branch: "main", head_sha: RELEASE.sourceSha,
-  head_repository: {full_name: "suvratgarg/catch-dating-app"},
+  head_repository: {id: CANONICAL_REPOSITORY_ID, full_name: "suvratgarg/catch-dating-app"},
   status: "completed", conclusion: "success"});
 const artifact = () => ({id: RELEASE.artifactId, expired: false,
   name: `firebase-delivery-${RELEASE.sourceSha}-1`, digest: `sha256:${RELEASE.archiveHash}`,
