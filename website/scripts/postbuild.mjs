@@ -73,6 +73,10 @@ writeRoute("/help/", {
   ...staticRouteMeta(websiteMeta, "help", baseUrl),
   bodyHtml: buildLegalStaticBody(legalContent.pages.help, legalContent.effectiveDate),
 });
+writeRoute("/delete-account/", {
+  ...staticRouteMeta(websiteMeta, "account_deletion", baseUrl),
+  bodyHtml: buildLegalStaticBody(legalContent.pages.account_deletion, legalContent.effectiveDate),
+});
 writeRoute("/404/", staticRouteMeta(websiteMeta, "not_found", baseUrl));
 writeStaticHtml("404.html", staticRouteMeta(websiteMeta, "not_found", baseUrl));
 
@@ -281,8 +285,12 @@ function buildLegalStaticBody(page, effectiveDate) {
     const bullets = (section.bullets ?? [])
       .map((bullet) => `<li>${escapeHtml(String(bullet))}</li>`)
       .join("");
+    const links = (section.links ?? [])
+      .map((link) => `<li><a href="${escapeHtml(String(link.href))}">${escapeHtml(String(link.label))}</a></li>`)
+      .join("");
     return `<section><h2>${escapeHtml(String(section.heading))}</h2>` +
-      `${paragraphs}${bullets ? `<ul>${bullets}</ul>` : ""}</section>`;
+      `${paragraphs}${bullets ? `<ul>${bullets}</ul>` : ""}` +
+      `${links ? `<ul>${links}</ul>` : ""}</section>`;
   }).join("");
   return [
     `<main data-static-legal-page="${escapeHtml(String(page.path))}">`,

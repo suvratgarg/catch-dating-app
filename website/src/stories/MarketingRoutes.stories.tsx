@@ -12,6 +12,7 @@ import {EventInvitePage} from "../features/events/EventInvitePage";
 import {NotFoundPage} from "../features/notFound/NotFoundPage";
 import {LegalPage} from "../features/legal/LegalPage";
 import {publishedLegalContent} from "../content/legal";
+import type {PublishedLegalPageKey} from "../content/types";
 import {hostListings} from "./fixtures/hostListings";
 import {HostListingPage} from "../features/organizers/HostListingPage";
 import {OrganizerSearchPage} from "../features/organizers/OrganizerSearchPage";
@@ -373,6 +374,19 @@ export const Help: Story = {
   render: () => <LegalStoryPage pageKey="help" />,
 };
 
+export const AccountDeletion: Story = {
+  name: "/delete-account/",
+  parameters: {
+    catchRoute: {
+      id: "account_deletion",
+      path: "/delete-account/",
+      reviewStates: ["published"],
+      stateCoverage: {storybook: ["published"], manual: []},
+    },
+  },
+  render: () => <LegalStoryPage pageKey="account_deletion" />,
+};
+
 export const LegalDocumentShell: Story = {
   name: "Legal document shell",
   parameters: {
@@ -528,7 +542,7 @@ function requireListing(id: string): HostListing {
   return listing;
 }
 
-function LegalStoryPage({pageKey}: {pageKey: "privacy" | "terms" | "help"}) {
+function LegalStoryPage({pageKey}: {pageKey: PublishedLegalPageKey}) {
   return (
     <PageShell pageClassName="legal-page">
       <LegalPage

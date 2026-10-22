@@ -1,7 +1,7 @@
 {
   "$schema": "./website.routes.schema.json",
-  "version": 19,
-  "updated": "2026-10-19",
+  "version": 20,
+  "updated": "2026-10-22",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -574,6 +574,35 @@
       "indexing": "index",
       "sitemap": "included",
       "notes": "Published account, privacy, listing, event, safety, website, correction, claim, and takedown support route.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "published"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "published"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
+      "id": "account_deletion",
+      "kind": "static",
+      "path": "/delete-account/",
+      "pageKey": "account_deletion",
+      "source": "website/src/features/legal/LegalPage.tsx",
+      "metaKey": "account_deletion",
+      "staticOutput": "postbuild",
+      "indexing": "index",
+      "sitemap": "included",
+      "notes": "Canonical store-listing account deletion resource: in-app deletion for Catch and Catch Host, the no-app email request path, and what is deleted versus retained.",
       "review": {
         "priority": "p0",
         "status": "ready",

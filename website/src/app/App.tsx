@@ -303,6 +303,15 @@ function CanonicalMarketingRouteShell() {
             )}
           />
           <Route
+            path={marketingRoutePaths.account_deletion}
+            element={(
+              <LegalPage
+                page={publishedLegalContent.pages.account_deletion}
+                effectiveDate={publishedLegalContent.effectiveDate}
+              />
+            )}
+          />
+          <Route
             path={marketingRoutePaths.not_found}
             element={<NotFoundPage />}
           />
