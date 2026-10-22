@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/legal_links.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Store review requires in-app Privacy, Terms and Help destinations, and
@@ -37,14 +35,22 @@ void main() {
     expect(_expectedLegalDefines.values.toSet(), hasLength(3));
   });
 
-  test('legalLinksProvider mirrors the configured destinations', () {
-    final container = ProviderContainer();
-    addTearDown(container.dispose);
+  test('legal URL getters resolve overridden define values', () {
+    AppConfig.overrideLegalUrlDefinesForTesting(_expectedLegalDefines);
+    addTearDown(AppConfig.resetLegalUrlDefinesOverrideForTesting);
 
-    final links = container.read(legalLinksProvider);
+    expect(
+      AppConfig.privacyPolicyUrl,
+      Uri.parse('https://catchdates.com/privacy/'),
+    );
+    expect(AppConfig.termsUrl, Uri.parse('https://catchdates.com/terms/'));
+    expect(AppConfig.helpUrl, Uri.parse('https://catchdates.com/help/'));
 
-    expect(links.privacyPolicy, AppConfig.privacyPolicyUrl);
-    expect(links.terms, AppConfig.termsUrl);
-    expect(links.help, AppConfig.helpUrl);
+    AppConfig.overrideLegalUrlDefinesForTesting(const {
+      'CATCH_PRIVACY_POLICY_URL': 'http://catchdates.com/privacy/',
+      'CATCH_TERMS_URL': '',
+    });
+    expect(AppConfig.privacyPolicyUrl, isNull);
+    expect(AppConfig.termsUrl, isNull);
   });
 }

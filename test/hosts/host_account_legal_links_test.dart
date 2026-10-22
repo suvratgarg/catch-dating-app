@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
-import 'package:catch_dating_app/core/legal_links.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -14,23 +16,22 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../test_pump_helpers.dart';
 
-final _legalLinks = LegalLinks(
-  privacyPolicy: Uri.parse('https://catchdates.com/privacy/'),
-  terms: Uri.parse('https://catchdates.com/terms/'),
-  help: Uri.parse('https://catchdates.com/help/'),
-);
+/// Configures AppConfig with the release define file the Host app ships with.
+void _useProdLegalUrlDefines() {
+  final defines =
+      jsonDecode(File('tool/env/dart_defines/prod.json').readAsStringSync())
+          as Map<String, dynamic>;
+  AppConfig.overrideLegalUrlDefinesForTesting(defines.cast<String, String>());
+  addTearDown(AppConfig.resetLegalUrlDefinesOverrideForTesting);
+}
 
 Future<void> _pump(
   WidgetTester tester, {
-  required LegalLinks legalLinks,
   required ExternalUrlLauncher launcher,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [
-        legalLinksProvider.overrideWithValue(legalLinks),
-        externalUrlLauncherProvider.overrideWithValue(launcher),
-      ],
+      overrides: [externalUrlLauncherProvider.overrideWithValue(launcher)],
       child: MaterialApp(
         theme: AppTheme.light,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -65,11 +66,11 @@ void main() {
     ('Help & support', 'https://catchdates.com/help/'),
   ]) {
     testWidgets('Host account menu opens $label externally', (tester) async {
+      _useProdLegalUrlDefines();
       Uri? launchedUri;
       LaunchMode? launchMode;
       await _pump(
         tester,
-        legalLinks: _legalLinks,
         launcher: (uri, {mode = LaunchMode.platformDefault}) async {
           launchedUri = uri;
           launchMode = mode;
@@ -94,10 +95,11 @@ void main() {
   testWidgets('Host account menu hides unconfigured legal destinations', (
     tester,
   ) async {
+    AppConfig.overrideLegalUrlDefinesForTesting(const {});
+    addTearDown(AppConfig.resetLegalUrlDefinesOverrideForTesting);
     var launchCount = 0;
     await _pump(
       tester,
-      legalLinks: const LegalLinks(),
       launcher: (uri, {mode = LaunchMode.platformDefault}) async {
         launchCount++;
         return true;
@@ -115,10 +117,10 @@ void main() {
   testWidgets('pending Host legal launch freezes account actions', (
     tester,
   ) async {
+    _useProdLegalUrlDefines();
     final launchResult = Completer<bool>();
     await _pump(
       tester,
-      legalLinks: _legalLinks,
       launcher: (uri, {mode = LaunchMode.platformDefault}) =>
           launchResult.future,
     );
@@ -141,9 +143,9 @@ void main() {
   });
 
   testWidgets('Host legal link launch failure is visible', (tester) async {
+    _useProdLegalUrlDefines();
     await _pump(
       tester,
-      legalLinks: _legalLinks,
       launcher: (uri, {mode = LaunchMode.platformDefault}) async =>
           throw StateError('launcher unavailable'),
     );

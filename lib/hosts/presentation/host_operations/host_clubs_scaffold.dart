@@ -164,25 +164,27 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
       icon: CatchIcons.logoutRounded,
       onPressed: accountOperationPending ? null : () => unawaited(_signOut()),
     );
-    final legalLinks = ref.watch(legalLinksProvider);
+    final privacyPolicyUrl = AppConfig.privacyPolicyUrl;
+    final termsUrl = AppConfig.termsUrl;
+    final helpUrl = AppConfig.helpUrl;
     final accountMenu = CatchActionMenu<String>(
       key: const ValueKey<String>('host-account-menu'),
       tooltip: context.l10n.safetySettingsScreenTitleAccount,
       enabled: !accountOperationPending,
       items: [
-        if (legalLinks.privacyPolicy != null)
+        if (privacyPolicyUrl != null)
           CatchActionMenuItem(
             value: _hostAccountPrivacyPolicyAction,
             label: context.l10n.safetySettingsScreenTitlePrivacyPolicy,
             icon: CatchIcons.lockOutline,
           ),
-        if (legalLinks.terms != null)
+        if (termsUrl != null)
           CatchActionMenuItem(
             value: _hostAccountTermsAction,
             label: context.l10n.safetySettingsScreenTitleTerms,
             icon: CatchIcons.descriptionOutlined,
           ),
-        if (legalLinks.help != null)
+        if (helpUrl != null)
           CatchActionMenuItem(
             value: _hostAccountHelpAction,
             label: context.l10n.safetySettingsScreenTitleHelpSupport,
@@ -196,11 +198,9 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
         ),
       ],
       onSelected: (action) => unawaited(switch (action) {
-        _hostAccountPrivacyPolicyAction => _openLegalLink(
-          legalLinks.privacyPolicy,
-        ),
-        _hostAccountTermsAction => _openLegalLink(legalLinks.terms),
-        _hostAccountHelpAction => _openLegalLink(legalLinks.help),
+        _hostAccountPrivacyPolicyAction => _openLegalLink(privacyPolicyUrl),
+        _hostAccountTermsAction => _openLegalLink(termsUrl),
+        _hostAccountHelpAction => _openLegalLink(helpUrl),
         _hostAccountDeleteAction => _deleteAccount(),
         _ => Future<void>.value(),
       }),
