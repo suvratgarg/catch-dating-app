@@ -5,16 +5,17 @@ import {spawnSync} from "node:child_process";
 import {assertPromotionInvocation, selectPreviewArtifact, productionHostingConfig, assertPreviewRuntime, assertProductionTarget, production} from "./promoteRelease.mjs";
 import {liveVersionName, usesNextRuntime} from "./hostingState.mjs";
 import {preview} from "./previewRelease.mjs";
+import {CANONICAL_REPOSITORY_ID} from "../../../tool/lib/canonical_repository.mjs";
 const sourceSha = "a".repeat(40), repository = "suvratgarg/catch-dating-app";
-const env = {GITHUB_EVENT_NAME: "workflow_dispatch", GITHUB_REF: "refs/heads/main", GITHUB_REPOSITORY: repository,
+const env = {GITHUB_EVENT_NAME: "workflow_dispatch", GITHUB_REF: "refs/heads/main", GITHUB_REPOSITORY: repository, GITHUB_REPOSITORY_ID: "1170579691",
   GITHUB_WORKFLOW_REF: `${repository}/${production.workflow}@refs/heads/main`, GITHUB_RUN_ATTEMPT: "1", GITHUB_SHA: sourceSha, PREVIEW_RUN_ID: "123"};
 const fixture = () => ({sourceSha, workflow: {id: 7, path: preview.workflow}, run: {id: 123, run_attempt: 1, workflow_id: 7,
   path: preview.workflow, head_sha: sourceSha, head_branch: "main", event: "workflow_dispatch", status: "completed", conclusion: "success",
-  repository: {id: 10, full_name: repository}, head_repository: {id: 10}}, artifacts: [{id: 456, name: `next-preview-${sourceSha}-123-1`, expired: false,
-    digest: `sha256:${"b".repeat(64)}`, workflow_run: {id: 123, head_sha: sourceSha, repository_id: 10, head_repository_id: 10}}]});
+  repository: {id: CANONICAL_REPOSITORY_ID, full_name: repository}, head_repository: {id: CANONICAL_REPOSITORY_ID}}, artifacts: [{id: 456, name: `next-preview-${sourceSha}-123-1`, expired: false,
+    digest: `sha256:${"b".repeat(64)}`, workflow_run: {id: 123, head_sha: sourceSha, repository_id: CANONICAL_REPOSITORY_ID, head_repository_id: CANONICAL_REPOSITORY_ID}}]});
 test("production promotion rejects other workflows, refs, automatic calls and reruns", () => {
   assertPromotionInvocation(env);
-  for (const [key, value] of Object.entries({GITHUB_EVENT_NAME: "push", GITHUB_REF: "refs/heads/feature", GITHUB_REPOSITORY: "fork/repo",
+  for (const [key, value] of Object.entries({GITHUB_EVENT_NAME: "push", GITHUB_REF: "refs/heads/feature", GITHUB_REPOSITORY: "fork/repo", GITHUB_REPOSITORY_ID: "1",
     GITHUB_WORKFLOW_REF: `${repository}/${preview.workflow}@refs/heads/main`, GITHUB_RUN_ATTEMPT: "2", GITHUB_SHA: "short", PREVIEW_RUN_ID: "1; bad"})) {
     assert.throws(() => assertPromotionInvocation({...env, [key]: value}));
   }
@@ -22,7 +23,7 @@ test("production promotion rejects other workflows, refs, automatic calls and re
 test("only the successful exact-source preview attempt and immutable artifact authorize promotion", () => {
   const good = fixture(); assert.equal(selectPreviewArtifact(good).artifactId, "456");
   for (const change of [{head_sha: "c".repeat(40)}, {head_branch: "feature"}, {event: "pull_request"}, {status: "in_progress"},
-    {conclusion: "failure"}, {workflow_id: 8}, {run_attempt: 2}, {head_repository: {id: 11}}, {path: ".github/workflows/other.yml"}]) {
+    {conclusion: "failure"}, {workflow_id: 8}, {run_attempt: 2}, {head_repository: {id: 11}}, {repository: {id: 11, full_name: repository}, head_repository: {id: 11}}, {path: ".github/workflows/other.yml"}]) {
     assert.throws(() => selectPreviewArtifact({...good, run: {...good.run, ...change}}));
   }
   for (const change of [{expired: true}, {digest: null}, {name: "other"}, {workflow_run: {...good.artifacts[0].workflow_run, head_sha: "c".repeat(40)}}]) {

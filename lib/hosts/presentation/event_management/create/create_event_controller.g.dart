@@ -57,7 +57,7 @@ final class CreateEventControllerProvider
 }
 
 String _$createEventControllerHash() =>
-    r'2c8ab9befbfabaf888bf9efea498453266b06268';
+    r'010996f125e4ef5aa4fe9ed7944579f94c21b5ed';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

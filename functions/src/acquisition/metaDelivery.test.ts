@@ -107,7 +107,8 @@ test("only a new, permission-bound Host lead prepares the closed delivery",
     assert.deepEqual(row.context, input.context);
     assert.equal(JSON.stringify(row).includes("private@example.test"), false);
     for (const override of [{enabled: false}, {isNew: false},
-      {consentDocument: {...consentDocument, status: "revoked"}},
+      {consentDocument: {...consentDocument, status: "revoked",
+        attributionCleanupPending: true}},
       {consentDocument: {...consentDocument, authority: {...authority,
         advertising: false}}}, {eventId: "a-business-id"},
       {consentId: "c".repeat(64)}]) {
@@ -191,7 +192,8 @@ test("explicit rejection retries are delayed, bounded and permission checked",
     assert.equal(sends, 1);
     clock += 120_000;
     assert.equal(await deliverHostMetaLead(delivery), "pending");
-    store.rows.set(consentPath, {...consentDocument, status: "revoked"});
+    store.rows.set(consentPath, {...consentDocument, status: "revoked",
+      attributionCleanupPending: true});
     clock += 240_000;
     await deliverHostMetaLead(delivery);
     assert.equal(sends, 2);

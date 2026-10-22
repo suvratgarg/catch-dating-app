@@ -11,6 +11,7 @@ esac
 
 if [[ $# -lt 2 ]]; then
   echo "Usage: $0 [--preflight|--functions-deploy-only|--functions-postconditions-only] <environment> <comma-separated-targets> [firebase deploy args...]" >&2
+  echo "--force reaches only exact Function batches; every other phase deploys without it." >&2
   exit 64
 fi
 
@@ -22,6 +23,19 @@ case "$environment" in
   dev|staging|prod) ;;
   *) echo "Unsupported environment: $environment" >&2; exit 64 ;;
 esac
+
+# Firebase requires --force when exact Function targets newly enable retry on
+# failure. On firestore:indexes the same flag deletes every live index missing
+# from firestore.indexes.json, so it is withheld from the shared arguments and
+# passed only to exact-named Function batches.
+function_force_flag=""
+for arg in "$@"; do
+  shift
+  case "$arg" in
+    --force|-f) function_force_flag="--force" ;;
+    *) set -- "$@" "$arg" ;;
+  esac
+done
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
@@ -156,6 +170,16 @@ while IFS=$'\t' read -r phase deploy_only; do
     echo "The Functions phase must contain at least one exact deployment batch." >&2
     exit 64
   fi
+  if [[ -n "$function_force_flag" ]]; then
+    # Mirrors the Delivery guard: --force with a broad selector deletes
+    # Functions absent from source, so every forced target must be exact.
+    for function_target in $(tr ',\n' '  ' <<< "$function_batches"); do
+      if [[ ! "$function_target" =~ ^functions:[A-Za-z][A-Za-z0-9_-]*$ ]]; then
+        echo "Refusing --force without an exact named Function target: $function_target" >&2
+        exit 64
+      fi
+    done
+  fi
 done <<< "$plan_output"
 
 if [[ "$preflight_only" == "true" ]]; then
@@ -173,7 +197,7 @@ while IFS=$'\t' read -r phase deploy_only; do
         for function_batch_attempt in 1 2 3; do
           function_batch_status=0
           function_batch_log="$(mktemp "${TMPDIR:-/tmp}/catch-functions-deploy.XXXXXX")"
-          deploy_target "$phase" "$function_batch" "$@" 2>&1 | \
+          deploy_target "$phase" "$function_batch" "$@" ${function_force_flag:+"$function_force_flag"} 2>&1 | \
             tee "$function_batch_log" || function_batch_status=$?
           if [[ "$function_batch_status" != "0" ]] && grep -q \
               -e "In non-interactive mode but have no value for the following environment variables" \
@@ -181,6 +205,13 @@ while IFS=$'\t' read -r phase deploy_only; do
               "$function_batch_log"; then
             rm -f "$function_batch_log"
             echo "::error::Firebase parameter configuration is missing; retrying cannot repair it. Materialize non-secret values with tool/firebase/prepare_functions_params_for_deploy.mjs and verify coverage with tool/firebase/check_functions_params_coverage.mjs. Missing secret values require the environment's Secret Manager readiness check before retrying this delivery." >&2
+            exit "$function_batch_status"
+          fi
+          if [[ "$function_batch_status" != "0" ]] && grep -q \
+              -e "Pass the --force option to deploy functions with a failure policy" \
+              "$function_batch_log"; then
+            rm -f "$function_batch_log"
+            echo "::error::This batch newly enables retry on failure, which Firebase deploys only with --force; retrying cannot change that. Re-run with --force: this helper passes it only to exact Function batches, never to indexes or rules." >&2
             exit "$function_batch_status"
           fi
           rm -f "$function_batch_log"
@@ -215,6 +246,9 @@ while IFS=$'\t' read -r phase deploy_only; do
         --targets "$deploy_only"
     fi
   else
+    if [[ -n "$function_force_flag" ]]; then
+      echo "--force applies only to exact Function batches; deploying $deploy_only without it."
+    fi
     deploy_target "$phase" "$deploy_only" "$@"
   fi
 done <<< "$plan_output"

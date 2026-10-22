@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/core/celebration/celebration_screen.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/hosts/domain/event_photo_recovery.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_photo_recovery_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -23,6 +26,9 @@ class CreateEventSuccessScreen extends ConsumerStatefulWidget {
     required this.onDone,
     this.rosterImportResult,
     this.rosterImportFailed = false,
+    this.photoRecovery,
+    this.onRetryPhotos,
+    this.onReselectPhotos,
   });
 
   final Club club;
@@ -33,6 +39,9 @@ class CreateEventSuccessScreen extends ConsumerStatefulWidget {
   final VoidCallback onDone;
   final EventAttendeeImportResult? rosterImportResult;
   final bool rosterImportFailed;
+  final CreateEventRecoveryState? photoRecovery;
+  final VoidCallback? onRetryPhotos;
+  final VoidCallback? onReselectPhotos;
 
   @override
   ConsumerState<CreateEventSuccessScreen> createState() =>
@@ -45,7 +54,9 @@ class _CreateEventSuccessScreenState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
+      if (!mounted || widget.event.status != EventLifecycleStatus.active) {
+        return;
+      }
       unawaited(
         ref
             .read(celebrationEffectsControllerProvider)
@@ -74,7 +85,9 @@ class _CreateEventSuccessScreenState
             inviteCode: normalizedInviteCode,
           ).toString();
     final displayName = _eventCreatedDisplayName(event, eventDisplayName);
-    final message = inviteLink == null
+    final message = event.status != EventLifecycleStatus.active
+        ? context.l10n.hostsEventPhotoRecoveryInactive
+        : inviteLink == null
         ? context.l10n
               .hostsCreateEventSuccessScreenMessageDisplaynameIsNowListed(
                 displayName: displayName,
@@ -96,10 +109,40 @@ class _CreateEventSuccessScreenState
               .l10n
               .hostsCreateEventSuccessScreenNoteBookingsWaitlistAndAttendance;
 
+    final l10n = context.l10n;
+    final recovery = widget.photoRecovery;
+    final receipt = recovery?.receipt;
+    final phase = receipt?.phase;
+    final active = recovery?.event?.status == EventLifecycleStatus.active;
+    final unknown = phase == EventPhotoRecoveryPhase.attachmentUnknown;
+    final conflict = phase == EventPhotoRecoveryPhase.conflict;
+    final resolved = receipt?.isResolved ?? false;
+    final cleanup =
+        phase == EventPhotoRecoveryPhase.cleanupPending ||
+        (phase == EventPhotoRecoveryPhase.complete && !resolved);
+    final canRetry = active || unknown || conflict || cleanup || resolved;
+    final recoveryMessage = !active && !canRetry
+        ? l10n.hostsEventPhotoRecoveryInactive
+        : !(recovery?.isDurable ?? true)
+        ? l10n.hostsEventPhotoRecoveryStorage
+        : (recovery?.working ?? false)
+        ? l10n.hostsEventPhotoRecoveryUploading
+        : resolved
+        ? l10n.hostsEventPhotoRecoveryRefresh
+        : conflict
+        ? l10n.hostsEventPhotoRecoveryConflict
+        : unknown
+        ? l10n.hostsEventPhotoRecoveryUnknown
+        : cleanup
+        ? l10n.hostsEventPhotoRecoveryCleanup
+        : l10n.hostsEventPhotoRecoveryFailed;
+
     return PaperCelebrationScaffold(
       icon: CatchIcons.celebration,
       eyebrow: context.l10n.hostsCreateEventSuccessScreenEyebrowEventCreated,
-      title: context.l10n.hostsCreateEventSuccessScreenTitleYourEventIsLive,
+      title: event.status == EventLifecycleStatus.active
+          ? context.l10n.hostsCreateEventSuccessScreenTitleYourEventIsLive
+          : context.l10n.hostsEventPhotoRecoverySavedTitle,
       message: message,
       details: [
         CelebrationDetail(
@@ -149,6 +192,53 @@ class _CreateEventSuccessScreenState
           ),
       ],
       note: rosterNote,
+      supplementalChildren: [
+        if (recovery?.hasPhotoRecovery ?? false) ...[
+          CatchBanner(
+            title: resolved
+                ? l10n.hostsEventPhotoRecoverySavedTitle
+                : l10n.hostsEventPhotoRecoveryTitle,
+            message: recoveryMessage,
+            tone: CatchBannerTone.warning,
+            actions: [
+              if (canRetry)
+                CatchButton(
+                  label: unknown || conflict || resolved
+                      ? l10n.hostsEventPhotoRecoveryCheck
+                      : cleanup
+                      ? l10n.hostsEventPhotoRecoveryCleanupAction
+                      : l10n.hostsEventPhotoRecoveryRetry,
+                  onPressed: (recovery?.working ?? false)
+                      ? null
+                      : widget.onRetryPhotos,
+                  status: (recovery?.working ?? false)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
+                ),
+              if (active && !unknown && !conflict && !cleanup && !resolved)
+                CatchButton(
+                  label: l10n.hostsEventPhotoRecoveryReselect,
+                  variant: CatchButtonVariant.secondary,
+                  onPressed: (recovery?.working ?? false)
+                      ? null
+                      : widget.onReselectPhotos,
+                ),
+            ],
+          ),
+          if ((recovery?.requiresPhotoReselection ?? false))
+            CatchBanner(
+              message: l10n.hostsEventPhotoRecoveryMissing,
+              tone: CatchBannerTone.neutral,
+            ),
+          if (receipt?.abandonedUploads.isNotEmpty ?? false)
+            CatchBanner(
+              message: l10n.hostsEventPhotoRecoveryUnsettled,
+              tone: CatchBannerTone.warning,
+            ),
+          if (recovery?.photoError case final error?)
+            CatchLocalizedErrorBanner(error),
+        ],
+      ],
       primaryAction: CelebrationAction(
         label: context.l10n.hostsCreateEventSuccessScreenLabelManageEvent,
         onPressed: onManageEvent,

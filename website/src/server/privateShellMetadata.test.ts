@@ -1,0 +1,24 @@
+import {expect, it} from "vitest";
+import {isPrivateShellPath, privateShellFamily, privateShellHead} from "./privateShellMetadata";
+
+it("treats only the shell route itself as the terminal rewrite target", () => {
+  expect(isPrivateShellPath("/private-shell")).toBe(true);
+  expect(isPrivateShellPath("/private-shell/")).toBe(true);
+  for (const path of ["/", "/f/token/", "/private-shell-x/", "/private-shell/f/", "/host/"]) {
+    expect(isPrivateShellPath(path)).toBe(false);
+  }
+});
+
+it("maps credential routes to a public family enum only", () => {
+  expect(privateShellFamily("/f/secret-token/")).toBe("f");
+  expect(privateShellFamily("/rsvp/abc/")).toBe("rsvp");
+  expect(privateShellFamily("/offer/")).toBe("offer");
+  expect(privateShellFamily("/offer/abc/")).toBeNull();
+  expect(privateShellFamily("/private-shell/")).toBeNull();
+});
+
+it("writes family metadata and falls back to the bare title for unknown families", () => {
+  expect(privateShellHead("f")).toBe('<title>Organizer form | Catch</title><meta name="description" content="Complete a secure organizer form in your browser without downloading an app."><link rel="canonical" href="https://catchdates.com/f/">');
+  expect(privateShellHead(null)).toBe("<title>Catch</title>");
+  expect(privateShellHead("constructor")).toBe("<title>Catch</title>");
+});

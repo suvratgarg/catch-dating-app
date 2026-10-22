@@ -119,12 +119,15 @@ void main() {
       expect(selected['files'], ['test/a_test.dart', 'test/probe_test.dart']);
       expect(selected['ordinaryDocuments'], ['docs/feature.md']);
       expect(run(full: true)['selectedTests'], 3);
-      // Missing classifier runtime must broaden coverage, never fail open.
+      // Prose is probe-only without the Node classifier. A missing classifier
+      // runtime only loses the ordinary-document list; it never fails open.
       final bin = Directory('${root.path}/bin')..createSync();
       final gitPath = (Process.runSync('which', ['git']).stdout as String)
           .trim();
       Link('${bin.path}/git').createSync(gitPath);
-      expect(run(path: bin.path)['selectedTests'], 3);
+      final withoutNode = run(path: bin.path);
+      expect(withoutNode['ordinaryDocuments'], isEmpty);
+      expect(withoutNode['files'], selected['files']);
       // An intermediate dependency edge is absent from both initial snapshots.
       // Its changed owner remains in the committed window, selecting the head
       // test that a finalized predecessor-based selector would require.
@@ -168,6 +171,24 @@ void main() {
         commitWindow: true,
       );
       expect((renamedWindow['files'] as List), contains('test/a_test.dart'));
+      // Committed manifests decide bundling: an asset under a probe-only
+      // directory still reaches every test without an import.
+      write(
+        'pubspec.yaml',
+        'name: example\nflutter:\n  assets:\n    - design/brand/\n',
+      );
+      write('design/brand/logo.svg', '<svg/>');
+      final declared = commit();
+      write('design/brand/logo.svg', '<svg></svg>');
+      final bundled = commit();
+      final asset = run(selectedBase: declared, selectedHead: bundled);
+      expect(asset['mode'], 'full');
+      expect(asset['reason'], contains('design/brand/logo.svg'));
+      write('design/screens.json', '{}');
+      final unbundled = commit();
+      expect(run(selectedBase: bundled, selectedHead: unbundled)['files'], [
+        'test/probe_test.dart',
+      ]);
     } finally {
       root.deleteSync(recursive: true);
     }
@@ -230,7 +251,10 @@ void main() {
       ),
       ['test/a_test.dart'],
     );
-    expect(plan({'lib/a.dart', 'docs/feature.md'})['mode'], 'full');
+    // Prose outside the bundle is probe-only even without the classifier.
+    expect(selected(plan({'lib/a.dart', 'docs/feature.md'})), [
+      'test/a_test.dart',
+    ]);
     expect(
       plan({'docs/feature.md'}, ordinaryDocuments: {'docs/feature.md'})['mode'],
       'full',
@@ -392,22 +416,240 @@ void main() {
     ]);
     expect(plan({'pubspec.lock'}, before: files, after: files)['mode'], 'full');
   });
-  test(
-    'assets, configuration, nightly and unknown inputs retain full suite',
-    () {
-      for (final changed in [
-        'assets/font.ttf',
-        'test/fixture.json',
-        'test/flutter_test_config.dart',
-        'tool/generator.dart',
-        '.github/workflows/flutter-ci.yml',
-      ]) {
-        expect(plan({changed})['mode'], 'full');
-      }
-      expect(plan({'lib/a.dart'}, full: true)['mode'], 'full');
-      expect(plan({})['mode'], 'full');
-    },
+  // A filesystem probe makes every non-full result below narrower than the
+  // suite, so a missing rule shows up as an affected plan instead of full.
+  final probed = {
+    ...fixture,
+    'test/support/reader.dart': "import 'dart:io'; const reader = 1;",
+    'test/probe_test.dart': "import 'support/reader.dart'; void main() {}",
+  };
+  Map<String, Object> probedPlan(
+    Set<String> changed, {
+    Map<String, String> extra = const {},
+  }) => plan(
+    changed,
+    before: {...probed, ...extra},
+    after: {...probed, ...extra},
   );
+  test('toolchain, package, localization and runner inputs keep full', () {
+    for (final input in [
+      'pubspec.yaml',
+      'pubspec.lock',
+      'pubspec_overrides.yaml',
+      'apps/consumer/pubspec.yaml',
+      'widgetbook/pubspec.yaml',
+      'analysis_options.yaml',
+      'tool/widget_dedupe/analysis_options.yaml',
+      'dart_test.yaml',
+      'build.yaml',
+      'l10n.yaml',
+      '.metadata',
+      'lib/l10n/app_en.arb',
+      'tool/ci/toolchain.env',
+      '.github/workflows/flutter-ci.yml',
+      '.github/actions/setup-flutter/action.yml',
+      '.github/actions/load-toolchain/action.yml',
+    ]) {
+      for (final changed in [
+        {input},
+        {input, 'lib/a.dart'},
+      ]) {
+        final result = probedPlan(changed);
+        expect(result['mode'], 'full', reason: input);
+        expect(result['reason'], contains(input), reason: input);
+      }
+    }
+  });
+  test('assets any manifest may bundle keep full, even when probe-only', () {
+    final manifests = {
+      'pubspec.yaml':
+          'name: example\n'
+          'flutter:\n'
+          '  assets:\n'
+          '    - design/brand/\n'
+          '    - path: docs/legal/terms.md\n'
+          '  fonts:\n'
+          '    - family: Brand # docs/comment/ is not a declaration\n'
+          '      fonts:\n'
+          '        - asset: tool/fonts/brand.ttf\n'
+          'flutter_launcher_icons:\n'
+          '  image_path: website/public/icon.png\n',
+      'packages/ui/pubspec.yaml':
+          'name: ui\nflutter:\n  assets: [../../functions/seed.json]\n',
+    };
+    for (final asset in [
+      'design/brand/logo.png',
+      'design/brand/nested/mark.svg',
+      'docs/legal/terms.md',
+      'tool/fonts/brand.ttf',
+      'functions/seed.json',
+    ]) {
+      final result = probedPlan({asset, 'lib/a.dart'}, extra: manifests);
+      expect(result['mode'], 'full', reason: asset);
+      expect(result['reason'], contains(asset), reason: asset);
+    }
+    // Undeclared neighbours, comments and non-Flutter sections stay narrow.
+    for (final input in [
+      'design/brandmark.png',
+      'docs/comment/readme.md',
+      'website/public/icon.png',
+      'functions/seed.ts',
+    ]) {
+      expect(selected(probedPlan({input, 'lib/a.dart'}, extra: manifests)), [
+        'test/a_test.dart',
+        'test/probe_test.dart',
+      ], reason: input);
+    }
+    // Ancestor, alias and escaped declarations make the manifest opaque.
+    for (final opaque in [
+      {'pubspec.yaml': 'name: example\nflutter:\n  assets:\n    - ./\n'},
+      {'packages/ui/pubspec.yaml': 'name: ui\nflutter:\n  assets: [../../]\n'},
+      {
+        'pubspec.yaml':
+            'name: example\ndirs: &dirs [docs/]\nflutter:\n  assets: *dirs\n',
+      },
+      {'pubspec.yaml': 'name: example\nflutter:\n  assets: ["docs\\x2f"]\n'},
+      {'pubspec.yaml': 'name: example\nflutter:\n  assets: [/abs/]\n'},
+    ]) {
+      expect(
+        probedPlan({'docs/feature.md', 'lib/a.dart'}, extra: opaque)['mode'],
+        'full',
+        reason: '$opaque',
+      );
+    }
+    // A declaration that leaves the repository cannot bundle a tracked file.
+    expect(
+      selected(
+        probedPlan(
+          {'docs/feature.md'},
+          extra: {'pubspec.yaml': 'name: example\nflutter:\n  assets: [../]\n'},
+        ),
+      ),
+      ['test/probe_test.dart'],
+    );
+  });
+  test('probe-only inputs select the filesystem probes that can read them', () {
+    final external = {
+      'design/screens/catch.screens.json',
+      'design/visual_baselines/admin/home.png',
+      'functions/src/index.ts',
+      'website/src/app/page.tsx',
+      'admin/src/App.tsx',
+      'operations/src/run.ts',
+      'contracts/firestore/user.schema.json',
+      'artifacts/marketing/hero.png',
+      'docs/plans/spec.md',
+      'lib/hosts/inbox/README.md',
+      'tool/design/check.mjs',
+      'tool/unimported.dart',
+      '.github/workflows/ci.yml',
+      'test/goldens/home.png',
+      'test/goldens/home_golden_test.dart',
+      'widgetbook/lib/main.dart',
+      'apps/host/ios/Runner/Info.plist',
+      'firestore.rules',
+      'package-lock.json',
+    };
+    expect(selected(probedPlan({...external, 'lib/a.dart'})), [
+      'test/a_test.dart',
+      'test/probe_test.dart',
+    ]);
+    for (final input in external) {
+      final result = probedPlan({input});
+      expect(result['mode'], 'affected', reason: input);
+      expect(selected(result), ['test/probe_test.dart'], reason: input);
+    }
+    // With no test able to read the disk, nothing proves coverage.
+    expect(plan({'design/screens/catch.screens.json'})['mode'], 'full');
+  });
+  test('Dart sources outside lib and test are covered by the import graph', () {
+    final files = {
+      ...probed,
+      'tool/helper.dart': 'const helper = 1;',
+      'packages/ui/pubspec.yaml': 'name: ui\n',
+      'packages/ui/lib/widget.dart': 'const widget = 1;',
+      'packages/ui/lib/unused.dart': 'const unused = 1;',
+      'test/c_test.dart':
+          "import '../tool/helper.dart'; import '../lib/c.dart'; void main() {}",
+      'test/w_test.dart': "import 'package:ui/widget.dart'; void main() {}",
+    };
+    Map<String, Object> run(Set<String> changed) =>
+        plan(changed, before: files, after: files);
+    expect(selected(run({'tool/helper.dart'})), [
+      'test/c_test.dart',
+      'test/probe_test.dart',
+    ]);
+    expect(selected(run({'packages/ui/lib/widget.dart'})), [
+      'test/probe_test.dart',
+      'test/w_test.dart',
+    ]);
+    // Package sources are not probe-only: unimported ones need proof.
+    expect(run({'packages/ui/lib/unused.dart'})['mode'], 'full');
+  });
+  test('test configs wrap every test beneath them', () {
+    final files = {
+      ...fixture,
+      'test/support/fonts.dart': 'const fonts = 1;',
+      'test/fonts_test.dart': "import 'support/fonts.dart'; void main() {}",
+      'test/ui/flutter_test_config.dart':
+          "import '../support/fonts.dart'; void testExecutable() {}",
+      'test/ui/deep/screen_test.dart': 'void main() {}',
+      'test/goldens/flutter_test_config.dart': 'void testExecutable() {}',
+    };
+    Map<String, Object> run(
+      Set<String> changed, {
+      Map<String, String> extra = const {},
+    }) => plan(changed, before: files, after: {...files, ...extra});
+    expect(selected(run({'test/support/fonts.dart'})), [
+      'test/fonts_test.dart',
+      'test/ui/deep/screen_test.dart',
+    ]);
+    expect(selected(run({'test/ui/flutter_test_config.dart'})), [
+      'test/ui/deep/screen_test.dart',
+    ]);
+    // A config with no root test beneath it belongs to its own gate.
+    expect(
+      selected(run({'lib/a.dart', 'test/goldens/flutter_test_config.dart'})),
+      ['test/a_test.dart'],
+    );
+    expect(
+      run(
+        {'test/flutter_test_config.dart'},
+        extra: {'test/flutter_test_config.dart': 'void testExecutable() {}'},
+      )['mode'],
+      'full',
+    );
+  });
+  test('fixtures, assets, native and unknown inputs retain full suite', () {
+    for (final input in [
+      'assets/font.ttf',
+      'assets/branding/new_icon.png',
+      'test/fixture.json',
+      'test/chats/fixtures/README.md',
+      'assets/audio/README.md',
+      'packages/ui/test/notes.md',
+      'test/chats/fixtures/thread.json',
+      'test/flutter_test_config.dart',
+      'lib/data/seed.json',
+      'packages/ui/assets/mark.png',
+      'ios/Runner/Info.plist',
+      'android/app/build.gradle',
+      'macos/Runner/AppDelegate.swift',
+      'web/index.html',
+      'new_root/input.txt',
+      'Makefile',
+    ]) {
+      for (final changed in [
+        {input},
+        {input, 'lib/a.dart'},
+      ]) {
+        final result = probedPlan(changed);
+        expect(result['mode'], 'full', reason: input);
+      }
+    }
+    expect(plan({'lib/a.dart'}, full: true)['mode'], 'full');
+    expect(plan({})['mode'], 'full');
+  });
   test('unresolved, malformed and untested source fail conservatively', () {
     expect(
       plan(

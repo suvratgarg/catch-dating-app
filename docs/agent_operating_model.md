@@ -102,11 +102,12 @@ Commit the exact source tree, publish the branch through ordinary Git/PR
 tooling, and ask CI to verify that head. Cross-environment handoff uses that
 commit, not a downloaded/generated snapshot whose origin or completeness is
 unverified. If push is unavailable, retain the commit and report the exact
-publication barrier to the integration owner. This repository's PR admission
-requires a non-draft PR, the sole `ci:admitted` label, and the current head and
-main. A draft intentionally skips the selected CI lanes: report `draft_pr` as
-an admission blocker, give the integration owner the review/readiness and label
-action, and do not call the skipped lanes test failures. A disconnected
+publication barrier to the integration owner. Every ready PR runs CI without
+the queue-only macOS and app-build lanes, and the merge queue validates the
+combined source with every lane before `main` moves. A
+draft intentionally skips CI until it is marked ready: report the draft state as
+the blocker, give the integration owner the readiness action, and do not call
+the skipped lanes test failures. A disconnected
 agent or VM does not establish task termination: inspect the branch, running
 process/command or CI run, and latest output after reconnecting. Report a
 blocked task with its exact commit, last observed command or run evidence,
