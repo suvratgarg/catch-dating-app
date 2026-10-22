@@ -44,16 +44,31 @@ if (require.main === module) {
   });
 }
 
+// CI may split the strict list across parallel emulator jobs with
+// CATCH_TEST_SHARD="<index>/<total>". Round-robin positions make the shards
+// disjoint and together cover every listed file exactly once.
+function shardFiles(files, shard) {
+  if (!shard) return {files, shard: null};
+  const match = /^([1-9][0-9]*)\/([1-9][0-9]*)$/u.exec(shard);
+  if (!match || Number(match[1]) > Number(match[2])) {
+    throw new Error(`Invalid CATCH_TEST_SHARD: ${shard}`);
+  }
+  const [index, total] = [Number(match[1]), Number(match[2])];
+  const subset = files.filter((_, position) => position % total === index - 1);
+  if (!subset.length) throw new Error(`Shard ${shard} selects no backend integration tests.`);
+  return {files: subset, shard: {index, total, listed: files.length}};
+}
+
 // The ordinary Functions lane intentionally allows emulator-only tests to skip.
 // Its integration owner must use this mode inside emulators:exec instead.
-async function runStrictFiles(files, {root = functionsRoot} = {}) {
+async function runStrictFiles(files, {root = functionsRoot, shard = process.env.CATCH_TEST_SHARD} = {}) {
   for (const key of ["FIRESTORE_EMULATOR_HOST", "FIREBASE_STORAGE_EMULATOR_HOST"]) {
     if (!process.env[key]) throw new Error(`${key} is required for backend integration tests.`);
   }
   if (!files.length || new Set(files).size !== files.length) {
     throw new Error("Backend integration requires nonempty, unique test files.");
   }
-  const selected = files.map((file) => {
+  const listed = files.map((file) => {
     const absolute = path.resolve(root, file);
     if (!absolute.startsWith(`${path.resolve(root)}${path.sep}`) ||
         !/\.test\.(?:js|cjs)$/u.test(file)) {
@@ -61,6 +76,7 @@ async function runStrictFiles(files, {root = functionsRoot} = {}) {
     }
     return fs.realpathSync(absolute);
   });
+  const {files: selected, shard: shardIdentity} = shardFiles(listed, shard);
   const {run: runTests} = require("node:test");
   const summaries = new Map();
   const executed = [];
@@ -99,7 +115,7 @@ async function runStrictFiles(files, {root = functionsRoot} = {}) {
     platform: process.platform, architecture: process.arch,
     inputHashes: Object.fromEntries(inputFiles.map(file => [path.relative(root, file),
       createHash("sha256").update(fs.readFileSync(file)).digest("hex")])),
-    selected, executed, summaries: Object.fromEntries(summaries), success: !failed};
+    shard: shardIdentity, selected, executed, summaries: Object.fromEntries(summaries), success: !failed};
   if (process.env.CATCH_TEST_EVIDENCE_PATH) {
     const output = path.resolve(process.env.CATCH_TEST_EVIDENCE_PATH);
     fs.mkdirSync(path.dirname(output), {recursive: true});
@@ -109,4 +125,4 @@ async function runStrictFiles(files, {root = functionsRoot} = {}) {
   return failed ? 1 : 0;
 }
 
-module.exports = {discoverTestFiles, runStrictFiles};
+module.exports = {discoverTestFiles, runStrictFiles, shardFiles};

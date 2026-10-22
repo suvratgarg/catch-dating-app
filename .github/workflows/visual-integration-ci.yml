@@ -205,7 +205,11 @@ jobs:
           (cd widgetbook &&
           flutter test --concurrency=1 test)
 
+      # Determinism is a property of the whole corpus, not of one change.
+      # Pass 1 still renders every golden on each PR; the repeat render runs
+      # on the nightly full validation so PRs do not pay for it.
       - name: Widgetbook corpus goldens (pass 2, determinism)
+        if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
         run: >-
           (cd widgetbook &&
           flutter test --concurrency=1 test/primitive_goldens_test.dart)
