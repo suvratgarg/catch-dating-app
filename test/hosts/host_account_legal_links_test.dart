@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/legal_links.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -48,6 +51,12 @@ Future<void> _openAccountMenu(WidgetTester tester) async {
   await tester.tap(find.byKey(const ValueKey('host-account-menu')));
   await pumpFeatureUi(tester);
 }
+
+CatchActionMenu<String> _accountMenu(WidgetTester tester) =>
+    tester.widget(find.byKey(const ValueKey('host-account-menu')));
+
+CatchIconAction _signOutAction(WidgetTester tester) =>
+    tester.widget(find.byKey(const ValueKey('host-organizer-sign-out')));
 
 void main() {
   for (final (label, expected) in [
@@ -101,6 +110,34 @@ void main() {
     expect(find.text('Help & support'), findsNothing);
     expect(find.text('Delete account'), findsOneWidget);
     expect(launchCount, 0);
+  });
+
+  testWidgets('pending Host legal launch freezes account actions', (
+    tester,
+  ) async {
+    final launchResult = Completer<bool>();
+    await _pump(
+      tester,
+      legalLinks: _legalLinks,
+      launcher: (uri, {mode = LaunchMode.platformDefault}) =>
+          launchResult.future,
+    );
+    await _openAccountMenu(tester);
+    await tester.tap(find.text('Terms'));
+    await tester.pump();
+
+    expect(_accountMenu(tester).enabled, isFalse);
+    expect(_signOutAction(tester).onPressed, isNull);
+
+    launchResult.complete(false);
+    await pumpFeatureUi(tester);
+
+    expect(
+      find.text('Could not open that link. Please try again.'),
+      findsOneWidget,
+    );
+    expect(_accountMenu(tester).enabled, isTrue);
+    expect(_signOutAction(tester).onPressed, isNotNull);
   });
 
   testWidgets('Host legal link launch failure is visible', (tester) async {

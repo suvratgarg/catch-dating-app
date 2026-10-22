@@ -110,6 +110,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
   final HostClubInsightsRefreshController _insightsRefreshController =
       HostClubInsightsRefreshController();
   bool _didRevealInitialEditor = false;
+  bool _legalLinkPending = false;
 
   @override
   void initState() {
@@ -154,7 +155,9 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
       SettingsController.requestAccountDeletionMutation,
     );
     final accountOperationPending =
-        signOutMutation.isPending || deletionMutation.isPending;
+        signOutMutation.isPending ||
+        deletionMutation.isPending ||
+        _legalLinkPending;
     final signOutAction = CatchIconAction.toolbar(
       key: const ValueKey<String>('host-organizer-sign-out'),
       tooltip: context.l10n.hostsHostClubTeamScreenTitleSignOut,
@@ -377,15 +380,19 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
   }
 
   /// Opens a public legal/support page through the same external launcher as
-  /// consumer Settings, reporting false and thrown outcomes alike.
+  /// consumer Settings. The launch joins the account actions' exclusive
+  /// pending state, and false and thrown outcomes are both reported.
   Future<void> _openLegalLink(Uri? uri) async {
-    if (uri == null) return;
+    if (uri == null || _legalLinkPending) return;
+    setState(() => _legalLinkPending = true);
     var opened = false;
     try {
       opened = await ref.read(externalLinkControllerProvider).openExternal(uri);
     } catch (_) {
       // ExternalLinkController retains the backend context; the account menu
       // owns the visible result.
+    } finally {
+      if (mounted) setState(() => _legalLinkPending = false);
     }
     if (!mounted || opened) return;
     showCatchNotice(
