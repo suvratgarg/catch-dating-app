@@ -11,6 +11,7 @@ const read = (relative: string) =>
 const gapsDart = read("../../../catch_tokens/lib/src/semantic/catch_gaps.dart");
 const insetsDart = read("../../../catch_tokens/lib/src/semantic/catch_insets.dart");
 const textStylesDart = read("../../../catch_ui/lib/src/foundations/catch_text_styles.dart");
+const textVariantDart = read("../../../catch_ui/lib/src/primitives/catch_text_variant.dart");
 const foundationsCss = read("../foundations.css");
 const gapCss = read("./CatchGap.module.css");
 const sectionListCss = read("./CatchSectionList.module.css");
@@ -136,6 +137,13 @@ describe("CatchTextStyles parity", () => {
     const base = flutterRole(delegate!);
     return {profile: base.profile, color: color ?? base.color, weight: weight ?? base.weight};
   }
+
+  it("offers exactly the Flutter CatchTextVariant values", () => {
+    const values = textVariantDart.match(/enum CatchTextVariant \{([^;]*);/)?.[1]
+      .split(",").map((value) => value.trim()).filter(Boolean);
+    expect(values?.length).toBeGreaterThan(0);
+    expect(selectorValues(textCss, "variant").sort()).toEqual([...values!].sort());
+  });
 
   it("binds each CatchText variant to its Flutter role's profile, weight and color", () => {
     const variants = selectorValues(textCss, "variant");
