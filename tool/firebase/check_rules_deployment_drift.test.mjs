@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   checkRulesDeploymentDrift,
   executeRulesDeploymentDriftCli,
+  fetchRulesApiJson,
   normalizedRulesHash,
   normalizeRulesContent,
   resolveRulesAccessToken,
@@ -153,4 +154,30 @@ test("credential resolution prefers explicit tokens and treats unavailable gclou
     }),
     null,
   );
+});
+
+test("user credentials without a quota project retry once against the inspected project", async () => {
+  const calls = [];
+  const response = (status, payload) => ({
+    ok: status === 200,
+    status,
+    text: async () => JSON.stringify(payload),
+  });
+  const fetchImpl = async (url, init) => {
+    calls.push(init.headers["x-goog-user-project"] ?? null);
+    return calls.length === 1 ?
+      response(403, {error: {message: "The firebaserules.googleapis.com API requires a quota project, which is not set by default."}}) :
+      response(200, {releases: []});
+  };
+  const url = `https://firebaserules.googleapis.com/v1/projects/${projectId}/releases`;
+  assert.deepEqual(await fetchRulesApiJson(url, "token", {fetchImpl}), {releases: []});
+  assert.deepEqual(calls, [null, projectId]);
+
+  calls.length = 0;
+  const denied = async (_url, init) => {
+    calls.push(init.headers["x-goog-user-project"] ?? null);
+    return response(403, {error: {message: "Permission denied"}});
+  };
+  await assert.rejects(fetchRulesApiJson(url, "token", {fetchImpl: denied}), /Permission denied/u);
+  assert.deepEqual(calls, [null]);
 });
