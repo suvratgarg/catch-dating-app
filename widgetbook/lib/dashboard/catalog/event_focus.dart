@@ -1,4 +1,5 @@
-import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
+import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list.dart';
 import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
 import 'package:flutter/material.dart';
@@ -20,20 +21,21 @@ final _eventFocusActions = EventFocusActions(
 );
 
 @widgetbook.UseCase(
-  name: 'Rail states',
-  type: EventFocusRail,
+  name: 'List states',
+  type: EventFocusList,
   path: '[P1 product surfaces]/Dashboard home',
 )
-Widget dashboardEventFocusRailReviewStates(BuildContext context) {
+Widget dashboardEventFocusListReviewStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'EventFocusRail',
-    contractId: 'dashboard.home.event_focus_rail',
+    title: 'EventFocusList',
+    contractId: 'dashboard.home.event_focus_list',
     children: [
       WidgetbookPageStateCard(
         label: 'upcoming event',
         child: WidgetbookDashboardPrimitiveFrame(
-          child: EventFocusRail(
+          child: EventFocusList(
             upcomingEvents: [widgetbookDashboardNextEvent],
+            windowedEvents: const [],
             actions: _eventFocusActions,
             clubNameBuilder: (_) => widgetbookDashboardClub.name,
           ),
@@ -42,8 +44,9 @@ Widget dashboardEventFocusRailReviewStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'check-in pending',
         child: WidgetbookDashboardPrimitiveFrame(
-          child: EventFocusRail(
+          child: EventFocusList(
             upcomingEvents: [widgetbookDashboardNextEvent],
+            windowedEvents: const [],
             arrivalAction: EventArrivalAction(
               kind: EventArrivalActionKind.selfCheckIn,
               event: widgetbookDashboardNextEvent,
@@ -51,6 +54,28 @@ Widget dashboardEventFocusRailReviewStates(BuildContext context) {
             checkInState: const EventFocusCheckInState(isPending: true),
             actions: _eventFocusActions,
             clubNameBuilder: (_) => widgetbookDashboardClub.name,
+          ),
+        ),
+      ),
+      WidgetbookPageStateCard(
+        label: 'one open Catch window',
+        child: WidgetbookDashboardPrimitiveFrame(
+          child: EventFocusList(
+            upcomingEvents: const [],
+            windowedEvents: [_window('one', 3)],
+            now: DashboardSurfaceFixtures.now,
+            actions: _eventFocusActions,
+          ),
+        ),
+      ),
+      WidgetbookPageStateCard(
+        label: 'two open Catch windows and an upcoming event',
+        child: WidgetbookDashboardPrimitiveFrame(
+          child: EventFocusList(
+            upcomingEvents: [widgetbookDashboardNextEvent],
+            windowedEvents: [_window('first', 2), _window('second', 9)],
+            now: DashboardSurfaceFixtures.now,
+            actions: _eventFocusActions,
           ),
         ),
       ),
@@ -110,6 +135,10 @@ Widget dashboardEventFocusCardReviewStates(BuildContext context) {
               clubName: widgetbookDashboardClub.name,
               canSwipe: true,
               needsReview: true,
+              windowClosesAt: DashboardSurfaceFixtures.now.add(
+                const Duration(hours: 2),
+              ),
+              attendedCount: 6,
             ),
             cardIndex: 2,
             cardCount: 3,
@@ -119,5 +148,23 @@ Widget dashboardEventFocusCardReviewStates(BuildContext context) {
         ),
       ),
     ],
+  );
+}
+
+DashboardCatchWindow _window(String id, int hoursLeft) {
+  final endTime = DashboardSurfaceFixtures.now.subtract(
+    Duration(hours: 24 - hoursLeft),
+  );
+  final event = DashboardSurfaceFixtures.attendedEvent.copyWith(
+    id: 'preview-catch-$id',
+    name: 'Catch window $id',
+    startTime: endTime.subtract(const Duration(hours: 1)),
+    endTime: endTime,
+  );
+  return DashboardCatchWindow(
+    event: event,
+    windowClosesAt: DashboardSurfaceFixtures.now.add(
+      Duration(hours: hoursLeft),
+    ),
   );
 }

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/shared/event_check_in_qr_scanner.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -42,7 +42,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byKey(EventFocusRail.actionKey('viewEvent')));
+    await tester.tap(find.byKey(EventFocusList.actionKey('viewEvent')));
     await pumpAppShellFrames(tester);
 
     expect(find.text('Carter Road Amphitheatre'), findsWidgets);
@@ -75,7 +75,7 @@ void main() {
     );
 
     expect(find.text('Check-in open'), findsOneWidget);
-    await tester.tap(find.byKey(EventFocusRail.actionKey('checkIn')));
+    await tester.tap(find.byKey(EventFocusList.actionKey('checkIn')));
     await tester.pump();
     final scanner = tester.widget<EventCheckInQrScanner>(
       find.byType(EventCheckInQrScanner),
