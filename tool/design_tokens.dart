@@ -6,7 +6,7 @@ const _defaultWebsiteCssPath = 'packages/web-config/generated/catch-tokens.css';
 const _defaultDartTokensPath =
     'packages/catch_tokens/lib/generated/catch_design_tokens.g.dart';
 
-void main(List<String> args) {
+Future<void> main(List<String> args) async {
   if (args.contains('--help') || args.contains('-h')) {
     _printHelp();
     return;
@@ -39,7 +39,7 @@ void main(List<String> args) {
     registry: tokens,
     websiteExtension: websiteExtension,
   );
-  final dart = _buildDartTokens(tokens);
+  final dart = await _formatDart(_buildDartTokens(tokens), dartOutputPath);
 
   final failures = <String>[];
   final websiteOutputFile = File(websiteOutputPath);
@@ -239,6 +239,24 @@ String _buildDartTokens(_TokenRegistry registry) {
   _writePlatformTokens(buffer, registry);
 
   return buffer.toString();
+}
+
+/// The pre-commit hook runs `dart format` on staged Dart files, so emit the
+/// formatter's output; otherwise committing the file would make `--check` fail.
+Future<String> _formatDart(String source, String outputPath) async {
+  final process = await Process.start(Platform.resolvedExecutable, [
+    'format',
+    '--output=show',
+    '--stdin-name=$outputPath',
+  ]);
+  final formatted = process.stdout.transform(utf8.decoder).join();
+  final errors = process.stderr.transform(utf8.decoder).join();
+  process.stdin.write(source);
+  await process.stdin.close();
+  if (await process.exitCode != 0) {
+    throw StateError('dart format failed for $outputPath: ${await errors}');
+  }
+  return formatted;
 }
 
 Map<String, dynamic> _catchExtension(Map<String, dynamic> document) {
@@ -757,18 +775,24 @@ List<_ShadowLayer> _shadowLayers(Object? value) {
       .toList(growable: false);
 }
 
-String _dartShadowValue(Object? value) {
-  final layers = _shadowLayers(value)
-      .map((layer) {
-        final spread = layer.spread == 0
-            ? ''
-            : ', spreadRadius: ${_formatDartNumber(layer.spread)}';
-        return 'BoxShadow(color: ${_dartColorValue(layer.color)}, '
-            'blurRadius: ${_formatDartNumber(layer.blur)}$spread, '
-            'offset: Offset(${_formatDartNumber(layer.x)}, ${_formatDartNumber(layer.y)}))';
-      })
-      .join(', ');
-  return '<BoxShadow>[$layers]';
+/// Writes `dart format`-stable layers so the generated file survives the
+/// pre-commit formatter unchanged.
+void _writeDartShadowLayers(StringBuffer buffer, Object? value) {
+  for (final layer in _shadowLayers(value)) {
+    buffer
+      ..writeln('    BoxShadow(')
+      ..writeln('      color: ${_dartColorValue(layer.color)},')
+      ..writeln('      blurRadius: ${_formatDartNumber(layer.blur)},');
+    if (layer.spread != 0) {
+      buffer.writeln('      spreadRadius: ${_formatDartNumber(layer.spread)},');
+    }
+    buffer
+      ..writeln(
+        '      offset: Offset(${_formatDartNumber(layer.x)}, '
+        '${_formatDartNumber(layer.y)}),',
+      )
+      ..writeln('    ),');
+  }
 }
 
 /// Mirrors `ActivitySwatch._derive` in `lib/core/theme/activity_palette.dart`,
@@ -1016,9 +1040,10 @@ void _writeFoundationTokens(StringBuffer buffer, _TokenRegistry registry) {
       );
     }
     buffer.writeln(
-      '  static const List<BoxShadow> ${token.path.last} = '
-      '${_dartShadowValue(registry.resolvedValue(token))};',
+      '  static const List<BoxShadow> ${token.path.last} = <BoxShadow>[',
     );
+    _writeDartShadowLayers(buffer, registry.resolvedValue(token));
+    buffer.writeln('  ];');
   }
   buffer
     ..writeln('}')
