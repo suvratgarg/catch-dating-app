@@ -511,6 +511,39 @@ void main() {
     expect(find.byType(HostInboxAudienceInput), findsNothing);
   });
 
+  testWidgets('Sends omits WhatsApp setup where the provider is unavailable', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        event: null,
+        previews: const [],
+        participations: const [],
+        now: now,
+        whatsappProviderConfigured: false,
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.text('Sends'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Choose what to send'), findsOneWidget);
+    expect(find.text('WhatsApp Business settings'), findsNothing);
+
+    await tester.tap(find.text('Choose what to send'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Continue a conversation'), findsOneWidget);
+    expect(find.text('Send an event announcement'), findsOneWidget);
+    expect(find.text('Post a follower update'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('host-send-intent-saved-audience')),
+      findsNothing,
+    );
+    expect(find.text('WhatsApp Business settings'), findsNothing);
+  });
+
   testWidgets('Follower update intent opens its composer', (tester) async {
     await tester.pumpWidget(
       _app(
@@ -905,6 +938,7 @@ Widget _app({
   int remainingFollowerQuota = 3,
   double routeWidth = 390,
   double floatingBottomOverlayInset = 0,
+  bool whatsappProviderConfigured = true,
 }) {
   final club = club_test.buildClub(id: event?.clubId ?? 'club-1');
   final inbox = ChatsListViewModel(
@@ -939,9 +973,14 @@ Widget _app({
         club.id,
       ).overrideWith((ref) => Stream.value(events ?? [?event])),
       chatsListViewModelProvider.overrideWithValue(AsyncData(inbox)),
-      hostMessagingSetupProvider(
-        club.id,
-      ).overrideWithValue(AsyncData(_messagingSetup(club.id))),
+      hostMessagingSetupProvider(club.id).overrideWithValue(
+        AsyncData(
+          _messagingSetup(
+            club.id,
+            providerConfigured: whatsappProviderConfigured,
+          ),
+        ),
+      ),
       hostCrmSummaryProvider(
         club.id,
       ).overrideWithValue(AsyncData(_crmSummary(club.id))),
@@ -1099,9 +1138,12 @@ HostWhatsappThreadSummary _whatsappThread({
   serviceWindowOpen: true,
 );
 
-HostMessagingSetup _messagingSetup(String organizerId) => HostMessagingSetup(
+HostMessagingSetup _messagingSetup(
+  String organizerId, {
+  bool providerConfigured = true,
+}) => HostMessagingSetup(
   organizerId: organizerId,
-  providerConfigured: true,
+  providerConfigured: providerConfigured,
   embeddedSignup: const HostWhatsappEmbeddedSignupConfig(
     appId: 'test-app',
     configId: 'test-config',

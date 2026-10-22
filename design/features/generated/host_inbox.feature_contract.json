@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-09-15",
-  "sourceDigest": "sha256:662f69ae32cbf6bbe58eed7b9a8b0f8e5b5263c1520d6f8068f684aa28116a06",
-  "resolvedDigest": "sha256:b3d9edb53d2c16a0aafbe2d9d484bb455b620c78a10e75285212f7332237e249",
+  "sourceDigest": "sha256:d1da5cb2b6d2bea0123d1fe970340665847edb262760aa6d6e8991955e04d01a",
+  "resolvedDigest": "sha256:aa8e93924d4b5620f4b4839927328a891c6e4041f289b38fb2919b4969bd241b",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -991,7 +991,7 @@
             "tests"
           ],
           "debtId": "HOST-MESSAGING-EVIDENCE-001",
-          "reason": "The disconnected native-to-web handoff, ready sender and initial campaign route are tested; remaining sender and campaign lifecycle variants need focused rendered tests."
+          "reason": "The unavailable-sender gates, ready sender and initial campaign route are tested; remaining sender and campaign lifecycle variants need focused rendered tests."
         },
         {
           "stateIds": [

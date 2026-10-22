@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_whatsapp_embedded_signup.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_event_announcement_field.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_back_button.dart';
@@ -44,6 +46,13 @@ class HostSendIntentMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final setup = ref.watch(hostMessagingSetupProvider(club.id));
+    // Saved-audience campaigns need a WhatsApp sender, so both the intent and
+    // its settings entry stay hidden where this client cannot manage one.
+    final showWhatsappSetup =
+        catchAsyncStateFromAsyncValue(setup).value?.canManageWhatsappSender(
+          embeddedSignupSupported: hostWhatsappEmbeddedSignupSupported,
+        ) !=
+        false;
     final followerQuota = ref.watch(
       watchClubPostRemainingWeeklyQuotaProvider(club.id),
     );
@@ -136,7 +145,7 @@ class HostSendIntentMenu extends ConsumerWidget {
                 onTap: onOpenInbox,
               ),
             ),
-            campaignField,
+            if (showWhatsappSetup) campaignField,
             HostEventAnnouncementField(
               organizerId: club.id,
               preferredEventId: preferredEventId,
@@ -148,15 +157,17 @@ class HostSendIntentMenu extends ConsumerWidget {
             followerUpdateField,
           ],
         ),
-        gapH12,
-        CatchButton(
-          label: context.l10n.hostSendsSettings,
-          variant: CatchButtonVariant.secondary,
-          onPressed: () => context.pushNamed(
-            Routes.hostOrganizerMessagingScreen.name,
-            pathParameters: {'clubId': club.id},
+        if (showWhatsappSetup) ...[
+          gapH12,
+          CatchButton(
+            label: context.l10n.hostSendsSettings,
+            variant: CatchButtonVariant.secondary,
+            onPressed: () => context.pushNamed(
+              Routes.hostOrganizerMessagingScreen.name,
+              pathParameters: {'clubId': club.id},
+            ),
           ),
-        ),
+        ],
       ],
     );
   }

@@ -340,6 +340,55 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(find.text('Messaging setup messaging-club'), findsOneWidget);
   });
 
+  testWidgets(
+    'sender recovery stays hidden where a sender cannot be connected',
+    (tester) async {
+      final club = buildClub(id: 'messaging-club', ownerUserId: _hostUid);
+      await _pumpHostScreen(
+        tester,
+        const HostCustomersScreen(),
+        overrides: [
+          ..._hostClubOverrides(
+            owned: [club],
+            messagingSetupByOrganizer: {
+              club.id: _hostMessagingSetup(
+                organizerId: club.id,
+                connected: false,
+              ),
+            },
+          ),
+          hostCustomersDirectoryControllerProvider.overrideWith2(
+            (_) => _FixedHostCustomersDirectoryController(
+              [],
+              _customerDirectoryState(),
+            ),
+          ),
+        ],
+      );
+
+      await tester.tap(find.byKey(const ValueKey('host-customers-filters')));
+      await pumpFeatureUi(tester);
+      final atRiskFilter = find.byKey(
+        const ValueKey('host-customer-filter-atRisk'),
+      );
+      await tester.ensureVisible(atRiskFilter);
+      await pumpFeatureUi(tester);
+      await tester.tap(atRiskFilter);
+      await pumpFeatureUi(tester);
+
+      await tester.ensureVisible(find.text('Close'));
+      await tester.tap(find.text('Close'));
+      await pumpFeatureUi(tester);
+
+      // Tests run without Meta Embedded Signup, like the native Host apps.
+      expect(find.text('Sender verification is incomplete'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('host-customers-sender-setup-action')),
+        findsNothing,
+      );
+    },
+  );
+
   testWidgets('customer search shows clear only while input is non-empty', (
     tester,
   ) async {

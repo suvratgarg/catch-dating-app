@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_messaging_setup.dart';
@@ -11,7 +10,6 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../clubs/clubs_test_helpers.dart';
 import '../test_pump_helpers.dart';
@@ -20,7 +18,7 @@ void main() {
   setUp(() => AppConfig.configureEntrypointRole(AppRole.host));
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
-  testWidgets('setup route uses canonical route and responsive body owners', (
+  testWidgets('setup route keeps its owners and omits an unavailable sender', (
     tester,
   ) async {
     const organizerId = 'organizer-route';
@@ -31,19 +29,7 @@ void main() {
         overrides: [
           watchClubProvider(organizerId).overrideWithValue(AsyncData(club)),
           hostMessagingSetupProvider(organizerId).overrideWithValue(
-            const AsyncData(
-              HostMessagingSetup(
-                organizerId: organizerId,
-                providerConfigured: false,
-                embeddedSignup: HostWhatsappEmbeddedSignupConfig(
-                  appId: null,
-                  configId: null,
-                  graphVersion: null,
-                ),
-                connection: null,
-                templates: [],
-              ),
-            ),
+            AsyncData(_messagingSetup(organizerId, providerConfigured: false)),
           ),
         ],
         child: MaterialApp(
@@ -58,69 +44,101 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
-    expect(find.byType(HostWhatsappSetupSection), findsOneWidget);
     expect(find.byType(CatchPageBody), findsOneWidget);
     expect(find.byType(CustomScrollView), findsOneWidget);
     expect(find.text('WhatsApp Business settings'), findsOneWidget);
+    expect(find.text('WHATSAPP BUSINESS SENDER'), findsNothing);
+    expect(find.byType(CatchNotice), findsNothing);
+    expect(find.text('Connect WhatsApp Business'), findsNothing);
   });
 
-  testWidgets('native WhatsApp setup opens the Host web onboarding route', (
+  testWidgets('hides sender connection where Embedded Signup is unavailable', (
     tester,
   ) async {
     const organizerId = 'organizer-1';
-    Uri? launchedUri;
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          hostMessagingSetupProvider(organizerId).overrideWithValue(
-            const AsyncData(
-              HostMessagingSetup(
-                organizerId: organizerId,
-                providerConfigured: true,
-                embeddedSignup: HostWhatsappEmbeddedSignupConfig(
-                  appId: 'app-id',
-                  configId: 'config-id',
-                  graphVersion: 'v24.0',
-                ),
-                connection: null,
-                templates: [],
-              ),
-            ),
-          ),
-          externalUrlLauncherProvider.overrideWithValue((
-            uri, {
-            mode = LaunchMode.platformDefault,
-          }) async {
-            launchedUri = uri;
-            return true;
-          }),
-        ],
-        child: MaterialApp(
-          theme: AppTheme.light,
-          builder: catchNoticeOverlayBuilder,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: SingleChildScrollView(
-              child: HostWhatsappSetupSection(club: buildClub(id: organizerId)),
+    await _pumpSection(tester, _messagingSetup(organizerId));
+
+    // Tests run without Meta Embedded Signup, like the native Host apps.
+    expect(find.text('WHATSAPP BUSINESS SENDER'), findsNothing);
+    expect(find.text('Connect WhatsApp Business'), findsNothing);
+  });
+
+  testWidgets('manages an already connected sender without Embedded Signup', (
+    tester,
+  ) async {
+    const organizerId = 'organizer-1';
+
+    await _pumpSection(
+      tester,
+      _messagingSetup(organizerId, connection: _connection),
+    );
+
+    expect(find.text('WHATSAPP BUSINESS SENDER'), findsOneWidget);
+    expect(find.text('Catch Social'), findsOneWidget);
+    expect(find.text('Sync templates'), findsOneWidget);
+    expect(find.text('Disconnect'), findsOneWidget);
+    expect(find.text('Connect WhatsApp Business'), findsNothing);
+  });
+}
+
+Future<void> _pumpSection(WidgetTester tester, HostMessagingSetup setup) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        hostMessagingSetupProvider(
+          setup.organizerId,
+        ).overrideWithValue(AsyncData(setup)),
+      ],
+      child: MaterialApp(
+        theme: AppTheme.light,
+        builder: catchNoticeOverlayBuilder,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: HostWhatsappSetupSection(
+              club: buildClub(id: setup.organizerId),
             ),
           ),
         ),
       ),
-    );
-    await pumpFeatureUi(tester);
-
-    await tester.tap(find.text('Connect WhatsApp Business'));
-    await pumpFeatureUi(tester);
-
-    expect(
-      launchedUri,
-      Uri.parse('https://catchdates.com/host/organizer/$organizerId/messaging'),
-    );
-    expect(
-      find.text('Continue WhatsApp setup in the Host web app.'),
-      findsOneWidget,
-    );
-  });
+    ),
+  );
+  await pumpFeatureUi(tester);
 }
+
+const _connection = HostWhatsappConnection(
+  connectionId: 'connection-1',
+  status: 'active',
+  displayPhoneNumber: '+91 98765 43210',
+  verifiedName: 'Catch Social',
+  qualityRating: 'GREEN',
+  messagingLimitTier: 'TIER_1K',
+  templateSyncStatus: 'ready',
+  webhookStatus: 'healthy',
+  testStatus: 'verified',
+  revision: 1,
+);
+
+HostMessagingSetup _messagingSetup(
+  String organizerId, {
+  bool providerConfigured = true,
+  HostWhatsappConnection? connection,
+}) => HostMessagingSetup(
+  organizerId: organizerId,
+  providerConfigured: providerConfigured,
+  embeddedSignup: providerConfigured
+      ? const HostWhatsappEmbeddedSignupConfig(
+          appId: 'app-id',
+          configId: 'config-id',
+          graphVersion: 'v24.0',
+        )
+      : const HostWhatsappEmbeddedSignupConfig(
+          appId: null,
+          configId: null,
+          graphVersion: null,
+        ),
+  connection: connection,
+  templates: const [],
+);

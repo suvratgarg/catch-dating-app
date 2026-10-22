@@ -355,6 +355,13 @@ class _HostSendsHistory extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sends = ref.watch(hostSendsProvider(organizerId));
+    final showWhatsappSetup =
+        catchAsyncStateFromAsyncValue(
+          ref.watch(hostMessagingSetupProvider(organizerId)),
+        ).value?.canManageWhatsappSender(
+          embeddedSignupSupported: hostWhatsappEmbeddedSignupSupported,
+        ) !=
+        false;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -368,16 +375,17 @@ class _HostSendsHistory extends ConsumerWidget {
                 label: context.l10n.hostSendsChooseIntent,
                 onPressed: busy ? null : onNew,
               ),
-              CatchButton(
-                label: context.l10n.hostSendsSettings,
-                variant: CatchButtonVariant.secondary,
-                onPressed: busy
-                    ? null
-                    : () => context.pushNamed(
-                        Routes.hostOrganizerMessagingScreen.name,
-                        pathParameters: {'clubId': organizerId},
-                      ),
-              ),
+              if (showWhatsappSetup)
+                CatchButton(
+                  label: context.l10n.hostSendsSettings,
+                  variant: CatchButtonVariant.secondary,
+                  onPressed: busy
+                      ? null
+                      : () => context.pushNamed(
+                          Routes.hostOrganizerMessagingScreen.name,
+                          pathParameters: {'clubId': organizerId},
+                        ),
+                ),
             ],
           ),
         ),

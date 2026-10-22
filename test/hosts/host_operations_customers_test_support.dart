@@ -61,6 +61,7 @@ HostCustomersDirectoryState _emptyCustomerDirectoryState() =>
 HostMessagingSetup _hostMessagingSetup({
   required String organizerId,
   bool providerConfigured = true,
+  bool connected = true,
   String connectionStatus = 'active',
 }) => HostMessagingSetup(
   organizerId: organizerId,
@@ -70,18 +71,20 @@ HostMessagingSetup _hostMessagingSetup({
     configId: 'config-id',
     graphVersion: 'v24.0',
   ),
-  connection: HostWhatsappConnection(
-    connectionId: 'connection-1',
-    status: connectionStatus,
-    displayPhoneNumber: '+91 98765 43210',
-    verifiedName: 'Catch Social',
-    qualityRating: 'GREEN',
-    messagingLimitTier: 'TIER_1K',
-    templateSyncStatus: 'ready',
-    webhookStatus: 'healthy',
-    testStatus: 'verified',
-    revision: 1,
-  ),
+  connection: connected
+      ? HostWhatsappConnection(
+          connectionId: 'connection-1',
+          status: connectionStatus,
+          displayPhoneNumber: '+91 98765 43210',
+          verifiedName: 'Catch Social',
+          qualityRating: 'GREEN',
+          messagingLimitTier: 'TIER_1K',
+          templateSyncStatus: 'ready',
+          webhookStatus: 'healthy',
+          testStatus: 'verified',
+          revision: 1,
+        )
+      : null,
   templates: const [],
 );
 
