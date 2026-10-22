@@ -1506,3 +1506,39 @@ test("harness tests, release workflows and the tool manifest validate without fu
     manifest: toolsManifest, componentGraph: graph, mode: "pr"});
   assert.equal(manifest.mode, "full", "a manifest edit runs every registered check");
 });
+
+// Narrowing is safe only because PR validation never executes those files.
+// Prove it against the real workflows: nothing PR CI runs, and no tool/ci
+// module those workflows invoke or import, may be harness-scoped.
+test("nothing PR validation executes can be harness-scoped", () => {
+  const read = (file) => fs.readFileSync(new URL(`../../${file}`, import.meta.url), "utf8");
+  const workflows = new Set([".github/workflows/ci.yml"]);
+  for (const workflow of workflows) {
+    for (const [, called] of read(workflow).matchAll(/uses: \.\/(\.github\/workflows\/[\w.-]+\.ya?ml)/gu)) {
+      workflows.add(called);
+    }
+  }
+  const scripts = new Set();
+  for (const workflow of workflows) {
+    for (const [script] of read(workflow).matchAll(/tool\/ci\/[\w.-]+\.(?:mjs|cjs|sh|env|json)/gu)) {
+      scripts.add(script);
+    }
+  }
+  for (const script of [...scripts]) {
+    if (!fs.existsSync(new URL(`../../${script}`, import.meta.url))) continue;
+    for (const [, imported] of read(script).matchAll(/from "\.\/([\w.-]+\.mjs)"/gu)) {
+      scripts.add(`tool/ci/${imported}`);
+    }
+  }
+  assert.ok(workflows.size > 5 && scripts.size > 3, "PR validation inventory looks incomplete");
+  for (const file of [...workflows, ...scripts]) {
+    assert.notEqual(plan(file).pathMatches[file]?.owner, "harness-scoped-control",
+      `${file} runs in PR validation and must keep its validation`);
+  }
+  // Negative control: narrowing a script PR CI runs is caught.
+  const probe = "tool/ci/generated_inventories.mjs";
+  assert.ok(scripts.has(probe), "negative control must be a PR-validation script");
+  const widened = clone(graph);
+  widened.classifications.find((entry) => entry.id === "harness-scoped-control").paths.include.push(probe);
+  assert.equal(plan(probe, "pr", widened).pathMatches[probe].owner, "harness-scoped-control");
+});

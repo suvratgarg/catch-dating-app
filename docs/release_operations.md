@@ -287,7 +287,13 @@ Changes to the shared Harness control plane intentionally run every declared
 target. The graph explicitly owns backend-only Delivery, staging, rebaseline,
 package-verifier and source-review files: those changes run Functions,
 contracts, rules, policy and the affected Tools check closure without compiling
-unrelated clients. The tool planner honors the graph's terminal classifications
+unrelated clients. Files PR validation never executes run only their own Tools
+checks and policy: harness and CI tests, release, deploy and operations
+workflows, and `tool/ci` release scripts no PR workflow invokes
+(`harness-scoped-control`). A `tool/tools_manifest.json` edit runs the complete
+Tools matrix, which executes every registered check. A harness test proves that
+no workflow PR CI runs, and no `tool/ci` module it invokes or imports, is ever
+narrowed. The tool planner honors the graph's terminal classifications
 and includes every declared check plus its transitive dependencies; it does not
 reapply a broader workflow glob or drop graph-required checks. Shared CI
 orchestration, toolchains, the cross-product delivery core,
