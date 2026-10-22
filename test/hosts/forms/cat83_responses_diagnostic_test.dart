@@ -325,7 +325,7 @@ void main() {
 
 Future<void> _frames(WidgetTester tester) async {
   for (var frame = 0; frame < 16; frame++) {
-    await tester.pump(const Duration(milliseconds: 16));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 16));
   }
 }
 
