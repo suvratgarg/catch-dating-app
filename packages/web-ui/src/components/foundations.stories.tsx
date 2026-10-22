@@ -66,40 +66,33 @@ function TextRoles() {
   );
 }
 
+/** catch.text: every role in both themes, then the per-instance overrides. */
 export const Text: Story = {
   render: () => (
-    <CatchPageBody>
-      <TextRoles />
-    </CatchPageBody>
-  ),
-};
-
-export const TextDark: Story = {
-  render: () => (
-    <div data-catch-theme="dark" style={{background: "var(--catch-theme-bg)"}}>
+    <>
       <CatchPageBody>
-        <TextRoles />
+        <CatchGap size="majorSection">
+          <TextRoles />
+          <CatchGap size="related">
+            <CatchText as="h2" variant="titleL">Heading element</CatchText>
+            <CatchText color="danger" variant="supporting">Danger color</CatchText>
+            <CatchText color="positiveText" variant="supporting">Positive color</CatchText>
+            <CatchText color="attentionText" variant="supporting">Attention color</CatchText>
+            <CatchText textAlign="center" variant="bodyM">Centred text</CatchText>
+            <CatchText maxLines={2} variant="bodyL">
+              Two-line clamp. A long description of the evening wraps onto more lines than
+              the role allows, so the second line ends with an ellipsis instead of growing
+              the card past its bounds on narrow screens.
+            </CatchText>
+          </CatchGap>
+        </CatchGap>
       </CatchPageBody>
-    </div>
-  ),
-};
-
-export const TextOverrides: Story = {
-  render: () => (
-    <CatchPageBody>
-      <CatchGap size="related">
-        <CatchText as="h2" variant="titleL">Heading element</CatchText>
-        <CatchText color="danger" variant="supporting">Danger color</CatchText>
-        <CatchText color="positiveText" variant="supporting">Positive color</CatchText>
-        <CatchText color="attentionText" variant="supporting">Attention color</CatchText>
-        <CatchText textAlign="center" variant="bodyM">Centred text</CatchText>
-        <CatchText maxLines={2} variant="bodyL">
-          Two-line clamp. A long description of the evening wraps onto more lines than the
-          role allows, so the second line ends with an ellipsis instead of growing the card
-          past its bounds on narrow screens.
-        </CatchText>
-      </CatchGap>
-    </CatchPageBody>
+      <div data-catch-theme="dark" style={{background: "var(--catch-theme-bg)"}}>
+        <CatchPageBody>
+          <TextRoles />
+        </CatchPageBody>
+      </div>
+    </>
   ),
 };
 
