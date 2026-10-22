@@ -98,8 +98,6 @@ function normalizedProviderParams(environment = process.env, projectId) {
       "real Meta app and embedded-signup config ids are required when enabled");
   }
 
-  const catchWebhookEnabled = normalizedBooleanParam(
-    environment, "CATCH_WHATSAPP_WEBHOOK_ENABLED");
   const catchConsumersEnabled = normalizedBooleanParam(
     environment, "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED");
   const catchRepliesEnabled = normalizedBooleanParam(
@@ -152,22 +150,25 @@ function normalizedProviderParams(environment = process.env, projectId) {
     "CATCH_WHATSAPP_PHONE_NUMBER_ID must be a numeric Meta phone number id");
   assert(Boolean(catchWabaId) === Boolean(catchPhoneNumberId),
     "Catch WABA and phone number ids must be configured together");
-  if (catchWebhookEnabled === "true" || hasReplyScope) {
-    assert(catchWabaId && catchPhoneNumberId,
-      "Catch WABA and phone number ids are required for ingress or reply scope");
+  // The receiver is credential-activated: configured account ids (with the
+  // runtime's app secret and verify token) are the only ingress switch.
+  const catchWebhookConfigured = Boolean(catchWabaId && catchPhoneNumberId);
+  if (hasReplyScope) {
+    assert(catchWebhookConfigured,
+      "Catch WABA and phone number ids are required for reply scope");
   }
   if (catchAtomicIngressReady === "true") {
-    assert(catchWebhookEnabled === "true",
-      "Catch atomic STOP ingress requires the webhook to be enabled");
+    assert(catchWebhookConfigured,
+      "Catch atomic STOP ingress requires configured webhook account ids");
   }
   if (catchConsumersEnabled === "true") {
-    assert(catchWebhookEnabled === "true" && catchAtomicIngressReady === "true",
-      "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED requires enabled atomic ingress");
+    assert(catchWebhookConfigured && catchAtomicIngressReady === "true",
+      "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED requires configured atomic ingress");
   }
   if (catchRepliesEnabled === "true") {
-    assert(catchWebhookEnabled === "true" && catchAtomicIngressReady === "true" &&
+    assert(catchWebhookConfigured && catchAtomicIngressReady === "true" &&
       catchConsumersEnabled === "true",
-    "CATCH_WHATSAPP_REPLIES_ENABLED requires enabled atomic ingress and consumers");
+    "CATCH_WHATSAPP_REPLIES_ENABLED requires configured atomic ingress and consumers");
   }
 
   const eventAssistance = {
@@ -226,7 +227,10 @@ function normalizedProviderParams(environment = process.env, projectId) {
     META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID: configId || " ",
     META_WHATSAPP_GRAPH_VERSION: graphVersion,
     META_WHATSAPP_ENABLED: enabled,
-    CATCH_WHATSAPP_WEBHOOK_ENABLED: catchWebhookEnabled,
+    // Derived, never read from the environment: Functions packages built
+    // before the receiver became credential-activated still declare it.
+    // Remove once no such package can be promoted (CAT-186).
+    CATCH_WHATSAPP_WEBHOOK_ENABLED: catchWebhookConfigured ? "true" : "false",
     CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: catchConsumersEnabled,
     CATCH_WHATSAPP_REPLIES_ENABLED: catchRepliesEnabled,
     CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: catchAtomicIngressReady,
@@ -280,7 +284,8 @@ export function functionsParamsProvenance({projectId, sourceSha, environment = p
     paramsSha256: createHash("sha256").update(paramsContents(params)).digest("hex"),
     names: materializedNonSecretParams.map((name) => ({name,
       source: name === "FLIGHT_PROVIDER_POLICY" ? "source-disabled" :
-        environment[name]?.trim() ? "deployment-environment" : "source-default"})),
+        name !== "CATCH_WHATSAPP_WEBHOOK_ENABLED" && environment[name]?.trim() ?
+          "deployment-environment" : "source-default"})),
     references: Object.fromEntries(referenceNames.map((name) => [name, params[name].trim() || null])),
     activation: Object.fromEntries(activationNames.map((name) => [name, name === "FLIGHT_PROVIDER_POLICY" ? Boolean(params[name].trim()) : params[name] === "true"])),
   };
