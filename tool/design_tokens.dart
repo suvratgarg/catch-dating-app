@@ -6,7 +6,7 @@ const _defaultWebsiteCssPath = 'packages/web-config/generated/catch-tokens.css';
 const _defaultDartTokensPath =
     'packages/catch_tokens/lib/generated/catch_design_tokens.g.dart';
 
-void main(List<String> args) {
+Future<void> main(List<String> args) async {
   if (args.contains('--help') || args.contains('-h')) {
     _printHelp();
     return;
@@ -39,7 +39,7 @@ void main(List<String> args) {
     registry: tokens,
     websiteExtension: websiteExtension,
   );
-  final dart = _buildDartTokens(tokens);
+  final dart = await _formatDart(_buildDartTokens(tokens), dartOutputPath);
 
   final failures = <String>[];
   final websiteOutputFile = File(websiteOutputPath);
@@ -114,6 +114,17 @@ String _buildWebsiteCss({
     final cssValue = registry.cssValue(token);
     if (cssValue == null) continue;
     buffer.writeln('  $cssName: $cssValue;');
+  }
+
+  for (final token in registry.tokens.values.where(_isActivityColorToken)) {
+    final swatches = _derivedActivitySwatches(
+      _mapValue(registry.resolvedValue(token), token.referencePath),
+    );
+    for (final entry in swatches.entries) {
+      buffer.writeln(
+        '  --catch-activity-${_kebab(token.path[1])}-${entry.key}: ${entry.value};',
+      );
+    }
   }
 
   final aliases = _mapValue(websiteExtension['legacyAliases'], 'legacyAliases');
@@ -228,6 +239,24 @@ String _buildDartTokens(_TokenRegistry registry) {
   _writePlatformTokens(buffer, registry);
 
   return buffer.toString();
+}
+
+/// The pre-commit hook runs `dart format` on staged Dart files, so emit the
+/// formatter's output; otherwise committing the file would make `--check` fail.
+Future<String> _formatDart(String source, String outputPath) async {
+  final process = await Process.start(Platform.resolvedExecutable, [
+    'format',
+    '--output=show',
+    '--stdin-name=$outputPath',
+  ]);
+  final formatted = process.stdout.transform(utf8.decoder).join();
+  final errors = process.stderr.transform(utf8.decoder).join();
+  process.stdin.write(source);
+  await process.stdin.close();
+  if (await process.exitCode != 0) {
+    throw StateError('dart format failed for $outputPath: ${await errors}');
+  }
+  return formatted;
 }
 
 Map<String, dynamic> _catchExtension(Map<String, dynamic> document) {
@@ -588,6 +617,16 @@ final class _TokenRegistry {
           throw const FormatException('cubicBezier needs four numeric values.');
         }
         return 'cubic-bezier(${value.map((v) => _formatNumber(v as num)).join(', ')})';
+      case 'shadow':
+        return _shadowLayers(value)
+            .map(
+              (layer) =>
+                  '${_cssLength(layer.x)} ${_cssLength(layer.y)} '
+                  '${_cssLength(layer.blur)}'
+                  '${layer.spread == 0 ? '' : ' ${_cssLength(layer.spread)}'} '
+                  '${_colorCssValue(layer.color)}',
+            )
+            .join(', ');
       default:
         if (value is String || value is num) return _rawCssValue(value);
         return null;
@@ -686,6 +725,158 @@ String _dimensionCssValue(Map<String, dynamic> value) {
     throw const FormatException('dimension unit must be a string.');
   }
   return '${_formatNumber(number)}$unit';
+}
+
+String _cssLength(num value) => value == 0 ? '0' : '${_formatNumber(value)}px';
+
+final class _ShadowLayer {
+  const _ShadowLayer({
+    required this.color,
+    required this.x,
+    required this.y,
+    required this.blur,
+    required this.spread,
+  });
+
+  final Map<String, dynamic> color;
+  final num x;
+  final num y;
+  final num blur;
+  final num spread;
+}
+
+/// One or more DTCG shadow layers, each emitted as a CSS box-shadow layer and
+/// a Flutter [BoxShadow] with the same offset, blur and spread numbers.
+List<_ShadowLayer> _shadowLayers(Object? value) {
+  final layers = value is List ? value : <Object?>[value];
+  if (layers.isEmpty) {
+    throw const FormatException('shadow needs at least one layer.');
+  }
+  return layers
+      .map((raw) {
+        final layer = _mapValue(raw, 'shadow layer');
+        num px(String key) {
+          final dimension = _mapValue(layer[key], 'shadow $key');
+          final number = dimension['value'];
+          if (dimension['unit'] != 'px' || number is! num) {
+            throw FormatException('shadow $key must be a px dimension.');
+          }
+          return number;
+        }
+
+        return _ShadowLayer(
+          color: _mapValue(layer['color'], 'shadow color'),
+          x: px('offsetX'),
+          y: px('offsetY'),
+          blur: px('blur'),
+          spread: px('spread'),
+        );
+      })
+      .toList(growable: false);
+}
+
+/// Writes `dart format`-stable layers so the generated file survives the
+/// pre-commit formatter unchanged.
+void _writeDartShadowLayers(StringBuffer buffer, Object? value) {
+  for (final layer in _shadowLayers(value)) {
+    buffer
+      ..writeln('    BoxShadow(')
+      ..writeln('      color: ${_dartColorValue(layer.color)},')
+      ..writeln('      blurRadius: ${_formatDartNumber(layer.blur)},');
+    if (layer.spread != 0) {
+      buffer.writeln('      spreadRadius: ${_formatDartNumber(layer.spread)},');
+    }
+    buffer
+      ..writeln(
+        '      offset: Offset(${_formatDartNumber(layer.x)}, '
+        '${_formatDartNumber(layer.y)}),',
+      )
+      ..writeln('    ),');
+  }
+}
+
+/// Mirrors `ActivitySwatch._derive` in `lib/core/theme/activity_palette.dart`,
+/// including Flutter's `HSLColor` math, so the website reads the same deep,
+/// soft and dark-mode swatches the app derives at runtime.
+/// `test/core/theme/activity_palette_web_parity_test.dart` fails on drift.
+Map<String, String> _derivedActivitySwatches(Map<String, dynamic> pigment) {
+  final hex = pigment['hex'];
+  if (hex is! String) {
+    throw const FormatException('activity pigments need a hex value.');
+  }
+  final color = _hexColorValue(hex)['components']! as List<num>;
+  final hsl = _Hsl.fromRgb(
+    color[0].toDouble(),
+    color[1].toDouble(),
+    color[2].toDouble(),
+  );
+  double unit(double value) => value.clamp(0.0, 1.0).toDouble();
+  return <String, String>{
+    'deep': hsl
+        .copyWith(
+          lightness: unit(hsl.lightness - 0.13),
+          saturation: unit(hsl.saturation + 0.04),
+        )
+        .hex,
+    'soft': hsl
+        .copyWith(lightness: 0.93, saturation: unit(hsl.saturation * 0.55))
+        .hex,
+    'accent-dark': hsl.copyWith(lightness: unit(hsl.lightness + 0.07)).hex,
+    'soft-dark': hsl
+        .copyWith(lightness: 0.22, saturation: unit(hsl.saturation * 0.5))
+        .hex,
+  };
+}
+
+final class _Hsl {
+  const _Hsl(this.hue, this.saturation, this.lightness);
+
+  factory _Hsl.fromRgb(double red, double green, double blue) {
+    final max = [red, green, blue].reduce((a, b) => a > b ? a : b);
+    final min = [red, green, blue].reduce((a, b) => a < b ? a : b);
+    final delta = max - min;
+    var hue = 0.0;
+    if (max == 0.0) {
+      hue = 0.0;
+    } else if (max == red) {
+      hue = 60.0 * (((green - blue) / delta) % 6);
+    } else if (max == green) {
+      hue = 60.0 * (((blue - red) / delta) + 2);
+    } else {
+      hue = 60.0 * (((red - green) / delta) + 4);
+    }
+    if (hue.isNaN) hue = 0.0;
+    final lightness = (max + min) / 2.0;
+    final saturation = lightness == 1.0
+        ? 0.0
+        : (delta / (1.0 - (2.0 * lightness - 1.0).abs()))
+              .clamp(0.0, 1.0)
+              .toDouble();
+    return _Hsl(hue, saturation, lightness);
+  }
+
+  final double hue;
+  final double saturation;
+  final double lightness;
+
+  _Hsl copyWith({double? saturation, double? lightness}) =>
+      _Hsl(hue, saturation ?? this.saturation, lightness ?? this.lightness);
+
+  String get hex {
+    final chroma = (1.0 - (2.0 * lightness - 1.0).abs()) * saturation;
+    final secondary = chroma * (1.0 - (((hue / 60.0) % 2.0) - 1.0).abs());
+    final match = lightness - chroma / 2.0;
+    final (red, green, blue) = switch (hue) {
+      < 60.0 => (chroma, secondary, 0.0),
+      < 120.0 => (secondary, chroma, 0.0),
+      < 180.0 => (0.0, chroma, secondary),
+      < 240.0 => (0.0, secondary, chroma),
+      < 300.0 => (secondary, 0.0, chroma),
+      _ => (chroma, 0.0, secondary),
+    };
+    String channel(double value) => _hexByte(((value + match) * 255).round());
+    return '#${channel(red)}${channel(green)}${channel(blue)}';
+  }
 }
 
 String _rawCssValue(Object? value) {
@@ -835,6 +1026,24 @@ void _writeFoundationTokens(StringBuffer buffer, _TokenRegistry registry) {
     } else {
       throw FormatException('Unsupported motion token: ${token.referencePath}');
     }
+  }
+  buffer
+    ..writeln('}')
+    ..writeln()
+    ..writeln('abstract final class GeneratedCatchElevationTokens {');
+  for (final token in registry.tokens.values.where(
+    (t) => t.path.length == 2 && t.path[0] == 'elevation',
+  )) {
+    if (token.type != 'shadow') {
+      throw FormatException(
+        'Unsupported elevation token: ${token.referencePath}',
+      );
+    }
+    buffer.writeln(
+      '  static const List<BoxShadow> ${token.path.last} = <BoxShadow>[',
+    );
+    _writeDartShadowLayers(buffer, registry.resolvedValue(token));
+    buffer.writeln('  ];');
   }
   buffer
     ..writeln('}')
