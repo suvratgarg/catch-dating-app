@@ -167,6 +167,18 @@ last 150 merges in its description, using the method from #760.
    already cover, port the rest (for example the search-capture and
    URL-normalization logic, the event import planning, and the fixtures), then
    retire. The live organizer-intake data model is not touched.
+
+   The "retired" status itself is contradicted by live code, so this needs an
+   owner decision before any deletion. Admin's data-quality screen
+   (`useDataQualityController.ts`) and the `eventSupplyReadiness` callable still
+   tell operators to run `plan_external_event_imports.mjs`,
+   `preflight_external_event_imports.mjs` and
+   `publish_event_supply_readiness.mjs`, and `tool/remote_ops_manifest.json`
+   still lists `organizer_intake.mjs`, `check_operational_health.mjs` and
+   `run_promotion_pipeline.mjs` as operator procedures. Either those workflows
+   are live, and the tools should return to `active` with an owner, or the Admin
+   and Functions instructions are stale and must be replaced by whatever does
+   the job now.
 3. Retire tools with no caller at all (listed in "Trim Inventory") under the
    same rule. A guard that is still wanted gets wired into CI instead.
 
@@ -298,7 +310,9 @@ Outside `tool/`:
 
 ## Owner Decisions
 
-1. Review the organizer-intake salvage map before its retirement PR lands.
+1. Organizer intake: are the external event import and promotion workflows
+   that Admin and the remote-ops runbook still point to live? That decides
+   whether those 34 tools are reactivated or retired with a salvage map.
 2. Decide on the one-time data tools: retire them now, or keep any you still
    run.
 3. Decide on the two proofs of concept.
