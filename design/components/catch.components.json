@@ -9777,9 +9777,202 @@
         "useCase": "Step",
         "comparedWith": [
           "catch.field.form_row_list",
-          "catch.screen_body.form_step_overview"
+          "catch.form_step_list"
         ],
         "reason": "Presents a passive ordered instruction sequence with numbered rows and a connecting trace. FormList edits typed values with accordion and save orchestration; neither its editing state nor StepHeader current-step progress belongs in this instructional list. FormStepList resumes completed or incomplete form sections using navigation fields and status badges."
+      }
+    },
+    {
+      "id": "catch.form_step_list",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
+      "name": "CatchFormStepList",
+      "status": "active",
+      "kind": "pattern",
+      "tier": "T2",
+      "aliases": [
+        "StepRail",
+        "StageRail",
+        "FormStepNavigator",
+        "FormStepOverview"
+      ],
+      "summary": "Resumable form-section navigator: ordered step rows with caller-resolved completion status labels and caller-owned step selection, shared by app, website and admin.",
+      "dart": {
+        "symbol": "CatchFormStepList",
+        "file": "packages/catch_ui/lib/src/patterns/catch_form_step_list.dart",
+        "constructors": [
+          "CatchFormStepList"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/FormStepList",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "FormStepList",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "items",
+            "type": "list",
+            "required": true,
+            "dartType": "List<CatchFormStepReviewItem>",
+            "tsType": "CatchFormStepReviewItem[]",
+            "notes": "Ordered steps; each item carries its index, title and completion status."
+          },
+          {
+            "name": "statusLabelBuilder",
+            "type": "callback",
+            "required": true,
+            "dartType": "String Function(CatchFormStepListStatus)",
+            "tsType": "(status: CatchFormStepListStatus) => string",
+            "notes": "Caller-resolved, localized label for each completion status."
+          },
+          {
+            "name": "onStepSelected",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<int>?",
+            "tsType": "(index: number) => void",
+            "notes": "Caller-owned step selection. When omitted in Flutter, a sheet route returns the selected index."
+          },
+          {
+            "name": "fieldCopy",
+            "type": "object",
+            "required": true,
+            "dartType": "CatchFieldCopy",
+            "tsType": "CatchFieldCopy"
+          }
+        ],
+        "states": [
+          "complete",
+          "needs-information",
+          "optional",
+          "mixed-progress",
+          "long-title"
+        ],
+        "slots": [],
+        "tokens": [],
+        "dartRoles": [
+          "CatchFieldLanes.divided",
+          "CatchField.nav",
+          "CatchBadge.functional",
+          "showCatchFormStepSheet"
+        ],
+        "goldens": [],
+        "members": [
+          {
+            "id": "catch.form_step_list.spec",
+            "symbol": "CatchFormStepSpec",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_spec.dart",
+            "summary": "Wizard step title, validation key and optional-step presentation metadata.",
+            "states": [
+              "complete",
+              "needs-information",
+              "optional"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.form_step_list",
+              "parentConceptId": "catch.form_step_list",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.form_step_list"
+            }
+          },
+          {
+            "id": "catch.form_step_list.status",
+            "symbol": "CatchFormStepListStatus",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_list_status.dart",
+            "summary": "Complete, needs-information and optional review statuses.",
+            "states": [
+              "complete",
+              "needs-information",
+              "optional"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.form_step_list",
+              "parentConceptId": "catch.form_step_list",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.form_step_list"
+            }
+          },
+          {
+            "id": "catch.form_step_list.review_item",
+            "symbol": "CatchFormStepReviewItem",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_review_item.dart",
+            "summary": "Indexed display item and its required-completion status.",
+            "states": [
+              "complete",
+              "needs-information",
+              "optional"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.form_step_list",
+              "parentConceptId": "catch.form_step_list",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.form_step_list"
+            }
+          }
+        ],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use to resume or jump between the sections of a multi-step form; each row shows the section's completion status.",
+          "Callers own step selection and status labels. Without onStepSelected, the Flutter list returns the chosen index from showCatchFormStepSheet.",
+          "Website StepRail and admin AdminIntakeStageRail are componentId adapters of this contract; the canonical @catch/web-ui implementation replaces both rails (blueprint Phase 7e).",
+          "Passive numbered instructions use catch.journey_steps; value editing uses catch.field.form_row_list."
+        ]
+      },
+      "governance": {
+        "role": "pattern",
+        "canonicalFamily": "catch.form_step_list",
+        "publicApi": true,
+        "stateOwnership": "display-state-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.form_step_list"
+      },
+      "level": "L4",
+      "roleNoun": "List",
+      "naming": {
+        "useCase": "FormStep",
+        "comparedWith": [
+          "catch.field.form_row_list",
+          "catch.journey_steps"
+        ],
+        "reason": "Resumes a form section through a caller callback or sheet result and shows each section completion status using canonical navigation fields and badges. FormList edits values and coordinates patch saves; StepList presents passive numbered instructions without navigation or completion status."
       }
     },
     {
@@ -10064,34 +10257,6 @@
             }
           },
           {
-            "id": "catch.screen_body.form_step_overview",
-            "symbol": "CatchFormStepList",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_list.dart",
-            "summary": "Resumable form navigator with caller-resolved status labels and caller-owned step selection.",
-            "states": [
-              "complete",
-              "needs-information",
-              "optional"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.screen_body",
-              "parentConceptId": "catch.screen_body",
-              "qualifier": "layout",
-              "decisionRef": "pattern-family:form-review-navigation-roles"
-            },
-            "level": "L4",
-            "roleNoun": "List",
-            "naming": {
-              "useCase": "FormStep",
-              "comparedWith": [
-                "catch.field.form_row_list",
-                "catch.journey_steps"
-              ],
-              "reason": "Resumes a form section through a caller callback or sheet result and shows each section completion status using canonical navigation fields and badges. FormList edits values and coordinates patch saves; StepList presents passive numbered instructions without navigation or completion status."
-            }
-          },
-          {
             "id": "catch.screen_body.form_review_body",
             "symbol": "CatchFormReviewPageBody",
             "file": "packages/catch_ui/lib/src/patterns/catch_form_review_page_body.dart",
@@ -10116,7 +10281,7 @@
               "comparedWith": [
                 "catch.screen_body"
               ],
-              "reason": "Composes final-review copy, read-only summary fields and the canonical form-step navigator inside one scrolling body with bottom-action clearance. PageBody supplies generic geometry; FormStepRowList supplies navigable status rows without owning this review page or its submission."
+              "reason": "Composes final-review copy, read-only summary fields and the canonical form-step navigator inside one scrolling body with bottom-action clearance. PageBody supplies generic geometry; FormStepList supplies navigable status rows without owning this review page or its submission."
             }
           },
           {
@@ -10287,60 +10452,6 @@
                 "catch.screen_body"
               ],
               "reason": "The page-body parent pads content and publishes field geometry. This member is the final empty space in a scroll body, computed from navigation obstruction and device safe area. It contains no child and therefore uses Gap; box/sliver output and explicit extra space are recipes of this one responsibility."
-            }
-          },
-          {
-            "id": "catch.screen_body.form_step_spec",
-            "symbol": "CatchFormStepSpec",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_spec.dart",
-            "summary": "Wizard step title, validation key and optional-step presentation metadata.",
-            "states": [
-              "complete",
-              "needs-information",
-              "optional"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.screen_body",
-              "parentConceptId": "catch.screen_body",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.screen_body"
-            }
-          },
-          {
-            "id": "catch.screen_body.form_step_status",
-            "symbol": "CatchFormStepListStatus",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_list_status.dart",
-            "summary": "Complete, needs-information and optional review statuses.",
-            "states": [
-              "complete",
-              "needs-information",
-              "optional"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.screen_body",
-              "parentConceptId": "catch.screen_body",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.screen_body"
-            }
-          },
-          {
-            "id": "catch.screen_body.form_step_review_item",
-            "symbol": "CatchFormStepReviewItem",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_review_item.dart",
-            "summary": "Indexed display item and its required-completion status.",
-            "states": [
-              "complete",
-              "needs-information",
-              "optional"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.screen_body",
-              "parentConceptId": "catch.screen_body",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.screen_body"
             }
           },
           {
