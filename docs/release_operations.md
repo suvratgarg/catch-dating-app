@@ -274,8 +274,9 @@ Configure GitHub branch protection for `main` to require the single stable
 pushes, and merge queues. It fails when planning fails or any selected lane
 fails; unaffected lanes are explicit skips, so path scoping never leaves a
 required check permanently pending. Required CI has no mandatory human backend
-source-review job; it retains the latest live PR admission and exact tested-source
-recheck before the automated aggregate can succeed.
+source-review job. The merge queue reruns it on the exact combined source of
+each group before `main` moves, so a pull request result never needs to stay
+current with `main`.
 
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
 `tool/harness/component_graph.json`, fails closed for an unmapped or ambiguous
@@ -360,11 +361,11 @@ hashes; they are not executed-test evidence or a cross-SHA reuse permission.
 Missing snapshot dependencies and incomplete selection fail closed.
 
 Orchestration job guards use `!cancelled()` so cancellation can terminate the
-planner and aggregate instead of leaving an `always()` job holding the serial
-slot. Failed or unadmitted runs still execute the rejecting aggregate; every
-selected target requires a successful owning job. A cancelled workflow has no
-successful validation authority. Reusable Flutter and Tools aggregates use the same cancellation guard. The
-single admitted integration slot and its live source checks remain unchanged. See [GitHub cancellation semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation).
+planner and aggregate instead of leaving an `always()` job running. Failed runs
+still execute the rejecting aggregate; every selected target requires a
+successful owning job. Drafts skip planning and publish no Required CI context
+until they are marked ready. A cancelled workflow has no
+successful validation authority. Reusable Flutter and Tools aggregates use the same cancellation guard. See [GitHub cancellation semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation).
 
 The required source preflight runs before validation fanout from a full checkout
 with pinned Node/Flutter and selected generator dependencies. It checks the
@@ -707,17 +708,22 @@ the exact promoter, whose four role/platform targets each have their own bounded
 non-cancelling queue. Every authorized iOS target is dispatched automatically;
 manual dispatch remains a recovery surface. `prod-backend` is main-only and
 accepts only the reusable Firebase promoter called by the automatic Delivery
-workflow. Its OIDC provider binds repository, ref, environment, caller workflow,
-reusable workflow, and automatic event type. It reuses the existing deployment
-identity; it does not add project permissions. That identity's federation grant
-is restricted to the exact `prod`, `prod-hosting`, and `prod-backend` subjects,
-replacing its former repository-wide grant. The older production provider
-accepts only main jobs in `prod`, `prod-hosting`, or `prod-mobile`.
+workflow. Its OIDC provider binds the immutable repository and owner IDs, ref,
+environment, caller workflow, reusable workflow, and automatic event type; both
+workflow paths are compared with the token's own repository name, never a
+hardcoded one. It reuses the existing deployment identity; it does not add
+project permissions. That identity's federation grant is restricted to the
+`attribute.repository_environment` values `1170579691:prod`,
+`1170579691:prod-hosting`, and `1170579691:prod-backend`. The older production
+provider accepts only main jobs in `prod`, `prod-hosting`, or `prod-mobile` from
+repository `1170579691`. Every provider and grant uses immutable IDs, so renaming
+or transferring the repository or its owner cannot break deployment sign-in
+(CAT-210).
 
 Keep required reviewers on shared `prod` for production data operations,
 non-Functions stages, snapshots, recovery, and older source without review proof.
 Functions pull requests complete Required CI after the selected automated
-validation and live admission recheck; CI no longer creates or requires the
+validation; CI no longer creates or requires the
 credential-free `backend-review` job. That environment no longer has required
 reviewers; its identity, `refs/pull/*/merge` branch policy and prohibition on
 administrator bypass remain. Successful automated CI alone is never human
@@ -849,12 +855,13 @@ and the dedicated service account
 The service account's only project role must be `roles/datastore.viewer`; do not
 grant it Hosting, Functions, Rules, Storage, Secret Manager, or Firestore write
 authority. Its impersonation policy must be narrower than the shared provider:
-only the current GitHub OIDC subject
-`repo:suvratgarg/catch-dating-app:environment:prod-hosting` may use it.
+only `principalSet://iam.googleapis.com/projects/574779808785/locations/global/workloadIdentityPools/github-actions/attribute.repository_environment/1170579691:prod-hosting`
+(the immutable repository ID plus the `prod-hosting` environment) may use it.
 
 Live state verified on 2026-08-08: the dedicated service account has only
-`roles/datastore.viewer`, has no user-managed keys, and its sole impersonation
-binding is the exact `prod-hosting` environment subject above. Both GitHub
+`roles/datastore.viewer` and no user-managed keys. CAT-210 (2026-10-22) added
+the ID-based `prod-hosting` binding above and retires the earlier name-based
+subject after the organization transfer. Both GitHub
 Environment variables are present with the expected provider and service
 account values. The first main proof completed successfully in Marketing run
 `31254427583`: the environment-scoped job authenticated, materialized the two
@@ -878,23 +885,21 @@ gcloud iam service-accounts add-iam-policy-binding \
   github-actions-web-reader@catch-dating-app-64e51.iam.gserviceaccount.com \
   --project=catch-dating-app-64e51 \
   --role='roles/iam.workloadIdentityUser' \
-  --member='principal://iam.googleapis.com/projects/574779808785/locations/global/workloadIdentityPools/github-actions/subject/repo:suvratgarg/catch-dating-app:environment:prod-hosting'
+  --member='principalSet://iam.googleapis.com/projects/574779808785/locations/global/workloadIdentityPools/github-actions/attribute.repository_environment/1170579691:prod-hosting'
 
 gh variable set GCP_WEB_HOSTING_READONLY_WORKLOAD_IDENTITY_PROVIDER \
-  --repo suvratgarg/catch-dating-app \
   --env prod-hosting \
   --body 'projects/574779808785/locations/global/workloadIdentityPools/github-actions/providers/catch-dating-app'
 
 gh variable set GCP_WEB_HOSTING_READONLY_SERVICE_ACCOUNT_EMAIL \
-  --repo suvratgarg/catch-dating-app \
   --env prod-hosting \
   --body 'github-actions-web-reader@catch-dating-app-64e51.iam.gserviceaccount.com'
 ```
 
 Before merging a workflow that requires this identity, verify the service
 account's project roles, its exact impersonation principal, and both GitHub
-environment variables. A repository-wide `attribute.repository` principal is
-not an acceptable substitute for the environment-scoped subject.
+environment variables. A repository-wide principal is not an acceptable
+substitute for the environment-scoped attribute.
 
 ## Custom form domain onboarding
 
@@ -1250,8 +1255,9 @@ JSON key.
 As of 2026-07-11, `androidpublisher.googleapis.com` is enabled and
 `github-actions-play-publisher@catch-dating-app-64e51.iam.gserviceaccount.com`
 exists with zero project roles. Its only IAM binding is
-`roles/iam.workloadIdentityUser` for the exact GitHub OIDC subject
-`repo:suvratgarg/catch-dating-app:environment:prod-mobile`. Play Console must
+`roles/iam.workloadIdentityUser` for
+`principalSet://iam.googleapis.com/projects/574779808785/locations/global/workloadIdentityPools/github-actions/attribute.repository_environment/1170579691:prod-mobile`
+(CAT-210 replaced the earlier name-based subject). Play Console must
 still invite that identity separately, scoped to the two app records and only
 read-app plus testing-track release permissions.
 
@@ -3342,7 +3348,7 @@ The `cat165` choice in the existing selective backend caller prepares an exact
 62-Function projection and one additive index. Source preparation is not deploy
 authority or full CAT165 privacy acceptance. The source owner remains accountable
 for the implementation, the existing runtime owner for rollout, and the serial
-integration coordinator for merge admission. Do not use this profile as a manual
+integration coordinator for merging. Do not use this profile as a manual
 fallback, full backend baseline, token rotation or migration.
 
 The fixed candidate is `25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a`, historical

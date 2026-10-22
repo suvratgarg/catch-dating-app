@@ -9,7 +9,7 @@ import {fileURLToPath} from "node:url";
 
 const snapshotPaths = ["tool/harness/component_graph.json",
   "tool/harness/lib/component_graph.mjs", "tool/lib/path_glob.mjs"];
-const selectorControl = /^(?:tool\/harness(?:\.mjs|\/)|tool\/lib\/(?:path_glob|tool_impact|repository_snapshot)\.mjs$|tool\/(?:run\.mjs|tools_manifest\.json)$|\.github\/workflows\/(?:ci|pr-feedback)\.yml$)/u;
+const selectorControl = /^(?:tool\/harness(?:\.mjs|\/)|tool\/lib\/(?:path_glob|tool_impact|repository_snapshot)\.mjs$|tool\/(?:run\.mjs|tools_manifest\.json)$|\.github\/workflows\/ci\.yml$)/u;
 const sha256 = bytes => createHash("sha256").update(bytes).digest("hex");
 function git(cwd, args) {
   const result = spawnSync("git", args, {cwd, encoding: "utf8", maxBuffer: 32 * 1024 * 1024});
