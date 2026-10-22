@@ -242,13 +242,9 @@ class _HostClubDefaultsEditorState
 }
 
 class HostClubReadOnlyDefaultsSection extends StatelessWidget {
-  const HostClubReadOnlyDefaultsSection._({
-    required this.club,
-    required this.progressiveDefaultsAvailable,
-  });
+  const HostClubReadOnlyDefaultsSection._({required this.club});
 
   final Club club;
-  final bool progressiveDefaultsAvailable;
 
   @override
   Widget build(BuildContext context) {
@@ -257,22 +253,20 @@ class HostClubReadOnlyDefaultsSection extends StatelessWidget {
       first: true,
       title: context.l10n.hostsHostClubEditTabLabelEventDefaults,
       children: [
-        if (progressiveDefaultsAvailable)
-          CatchField.read(
-            copy: catchFieldCopy(context.l10n),
-            title: context.l10n.hostsPrivateEventCity,
-            body: club.location,
-            icon: CatchIcons.locationOnOutlined,
-          ),
-        if (progressiveDefaultsAvailable)
-          CatchField.read(
-            copy: catchFieldCopy(context.l10n),
-            title: context.l10n.hostsPrivateEventTimezone,
-            body:
-                club.hostDefaults.timezone ??
-                context.l10n.hostsEventDefaultsChooseEachEvent,
-            icon: CatchIcons.languageOutlined,
-          ),
+        CatchField.read(
+          copy: catchFieldCopy(context.l10n),
+          title: context.l10n.hostsPrivateEventCity,
+          body: club.location,
+          icon: CatchIcons.locationOnOutlined,
+        ),
+        CatchField.read(
+          copy: catchFieldCopy(context.l10n),
+          title: context.l10n.hostsPrivateEventTimezone,
+          body:
+              club.hostDefaults.timezone ??
+              context.l10n.hostsEventDefaultsChooseEachEvent,
+          icon: CatchIcons.languageOutlined,
+        ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleDefaultActivity,

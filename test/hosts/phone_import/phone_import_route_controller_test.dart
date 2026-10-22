@@ -9,7 +9,6 @@ import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_controller.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_state.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
-import 'package:catch_dating_app/hosts/data/host_release_config.dart';
 import 'package:catch_dating_app/hosts/work/data/host_work_repository.dart';
 import 'package:catch_dating_app/hosts/work/domain/host_work_assignment.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -173,7 +172,6 @@ class _Fixture {
       return access;
     };
   }
-  bool enabled = true;
   Map<String, Object?> access = _access();
   final auth = _Auth();
   final functions = _Functions();
@@ -190,9 +188,6 @@ class _Fixture {
     overrides: [
       uidProvider.overrideWithValue(const AsyncData('manager-account')),
       authRepositoryProvider.overrideWithValue(AuthRepository(auth)),
-      hostReleaseFlagProvider(
-        hostWeddingPhoneImportFlagKey,
-      ).overrideWith((ref) => enabled),
       programWorkRepositoryProvider.overrideWithValue(work),
       programSetupRepositoryProvider.overrideWithValue(
         ProgramSetupRepository(functions),
@@ -405,7 +400,7 @@ void main() {
     },
   );
 
-  for (final kind in ['account', 'route', 'flag', 'organizer']) {
+  for (final kind in ['account', 'route', 'organizer']) {
     test('canonical refresh cannot cross a changed $kind', () async {
       final f = _Fixture();
       addTearDown(f.close);
@@ -419,11 +414,6 @@ void main() {
             f.auth.account = 'other-account';
           case 'route':
             current = false;
-          case 'flag':
-            f.enabled = false;
-            f.container.invalidate(
-              hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey),
-            );
           case 'organizer':
             f.access = _access(organizer: 'other-planner');
         }

@@ -12,7 +12,6 @@ import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart'
 import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
@@ -102,60 +101,47 @@ void main() {
     }
   }
 
-  for (final privateEnabled in [false, true]) {
-    for (final signout in [false, true]) {
-      testWidgets(
-        'session switch hides previous rows immediately; private=$privateEnabled signout=$signout',
-        (tester) async {
-          final old = _Reads('old');
-          final fresh = _Reads('fresh');
-          final harness = _Harness([
-            old,
-            fresh,
-          ], privateEnabled: privateEnabled);
-          await harness.pump(tester);
-          old.completeUpcoming();
+  for (final signout in [false, true]) {
+    testWidgets(
+      'session switch hides previous rows immediately; signout=$signout',
+      (tester) async {
+        final old = _Reads('old');
+        final fresh = _Reads('fresh');
+        final harness = _Harness([old, fresh]);
+        await harness.pump(tester);
+        old.completeUpcoming();
+        await _publish(tester);
+        expect(
+          find.byKey(const ValueKey('host-event-row-old')),
+          findsOneWidget,
+        );
+        harness.container.updateOverrides(
+          harness.overrides(signout ? null : 'account-b'),
+        );
+        await _publish(tester);
+        expect(find.byKey(const ValueKey('host-event-row-old')), findsNothing);
+        if (signout) {
+          expect(harness.repository.reads, 3);
+          harness.container.updateOverrides(harness.overrides('account-a'));
           await _publish(tester);
-          expect(
-            find.byKey(const ValueKey('host-event-row-old')),
-            findsOneWidget,
-          );
-          harness.container.updateOverrides(
-            harness.overrides(signout ? null : 'account-b'),
-          );
-          await _publish(tester);
-          expect(
-            find.byKey(const ValueKey('host-event-row-old')),
-            findsNothing,
-          );
-          if (signout) {
-            expect(harness.repository.reads, 3);
-            harness.container.updateOverrides(harness.overrides('account-a'));
-            await _publish(tester);
-          }
-          // Old background failure must not turn the new family's loading into
-          // an error, including sign-out followed by the same UID signing in.
-          old.completeHistory(
-            failingScope: privateEnabled ? PrivateEventSetupScope.past : null,
-          );
-          await _publish(tester);
-          expect(find.byType(CatchLocalizedSliverErrorState), findsNothing);
-          fresh.completeUpcoming();
-          fresh.completeHistory();
-          await _publish(tester);
-          expect(
-            find.byKey(const ValueKey('host-event-row-fresh')),
-            findsOneWidget,
-          );
-          expect(
-            find.byKey(const ValueKey('host-event-row-old')),
-            findsNothing,
-          );
-          expect(harness.setups.reads, privateEnabled ? 6 : 0);
-          expect(tester.takeException(), isNull);
-        },
-      );
-    }
+        }
+        // Old background failure must not turn the new family's loading into
+        // an error, including sign-out followed by the same UID signing in.
+        old.completeHistory(failingScope: PrivateEventSetupScope.past);
+        await _publish(tester);
+        expect(find.byType(CatchLocalizedSliverErrorState), findsNothing);
+        fresh.completeUpcoming();
+        fresh.completeHistory();
+        await _publish(tester);
+        expect(
+          find.byKey(const ValueKey('host-event-row-fresh')),
+          findsOneWidget,
+        );
+        expect(find.byKey(const ValueKey('host-event-row-old')), findsNothing);
+        expect(harness.setups.reads, 6);
+        expect(tester.takeException(), isNull);
+      },
+    );
   }
 }
 
@@ -165,13 +151,12 @@ Future<void> _publish(WidgetTester tester) async {
 }
 
 class _Harness {
-  _Harness(List<_Reads> reads, {this.privateEnabled = true})
+  _Harness(List<_Reads> reads)
     : repository = _Repository(reads),
       setups = _Setups(reads) {
     container = ProviderContainer(overrides: overrides('account-a'));
     addTearDown(container.dispose);
   }
-  final bool privateEnabled;
   final _Repository repository;
   final _Setups setups;
   late final ProviderContainer container;
@@ -179,7 +164,6 @@ class _Harness {
   List<Override> overrides(String? uid) => [
     uidProvider.overrideWithValue(AsyncData(uid)),
     eventRepositoryProvider.overrideWithValue(repository),
-    privateEventSetupAvailableProvider.overrideWithValue(privateEnabled),
     privateEventSetupTimelineRepositoryProvider.overrideWithValue(setups),
     clubEventDraftsProvider.overrideWith((ref, clubId) async => []),
     programEventsControllerProvider.overrideWith((ref, request) {

@@ -41,6 +41,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/create/crea
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
@@ -162,34 +163,34 @@ void main() {
       expect(find.text('Event basics'), findsNothing);
     });
 
-    testWidgets('route hydrates wizard from initial club extra', (
-      tester,
-    ) async {
-      final initialClub = buildClub(
-        id: 'club-extra',
-        name: 'Extra Hydration Club',
-      );
+    testWidgets(
+      'route hydrates the private create flow from initial club extra',
+      (tester) async {
+        final initialClub = buildClub(
+          id: 'club-extra',
+          name: 'Extra Hydration Club',
+        );
 
-      await pumpEventsTestApp(
-        tester,
-        HostCreateEventRouteScreen(
-          clubId: initialClub.id,
-          initialClub: initialClub,
-        ),
-        overrides: [
-          fetchClubProvider(
-            initialClub.id,
-          ).overrideWithValue(const AsyncLoading<Club?>()),
-        ],
-        signedInUid: 'host-1',
-      );
-      await _pumpTestAnimation(tester);
+        await pumpEventsTestApp(
+          tester,
+          HostCreateEventRouteScreen(
+            clubId: initialClub.id,
+            initialClub: initialClub,
+          ),
+          overrides: [
+            fetchClubProvider(
+              initialClub.id,
+            ).overrideWithValue(const AsyncLoading<Club?>()),
+          ],
+          signedInUid: 'host-1',
+        );
+        await _pumpTestAnimation(tester);
 
-      expect(find.text('Event basics'), findsWidgets);
-      expect(find.text('Extra Hydration Club'), findsWidgets);
-      expect(find.text('Loading club'), findsNothing);
-      expect(find.text('Host access required'), findsNothing);
-    });
+        expect(find.byType(PrivateEventCreateScreen), findsOneWidget);
+        expect(find.text('Loading club'), findsNothing);
+        expect(find.text('Host access required'), findsNothing);
+      },
+    );
 
     testWidgets('route rejects an initial club that disagrees with its path', (
       tester,

@@ -8,7 +8,6 @@ import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_controller.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_state.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
-import 'package:catch_dating_app/hosts/data/host_release_config.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
@@ -120,7 +119,6 @@ class _Fixture {
   _Fixture({OrganizerProgramDetail? detail}) : detail = detail ?? _detail();
 
   final OrganizerProgramDetail detail;
-  bool enabled = true;
   int accessReads = 0;
   Future<ProgramReadView<ProgramWorkAccess>> Function() readAccess = () async =>
       _view();
@@ -129,9 +127,6 @@ class _Fixture {
     retry: (_, _) => null,
     overrides: [
       uidProvider.overrideWithValue(const AsyncData('synthetic-account')),
-      hostReleaseFlagProvider(
-        hostWeddingPhoneImportFlagKey,
-      ).overrideWith((ref) => enabled),
       organizerProgramDetailProvider('p-1').overrideWith((ref) async => detail),
       programGuestListProvider('p-1').overrideWith(
         (ref) async => ProgramGuestListPage.fromCallableData({
@@ -214,17 +209,6 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  testWidgets(
-    'disabled client flag hides entry without requesting work access',
-    (tester) async {
-      final f = _Fixture()..enabled = false;
-      await f.mount(tester);
-      expect(find.byKey(_entryKey), findsNothing);
-      expect(f.accessReads, 0);
-      await tester.pumpWidget(const SizedBox.shrink());
-    },
-  );
-
   final hiddenViews = <String, ProgramReadView<ProgramWorkAccess>>{
     'cached manager': _view(cached: true),
     'archived work access': _view(status: 'archived'),
@@ -278,21 +262,6 @@ void main() {
     expect(find.byKey(_entryKey), findsNothing);
     expect(find.text('Add guest'), findsOneWidget);
     expect(tester.takeException(), isNull);
-    await tester.pumpWidget(const SizedBox.shrink());
-  });
-
-  testWidgets('release-flag revocation removes the existing entry', (
-    tester,
-  ) async {
-    final f = _Fixture();
-    await f.mount(tester);
-    expect(find.byKey(_entryKey), findsOneWidget);
-    f.enabled = false;
-    f.container.invalidate(
-      hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey),
-    );
-    await pumpFeatureUi(tester);
-    expect(find.byKey(_entryKey), findsNothing);
     await tester.pumpWidget(const SizedBox.shrink());
   });
 

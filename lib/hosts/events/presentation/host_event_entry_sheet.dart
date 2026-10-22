@@ -5,7 +5,6 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -23,7 +22,6 @@ Future<HostEventEntrySelection?> showHostEventEntrySheet({
     builder: (sheetContext) => Consumer(
       builder: (context, ref, _) => HostEventEntrySheet(
         state: state,
-        hideSavedDrafts: ref.watch(privateEventSetupAvailableProvider),
         onDeleteDraft:
             onDeleteDraft ??
             (draft) async {
@@ -46,7 +44,6 @@ class HostEventEntrySheet extends StatefulWidget {
     super.key,
     required this.state,
     this.onDeleteDraft,
-    this.hideSavedDrafts = false,
   });
 
   final HostEventEntryState state;
@@ -54,7 +51,6 @@ class HostEventEntrySheet extends StatefulWidget {
 
   /// Drafts already materialized as saved events are reachable from the
   /// events timeline instead of the entry sheet.
-  final bool hideSavedDrafts;
 
   @override
   State<HostEventEntrySheet> createState() => _HostEventEntrySheetState();
@@ -65,11 +61,9 @@ enum _HostCreateEntryTab { event, program }
 class _HostEventEntrySheetState extends State<HostEventEntrySheet> {
   _HostCreateEntryTab _tab = _HostCreateEntryTab.event;
   late final List<EventDraft> _drafts = List.of(
-    widget.hideSavedDrafts
-        ? widget.state.drafts.where(
-            (draft) => draft.eventCreateReceiptEventId == null,
-          )
-        : widget.state.drafts,
+    widget.state.drafts.where(
+      (draft) => draft.eventCreateReceiptEventId == null,
+    ),
   );
   String? _deletingDraftId;
 

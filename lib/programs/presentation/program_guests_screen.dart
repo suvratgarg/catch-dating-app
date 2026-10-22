@@ -8,7 +8,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_access.dart';
-import 'package:catch_dating_app/hosts/data/host_release_config.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
@@ -37,16 +36,12 @@ class ProgramGuestsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final detailAsync = ref.watch(organizerProgramDetailProvider(programId));
     final guestsAsync = ref.watch(programGuestListProvider(programId));
-    final phoneImportEnabled = ref.watch(
-      hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey),
-    );
     final detailState = catchAsyncStateFromAsyncValue(detailAsync);
     final program = detailState.isSettledData
         ? detailState.value?.program
         : null;
     final workAccessAsync =
-        phoneImportEnabled &&
-            program?.kind == ProgramKind.wedding &&
+        program?.kind == ProgramKind.wedding &&
             program?.status != ProgramStatus.archived
         ? ref.watch(programWorkEntryProvider(programId, null))
         : null;

@@ -9,7 +9,6 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,9 +48,9 @@ ProviderContainer timelineContainer(
     overrides: [
       uidProvider.overrideWithValue(const AsyncData('account-a')),
       eventRepositoryProvider.overrideWithValue(repository),
-      privateEventSetupAvailableProvider.overrideWithValue(setups != null),
-      if (setups != null)
-        privateEventSetupTimelineRepositoryProvider.overrideWithValue(setups),
+      privateEventSetupTimelineRepositoryProvider.overrideWithValue(
+        setups ?? emptySetupRepository,
+      ),
     ],
   );
   addTearDown(container.dispose);
@@ -119,6 +118,20 @@ class PagedEventRepository extends Fake implements EventRepository {
         ? Future.value(const TimelinePage(items: [], hasMore: false))
         : cancelledSteps.removeAt(0)();
   }
+}
+
+/// Stable instance so `updateOverrides` keeps the same empty inventory.
+final emptySetupRepository = EmptySetupRepository();
+
+class EmptySetupRepository extends Fake implements PrivateEventSetupRepository {
+  @override
+  Future<PrivateEventSetupInventoryPage> list({
+    required String organizerId,
+    PrivateEventSetupScope? scope,
+    int limit = ReadLimitPolicy.privateEventSetupPage,
+    String? cursor,
+  }) async =>
+      const PrivateEventSetupInventoryPage(events: [], nextCursor: null);
 }
 
 class SetupRepository extends Fake implements PrivateEventSetupRepository {
@@ -217,20 +230,17 @@ class PendingTimelineReads {
     Object? error,
     Map<TimelineSource, Object> failures = const {},
     bool reverse = false,
-    bool includePrivate = true,
   }) {
     final errors = {...failures, ?failure: error!};
     final completions = [
-      if (includePrivate) ...[
-        () => completePrivate(
-          PrivateEventSetupScope.past,
-          errors[TimelineSource.privatePast],
-        ),
-        () => completePrivate(
-          PrivateEventSetupScope.cancelled,
-          errors[TimelineSource.privateCancelled],
-        ),
-      ],
+      () => completePrivate(
+        PrivateEventSetupScope.past,
+        errors[TimelineSource.privatePast],
+      ),
+      () => completePrivate(
+        PrivateEventSetupScope.cancelled,
+        errors[TimelineSource.privateCancelled],
+      ),
       () => completeTimelineRead(
         past,
         TimelinePage(items: [buildEvent(id: '$prefix-past')], hasMore: false),
