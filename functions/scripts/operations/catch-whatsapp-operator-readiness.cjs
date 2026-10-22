@@ -92,7 +92,7 @@ function createProtectedReadinessRuntime({privateFiles: files, binding,
   const current = async (services, work, write = false) => {
     const {store, sources} = services;
     return withCatchFreshAuthContext(store.deps.firebase, {projectId: scope.projectId,
-      uids: [scope.actorUid, scope.recipientUid], actorUid: scope.actorUid,
+      uids: [...new Set([scope.actorUid, scope.recipientUid])], actorUid: scope.actorUid,
       actorIdToken: await token()}, async context => store.db.runTransaction(async tx => {
       const operation = readOperatorSetupOperation((await tx.get(store.db.collection(
         "catchWhatsappOperatorSetupOperations").doc(scope.projectId))).data(), plan, request);

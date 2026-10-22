@@ -9,6 +9,25 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get hostAnalyticsPrivacyTitle => 'Host app analytics';
+
+  @override
+  String get hostAnalyticsPrivacyBody =>
+      'Help improve Catch Host by sharing sign-in, onboarding and event setup activity with Google Analytics using a random app identifier. Names, contact details, guest data and event details are excluded. This choice applies to this device for 30 days. Advertising measurement stays off. You can turn analytics off here at any time.';
+
+  @override
+  String get hostAnalyticsPrivacyDeny => 'Keep analytics off';
+
+  @override
+  String get hostAnalyticsPrivacyAllow => 'Allow analytics';
+
+  @override
+  String get hostAnalyticsPrivacyOn => 'Allowed on this device';
+
+  @override
+  String get hostAnalyticsPrivacyOff => 'Off';
+
+  @override
   String get eventsEventViewerCheckingBooking =>
       'Checking booking availability…';
 
@@ -25311,4 +25330,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsEventPhotoRecoveryRefresh =>
       'Your photos are attached. Check photo status to refresh the current event details.';
+
+  @override
+  String get hostAccountDeletionConfirmation =>
+      'Permanently delete your Catch account and Host profile? You’ll lose organizer access. Shared business records and required safety/payment records remain. Transfer organizer ownership first if needed.';
 }

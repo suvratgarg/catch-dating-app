@@ -145,7 +145,7 @@ test("offline profile validation writes nothing; valid confirmed handoff saves o
   const f = fixture(t); await f.start(); await f.bootstrap();
   for (const candidate of [{...f.profile, unexpected: true}, {...f.profile, sourceSha: "e".repeat(40)},
     {...f.profile, executionSha256: "f".repeat(64)}, {...f.profile, credentialVersionName: "secret-payload"},
-    {...f.profile, scope: {...f.scope, actorUid: f.scope.recipientUid}}]) {
+    {...f.profile, scope: {...f.scope, actorUid: ""}}]) {
     assert.equal((await f.configure(candidate)).status, 400);
     assert.equal(f.calls(), 0); assert.equal(fs.existsSync(path.join(f.home, "profile.json")), false);
   }
@@ -440,3 +440,20 @@ for (const drift of ["source", "profile"]) {
     assert.deepEqual(f.diagnostics.map(({stage, outcome}) => [stage, outcome]), [["admission", "started"], ["admission", "failed"]]);
   });
 }
+
+
+test("consolidated actor and recipient can save the verified Google session", async t => {
+  const f = fixture(t);
+  f.scope.recipientUid = f.scope.actorUid;
+  await f.start(); await f.bootstrap();
+  assert.equal((await f.configure()).status, 200);
+  assert.equal(f.calls(), 0);
+  assert.equal(fs.existsSync(path.join(f.home, "profile.json")), false);
+  const result = await f.save();
+  assert.equal(result.status, 200);
+  assert.equal(result.value.state, "saved");
+  const saved = JSON.parse(fs.readFileSync(path.join(f.home, "profile.json"), "utf8"));
+  assert.equal(saved.scope.actorUid, saved.scope.recipientUid);
+  assert.equal(fs.readFileSync(path.join(f.home, "actor-id-token.txt"), "utf8"), privateToken + "\n");
+  assert.equal(f.calls(), 1);
+});

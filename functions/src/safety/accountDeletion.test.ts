@@ -33,6 +33,69 @@ test("storagePathFromDownloadUrl returns null for invalid urls", () => {
   assert.equal(storagePathFromDownloadUrl("not a url"), null);
 });
 
+test("Host-only deletion removes identity and preserves shared business data",
+  async () => {
+    const seed: Record<string, FakeDocumentData> = {
+      "hostProfiles/host1": {displayName: "Private name", bio: "Private bio",
+        avatarUrl: "https://firebasestorage.googleapis.com/v0/b/demo/o/" +
+          "users%2Fhost1%2Favatar.jpg?alt=media"},
+      "hostProfiles/host2": {displayName: "Other host"},
+      "organizers/shared": {ownerUserId: "host1", hostUserId: "host1",
+        hostName: "Private name", hostAvatarUrl: "private-avatar",
+        hostUserIds: ["host1", "host2"], hostProfiles: [
+          {uid: "host1", displayName: "Private name"},
+          {uid: "host2", displayName: "Other host"},
+        ], name: "Shared organizer", email: "business@example.com",
+        status: "active"},
+      "events/retained": {organizerId: "shared", title: "Shared event"},
+    };
+    const harness = createAccountDeletionHarness({seed, now: "now"});
+    await requestAccountDeletionHandler({auth: {uid: "host1"}} as
+      Parameters<typeof requestAccountDeletionHandler>[0], harness.deps);
+    assert.ok(harness.deletedPublicDocs.includes("hostProfiles/host1"));
+    assert.ok(!harness.deletedPublicDocs.includes("hostProfiles/host2"));
+    assert.ok(harness.deletedStorageFiles.includes("users/host1/avatar.jpg"));
+    const organizer = seed["organizers/shared"];
+    assert.equal(organizer.ownerUserId, null);
+    assert.equal(organizer.hostUserId, null);
+    assert.equal(organizer.hostName, null);
+    assert.equal(organizer.hostAvatarUrl, null);
+    assert.deepEqual(organizer.hostUserIds, ["host2"]);
+    assert.deepEqual(organizer.hostProfiles, [
+      {uid: "host2", displayName: "Other host"},
+    ]);
+    assert.equal(organizer.name, "Shared organizer");
+    assert.equal(organizer.email, "business@example.com");
+    assert.equal(organizer.status, "active");
+    assert.ok(!harness.deletedPublicDocs.includes("events/retained"));
+    assert.deepEqual(harness.deletedAuthUsers, ["host1"]);
+  });
+
+test("Host deletion preserves foreign avatars and transferred ownership",
+  async () => {
+    const seed: Record<string, FakeDocumentData> = {
+      "hostProfiles/host1": {avatarUrl:
+        "https://firebasestorage.googleapis.com/v0/b/demo/o/" +
+          "users%2Fhost2%2Favatar.jpg?alt=media"},
+      "organizers/shared": {ownerUserId: "host1", hostUserId: "host2",
+        hostName: "Other host", hostAvatarUrl: "other-avatar",
+        hostUserIds: ["host1", "host2"], hostProfiles: [
+          {uid: "host1", displayName: "Private name"},
+          {uid: "host2", displayName: "Other host"},
+        ]},
+    };
+    const harness = createAccountDeletionHarness({seed, now: "now",
+      beforeTransaction: () => {
+        seed["organizers/shared"].ownerUserId = "host2";
+      }});
+    await requestAccountDeletionHandler({auth: {uid: "host1"}} as
+      Parameters<typeof requestAccountDeletionHandler>[0], harness.deps);
+    assert.deepEqual(harness.deletedStorageFiles, []);
+    assert.equal(seed["organizers/shared"].ownerUserId, "host2");
+    assert.equal(seed["organizers/shared"].hostName, "Other host");
+    assert.equal(seed["organizers/shared"].hostAvatarUrl, "other-avatar");
+  });
+
 test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   const now = {kind: "serverTimestamp"};
   const runnerDeliveryKey = eventBroadcastDeliveryKey("runner-1");

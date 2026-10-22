@@ -9,16 +9,19 @@
 final class UpdateEventCallableRequest {
   const UpdateEventCallableRequest({
     required this.eventId,
+    this.mediaRecovery,
     this.expectedSetupRevision,
     required this.fields,
   });
 
   final String eventId;
+  final Map<String, Object?>? mediaRecovery;
   final int? expectedSetupRevision;
   final Map<String, Object?> fields;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
+    'mediaRecovery': ?mediaRecovery,
     'expectedSetupRevision': ?expectedSetupRevision,
     'fields': fields,
   };

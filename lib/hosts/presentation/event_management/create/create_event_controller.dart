@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
@@ -241,6 +242,9 @@ class CreateEventController extends _$CreateEventController {
               adapterVersion: externalOrigin.adapterVersion,
             ),
     );
+    final reportCreated = ref
+        .read(appAnalyticsProvider)
+        .hostEventCompletion(AnalyticsEvents.hostEventCreated);
     final selected = List<XFile>.unmodifiable(
       photoImages.isNotEmpty ? photoImages : [?photoImage],
     );
@@ -252,18 +256,21 @@ class CreateEventController extends _$CreateEventController {
           event: event,
           photos: selected,
           sourceDraftId: sourceDraftId,
-          commit: () => eventRepo.createEvent(
-            event: event,
-            inviteCode: normalizedInviteCode,
-            eventSuccessDefaults: eventSuccessDefaults.enabled
-                ? eventSuccessDefaults.normalizedForFormat(
-                    event.eventFormat,
-                    targetAttendeeCount: event.capacityLimit,
-                  )
-                : null,
-            externalOrigin: externalOrigin,
-            runtimeWalkInPolicy: runtimeWalkInPolicy,
-          ),
+          commit: () async {
+            await eventRepo.createEvent(
+              event: event,
+              inviteCode: normalizedInviteCode,
+              eventSuccessDefaults: eventSuccessDefaults.enabled
+                  ? eventSuccessDefaults.normalizedForFormat(
+                      event.eventFormat,
+                      targetAttendeeCount: event.capacityLimit,
+                    )
+                  : null,
+              externalOrigin: externalOrigin,
+              runtimeWalkInPolicy: runtimeWalkInPolicy,
+            );
+            reportCreated();
+          },
         );
   }
 }

@@ -14,7 +14,7 @@ import {publicEventAuthorized} from "./publicReadPolicy";
 
 const markets = new Set(activeEventLiveCities.map(city => city.slug));
 const limit = 400;
-function database() {
+export function publicFirestore() {
   validatePublicRuntimeEnvironment();
   const projectId = process.env.CATCH_PUBLIC_FIRESTORE_PROJECT;
   if (!projectId) throw new Error("CATCH_PUBLIC_FIRESTORE_PROJECT is required");
@@ -27,7 +27,7 @@ function database() {
 
 /** React cache deduplicates within one render only. No cross-request or offline cache. */
 async function loadPublicCatalog(): Promise<PublicCatalog> {
-  const db = database();
+  const db = publicFirestore();
   const readAt = Date.now();
   const [organizers, events, externalEvents] = await withinReadDeadline(Promise.all([
     db.collection("organizers").where("publicPage.publishStatus", "==", "published").limit(limit + 1).get(),
@@ -71,7 +71,7 @@ async function withinReadDeadline<T>(read: Promise<T>): Promise<T> {
 export async function readPublicListingReviews(listing: HostListing, eventId?: string): Promise<HostListing> {
   if (listing.capabilities.publicReviews.readState !== "enabled") return listing;
   try {
-    const reviews = database().collection("reviews");
+    const reviews = publicFirestore().collection("reviews");
     const snapshots = await withinReadDeadline(Promise.all([
       reviews.where("organizerId", "==", listing.id).orderBy("createdAt", "desc").limit(50).get(),
       ...(eventId ? [reviews.where("eventId", "==", eventId).orderBy("createdAt", "desc").limit(50).get()] : []),

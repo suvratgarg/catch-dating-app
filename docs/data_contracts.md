@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.172.0
-updated: 2026-10-19
+version: 1.173.0
+updated: 2026-10-20
 owner: recursive_audit_loop
 status: active
 ---
@@ -5340,7 +5340,8 @@ use synthetic identities. Planning is read-only and expires within 15 minutes.
 The permanent project slot in `catchWhatsappOperatorSetupOperations` and
 create-only phase receipts in `catchWhatsappOperatorSetupAudits` have no TTL or
 reset path. The runner preserves unrelated custom claims, rejects pre-existing
-owner/authority or actor assignment state, and journals Auth intent before the
+owner/authority state and, except for the consolidated Admin case below, actor
+assignment state. It journals Auth intent before the
 single claim replacement. The concrete writer also consumes a create-only Auth
 dispatch-intent receipt before calling Auth, so direct adapter replay cannot
 redispatch even when the first call throws before applying. Unknown effects
@@ -5359,8 +5360,28 @@ Auth claim is written or removed. Its pre-existing general Admin access remains;
 legacy `admin` supplies no Catch capability. Only separately approved
 endpoint-bound `receive` is granted. Recipient `adminOwner`, `support`, other
 privileged combinations or extra claims alongside `admin: true` remain rejected.
-Actor admission, no-existing-owner/authority/assignment checks and permanent
-receipts are unchanged.
+Separate-account actor admission and permanent receipts are unchanged.
+
+When the operator and recipient have the same UID, planning admits only an
+existing exact `{admin: true}` account with an active, enabled `admin`-only
+assignment for that UID. Both observations must agree on claims, creation time,
+revocation time and the verified phone endpoint. The plan additionally binds
+`actorAssignmentSha256`, a canonical digest of the full existing projection,
+including its metadata. Changes before claim dispatch or seed fail closed.
+The reviewed claim replacement preserves `admin` and adds `adminOwner`; seed
+updates only roles and update attribution on the existing assignment, retaining
+email, display name and other metadata. Other owner/authority state remains
+forbidden. This is an explicit bootstrap mode, not a general self-grant API.
+
+Consolidated setup creates one denied authority, then activates root revision 2
+with `receive`, `reply`, `review` and the exact verified endpoint after the fresh
+Google sign-in cutoff. No grant is issued to the same identity: the two receive
+phases instead recheck the root and endpoint in the transaction that writes each
+phase receipt and exact effect digest. Unknown responses retain the original
+plan and phase chain. Readiness and reconciliation use that same root for both
+roles and continue to enforce current identity, STOP, deletion, archive,
+independent publication review and expiry. Legacy two-account plans retain their
+original fields, separate receive grant and revision semantics.
 
 Read-only reconciliation checks the current full recipient fingerprint alongside
 account incarnation and endpoint. Observed claim drift requires reconciliation;

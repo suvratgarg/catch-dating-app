@@ -184,6 +184,22 @@ export function HostApplicationFlow() {
                 onChange={(event) => updateDraft("nextEventName", event.currentTarget.value)}
                 required
               />
+              <SelectField
+                id="host-event-pricing"
+                label={hostApplicationCopy.eventPricing.label}
+                value={draft.eventPricing}
+                required
+                onChange={(event) => {
+                  const value = hostApplicationCopy.eventPricing.options.find(
+                    (option) => option.value === event.currentTarget.value)?.value;
+                  updateDraft("eventPricing", value ?? "");
+                }}
+              >
+                <option value="">{hostApplicationCopy.eventPricing.placeholder}</option>
+                {hostApplicationCopy.eventPricing.options.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </SelectField>
               <TextField
                 id="host-event-date"
                 label={websiteCopy["hostapplicationflow_0257"]}
@@ -289,6 +305,7 @@ export function HostApplicationFlow() {
               <HostApplicationReviewCard title={websiteCopy["hostapplicationflow_0227"]} rows={[
                 ["Formats", draft.formats.join(", ")],
                 ["Event", draft.nextEventName],
+                [hostApplicationCopy.eventPricing.label, hostApplicationCopy.eventPricing.options.find((option) => option.value === draft.eventPricing)?.label ?? ""],
                 ["Location", draft.eventLocation],
                 ["Cadence", draft.eventCadence],
               ]} />

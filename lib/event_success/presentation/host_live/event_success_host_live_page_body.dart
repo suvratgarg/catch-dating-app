@@ -20,7 +20,6 @@ import 'package:catch_dating_app/event_success/presentation/assignments/event_su
 import 'package:catch_dating_app/event_success/presentation/event_success_control_room_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_card.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_fixture_actions.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
@@ -107,7 +106,6 @@ class EventSuccessHostLivePageBody extends StatelessWidget {
     required this.onResetReveal,
     required this.outcomeActionState,
     required this.onRecordOutcomes,
-    required this.fixtureActions,
     required this.exclusionAlertThreshold,
     this.exclusionReferenceNow,
     required this.embedded,
@@ -188,7 +186,6 @@ class EventSuccessHostLivePageBody extends StatelessWidget {
     required List<EventSuccessUnitOutcomeEntryInput> entries,
   })?
   onRecordOutcomes;
-  final EventSuccessHostFixtureActions? fixtureActions;
   final Duration exclusionAlertThreshold;
   final DateTime? exclusionReferenceNow;
   final bool embedded;
@@ -462,9 +459,7 @@ class EventSuccessHostLivePageBody extends StatelessWidget {
             onReassign: onReassignSpatial,
             onConfirmPosition: onConfirmSpatial,
             onReleasePinned: onReleaseSpatial,
-            initialSelectedUid:
-                initialSpatialSelectionUid ??
-                fixtureActions?.initialSpatialSelectionUid,
+            initialSelectedUid: initialSpatialSelectionUid,
           );
 
     if (showRoomWorkspace) {
@@ -526,9 +521,7 @@ class EventSuccessHostLivePageBody extends StatelessWidget {
               onReassign: onReassignSpatial,
               onConfirmPosition: onConfirmSpatial,
               onReleasePinned: onReleaseSpatial,
-              initialSelectedUid:
-                  initialSpatialSelectionUid ??
-                  fixtureActions?.initialSpatialSelectionUid,
+              initialSelectedUid: initialSpatialSelectionUid,
               showHeader: false,
             ),
             if (spatialAssignments.isEmpty) ...[

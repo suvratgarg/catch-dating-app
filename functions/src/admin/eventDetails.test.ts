@@ -935,3 +935,36 @@ test("adminGetEventDetailsHandler denies viewer-only admins", async () => {
     (error) => assertHttpsCode(error, "permission-denied")
   );
 });
+
+test("real pilot review is private, audited and rejects stale staff decisions",
+  async () => {
+    const h = harness({"organizers/afterfly": clubDoc(),
+      "events/afterfly-social-run-1": eventDoc()});
+    const data = {eventId: "afterfly-social-run-1", reviewNote: "Real pilot",
+      fields: {hostPilotReview: {realEvent: true, expectedRevision: 0}}};
+    await assert.rejects(adminUpdateEventDetailsHandler(
+      callableRequest("staff", data, {support: true}), h.deps),
+    (error) => assertHttpsCode(error, "permission-denied"));
+    await adminUpdateEventDetailsHandler(
+      callableRequest("staff", data, {admin: true}), h.deps);
+    const loaded = await adminGetEventDetailsHandler(callableRequest("staff",
+      {eventId: data.eventId}, {admin: true}), h.deps);
+    assert.equal(loaded.event.hostPilotReview?.realEvent, true);
+    assert.equal(loaded.event.hostPilotReview?.revision, 1);
+    await assert.rejects(adminUpdateEventDetailsHandler(
+      callableRequest("staff", data, {admin: true}), h.deps),
+    (error) => assertHttpsCode(error, "failed-precondition"));
+  });
+
+test("pilot review cannot recreate data after a Sales privacy restriction",
+  async () => {
+    const h = harness({"organizers/afterfly": clubDoc(),
+      "events/afterfly-social-run-1": eventDoc(),
+      "salesPrivacyRestrictions/afterfly": {}});
+    await assert.rejects(adminUpdateEventDetailsHandler(
+      callableRequest("staff", {eventId: "afterfly-social-run-1",
+        reviewNote: "Synthetic restricted organiser",
+        fields: {hostPilotReview: {realEvent: true, expectedRevision: 0}}},
+      {admin: true}), h.deps),
+    (error) => assertHttpsCode(error, "failed-precondition"));
+  });

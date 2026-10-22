@@ -241,6 +241,11 @@ export {validateSalesDemoSetupCallablePayload} from "./validators/salesDemoSetup
 export {validateSalesDemoSetupCallableResponse} from "./validators/salesDemoSetupOutput";
 export {validateSalesDemoSessionsDocument} from "./validators/salesDemoSessionsDocument";
 export {validateSalesEvidenceProposalsDocument} from "./validators/salesEvidenceProposalsDocument";
+export {validateHostAcquisitionConsentDocument} from "./validators/hostAcquisitionConsentDocument";
+export {validateHostPilotEventReviewDocument} from "./validators/hostPilotEventReviewDocument";
+export {validateHostOrganizerActivationDocument} from "./validators/hostOrganizerActivationDocument";
+export {validateHostOperatorAlertDocument} from "./validators/hostOperatorAlertDocument";
+export {validateHostAcquisitionDeliveryDocument} from "./validators/hostAcquisitionDeliveryDocument";
 export {validateSalesInboundIntentsDocument} from "./validators/salesInboundIntentsDocument";
 export {validateSalesIntelligenceAssessmentDocument} from "./validators/salesIntelligenceAssessmentsDocument";
 export {validateSalesIntelligenceClauseDocument} from "./validators/salesIntelligenceClausesDocument";
@@ -1242,6 +1247,8 @@ export {validateAdminRecordMarketingReviewDecisionCallablePayload} from "./valid
 export {validateAdminRecordMarketingReviewDecisionCallableResponse} from "./validators/adminRecordMarketingReviewDecisionOutput";
 export {validateAdminListCrossPathsShowcaseCandidatesCallableResponse} from "./validators/adminListCrossPathsShowcaseCandidatesOutput";
 export {validateAdminSetCrossPathsShowcaseEligibilityCallableResponse} from "./validators/adminSetCrossPathsShowcaseEligibilityOutput";
+export {validateHostAcquisitionConsentHTTPRequest} from "./validators/hostAcquisitionConsentHttpRequest";
+export {validateHostAcquisitionConsentHTTPResponse} from "./validators/hostAcquisitionConsentHttpResponse";
 export {validateJoinWaitlistHTTPRequest} from "./validators/joinWaitlistHttpRequest";
 export {validateJoinWaitlistHTTPResponse} from "./validators/joinWaitlistHttpResponse";
 

@@ -21,6 +21,7 @@ export interface EventPublishingFormState {
   distanceKm: string;
   pace: AdminEventPace;
   crossPathsDiscoveryEnabled: boolean;
+  hostPilotRealEvent: boolean;
   reviewNote: string;
 }
 
@@ -110,6 +111,7 @@ export function formFromEventProfile(
     distanceKm: String(event.distanceKm),
     pace: event.pace,
     crossPathsDiscoveryEnabled: event.crossPathsDiscoveryEnabled,
+    hostPilotRealEvent: event.hostPilotReview?.realEvent === true,
     reviewNote: "",
   };
 }
@@ -157,6 +159,11 @@ export function buildEventSavePayload(
     original.crossPathsDiscoveryEnabled,
     form.crossPathsDiscoveryEnabled
   );
+
+  if (original.hostPilotRealEvent !== form.hostPilotRealEvent) {
+    fields.hostPilotReview = {realEvent: form.hostPilotRealEvent,
+      expectedRevision: event.hostPilotReview?.revision ?? 0};
+  }
 
   const eventFormatChanged =
     original.activityKind !== form.activityKind ||

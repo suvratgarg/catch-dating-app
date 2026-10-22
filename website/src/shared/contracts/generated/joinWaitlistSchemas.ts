@@ -17,6 +17,32 @@ export const joinWaitlistRequestSchema: Record<string, unknown> =
     "role"
   ],
   "properties": {
+    "hostMeasurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capability",
+        "clientId"
+      ],
+      "properties": {
+        "capability": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "clientId": {
+          "type": "string",
+          "pattern": "^[0-9]{1,10}\\.[0-9]{10}$"
+        },
+        "fbclid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{10,512}$"
+        },
+        "clickCapturedAt": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
     "fullName": {
       "type": "string",
       "minLength": 2,
@@ -138,6 +164,15 @@ export const joinWaitlistRequestSchema: Record<string, unknown> =
         "operatingNotes": {
           "type": "string",
           "maxLength": 1000
+        },
+        "eventPricing": {
+          "type": "string",
+          "enum": [
+            "paid",
+            "free",
+            "mixed",
+            "undecided"
+          ]
         }
       }
     },
@@ -516,6 +551,15 @@ export const joinWaitlistRequestSchema: Record<string, unknown> =
         "operatingNotes": {
           "type": "string",
           "maxLength": 1000
+        },
+        "eventPricing": {
+          "type": "string",
+          "enum": [
+            "paid",
+            "free",
+            "mixed",
+            "undecided"
+          ]
         }
       }
     },
@@ -945,6 +989,23 @@ export const joinWaitlistResponseSchema: Record<string, unknown> =
         },
         "alreadyJoined": {
           "type": "boolean"
+        },
+        "hostLead": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "isNew"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "pattern": "^host_lead_[0-9]{13}_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
+            },
+            "isNew": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },

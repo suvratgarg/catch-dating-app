@@ -140,6 +140,9 @@ export function useWaitlistFormController(variant: FormVariant) {
           : "You're in. We'll reach out when Catch opens in your city.",
         tone: "is-success",
       });
+      // The server deliberately acknowledges honeypot submissions without
+      // storing a lead. Keep that response opaque, but never count it as one.
+      if (body.website) return;
       trackMarketingEvent(
         variant === "host" ? "host_lead_submitted" : "waitlist_submitted",
         {
@@ -151,7 +154,7 @@ export function useWaitlistFormController(variant: FormVariant) {
         }
       );
       trackAcceptedMarketingLead(eventId, variant === "host" ? "host_lead" : "member_waitlist",
-        data.alreadyJoined, submissionConsent);
+        data.alreadyJoined, submissionConsent, data.hostLead);
       trackMarketingEvent("generate_lead", {
         city: body.city,
         event_id: eventId,

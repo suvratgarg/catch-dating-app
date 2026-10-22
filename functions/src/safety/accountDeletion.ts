@@ -71,13 +71,22 @@ export async function requestAccountDeletionHandler(
 
   const userSnap = await db.collection("users").doc(uid).get();
   const userData = userSnap.data() ?? {};
+  const hostProfile = await db.collection("hostProfiles").doc(uid).get();
 
   await deleteStoragePaths(
-    profilePhotoDeletionStoragePaths(uid, userData),
+    profilePhotoDeletionStoragePaths(uid, {
+      ...userData,
+      profilePhotos: [
+        ...(Array.isArray(userData.profilePhotos) ?
+          userData.profilePhotos : []),
+        {url: hostProfile.data()?.avatarUrl},
+      ],
+    }),
     deps.storageBucket()
   );
 
   const writer = new BatchQueue(db);
+  writer.delete(db.collection("hostProfiles").doc(uid));
   writer.delete(db.collection("publicProfiles").doc(uid));
   writer.delete(db.collection("crossPathsShowcaseEligibility").doc(uid));
   writer.delete(db.collection("onboarding_drafts").doc(uid));
@@ -88,6 +97,7 @@ export async function requestAccountDeletionHandler(
     now,
     writer,
   });
+  await removeOrganizerHostIdentity(db, uid);
 
   writer.set(db.collection("users").doc(uid), {
     deleted: true,
@@ -153,6 +163,44 @@ export async function requestAccountDeletionHandler(
   await deleteAuthUserIfPresent(deps.auth(), uid);
 
   return {deleted: true};
+}
+
+/** Removes personal Host projections and preserves shared business records. */
+async function removeOrganizerHostIdentity(
+  db: FirebaseFirestore.Firestore,
+  uid: string
+) {
+  const organizers = db.collection("organizers");
+  const groups = await Promise.all([
+    organizers.where("hostUserIds", "array-contains", uid).get(),
+    organizers.where("ownerUserId", "==", uid).get(),
+    organizers.where("hostUserId", "==", uid).get(),
+  ]);
+  const refs = new Map(groups.flatMap((group) =>
+    group.docs.map((doc) => [doc.id, doc.ref] as const)));
+  for (const ref of refs.values()) {
+    // Re-read within the transaction so a teammate's concurrent edit survives.
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(ref);
+      if (!snap.exists) return;
+      const data = snap.data()!;
+      const patch: FirebaseFirestore.UpdateData<
+        FirebaseFirestore.DocumentData
+      > = {
+        hostUserIds: (data.hostUserIds ?? []).filter(
+          (id: string) => id !== uid),
+        hostProfiles: (data.hostProfiles ?? []).filter(
+          (profile: {uid: string}) => profile.uid !== uid),
+      };
+      if (data.ownerUserId === uid) patch.ownerUserId = null;
+      if (data.hostUserId === uid) {
+        patch.hostUserId = null;
+        patch.hostName = null;
+        patch.hostAvatarUrl = null;
+      }
+      tx.update(ref, patch);
+    });
+  }
 }
 
 /**

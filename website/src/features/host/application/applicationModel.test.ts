@@ -3,6 +3,7 @@ import {
   hostApplicationCompleteness,
   hostApplicationIsComplete,
   hostApplicationStepError,
+  hostApplicationStepIsComplete,
   initialHostApplicationDraft,
 } from "./applicationModel";
 
@@ -21,10 +22,19 @@ describe("host application model", () => {
       organizationName: "Sunday Club",
       communityLink: "https://example.com",
       nextEventName: "Sunday Dinner",
+      eventPricing: "paid" as const,
       eventLocation: "Delhi",
       hostGoals: "Create thoughtful introductions",
     };
     expect(hostApplicationIsComplete(complete)).toBe(true);
     expect(hostApplicationCompleteness(complete)).toBe(100);
+  });
+
+  it("requires an explicit pricing answer without treating free or undecided as paid", () => {
+    const event = {...initialHostApplicationDraft, nextEventName: "Planned event", eventLocation: "Mumbai"};
+    expect(hostApplicationStepIsComplete("event", event)).toBe(false);
+    for (const eventPricing of ["paid", "free", "mixed", "undecided"] as const) {
+      expect(hostApplicationStepIsComplete("event", {...event, eventPricing})).toBe(true);
+    }
   });
 });

@@ -21,16 +21,18 @@ Map<String, Object?> boundedEventPhotoAttachmentPayload({
         },
     ],
   };
-  final payload =
-      UpdateEventCallableRequest(eventId: event.id, fields: fields).toJson()
-        ..['mediaRecovery'] = {
-          'organizerId': event.organizerId,
-          'requestId': requestId,
-          'expectedMediaHash': expectedMediaHash,
-        };
+  final mediaRecovery = <String, Object?>{
+    'organizerId': event.organizerId,
+    'requestId': requestId,
+    'expectedMediaHash': expectedMediaHash,
+  };
+  final payload = UpdateEventCallableRequest(
+    eventId: event.id,
+    mediaRecovery: mediaRecovery,
+    fields: fields,
+  ).toJson();
   // Match updateEventMediaRecovery's byte admission, including UTF-8 strings.
-  if (utf8.encode(jsonEncode([payload['mediaRecovery'], fields])).length >
-      64 * 1024) {
+  if (utf8.encode(jsonEncode([mediaRecovery, fields])).length > 64 * 1024) {
     throw const ValidationException(
       'These photos exceed the saved-event photo request limit. '
       'Select fewer photos and retry on this event.',

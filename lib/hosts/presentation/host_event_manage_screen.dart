@@ -12,9 +12,11 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show
-        EventSuccessHostFixtureActions,
+        EventSuccessAssignment,
         EventSuccessHostSection,
-        EventSuccessHostTab;
+        EventSuccessHostTab,
+        EventSuccessSpatialPreview,
+        EventSuccessSpatialReassign;
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -62,7 +64,11 @@ class HostEventManageScreen extends ConsumerStatefulWidget {
     required this.onBackToSuccess,
     this.initialSection = HostEventManageSection.setup,
     this.onSectionChanged,
-    this.eventSuccessFixtureActions,
+    this.initialSpatialSelectionUid,
+    this.onPreviewSpatial,
+    this.onReassignSpatial,
+    this.onConfirmSpatial,
+    this.onReleaseSpatial,
     this.initialParticipantSearchQuery = '',
     this.referenceNow,
   });
@@ -72,7 +78,13 @@ class HostEventManageScreen extends ConsumerStatefulWidget {
   final VoidCallback onBackToSuccess;
   final HostEventManageSection initialSection;
   final ValueChanged<HostEventManageSection>? onSectionChanged;
-  final EventSuccessHostFixtureActions? eventSuccessFixtureActions;
+  final String? initialSpatialSelectionUid;
+  final EventSuccessSpatialPreview? onPreviewSpatial;
+  final EventSuccessSpatialReassign? onReassignSpatial;
+  final Future<void> Function(EventSuccessAssignment assignment)?
+  onConfirmSpatial;
+  final Future<void> Function(EventSuccessAssignment assignment)?
+  onReleaseSpatial;
   final String initialParticipantSearchQuery;
 
   /// A deterministic clock used by captures and lifecycle-focused tests.
@@ -215,7 +227,11 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       event: event,
       referenceNow: now,
       showTabs: false,
-      fixtureActions: widget.eventSuccessFixtureActions,
+      initialSpatialSelectionUid: widget.initialSpatialSelectionUid,
+      onPreviewSpatial: widget.onPreviewSpatial,
+      onReassignSpatial: widget.onReassignSpatial,
+      onConfirmSpatial: widget.onConfirmSpatial,
+      onReleaseSpatial: widget.onReleaseSpatial,
     );
     final workspaceChildren = switch (screenState.phase) {
       HostEventWorkspacePhase.preparation => <Widget>[
@@ -332,7 +348,11 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           onOpenGuests: () => _openRoster(),
           guestsWorkspaceSemanticLabel: context.l10n
               .hostsHostEventRosterDrawerOpen(count: bookedCount),
-          fixtureActions: widget.eventSuccessFixtureActions,
+          initialSpatialSelectionUid: widget.initialSpatialSelectionUid,
+          onPreviewSpatial: widget.onPreviewSpatial,
+          onReassignSpatial: widget.onReassignSpatial,
+          onConfirmSpatial: widget.onConfirmSpatial,
+          onReleaseSpatial: widget.onReleaseSpatial,
         ),
       ],
       HostEventWorkspacePhase.recap => <Widget>[
@@ -343,7 +363,11 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           referenceNow: now,
           initialTab: EventSuccessHostTab.report,
           showTabs: false,
-          fixtureActions: widget.eventSuccessFixtureActions,
+          initialSpatialSelectionUid: widget.initialSpatialSelectionUid,
+          onPreviewSpatial: widget.onPreviewSpatial,
+          onReassignSpatial: widget.onReassignSpatial,
+          onConfirmSpatial: widget.onConfirmSpatial,
+          onReleaseSpatial: widget.onReleaseSpatial,
         ),
         gapH20,
         CatchSection.fieldRows(

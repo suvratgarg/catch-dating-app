@@ -91,10 +91,11 @@ class TestDb {
     return pending;
   }
 }
-function fixture() {
+function fixture(consolidated = false) {
   let now = 1800000000000;
   let authTime = now / 1000 - 1;
-  let claims: Data = {tenantLabel: "synthetic", nested: {flag: true}};
+  let claims: Data = consolidated ? {admin: true} :
+    {tenantLabel: "synthetic", nested: {flag: true}};
   let setterCalls = 0;
   let setterMode: "normal" | "throw-before" | "commit-then-throw" = "normal";
   let recipientEndpoint = "b".repeat(64);
@@ -103,15 +104,23 @@ function fixture() {
   const memory = new TestDb();
   const db = memory as unknown as Firestore;
   const scope = {projectId: memory.projectId, actorUid: "operator",
-    actorEmailSha256: "a".repeat(64), recipientUid: "recipient",
+    actorEmailSha256: "a".repeat(64),
+    recipientUid: consolidated ? "operator" : "recipient",
     endpointHash: recipientEndpoint, appId: "10001", wabaId: "10002",
     phoneNumberId: "10003", credentialVersionSha256: "c".repeat(64)};
+  if (consolidated) {
+    memory.records.set("adminRoleAssignments/operator", {
+      targetUid: "operator", disabled: false,
+      status: "active", roles: ["admin"],
+      displayName: "Preserved operator", email: "operator@example.test",
+    });
+  }
   const observation = (uid: string) => ({projectId: scope.projectId, uid,
-    creationTimeMillis: uid === "recipient" ? recipientCreation : 1001,
+    creationTimeMillis: uid === scope.recipientUid ? recipientCreation : 1001,
     observedAtMillis: now, disabled: uid === "operator" && actorDisabled,
     relevantRoles: uid === "operator" && claims.adminOwner === true ?
       ["adminOwner" as const] : [],
-    endpointHash: uid === "recipient" ? recipientEndpoint : null,
+    endpointHash: uid === scope.recipientUid ? recipientEndpoint : null,
     tokensValidAfterMillis: 0});
   const session = () => ({projectId: scope.projectId, uid: "operator",
     authTimeSeconds: authTime, expiresAtSeconds: now / 1000 + 1800});
@@ -123,13 +132,16 @@ function fixture() {
     now: () => now, actor,
     snapshot: async (): Promise<OperatorSetupSnapshot> => (
       {actor: await actor(),
-        recipient: {auth: observation("recipient"), claims: {}},
+        recipient: {auth: observation(scope.recipientUid),
+          claims: consolidated ? structuredClone(claims) : {}},
         existingOwnerUids: claims.adminOwner === true ? ["operator"] : [],
         authorityExists: [...memory.records.keys()].some((path) =>
           path.startsWith("catchWhatsappAppAuthorities/")),
         bootstrapExists: memory.records.has(OPERATOR_SETUP_OPERATIONS + "/" +
         scope.projectId), actorAssignmentExists:
-          memory.records.has("adminRoleAssignments/operator")}),
+          memory.records.has("adminRoleAssignments/operator"),
+        ...(consolidated ? {actorAssignment:
+          memory.records.get("adminRoleAssignments/operator")} : {})}),
     loadReviewedPlan: async (id) => id === plan.planId ? structuredClone(plan) :
       null,
     authorizeApply: async (digest) => assert.equal(digest, setupHash(plan)),
@@ -620,5 +632,66 @@ test("protected revoke rejects string, duplicate and unknown role facts",
         f.plan().revokeReviewRef));
       assert.equal(f.memory.records.get("catchWhatsappReplyReadiness/" +
         f.readinessKey)?.state, "ready");
+    }
+  });
+
+
+test("consolidated bootstrap preserves Admin " +
+  "and activates one endpoint-bound root",
+async () => {
+  const f = fixture(true);
+  await f.initialize();
+  assert.deepEqual(await f.engine.apply(f.request()),
+    {state: "fresh-sign-in-required"});
+  assert.deepEqual(f.claims(), {admin: true, adminOwner: true});
+  const assignment = f.memory.records.get("adminRoleAssignments/operator")!;
+  assert.deepEqual(assignment.roles, ["admin", "adminOwner"]);
+  assert.equal(assignment.displayName, "Preserved operator");
+  assert.equal(assignment.email, "operator@example.test");
+  f.signIn();
+  assert.deepEqual(await f.engine.apply(f.request()), {state: "complete"});
+  const authorities = [...f.memory.records].filter(([path]) =>
+    path.startsWith("catchWhatsappAppAuthorities/"));
+  assert.equal(authorities.length, 1);
+  assert.equal(authorities[0][1].revision, 2);
+  assert.equal(authorities[0][1].grantedBy, null);
+  assert.equal(authorities[0][1].endpointHash, f.sources.scope.endpointHash);
+  assert.deepEqual(authorities[0][1].capabilities,
+    ["receive", "reply", "review"]);
+  assert.deepEqual(await f.engine.apply(f.request()), {state: "complete"});
+  assert.equal(f.setters(), 1);
+  f.changePhone();
+  await assert.rejects(f.engine.apply(f.request()));
+});
+for (const mode of ["throw-before", "commit-then-throw"] as const) {
+  test(`consolidated unknown Auth ${mode} does not retry claim replacement`,
+    async () => {
+      const f = fixture(true);
+      await f.initialize();
+      f.setterMode(mode);
+      assert.deepEqual(await f.engine.apply(f.request()),
+        {state: "reconciliation-required"});
+      f.setterMode("normal");
+      const result = await f.engine.apply(f.request());
+      assert.equal(result.state, mode === "throw-before" ?
+        "reconciliation-required" : "fresh-sign-in-required");
+      assert.equal(f.setters(), 1);
+    });
+}
+test("consolidated assignment drift blocks before Auth and before seed",
+  async () => {
+    for (const when of ["before-auth", "after-auth"] as const) {
+      const f = fixture(true);
+      await f.initialize();
+      if (when === "after-auth") {
+        f.setterMode("commit-then-throw");
+        await f.engine.apply(f.request());
+      }
+      f.memory.records.get("adminRoleAssignments/operator")!.displayName =
+        "Concurrent update";
+      await assert.rejects(f.engine.apply(f.request()));
+      assert.equal(f.setters(), when === "before-auth" ? 0 : 1);
+      assert.equal([...f.memory.records.keys()].some((path) =>
+        path.startsWith("catchWhatsappAppAuthorities/")), false);
     }
   });

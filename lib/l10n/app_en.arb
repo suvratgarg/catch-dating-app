@@ -1,4 +1,16 @@
 {
+  "hostAnalyticsPrivacyTitle": "Host app analytics",
+  "@hostAnalyticsPrivacyTitle": {"description": "Host device analytics privacy setting.", "x-audience": "host", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
+  "hostAnalyticsPrivacyBody": "Help improve Catch Host by sharing sign-in, onboarding and event setup activity with Google Analytics using a random app identifier. Names, contact details, guest data and event details are excluded. This choice applies to this device for 30 days. Advertising measurement stays off. You can turn analytics off here at any time.",
+  "@hostAnalyticsPrivacyBody": {"description": "Explicit Host product analytics disclosure before consent.", "x-audience": "host", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
+  "hostAnalyticsPrivacyDeny": "Keep analytics off",
+  "@hostAnalyticsPrivacyDeny": {"description": "Decline or withdraw Host analytics permission.", "x-audience": "host", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
+  "hostAnalyticsPrivacyAllow": "Allow analytics",
+  "@hostAnalyticsPrivacyAllow": {"description": "Grant optional Host analytics permission.", "x-audience": "host", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
+  "hostAnalyticsPrivacyOn": "Allowed on this device",
+  "@hostAnalyticsPrivacyOn": {"description": "Current device has granted Host analytics permission.", "x-audience": "host", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
+  "hostAnalyticsPrivacyOff": "Off",
+  "@hostAnalyticsPrivacyOff": {"description": "Host analytics permission is absent or withdrawn.", "x-audience": "host", "x-owner": "product", "x-surface": "safety.presentation.settings_screen"},
   "eventsEventViewerCheckingBooking": "Checking booking availability…",
   "@eventsEventViewerCheckingBooking": {"description": "Current event viewer booking facts status.", "x-audience": "consumer", "x-owner": "product", "x-surface": "events.presentation.widgets.event_detail_cta"},
   "eventsEventViewerRetryBooking": "Retry booking availability",
@@ -32013,5 +32025,12 @@
   "hostsEventPhotoRecoveryInactive": "This saved event is no longer active. Open the event to review its current status.",
   "@hostsEventPhotoRecoveryInactive": {"description": "Saved inactive event recovery message.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create"},
   "hostsEventPhotoRecoveryRefresh": "Your photos are attached. Check photo status to refresh the current event details.",
-  "@hostsEventPhotoRecoveryRefresh": {"description": "Completed photo recovery awaiting a fresh event read.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create"}
+  "@hostsEventPhotoRecoveryRefresh": {"description": "Completed photo recovery awaiting a fresh event read.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.event_management.create"},
+  "hostAccountDeletionConfirmation": "Permanently delete your Catch account and Host profile? You’ll lose organizer access. Shared business records and required safety/payment records remain. Transfer organizer ownership first if needed.",
+  "@hostAccountDeletionConfirmation": {
+    "description": "Confirmation before a Host deletes their Catch account; explains shared business records and ownership.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
+  }
 }

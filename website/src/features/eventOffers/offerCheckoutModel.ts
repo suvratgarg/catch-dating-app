@@ -1,4 +1,4 @@
-import {record, integer, matches, keys, policy, validEventPayment} from "../../shared/payments/eventPaymentValidation";
+import {record, integer, matches, keys, policy, validEventPayment, codePointLength} from "../../shared/payments/eventPaymentValidation";
 import {eventOfferCopy, offerPaymentCopy} from "../../content/eventOffer";
 import type {EventOfferCheckoutResponse as Response} from "../../firebase";
 export type OfferGrant = NonNullable<Response["grant"]>;
@@ -19,7 +19,7 @@ export function assertOfferResponse(value: unknown): Response {
     ...(grant.freeAdmission ? ["freeAdmission"] : [])]) ||
     !matches(grant.grantId, /^[a-f0-9]{64}$/u) ||
     !matches(grant.eventId, /^[A-Za-z0-9_:-]{1,180}$/u) ||
-    typeof grant.eventName !== "string" || !grant.eventName || grant.eventName.length > 200 ||
+    typeof grant.eventName !== "string" || !grant.eventName || codePointLength(grant.eventName) > 200 ||
     !integer(grant.startTimeMillis) || !integer(grant.expiresAtMillis) ||
     !integer(grant.amountPaise, 0) || grant.amountPaise > 100_000_000 ||
     grant.amountPaise > 0 && grant.amountPaise < 100 ||

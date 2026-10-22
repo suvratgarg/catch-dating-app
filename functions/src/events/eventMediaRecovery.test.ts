@@ -1,7 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {Timestamp, FieldValue} from "firebase-admin/firestore";
+import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
+import {validateEventSetupReceiptDocument} from
+  "../shared/generated/validators/eventSetupReceiptDocument";
+import {validateUpdateEventCallablePayload} from
+  "../shared/generated/validators/updateEventInput";
 import {FakeFirestore} from "../shared/testing/programFirestore";
+import {updateEventHandler} from "./mutateEvent";
 import {receiptFor} from "./progressiveSetup/service";
 import {
   eventMediaFingerprint,
@@ -281,4 +287,88 @@ test("metadata byte bound preserves gallery semantics", async () => {
     {code: "invalid-argument"}
   );
   assert.equal(h.store.transactionCommits, 0);
+});
+
+/** The exact JSON wire shape boundedEventPhotoAttachmentPayload sends: plain
+ * timestamp maps, not Admin SDK Timestamps, through the generated validator. */
+function callableHarness() {
+  const h = fixture();
+  const wirePhotos = h.photos.map((photo) => ({
+    ...photo,
+    createdAt: {_seconds: 1, _nanoseconds: 0},
+    updatedAt: {_seconds: 1, _nanoseconds: 0},
+  }));
+  const data = {
+    eventId: "event-1",
+    mediaRecovery: h.identity,
+    fields: {photoUrl: wirePhotos[0].url, eventPhotos: wirePhotos},
+  };
+  const deps = {
+    firestore: () => h.db,
+    timestampFromMillis: (millis: number) => Timestamp.fromMillis(millis),
+    serverTimestamp: () => FieldValue.serverTimestamp(),
+    checkRateLimit: async () => undefined,
+  };
+  const call = (payload: Record<string, unknown>) => updateEventHandler({
+    auth: {uid: "host-1", token: {}},
+    data: payload,
+    rawRequest: {},
+  } as unknown as CallableRequest<unknown>, deps);
+  return {...h, data, call};
+}
+
+test("updateEvent admits, commits and replays a media recovery request",
+  async () => {
+    const h = callableHarness();
+    assert.equal(validateUpdateEventCallablePayload(h.data), true);
+    const first = await h.call(h.data);
+    assert.equal(first.updated, true);
+    assert.deepEqual(first.receipt, {
+      actorUid: "host-1",
+      organizerId: "org-1",
+      eventId: "event-1",
+      requestId: "request-0001",
+      payloadHash: first.receipt?.payloadHash,
+    });
+    assert.match(first.receipt?.payloadHash ?? "", /^[a-f0-9]{64}$/);
+    const saved = h.store.getDoc("events/event-1")!;
+    assert.equal(saved.photoUrl, h.photos[0].url);
+    assert.equal((saved.eventPhotos as unknown[]).length, 2);
+
+    const receiptPath =
+      receiptFor(h.db, "host-1", "org-1", "request-0001").path;
+    const receipt = h.store.getDoc(receiptPath)!;
+    assert.equal(validateEventSetupReceiptDocument({
+      ...receipt,
+      createdAt: Timestamp.fromMillis(1000),
+    }), true, JSON.stringify(validateEventSetupReceiptDocument.errors));
+
+    // A lost acknowledgement retries the identical request and reconciles to
+    // the same receipt without a second gallery write.
+    const replay = await h.call(h.data);
+    assert.deepEqual(replay, first);
+    assert.deepEqual(h.store.getDoc(receiptPath), receipt);
+    assert.deepEqual(h.store.getDoc("events/event-1"), saved);
+  });
+
+test("updateEvent schema keeps media recovery media-only", async () => {
+  const h = callableHarness();
+  for (const payload of [
+    {...h.data, fields: {...h.data.fields, name: "Renamed"}},
+    {...h.data, fields: {eventPhotos: h.data.fields.eventPhotos}},
+    {...h.data, fields: {photoUrl: h.data.fields.photoUrl, eventPhotos: []}},
+    {...h.data, expectedSetupRevision: 1},
+    {...h.data, mediaRecovery: {...h.identity, extra: true}},
+    {...h.data, mediaRecovery: {...h.identity, requestId: "short"}},
+  ]) {
+    assert.equal(validateUpdateEventCallablePayload(payload), false);
+    await assert.rejects(h.call(payload), (error: unknown) =>
+      error instanceof HttpsError && error.code === "invalid-argument");
+  }
+  assert.equal(h.store.getDoc("events/event-1")!.photoUrl, null);
+  assert.equal(validateEventSetupReceiptDocument({
+    operation: "media", actorUid: "host-1", organizerId: "org-1",
+    eventId: "event-1", requestHash: "a".repeat(64),
+    createdAt: Timestamp.fromMillis(1000), appliedRevision: 1,
+  }), false);
 });

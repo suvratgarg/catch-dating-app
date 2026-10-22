@@ -2900,6 +2900,9 @@ service cloud.firestore {
     match /salesSuppressionDecisions/{privateDocument=**} {
       allow read, write: if false;
     }
+    match /hostOperatorAlerts/{privateDocument=**} {
+      allow read, write: if false;
+    }
     match /salesInboundIntents/{privateDocument=**} {
       allow read, write: if false;
     }

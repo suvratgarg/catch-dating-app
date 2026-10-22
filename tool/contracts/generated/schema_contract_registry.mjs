@@ -43527,6 +43527,584 @@ export const salesEvidenceProposalsDocumentSchema = {
   }
 };
 
+export const hostAcquisitionConsentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_acquisition_consents.schema.json",
+  "title": "HostAcquisitionConsentDocument",
+  "description": "Private anonymous device permission, keyed by a domain-separated capability hash. Revocation tombstones cannot be reactivated; fresh permission requires a new capability.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostAcquisitionConsents",
+  "x-firestore-path": "hostAcquisitionConsents/{consentId}",
+  "x-document-id-field": "consentId",
+  "x-owner": "hostAcquisitionConsent and acquisition expiry worker",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "consentId",
+    "status",
+    "authority",
+    "createdAt",
+    "updatedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "consentId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "status": {
+      "enum": [
+        "active",
+        "revoked"
+      ]
+    },
+    "authority": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "purpose",
+            "analytics",
+            "advertising",
+            "chosenAt",
+            "acceptedAt",
+            "expiresAt",
+            "revokedAt"
+          ],
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "purpose": {
+              "const": "host_acquisition_measurement"
+            },
+            "analytics": {
+              "const": true
+            },
+            "advertising": {
+              "type": "boolean"
+            },
+            "chosenAt": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "acceptedAt": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "expiresAt": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "revokedAt": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "active"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "authority": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "version",
+              "purpose",
+              "analytics",
+              "advertising",
+              "chosenAt",
+              "acceptedAt",
+              "expiresAt",
+              "revokedAt"
+            ],
+            "properties": {
+              "version": {
+                "const": 1
+              },
+              "purpose": {
+                "const": "host_acquisition_measurement"
+              },
+              "analytics": {
+                "const": true
+              },
+              "advertising": {
+                "type": "boolean"
+              },
+              "chosenAt": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "acceptedAt": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "expiresAt": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "revokedAt": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const hostPilotEventReviewDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_pilot_event_reviews.schema.json",
+  "title": "HostPilotEventReviewDocument",
+  "description": "Private Host pilot review and operational activation evidence. No attendee identity or advertising permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostPilotEventReviews",
+  "x-firestore-path": "hostPilotEventReviews/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "Host acquisition reviewed pilot workflow",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "eventId",
+    "organizerId",
+    "realEvent",
+    "revision",
+    "reviewedAt",
+    "reviewedBy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "realEvent": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "reviewedAt": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "reviewedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    }
+  }
+};
+
+export const hostOrganizerActivationDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_organizer_activations.schema.json",
+  "title": "HostOrganizerActivationDocument",
+  "description": "Private Host pilot review and operational activation evidence. No attendee identity or advertising permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostOrganizerActivations",
+  "x-firestore-path": "hostOrganizerActivations/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "Host acquisition reviewed pilot workflow",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "organizerId",
+    "eventId",
+    "receiptId",
+    "activatedAt",
+    "recordedAt",
+    "reviewRevision"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "receiptId": {
+      "type": "string",
+      "pattern": "^host_activation_[a-f0-9-]{36}$"
+    },
+    "activatedAt": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "recordedAt": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "reviewRevision": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+};
+
+export const hostOperatorAlertDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_operator_alerts.schema.json",
+  "title": "HostOperatorAlertDocument",
+  "description": "Private operator notice receipt keyed by the original accepted Host lead. No applicant details or contact data.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostOperatorAlerts",
+  "x-firestore-path": "hostOperatorAlerts/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "onHostApplicationAccepted and dispatchHostApplicationAlerts",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "eventId",
+    "intentId",
+    "acceptedAt",
+    "status",
+    "attempts",
+    "attemptId",
+    "providerMessageId"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "eventId": {
+      "type": "string",
+      "pattern": "^host_lead_[0-9]{13}_[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$"
+    },
+    "intentId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "acceptedAt": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "sending",
+        "accepted",
+        "failed",
+        "unknown",
+        "stopped"
+      ]
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "attemptId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9-]{36}$"
+    },
+    "providerMessageId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "nextAttemptAt": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "pending",
+              "sending"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "nextAttemptAt"
+        ]
+      },
+      "else": {
+        "properties": {
+          "nextAttemptAt": false
+        }
+      }
+    }
+  ]
+};
+
+export const hostAcquisitionDeliveryDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_acquisition_deliveries.schema.json",
+  "title": "HostAcquisitionDeliveryDocument",
+  "description": "Private, bounded Meta Lead delivery. Current consent and the original Sales intent are rechecked before dispatch. Contact data and form answers are excluded.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostAcquisitionDeliveries",
+  "x-firestore-path": "hostAcquisitionDeliveries/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "joinWaitlist and Host acquisition delivery worker",
+  "required": [
+    "schemaVersion",
+    "classification",
+    "eventId",
+    "intentId",
+    "consentId",
+    "acceptedAt",
+    "status",
+    "attempts",
+    "nextAttemptAt",
+    "attemptId",
+    "lastAttemptAt",
+    "expiresAt",
+    "context"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "classification": {
+      "const": "sales_private"
+    },
+    "eventId": {
+      "type": "string",
+      "pattern": "^host_lead_[0-9]{13}_[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$"
+    },
+    "intentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "consentId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "acceptedAt": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "sending",
+        "accepted",
+        "unknown",
+        "stopped"
+      ]
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "nextAttemptAt": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "attemptId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9-]{36}$"
+    },
+    "lastAttemptAt": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "context": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "clientId",
+            "userAgent"
+          ],
+          "properties": {
+            "clientId": {
+              "type": "string",
+              "pattern": "^[0-9]{1,10}\\.[0-9]{10}$"
+            },
+            "userAgent": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+            },
+            "fbclid": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{10,512}$"
+            },
+            "clickCapturedAt": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
 export const salesInboundIntentsDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_inbound_intents.schema.json",
@@ -43862,6 +44440,22 @@ export const salesInboundIntentsDocumentSchema = {
                   "type": "null"
                 }
               ]
+            },
+            "eventPricing": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "paid",
+                    "free",
+                    "mixed",
+                    "undecided"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },
@@ -43944,6 +44538,23 @@ export const salesInboundIntentsDocumentSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 128
+    },
+    "hostLead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "isNew"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "pattern": "^host_lead_[0-9]{13}_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
+        },
+        "isNew": {
+          "type": "boolean"
+        }
+      }
     }
   },
   "allOf": [
@@ -56401,7 +57012,8 @@ export const eventSetupReceiptDocumentSchema = {
         "preferences",
         "details",
         "publish",
-        "unpublish"
+        "unpublish",
+        "media"
       ]
     },
     "actorUid": {
@@ -56451,6 +57063,14 @@ export const eventSetupReceiptDocumentSchema = {
       "type": "string",
       "const": "discarded"
     },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,119}$"
+    },
+    "mediaPayloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
     "expectedSetupRevision": {
       "type": "integer",
       "minimum": 1,
@@ -56477,6 +57097,18 @@ export const eventSetupReceiptDocumentSchema = {
             "required": [
               "expectedSetupRevision"
             ]
+          },
+          {
+            "required": [
+              "mediaPayloadHash"
+            ]
+          },
+          {
+            "properties": {
+              "operation": {
+                "const": "media"
+              }
+            }
           }
         ]
       }
@@ -56494,6 +57126,36 @@ export const eventSetupReceiptDocumentSchema = {
       "not": {
         "required": [
           "appliedRevision"
+        ]
+      }
+    },
+    {
+      "required": [
+        "requestId",
+        "mediaPayloadHash"
+      ],
+      "properties": {
+        "operation": {
+          "const": "media"
+        }
+      },
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "appliedRevision"
+            ]
+          },
+          {
+            "required": [
+              "outcome"
+            ]
+          },
+          {
+            "required": [
+              "expectedSetupRevision"
+            ]
+          }
         ]
       }
     }
@@ -247722,6 +248384,23 @@ export const adminUpdateEventDetailsCallablePayloadSchema = {
               }
             }
           }
+        },
+        "hostPilotReview": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "realEvent",
+            "expectedRevision"
+          ],
+          "properties": {
+            "realEvent": {
+              "type": "boolean"
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
         }
       }
     }
@@ -255319,6 +255998,31 @@ export const updateEventCallablePayloadSchema = {
       "minLength": 1,
       "maxLength": 180
     },
+    "mediaRecovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "requestId",
+        "expectedMediaHash"
+      ],
+      "description": "Media-only attachment for an already committed create. Replays its eventSetupReceipts media receipt; never edits schedule or setup fields.",
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,119}$"
+        },
+        "expectedMediaHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
     "expectedSetupRevision": {
       "type": "integer",
       "minimum": 1,
@@ -256513,7 +257217,42 @@ export const updateEventCallablePayloadSchema = {
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "mediaRecovery"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "expectedSetupRevision"
+          ]
+        },
+        "properties": {
+          "fields": {
+            "required": [
+              "photoUrl",
+              "eventPhotos"
+            ],
+            "propertyNames": {
+              "enum": [
+                "photoUrl",
+                "eventPhotos"
+              ]
+            },
+            "properties": {
+              "eventPhotos": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 };
 
 export const cancelEventCallablePayloadSchema = {
@@ -323165,6 +323904,163 @@ export const adminSetCrossPathsShowcaseEligibilityCallableResponseSchema = {
   }
 };
 
+export const hostAcquisitionConsentHTTPRequestSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/http/host_acquisition_consent_request.schema.json",
+  "title": "HostAcquisitionConsentHTTPRequest",
+  "description": "Anonymous device-specific grant or withdrawal. Capability is 32 random bytes and must never be logged. Old intake analytics is not this permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "action",
+    "capability"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "grant",
+        "revoke"
+      ]
+    },
+    "capability": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "purpose",
+        "analytics",
+        "advertising",
+        "chosenAt"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "host_acquisition_measurement"
+        },
+        "analytics": {
+          "const": true
+        },
+        "advertising": {
+          "type": "boolean"
+        },
+        "chosenAt": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "grant"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "choice"
+        ]
+      },
+      "else": {
+        "properties": {
+          "choice": false
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "purpose",
+        "analytics",
+        "advertising",
+        "chosenAt"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "host_acquisition_measurement"
+        },
+        "analytics": {
+          "const": true
+        },
+        "advertising": {
+          "type": "boolean"
+        },
+        "chosenAt": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+};
+
+export const hostAcquisitionConsentHTTPResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/http/host_acquisition_consent_response.schema.json",
+  "title": "HostAcquisitionConsentHTTPResponse",
+  "description": "Permission handshake result. Disabled or revoked status never authorizes delivery.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ok",
+        "status",
+        "expiresAt"
+      ],
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "status": {
+          "enum": [
+            "active",
+            "revoked",
+            "disabled"
+          ]
+        },
+        "expiresAt": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "error"
+      ],
+      "properties": {
+        "error": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      }
+    }
+  ]
+};
+
 export const joinWaitlistHTTPRequestSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/http/join_waitlist_request.schema.json",
@@ -323179,6 +324075,32 @@ export const joinWaitlistHTTPRequestSchema = {
     "role"
   ],
   "properties": {
+    "hostMeasurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capability",
+        "clientId"
+      ],
+      "properties": {
+        "capability": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "clientId": {
+          "type": "string",
+          "pattern": "^[0-9]{1,10}\\.[0-9]{10}$"
+        },
+        "fbclid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{10,512}$"
+        },
+        "clickCapturedAt": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
     "fullName": {
       "type": "string",
       "minLength": 2,
@@ -323300,6 +324222,15 @@ export const joinWaitlistHTTPRequestSchema = {
         "operatingNotes": {
           "type": "string",
           "maxLength": 1000
+        },
+        "eventPricing": {
+          "type": "string",
+          "enum": [
+            "paid",
+            "free",
+            "mixed",
+            "undecided"
+          ]
         }
       }
     },
@@ -323678,6 +324609,15 @@ export const joinWaitlistHTTPRequestSchema = {
         "operatingNotes": {
           "type": "string",
           "maxLength": 1000
+        },
+        "eventPricing": {
+          "type": "string",
+          "enum": [
+            "paid",
+            "free",
+            "mixed",
+            "undecided"
+          ]
         }
       }
     },
@@ -324106,6 +325046,23 @@ export const joinWaitlistHTTPResponseSchema = {
         },
         "alreadyJoined": {
           "type": "boolean"
+        },
+        "hostLead": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventId",
+            "isNew"
+          ],
+          "properties": {
+            "eventId": {
+              "type": "string",
+              "pattern": "^host_lead_[0-9]{13}_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
+            },
+            "isNew": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },

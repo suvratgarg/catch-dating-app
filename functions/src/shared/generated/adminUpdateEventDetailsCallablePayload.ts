@@ -151,5 +151,9 @@ export interface AdminUpdateEventDetailsCallablePayload {
         [k: string]: unknown;
       };
     };
+    hostPilotReview?: {
+      realEvent: boolean;
+      expectedRevision: number;
+    };
   };
 }

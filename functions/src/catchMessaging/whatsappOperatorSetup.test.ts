@@ -227,3 +227,72 @@ test("setup authentication accepts through fifteen minutes " +
   assert.throws(() => planOperatorSetup(stale.scope, stale.snapshot,
     stale.options));
 });
+
+function consolidatedFixture() {
+  const f = fixture();
+  f.scope.recipientUid = f.scope.actorUid;
+  f.snapshot.actor.auth.endpointHash = f.scope.endpointHash;
+  f.snapshot.actor.claims = {admin: true};
+  f.snapshot.recipient = {auth: structuredClone(f.snapshot.actor.auth),
+    claims: {admin: true}};
+  f.snapshot.actorAssignmentExists = true;
+  f.snapshot.actorAssignment = {targetUid: f.scope.actorUid, disabled: false,
+    status: "active", roles: ["admin"], displayName: "Existing operator"};
+  return f;
+}
+test("consolidated plan binds the existing Admin projection and one identity",
+  () => {
+    const f = consolidatedFixture();
+    const plan = planOperatorSetup(f.scope, f.snapshot, f.options);
+    assert.equal(plan.actorAssignmentSha256,
+      setupHash(f.snapshot.actorAssignment));
+    assert.equal(plan.beforeClaimsSha256, plan.recipientClaimsSha256);
+    assertPlannedSetupIdentity(plan, f.snapshot, f.options.now);
+    f.snapshot.actor.claims = {admin: true, adminOwner: true};
+    f.snapshot.actor.auth.relevantRoles = ["adminOwner"];
+    f.snapshot.recipient = {auth: structuredClone(f.snapshot.actor.auth),
+      claims: structuredClone(f.snapshot.actor.claims)};
+    f.snapshot.existingOwnerUids = [f.scope.actorUid];
+    assertPlannedSetupIdentity(plan, f.snapshot, f.options.now);
+    f.snapshot.recipient.claims.extra = true;
+    assert.throws(() => assertPlannedSetupIdentity(plan, f.snapshot,
+      f.options.now));
+  });
+test("consolidated planning rejects missing, drifted and broader Admin state",
+  () => {
+    const changes: Array<(f: ReturnType<typeof consolidatedFixture>) =>
+      void> = [
+        (f) => {
+          delete f.snapshot.actorAssignment;
+        },
+        (f) => {
+          f.snapshot.actorAssignmentExists = false;
+        },
+        (f) => {
+ f.snapshot.actorAssignment!.roles = ["admin", "support"];
+        },
+        (f) => {
+ f.snapshot.actorAssignment!.disabled = true;
+        },
+        (f) => {
+ f.snapshot.actorAssignment!.targetUid = "another";
+        },
+        (f) => {
+ f.snapshot.actorAssignment!.status = "revoked";
+        },
+        (f) => {
+          f.snapshot.recipient.auth.creationTimeMillis++;
+        },
+        (f) => {
+          f.snapshot.actor.auth.endpointHash = null;
+        },
+        (f) => {
+          f.snapshot.actor.claims.extra = true;
+        },
+      ];
+    for (const change of changes) {
+      const f = consolidatedFixture();
+      change(f);
+      assert.throws(() => planOperatorSetup(f.scope, f.snapshot, f.options));
+    }
+  });

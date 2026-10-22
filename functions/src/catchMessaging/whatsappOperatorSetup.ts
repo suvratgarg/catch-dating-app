@@ -33,6 +33,7 @@ export interface OperatorSetupSnapshot {
   authorityExists: boolean;
   bootstrapExists: boolean;
   actorAssignmentExists: boolean;
+  actorAssignment?: Record<string, unknown>;
 }
 export interface OperatorSetupPlan {
   schemaVersion: 1;
@@ -52,6 +53,7 @@ export interface OperatorSetupPlan {
   grantNonce: string;
   createReviewRef: string;
   revokeReviewRef: string;
+  actorAssignmentSha256?: string;
   expectedActorRevision: 0;
   expectedRecipientRevision: 0;
 }
@@ -143,13 +145,48 @@ export function validateSetupScope(scope: OperatorSetupScope): void {
     "credentialVersionSha256"]);
   if (!/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/u.test(scope.projectId) ||
       !id(scope.actorUid) || !id(scope.recipientUid) ||
-      scope.actorUid === scope.recipientUid ||
       ![scope.actorEmailSha256, scope.endpointHash,
         scope.credentialVersionSha256].every(hash) ||
       ![scope.appId, scope.wabaId, scope.phoneNumberId]
         .every((v) => typeof v === "string" && /^[1-9][0-9]{4,31}$/u.test(v))) {
     setupUnavailable();
   }
+}
+/** A consolidated operator keeps one Auth identity and one authority record. */
+export const isConsolidatedOperator = (scope: OperatorSetupScope): boolean =>
+  scope.actorUid === scope.recipientUid;
+
+/** Bind the existing projection, including metadata, before any role write. */
+export function operatorAssignmentHash(value: Record<string, unknown>): string {
+  return setupHash(JSON.parse(JSON.stringify(value)));
+}
+export function assertLegacyOperatorAssignment(value: unknown,
+  scope: OperatorSetupScope): asserts value is Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    setupUnavailable();
+  }
+  const record = value as Record<string, unknown>;
+  if (record.targetUid !== scope.actorUid || record.disabled !== false ||
+      record.status !== "active" || setupHash(record.roles) !==
+        setupHash(["admin"])) setupUnavailable();
+}
+export function setupAssignmentMatches(plan: OperatorSetupPlan,
+  snapshot: Pick<OperatorSetupSnapshot,
+    "actorAssignmentExists" | "actorAssignment">): boolean {
+  if (!isConsolidatedOperator(plan.scope)) {
+    return !snapshot.actorAssignmentExists;
+  }
+  if (!snapshot.actorAssignmentExists || !snapshot.actorAssignment) {
+    return false;
+  }
+  assertLegacyOperatorAssignment(snapshot.actorAssignment, plan.scope);
+  return operatorAssignmentHash(snapshot.actorAssignment) ===
+    plan.actorAssignmentSha256;
+}
+export function operatorRootCapabilities(scope: OperatorSetupScope):
+  CatchAppAuthority["capabilities"] {
+  return isConsolidatedOperator(scope) ? ["receive", "reply", "review"] :
+    ["reply", "review"];
 }
 export function validateSetupPlan(plan: OperatorSetupPlan): void {
   setupExact(plan, ["schemaVersion", "planId", "scope", "sourceSha",
@@ -158,8 +195,18 @@ export function validateSetupPlan(plan: OperatorSetupPlan): void {
     "recipientTokensValidAfterMillis", "googleSubjectSha256",
     "beforeClaimsSha256", "desiredClaimsSha256", "recipientClaimsSha256",
     "grantNonce", "createReviewRef", "revokeReviewRef",
-    "expectedActorRevision", "expectedRecipientRevision"]);
+    "expectedActorRevision", "expectedRecipientRevision",
+    ...(isConsolidatedOperator(plan.scope) ? ["actorAssignmentSha256"] : [])]);
   validateSetupScope(plan.scope);
+  if (isConsolidatedOperator(plan.scope) &&
+      (!hash(plan.actorAssignmentSha256) ||
+        plan.beforeClaimsSha256 !== setupHash({admin: true}) ||
+        plan.desiredClaimsSha256 !==
+          setupHash({admin: true, adminOwner: true}) ||
+        plan.recipientClaimsSha256 !== plan.beforeClaimsSha256 ||
+        plan.actorCreationTimeMillis !== plan.recipientCreationTimeMillis ||
+        plan.actorTokensValidAfterMillis !==
+          plan.recipientTokensValidAfterMillis)) setupUnavailable();
   if (plan.schemaVersion !== 1 || !id(plan.planId) ||
       !/^[a-f0-9]{40}$/u.test(plan.sourceSha) ||
       ![plan.createdAtMillis, plan.expiresAtMillis,
@@ -248,6 +295,13 @@ export function assertSetupSnapshot(scope: OperatorSetupScope,
         (snapshot.recipient.claims.support === true)) setupUnavailable();
   setupHash(a.claims);
   setupHash(snapshot.recipient.claims);
+  if (isConsolidatedOperator(scope) &&
+      (setupHash(a.claims) !== setupHash(snapshot.recipient.claims) ||
+        a.auth.creationTimeMillis !==
+          snapshot.recipient.auth.creationTimeMillis ||
+        a.auth.tokensValidAfterMillis !==
+          snapshot.recipient.auth.tokensValidAfterMillis ||
+        a.auth.endpointHash !== scope.endpointHash)) setupUnavailable();
 }
 /** Read-only plan; receipt excludes tokens, raw claims and endpoints. */
 export function planOperatorSetup(scope: OperatorSetupScope,
@@ -256,6 +310,14 @@ export function planOperatorSetup(scope: OperatorSetupScope,
     createReviewRef: string; revokeReviewRef: string; now: number;
   }): OperatorSetupPlan {
   assertSetupSnapshot(scope, snapshot, options.now);
+  const consolidated = isConsolidatedOperator(scope);
+  if (consolidated) {
+    assertLegacyOperatorAssignment(snapshot.actorAssignment, scope);
+    if (!snapshot.actorAssignmentExists ||
+        setupHash(snapshot.actor.claims) !== setupHash({admin: true})) {
+      setupUnavailable();
+    }
+  }
   const recipientClaims = snapshot.recipient.claims;
   // Preserve only the explicitly observed legacy {admin: true} shape. The
   // reviewed plan binds its full hash, exact recipient and source; this claim
@@ -263,9 +325,10 @@ export function planOperatorSetup(scope: OperatorSetupScope,
   const preserveLegacyAdmin = Object.keys(recipientClaims).length === 1 &&
     Object.hasOwn(recipientClaims, "admin") && recipientClaims.admin === true;
   if (snapshot.authorityExists || snapshot.bootstrapExists ||
-      snapshot.actorAssignmentExists ||
+      (!consolidated && snapshot.actorAssignmentExists) ||
       snapshot.existingOwnerUids.length ||
-      ADMIN_ROLE_CLAIMS.some((role) => snapshot.actor.claims[role] === true) ||
+      (!consolidated && ADMIN_ROLE_CLAIMS.some((role) =>
+        snapshot.actor.claims[role] === true)) ||
       (!preserveLegacyAdmin && ADMIN_ROLE_CLAIMS.some((role) =>
         recipientClaims[role] === true))) {
     setupUnavailable();
@@ -286,6 +349,8 @@ export function planOperatorSetup(scope: OperatorSetupScope,
     recipientClaimsSha256: setupHash(snapshot.recipient.claims),
     grantNonce: options.grantNonce, createReviewRef: options.createReviewRef,
     revokeReviewRef: options.revokeReviewRef,
+    ...(consolidated ? {actorAssignmentSha256:
+      operatorAssignmentHash(snapshot.actorAssignment!)} : {}),
     expectedActorRevision: 0, expectedRecipientRevision: 0};
   validateSetupPlan(plan);
   return plan;
@@ -301,7 +366,10 @@ export function assertPlannedSetupIdentity(plan: OperatorSetupPlan,
       snapshot.recipient.auth.tokensValidAfterMillis !==
         plan.recipientTokensValidAfterMillis ||
       snapshot.actor.googleSubjectSha256 !== plan.googleSubjectSha256 ||
-      setupHash(snapshot.recipient.claims) !== plan.recipientClaimsSha256 ||
+      !(isConsolidatedOperator(plan.scope) ?
+        [plan.beforeClaimsSha256, plan.desiredClaimsSha256].includes(
+          setupHash(snapshot.recipient.claims)) :
+        setupHash(snapshot.recipient.claims) === plan.recipientClaimsSha256) ||
       snapshot.existingOwnerUids.some((uid) => uid !== plan.scope.actorUid)) {
     setupUnavailable();
   }
@@ -347,7 +415,7 @@ export class CatchWhatsappOperatorSetup {
       if (phase === "reserved") {
         if (claimsHash !== plan.beforeClaimsSha256 ||
             snapshot.existingOwnerUids.length || snapshot.authorityExists ||
-            snapshot.actorAssignmentExists) {
+            !setupAssignmentMatches(plan, snapshot)) {
           setupUnavailable();
         }
         const won = await this.journal.advance(plan, request,
@@ -358,7 +426,7 @@ export class CatchWhatsappOperatorSetup {
           assertPlannedSetupIdentity(plan, latest, this.sources.now());
           if (setupHash(latest.actor.claims) !== plan.beforeClaimsSha256 ||
               latest.existingOwnerUids.length || latest.authorityExists ||
-              latest.actorAssignmentExists) {
+              !setupAssignmentMatches(plan, latest)) {
             setupUnavailable();
           }
           try {
@@ -394,6 +462,9 @@ export class CatchWhatsappOperatorSetup {
               return {state: "reconciliation-required"};
             }
           }
+        } else if (phase === "prepare-intent" &&
+            isConsolidatedOperator(plan.scope)) {
+          await this.journal.prepareReceive(plan, request);
         } else if (phase === "prepare-intent") {
           const target = await this.journal.recipient(plan);
           if (target.state === "denied" && target.revision === 1) {
@@ -420,9 +491,13 @@ export class CatchWhatsappOperatorSetup {
               return {state: "reconciliation-required"};
             }
           }
+        } else if (phase === "finalize-intent" &&
+            isConsolidatedOperator(plan.scope)) {
+          await this.journal.finalizeReceive(plan, request);
         } else if (phase === "finalize-intent") {
           const target = await this.journal.recipient(plan);
-          if (target.state === "granting" && target.revision === 2) {
+          if (!isConsolidatedOperator(plan.scope) &&
+              target.state === "granting" && target.revision === 2) {
             return {state: "reconciliation-required"};
           }
           await this.journal.assertComplete(plan);

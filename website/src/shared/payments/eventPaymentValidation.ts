@@ -18,6 +18,8 @@ export const integer = (value: unknown, minimum = 1): value is number =>
   typeof value === "number" && Number.isSafeInteger(value) && value >= minimum;
 export const matches = (value: unknown, pattern: RegExp): value is string =>
   typeof value === "string" && pattern.test(value);
+// JSON Schema maxLength counts Unicode code points rather than UTF-16 units.
+export const codePointLength = (value: string): number => Array.from(value).length;
 export function keys(value: Record<string, unknown>, expected: string[]) {
   return (
     Object.keys(value).length === expected.length &&
@@ -64,7 +66,7 @@ export function validEventPayment(
       !integer(payment.amountPaise, 100) ||
       payment.amountPaise > 100_000_000 ||
       payment.currency !== "INR" ||
-      !["test", "live"].includes(String(payment.mode)) ||
+      (payment.mode !== "test" && payment.mode !== "live") ||
       !integer(payment.refundedAmountPaise, 0) ||
       payment.refundedAmountPaise > payment.amountPaise ||
       ![null, "eventCancelled", "guestCancelled"].includes(
@@ -124,7 +126,7 @@ export function validEventPayment(
         checkout.currency !== "INR" ||
         checkout.expiresAtMillis !== payment.expiresAtMillis ||
         typeof checkout.description !== "string" ||
-        checkout.description.length > 200)
+        codePointLength(checkout.description) > 200)
     )
       return false;
   }

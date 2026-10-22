@@ -322,6 +322,17 @@
       ]
     },
     {
+      "id": "config_public_contact",
+      "path": "config/publicContact",
+      "rulesMatch": "/config/{docId}",
+      "owner": "website public contact operator; exact versioned document validated by website/src/content/publicContact.ts",
+      "read": "server only through the existing website Firestore viewer identity; clients denied",
+      "write": "bounded operator transaction with Firestore IAM writer authority; clients denied",
+      "migrationNotes": [
+        "Only schemaVersion, revision and supportEmail are stored. Missing, invalid and unavailable documents use the source-controlled Gmail fallback."
+      ]
+    },
+    {
       "id": "users",
       "path": "users/{uid}",
       "rulesMatch": "/users/{uid}",
@@ -545,7 +556,8 @@
       "read": "public",
       "write": "authenticated owner direct create/update; server functions may seed and project host display data",
       "exportedFunctions": [
-        "syncHostProfile"
+        "syncHostProfile",
+        "requestAccountDeletion"
       ],
       "operations": [
         {
@@ -565,7 +577,8 @@
       ],
       "migrationNotes": [
         "Host professional identity is intentionally separate from users/{uid} dating profile data and publicProfiles/{uid}.",
-        "Organizer creation and team-management callables may seed missing hostProfiles/{uid} documents from professional host snapshots."
+        "Organizer creation and team-management callables may seed missing hostProfiles/{uid} documents from professional host snapshots.",
+        "Account deletion removes the professional profile, owned avatar and personal organizer host projections. Shared organizer, event and guest records remain."
       ]
     },
     {
