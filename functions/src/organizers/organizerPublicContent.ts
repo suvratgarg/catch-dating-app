@@ -189,12 +189,13 @@ export function organizerPublicContentIssues(
   const seenLinks = new Set<string>();
   (content.publicSources ?? []).forEach((source, index) => {
     const prefix = `publicSources[${index}]`;
+    const field = `${prefix}.href`;
     if (!isPublicSourceLink(source.href)) {
-      issues.push({field: `${prefix}.href`, rule: "source_without_public_link"});
+      issues.push({field, rule: "source_without_public_link"});
     } else {
       const key = sourceLinkKey(source.href as string);
       if (seenLinks.has(key)) {
-        issues.push({field: `${prefix}.href`, rule: "duplicate_source_link"});
+        issues.push({field, rule: "duplicate_source_link"});
       }
       seenLinks.add(key);
     }
