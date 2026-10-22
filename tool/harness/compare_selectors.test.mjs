@@ -110,3 +110,17 @@ for (const file of ["tool/lib/path_glob.mjs", "tool/lib/tool_impact.mjs",
     assert.equal(compareSelectors(f).status, "full-validation-required");
   });
 }
+
+test("only a pull request plan may defer queue-only lanes found by comparison", () => {
+  const comparison = {baseSha: "a".repeat(40), headSha: "b".repeat(40), mode: "pr",
+    status: "full-validation-required", requiredTargets: ["flutter", "visual_integration"]};
+  const plan = {baseSha: comparison.baseSha, sourceSha: comparison.headSha, mode: "pr",
+    operations: {ciTargets: ["flutter"]}, queueDeferredCiTargets: ["visual_integration"]};
+  requireComparedTargets(comparison, plan, "flutter=true\n");
+  assert.throws(() => requireComparedTargets({...comparison, mode: "merge_group"}, {...plan, mode: "merge_group"},
+    "flutter=true\n"), /suppressed compared obligations: visual_integration/);
+  assert.throws(() => requireComparedTargets(comparison, {...plan, queueDeferredCiTargets: []},
+    "flutter=true\n"), /suppressed compared obligations: visual_integration/);
+  assert.throws(() => requireComparedTargets(comparison, {...plan, operations: {ciTargets: ["visual_integration"]},
+    queueDeferredCiTargets: ["flutter"]}, "visual_integration=true\n"), /Only queue-only lanes may be deferred/);
+});
