@@ -6,7 +6,6 @@ import {
   ClaimBandGrid,
   ClaimBandRail,
   ClaimBandSection,
-  ClaimMissingEvidenceList,
   ClaimRequestForm,
   ClaimRequestPanel,
   ClaimRequestPanelHeading,
@@ -21,6 +20,7 @@ import {
 import {claimRoleOptions} from "../../claims/claimModel";
 import type {ListingClaimController} from "../../claims/useListingClaimController";
 import {claimUnlocks} from "@content/marketing";
+import {organizerListingCopy} from "@content/organizer";
 import {trackCtaClick} from "../../marketing/tracking";
 import {trackOrganizerAnalytics} from "../analytics";
 import {claimHrefForListing} from "../routing";
@@ -36,13 +36,12 @@ export function ListingMissingEvidenceSection({
   return (
     <ClaimBandSection aria-labelledby="listing-missing-title">
       <ListingSectionIntro
-        eyebrow={websiteCopy["listingclaimsections_0367"]}
-        title={websiteCopy["listingclaimsections_0373"]}
+        eyebrow={organizerListingCopy.claims.introEyebrow}
+        title={organizerListingCopy.claims.introTitle}
         titleId="listing-missing-title"
-        body={websiteCopy["listingclaimsections_0381"]}
+        body={organizerListingCopy.claims.introBody}
       />
       <ClaimBandGrid>
-        <ClaimMissingEvidenceList items={listing.missingEvidence} />
         <ClaimBandRail>
           <ClaimUnlocksCard listing={listing} />
           <ClaimListingPanel controller={claimController} listing={listing} />
