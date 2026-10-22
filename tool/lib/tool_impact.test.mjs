@@ -314,9 +314,13 @@ const consumedInputs = new Map([
     "data:repair-club-member-counts", "data:repair-event-aggregates", "data:repair-review-authors"]],
   ["packages/web-config/firebase.ts", ["web:react-controller-test-targets",
     "web:react-dependency-graph", "web:shared-ui-adoption"]],
-  ["operations/src/platform/storage/file-store.mjs", ["operations:admin-action-catalog",
-    "operations:admin-cli", "operations:cli", "operations:workflow-manifest"]],
 ]);
+// Tool code must not name the Operations runtime tree (operations:boundaries
+// enforces that), so sample a file under the owners' declared source glob.
+const operationsSource = productionManifest.tools.find((tool) => tool.id === "operations:cli")
+  .impactPaths.find((pattern) => pattern.endsWith("/**"));
+consumedInputs.set(operationsSource.replace("**", "example.mjs"), ["operations:admin-action-catalog",
+  "operations:admin-cli", "operations:cli", "operations:workflow-manifest"]);
 
 test("formerly unmapped inputs select every check that reads them without full fanout", () => {
   const added = new Set([...consumedInputs.values()].flat());
