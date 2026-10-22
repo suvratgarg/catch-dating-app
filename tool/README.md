@@ -804,8 +804,8 @@ exports without committing or publishing. The producer renders only invalid or
 changed-input/font captures; reuse preserves the original PNG and render SHA,
 while the v2 receipt records verification against the selected source SHA.
 Website captions and destination metadata do not invalidate rendering.
-Capture requests preserve full-CI
-admission and merge authority. See
+Capture requests never start CI or
+change merge authority. See
 `docs/marketing_app_media_pipeline.md#hosted-export-cat159-enabling-slice`
 for controller integration, exact event/source selection and artifact receipts. Its focused
 wrapper/workflow checks run through `marketing:hosted-capture-export`.
@@ -1225,42 +1225,28 @@ ids, non-empty text, and exact generated output.
 Remote write tools should default to dry-run/read-only behavior, require an
 explicit apply flag, and carry a `safety` label that reflects the blast radius.
 
-## PR validation admission
+## PR validation and the merge queue
 
-Development branches retain independent, inexpensive `PR feedback` planning
-for affected checks. Full validation stays in `CI` and
-requires exactly one open, ready PR into `main` carrying `ci:admitted`.
-The read-only `ci:pr-admission` verifier checks live labels, the tested head and
-current main before validation and again before `Required CI` can succeed.
-Deferred PRs explicitly fail that aggregate with `Awaiting admission`; skipping
-expensive jobs is never evidence that those jobs passed. API failures deny
-admission. Main validation, backend source approval and delivery authority
-remain separate and retain their existing checks.
+Every ready PR into `main` runs full `CI` in parallel. A newer push or a
+conversion to draft cancels that PR's older run, and drafts validate once they
+are marked ready. The `Plan affected targets` job gives the early planner
+feedback within a minute; skipping expensive jobs is never evidence that those
+jobs passed.
 
-The integration owner reads existing failed-job logs first, resolves the
-candidate's dependencies, batches local repairs, updates only that candidate
-against current main, then admits it. Leave waiting branches unchanged until
-their turn. Inspect the final combined diff and run focused checks before one
-push. The full PR workflow has one concurrency slot, including its approval
-wait, and retains queued runs rather than replacing another PR's pending run.
-GitHub queue order is not dependency order; the sole label determines admission.
+A PR result does not need to stay current with `main`. The GitHub merge queue
+validates each group's exact combined source with the same `Required CI`
+aggregate (`merge_group` mode) before `main` moves, so two individually green
+PRs cannot break `main` together. Queue a PR with
+`gh pr merge <number> --auto --squash`; a failed group drops the failing PR and
+retests the rest. Main validation, backend source approval and delivery
+authority remain separate and retain their existing checks.
 
-Before changing the admitted source or handing the slot to another PR, remove
-its label and cancel or wait for its obsolete CI run to finish. Push the reviewed
-repair batch once, then apply the label to the next ready candidate. Label events
-and draft transitions re-evaluate admission. Old events with stale heads fail
-before expensive checks. A fresh head needs fresh validation and applicable
-backend approval. Do not cancel main validation or delivery as queue cleanup.
-
-Labels are scheduling authority, not an atomic GitHub merge lock. Removing one
-cannot synchronously revoke an already-green status. Immediately before merging,
-verify the sole label, exact head, current main, successful full CI and required
-source approval, then use an expected-head merge guard. Preserve strict
-up-to-date branch protection. Drafts with missing implementation stay drafts
-until their stated scope is complete; ordering never substitutes for review.
-Measure completed job runner time, reruns and superseded work separately from
-queue/approval waits. Public standard-runner usage and private billed usage must
-not be conflated when reporting savings.
+Read failed-job logs before rerunning, and push a reviewed repair batch once
+rather than iterating on CI. Drafts with missing implementation stay drafts
+until their stated scope is complete. Measure completed job runner time, reruns
+and superseded work separately from queue and approval waits. Public
+standard-runner usage and private billed usage must not be conflated when
+reporting savings.
 
 ## Host measurement preview runtime
 

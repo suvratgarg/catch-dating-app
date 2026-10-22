@@ -223,8 +223,8 @@ After a new source head or an intentional retry, remove and reapply the label
 to request a new run. Eligible jobs share a concurrency key by source SHA across
 both trigger modes, preventing simultaneous duplicate renders; unrelated label
 events do not enter that queue. Completed runs are not a durable deduplication
-cache. `capture:requested` does not grant full-CI admission, satisfy Required CI
-or change merge/deployment authority; `ci:admitted` retains its existing policy.
+cache. `capture:requested` does not start CI, satisfy Required CI or change
+merge/deployment authority.
 
 Use the currently published exact head of each product PR; short SHAs and local
 unpublished Programs commits cannot be dispatched. The job runs at most 12
@@ -262,8 +262,8 @@ SF font bytes, dependency caches and arbitrary checkout files are excluded.
 
 Tracked changes outside the declared media/design outputs fail packaging,
 including source and golden baseline changes. Automatic reusable calls expose
-`capture_binding` with immutable artifact/source/run identity; they do not grant
-CI admission or merge/deployment authority. The producer and consumers preserve
+`capture_binding` with immutable artifact/source/run identity; they do not start
+CI or grant merge/deployment authority. The producer and consumers preserve
 existing regression checks. Export alone does not publish a website or prove
 product/backend availability.
 
