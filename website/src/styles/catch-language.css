@@ -244,9 +244,11 @@ h3,
   position: absolute;
   inset: 0;
   z-index: 1;
+  /* stylelint-disable function-disallowed-list -- The photo grade is not a token yet; Flutter's CatchGradedImage owns its own grade. */
   background:
     linear-gradient(180deg, rgba(255, 236, 210, 0.06), transparent 34%),
     linear-gradient(0deg, rgba(43, 28, 16, 0.10), transparent 42%);
+  /* stylelint-enable function-disallowed-list */
   content: "";
   mix-blend-mode: soft-light;
   pointer-events: none;
