@@ -4204,6 +4204,51 @@
       }
     },
     {
+      "id": "firebase:environment-parity",
+      "category": "firebase",
+      "path": "tool/firebase/report_environment_parity.mjs",
+      "command": "node tool/firebase/report_environment_parity.mjs",
+      "safety": "remote-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/*.yml",
+        "firebase/remote_config.template.json",
+        "functions/src/**/*.ts",
+        "tool/env/dart_defines/*.json",
+        "tool/firebase/check_deploy_parity.mjs",
+        "tool/firebase/client_callable_dependencies.json",
+        "tool/firebase/environment_difference_policy.json",
+        "tool/firebase/list_firebase_function_targets.mjs",
+        "tool/firebase/prepare_functions_params_for_deploy.mjs",
+        "tool/firebase/report_environment_parity.test.mjs",
+        "tool/firebase/sanitize_firestore_indexes_for_deploy.mjs",
+        "tool/firebase/wait_firestore_indexes_ready.mjs"
+      ],
+      "description": "Read-only what's-live-where report comparing main with live dev/prod across Functions, params, GitHub variables, indexes, rules, dormant policy, callable gates, Remote Config and build modes; --policy-only requires every environment-conditional switch to be classified and feature-gate differences to carry an owner, ticket and expiry.",
+      "checks": [
+        "node --check tool/firebase/report_environment_parity.mjs",
+        "node --test tool/firebase/report_environment_parity.test.mjs",
+        "node tool/firebase/report_environment_parity.mjs --policy-only"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/report_environment_parity.test.mjs",
+        "contains": [
+          "policy guard requires every discovered switch to be classified",
+          "an allowed difference needs a feature gate, owner, reason, CAT ticket and unexpired date",
+          "policy-only mode reads a real repository layout offline and fails closed on a new switch",
+          "the CLI collects only read-only metadata, survives an unavailable source and never prints identities"
+        ]
+      }
+    },
+    {
       "id": "firebase:deploy-targets",
       "category": "firebase",
       "path": "tool/deploy_firebase_targets.sh",
