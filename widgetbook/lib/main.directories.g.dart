@@ -6465,12 +6465,22 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EventFocusRail',
+            name: 'EventFocusList',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Rail states',
+                name: 'List states',
                 builder: _widgetbook_workspace_dashboard_catalog_event_focus
-                    .dashboardEventFocusRailReviewStates,
+                    .dashboardEventFocusListReviewStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HowCatchWorksSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Idle explainer',
+                builder: _widgetbook_workspace_dashboard_catalog_home
+                    .dashboardHowCatchWorksSectionReview,
               ),
             ],
           ),

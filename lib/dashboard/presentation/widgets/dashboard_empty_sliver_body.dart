@@ -9,37 +9,42 @@ class DashboardEmptySliverBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverMainAxisGroup(
+    return const SliverMainAxisGroup(
       slivers: [
-        const SliverToBoxAdapter(child: EmptyHeroCard(fullBleed: true)),
-        SliverToBoxAdapter(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: CatchLayout.maxContentWidth,
-              ),
-              child: CatchSectionList.inset(
-                emptyStateOmitted: true,
-                padding: CatchInsets.pageBody.copyWith(
-                  top: CatchSpacing.s5,
-                  bottom: 0,
-                ),
-                children: [
-                  CatchSection.divided(
-                    title:
-                        context.l10n.dashboardDashboardEmptyTitleHowCatchWorks,
-                    first: true,
-                    bodyGap: CatchSpacing.s4,
-                    child: CatchStepList(
-                      steps: _howCatchWorksSteps(context.l10n),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        SliverToBoxAdapter(child: EmptyHeroCard(fullBleed: true)),
+        SliverToBoxAdapter(child: HowCatchWorksSection()),
       ],
+    );
+  }
+}
+
+/// Shared explainer for both the signed-out and signed-in idle Home states.
+class HowCatchWorksSection extends StatelessWidget {
+  const HowCatchWorksSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxWidth: CatchLayout.maxContentWidth,
+        ),
+        child: CatchSectionList.inset(
+          emptyStateOmitted: true,
+          padding: CatchInsets.pageBody.copyWith(
+            top: CatchSpacing.s5,
+            bottom: 0,
+          ),
+          children: [
+            CatchSection.divided(
+              title: context.l10n.dashboardDashboardEmptyTitleHowCatchWorks,
+              first: true,
+              bodyGap: CatchSpacing.s4,
+              child: CatchStepList(steps: _howCatchWorksSteps(context.l10n)),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
