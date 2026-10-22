@@ -101,6 +101,15 @@ test("actual fanout cannot suppress obligations found by independent comparison"
   assert.throws(() => requireComparedTargets(comparison, {...plan, baseSha: "c".repeat(40)}), /Planned base differs/);
 });
 
+test("harness test edits are not selector-control changes", t => {
+  const f = fixture(t);
+  f.write("tool/harness/example_selector.test.mjs", "// assertion-only edit\n");
+  const head = f.commit();
+  assert.equal(compareSelectors({...f, head}).status, "no-selector-control-change");
+  f.write("tool/harness/example_selector.mjs", "// selector source edit\n");
+  assert.equal(compareSelectors({...f, head: f.commit()}).status, "full-validation-required");
+});
+
 for (const file of ["tool/lib/path_glob.mjs", "tool/lib/tool_impact.mjs",
   "tool/lib/repository_snapshot.mjs", "tool/run.mjs", "tool/tools_manifest.json"]) {
   test(`selector comparison and graph agree for ${file}`, t => {

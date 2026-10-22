@@ -1478,7 +1478,7 @@ test("minimum safety obligations cover source, tests, lockfiles and generated ou
 
 test("every selector control input routes to full validation before comparison", () => {
   for (const file of ["tool/lib/path_glob.mjs", "tool/lib/tool_impact.mjs",
-    "tool/lib/repository_snapshot.mjs", "tool/run.mjs",
+    "tool/lib/repository_snapshot.mjs", "tool/run.mjs", "tool/tools_manifest.json",
     "tool/harness.mjs", "tool/harness/compare_selectors.mjs"]) {
     for (const mode of ["pr", "merge_group", "main", "nightly"]) {
       const result = plan(file, mode);
@@ -1489,10 +1489,10 @@ test("every selector control input routes to full validation before comparison",
 });
 
 // PR validation never executes these files, so re-running every product lane
-// adds no coverage. Their own Tools checks and policy validate them; the tool
-// manifest additionally runs the complete Tools matrix (see tool_impact.mjs).
-test("harness tests, release workflows and the tool manifest validate without full fan-out", () => {
-  for (const file of ["tool/tools_manifest.json", "tool/harness/workflow_wiring.test.mjs",
+// adds no coverage; their own Tools checks and policy validate them. The tool
+// manifest stays a selector control because it places checks across lanes.
+test("harness tests and release workflows validate without full fan-out", () => {
+  for (const file of ["tool/harness/workflow_wiring.test.mjs",
     "tool/ci/delivery_core.test.mjs", ".github/workflows/mobile-internal-release.yml",
     ".github/workflows/host-store-rules-release.yml", "tool/ci/host_store_rules_release.mjs",
     ".github/workflows/marketing-website.yml"]) {
@@ -1502,9 +1502,6 @@ test("harness tests, release workflows and the tool manifest validate without fu
       assert.deepEqual(result.operations.ciTargets, ["policy_docs", "tools"], `${file} ${mode}`);
     }
   }
-  const manifest = planAffectedToolChecks({changedPaths: ["tool/tools_manifest.json"],
-    manifest: toolsManifest, componentGraph: graph, mode: "pr"});
-  assert.equal(manifest.mode, "full", "a manifest edit runs every registered check");
 });
 
 // Narrowing is safe only because PR validation never executes those files.
