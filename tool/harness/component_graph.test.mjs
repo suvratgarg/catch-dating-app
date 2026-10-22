@@ -455,9 +455,8 @@ test("Hosting promotion exceptions leave shared and unknown controls full", () =
   const controls = [".github/workflows/_web-hosting-promote.yml",
     "tool/ci/web_hosting_freshness.mjs", "tool/ci/web_hosting_workflow.test.mjs"];
   const broad = [".github/workflows/ci.yml", ".github/workflows/tools-ci.yml",
-    ".github/workflows/unknown-hosting.yml", ".github/workflows/_web-hosting-build.yml",
-    ".github/workflows/host-website.yml", "tool/ci/unknown_hosting.mjs",
-    "tool/ci/finalize_ci_plan.mjs", "tool/ci/required_ci_policy.test.mjs",
+    ".github/workflows/unknown-hosting.yml", "tool/ci/package_web_hosting.mjs",
+    "tool/ci/unknown_hosting.mjs", "tool/ci/finalize_ci_plan.mjs",
     "tool/ci/main_ci_baseline.mjs", "tool/ci/delivery_core.mjs",
     ".github/workflows/_web-hosting-promote-other.yml",
     "tool/ci/web_hosting_freshness_other.mjs",
@@ -554,8 +553,8 @@ test("shared CI controls and unknown workflow or verifier files retain full vali
   for (const file of [
     ".github/workflows/ci.yml", ".github/workflows/tools-ci.yml",
     ".github/actions/setup-flutter/action.yml", ".github/workflows/new-ci.yml",
-    ".github/workflows/mobile-internal-release.yml", "tool/ci/delivery_core.mjs",
-    "tool/ci/delivery_core.test.mjs", "tool/ci/new_backend_verifier.mjs",
+    "tool/ci/generated_inventories.mjs", "tool/ci/delivery_core.mjs",
+    "tool/ci/package_web_hosting.mjs", "tool/ci/new_backend_verifier.mjs",
     "tool/harness/component_graph.json", "tool/ci/toolchain.env",
   ]) {
     assert.deepEqual(plan(file).operations.ciTargets, [...graph.targets].sort(), file);
@@ -1479,7 +1478,7 @@ test("minimum safety obligations cover source, tests, lockfiles and generated ou
 
 test("every selector control input routes to full validation before comparison", () => {
   for (const file of ["tool/lib/path_glob.mjs", "tool/lib/tool_impact.mjs",
-    "tool/lib/repository_snapshot.mjs", "tool/run.mjs", "tool/tools_manifest.json",
+    "tool/lib/repository_snapshot.mjs", "tool/run.mjs",
     "tool/harness.mjs", "tool/harness/compare_selectors.mjs"]) {
     for (const mode of ["pr", "merge_group", "main", "nightly"]) {
       const result = plan(file, mode);
@@ -1487,4 +1486,23 @@ test("every selector control input routes to full validation before comparison",
       assert.deepEqual(result.operations.ciTargets, [...graph.targets].sort(), `${file} ${mode}`);
     }
   }
+});
+
+// PR validation never executes these files, so re-running every product lane
+// adds no coverage. Their own Tools checks and policy validate them; the tool
+// manifest additionally runs the complete Tools matrix (see tool_impact.mjs).
+test("harness tests, release workflows and the tool manifest validate without full fan-out", () => {
+  for (const file of ["tool/tools_manifest.json", "tool/harness/workflow_wiring.test.mjs",
+    "tool/ci/delivery_core.test.mjs", ".github/workflows/mobile-internal-release.yml",
+    ".github/workflows/host-store-rules-release.yml", "tool/ci/host_store_rules_release.mjs",
+    ".github/workflows/marketing-website.yml"]) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const result = plan(file, mode);
+      assert.equal(result.complete, true, `${file} ${mode}`);
+      assert.deepEqual(result.operations.ciTargets, ["policy_docs", "tools"], `${file} ${mode}`);
+    }
+  }
+  const manifest = planAffectedToolChecks({changedPaths: ["tool/tools_manifest.json"],
+    manifest: toolsManifest, componentGraph: graph, mode: "pr"});
+  assert.equal(manifest.mode, "full", "a manifest edit runs every registered check");
 });
