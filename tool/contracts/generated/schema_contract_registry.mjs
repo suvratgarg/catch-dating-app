@@ -57292,7 +57292,8 @@ export const eventSetupReceiptDocumentSchema = {
         "preferences",
         "details",
         "publish",
-        "unpublish"
+        "unpublish",
+        "media"
       ]
     },
     "actorUid": {
@@ -57342,6 +57343,14 @@ export const eventSetupReceiptDocumentSchema = {
       "type": "string",
       "const": "discarded"
     },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,119}$"
+    },
+    "mediaPayloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
     "expectedSetupRevision": {
       "type": "integer",
       "minimum": 1,
@@ -57368,6 +57377,18 @@ export const eventSetupReceiptDocumentSchema = {
             "required": [
               "expectedSetupRevision"
             ]
+          },
+          {
+            "required": [
+              "mediaPayloadHash"
+            ]
+          },
+          {
+            "properties": {
+              "operation": {
+                "const": "media"
+              }
+            }
           }
         ]
       }
@@ -57385,6 +57406,36 @@ export const eventSetupReceiptDocumentSchema = {
       "not": {
         "required": [
           "appliedRevision"
+        ]
+      }
+    },
+    {
+      "required": [
+        "requestId",
+        "mediaPayloadHash"
+      ],
+      "properties": {
+        "operation": {
+          "const": "media"
+        }
+      },
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "appliedRevision"
+            ]
+          },
+          {
+            "required": [
+              "outcome"
+            ]
+          },
+          {
+            "required": [
+              "expectedSetupRevision"
+            ]
+          }
         ]
       }
     }
@@ -256227,6 +256278,31 @@ export const updateEventCallablePayloadSchema = {
       "minLength": 1,
       "maxLength": 180
     },
+    "mediaRecovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "requestId",
+        "expectedMediaHash"
+      ],
+      "description": "Media-only attachment for an already committed create. Replays its eventSetupReceipts media receipt; never edits schedule or setup fields.",
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,119}$"
+        },
+        "expectedMediaHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
     "expectedSetupRevision": {
       "type": "integer",
       "minimum": 1,
@@ -257421,7 +257497,42 @@ export const updateEventCallablePayloadSchema = {
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "mediaRecovery"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "expectedSetupRevision"
+          ]
+        },
+        "properties": {
+          "fields": {
+            "required": [
+              "photoUrl",
+              "eventPhotos"
+            ],
+            "propertyNames": {
+              "enum": [
+                "photoUrl",
+                "eventPhotos"
+              ]
+            },
+            "properties": {
+              "eventPhotos": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 };
 
 export const cancelEventCallablePayloadSchema = {

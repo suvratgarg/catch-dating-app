@@ -72447,11 +72447,17 @@ abstract final class CatchContractConstraints {
     maximum: 999999999,
   );
 
+  static const eventSetupReceiptDocumentMediaPayloadHash = CatchContractFieldConstraints(
+    path: 'eventSetupReceiptDocument.mediaPayloadHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventSetupReceiptDocumentOperation = CatchContractFieldConstraints(
     path: 'eventSetupReceiptDocument.operation',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['create', 'update', 'preferences', 'details', 'publish', 'unpublish'],
+    enumValues: <String>['create', 'update', 'preferences', 'details', 'publish', 'unpublish', 'media'],
   );
 
   static const eventSetupReceiptDocumentOrganizerId = CatchContractFieldConstraints(
@@ -72472,6 +72478,12 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventSetupReceiptDocumentRequestId = CatchContractFieldConstraints(
+    path: 'eventSetupReceiptDocument.requestId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,119}\$',
   );
 
   static const eventShareIntentDocumentActorKind = CatchContractFieldConstraints(
@@ -160344,6 +160356,28 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const updateEventCallablePayloadMediaRecoveryExpectedMediaHash = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.mediaRecovery.expectedMediaHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const updateEventCallablePayloadMediaRecoveryOrganizerId = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.mediaRecovery.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventCallablePayloadMediaRecoveryRequestId = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.mediaRecovery.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,119}\$',
+  );
+
   static const updateEventChatAccessCallablePayloadAction = CatchContractFieldConstraints(
     path: 'updateEventChatAccessCallablePayload.action',
     required: true,
@@ -180135,10 +180169,12 @@ abstract final class CatchContractConstraints {
     'eventSetupReceiptDocument.createdAt._seconds': eventSetupReceiptDocumentCreatedAtSeconds,
     'eventSetupReceiptDocument.eventId': eventSetupReceiptDocumentEventId,
     'eventSetupReceiptDocument.expectedSetupRevision': eventSetupReceiptDocumentExpectedSetupRevision,
+    'eventSetupReceiptDocument.mediaPayloadHash': eventSetupReceiptDocumentMediaPayloadHash,
     'eventSetupReceiptDocument.operation': eventSetupReceiptDocumentOperation,
     'eventSetupReceiptDocument.organizerId': eventSetupReceiptDocumentOrganizerId,
     'eventSetupReceiptDocument.outcome': eventSetupReceiptDocumentOutcome,
     'eventSetupReceiptDocument.requestHash': eventSetupReceiptDocumentRequestHash,
+    'eventSetupReceiptDocument.requestId': eventSetupReceiptDocumentRequestId,
     'eventShareIntentDocument.actorKind': eventShareIntentDocumentActorKind,
     'eventShareIntentDocument.actorUid': eventShareIntentDocumentActorUid,
     'eventShareIntentDocument.channelHint': eventShareIntentDocumentChannelHint,
@@ -192225,6 +192261,9 @@ abstract final class CatchContractConstraints {
     'updateEventCallablePayload.fields.startingPointLat': updateEventCallablePayloadFieldsStartingPointLat,
     'updateEventCallablePayload.fields.startingPointLng': updateEventCallablePayloadFieldsStartingPointLng,
     'updateEventCallablePayload.fields.startTimeMillis': updateEventCallablePayloadFieldsStartTimeMillis,
+    'updateEventCallablePayload.mediaRecovery.expectedMediaHash': updateEventCallablePayloadMediaRecoveryExpectedMediaHash,
+    'updateEventCallablePayload.mediaRecovery.organizerId': updateEventCallablePayloadMediaRecoveryOrganizerId,
+    'updateEventCallablePayload.mediaRecovery.requestId': updateEventCallablePayloadMediaRecoveryRequestId,
     'updateEventChatAccessCallablePayload.action': updateEventChatAccessCallablePayloadAction,
     'updateEventChatAccessCallablePayload.closesAtMillis': updateEventChatAccessCallablePayloadClosesAtMillis,
     'updateEventChatAccessCallablePayload.eventId': updateEventChatAccessCallablePayloadEventId,

@@ -4,6 +4,9 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
+import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -22,6 +25,7 @@ import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/events/domain/saved_event.dart'
     as saved_domain;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/hosts/domain/event_photo_recovery.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -310,11 +314,16 @@ Future<void> pumpEventsTestApp(
   Widget child, {
   Iterable overrides = const [],
   String? signedInUid = 'runner-1',
+  CommandJournalStorage? recoveryStorage,
   EventViewerState? viewerState,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        commandJournalStorageProvider.overrideWith((ref) {
+          final storage = recoveryStorage ?? MemoryCommandJournalStorage();
+          return () async => storage;
+        }),
         if (signedInUid != null)
           uidProvider.overrideWith((ref) => Stream.value(signedInUid)),
         if (viewerState != null && signedInUid != null)
@@ -357,6 +366,13 @@ class FakeEventRepository extends Fake implements EventRepository {
   String generatedId = 'generated-event-id';
   String generatedBroadcastRequestId = 'generated-broadcast-request-id';
   Event? createdEvent;
+  int createEventCallCount = 0;
+  final mediaRequests =
+      <({Event event, String requestId, String expectedMediaHash})>[];
+  bool loseMediaAcknowledgement = false;
+  final _mediaWireHashes = <String, String>{};
+  final _mediaReceipts = <String, Map<Object?, Object?>>{};
+  Future<void> Function()? duringCreate;
   Object? createError;
   Object? cancelError;
   Object? hostCancelError;
@@ -413,6 +429,7 @@ class FakeEventRepository extends Fake implements EventRepository {
   String? selfCheckedInEventId;
   String? selfCheckedInVenueSessionToken;
   Event? fetchedEvent;
+  Object? fetchEventError;
   EventSuccessDefaults? createdEventSuccessDefaults;
   ExternalEventOriginInput? createdExternalOrigin;
   EventRuntimeWalkInPolicy? createdRuntimeWalkInPolicy;
@@ -439,10 +456,12 @@ class FakeEventRepository extends Fake implements EventRepository {
     ExternalEventOriginInput? externalOrigin,
     EventRuntimeWalkInPolicy? runtimeWalkInPolicy,
   }) async {
+    createEventCallCount++;
     if (createError != null) {
       throw createError!;
     }
     createdEvent = event;
+    await duringCreate?.call();
     createdEventInviteCode = inviteCode;
     createdEventSuccessDefaults = eventSuccessDefaults;
     createdExternalOrigin = externalOrigin;
@@ -450,7 +469,10 @@ class FakeEventRepository extends Fake implements EventRepository {
   }
 
   @override
-  Future<Event?> fetchEvent(String id) async => fetchedEvent;
+  Future<Event?> fetchEvent(String id) async {
+    if (fetchEventError case final error?) throw error;
+    return fetchedEvent;
+  }
 
   @override
   Stream<Event?> watchEvent(String id) => Stream.value(watchedEvents[id]);
@@ -505,6 +527,73 @@ class FakeEventRepository extends Fake implements EventRepository {
     }
     deletedEventId = eventId;
   }
+
+  @override
+  Future<Map<Object?, Object?>> attachEventPhotos({
+    required Event event,
+    required String requestId,
+    required String expectedMediaHash,
+  }) async {
+    mediaRequests.add((
+      event: event,
+      requestId: requestId,
+      expectedMediaHash: expectedMediaHash,
+    ));
+    updateEventCallCount++;
+    if (updateEventError != null) throw updateEventError!;
+    await updateEventCompleter?.future;
+    final wireHash = eventPhotoRecoveryHash([
+      event.id,
+      expectedMediaHash,
+      [
+        for (final photo in event.eventPhotos)
+          [
+            photo.id,
+            photo.url,
+            photo.storagePath,
+            photo.position,
+            photo.createdAt.microsecondsSinceEpoch,
+            photo.updatedAt.microsecondsSinceEpoch,
+          ],
+      ],
+    ]);
+    if (_mediaReceipts[requestId] case final receipt?) {
+      if (_mediaWireHashes[requestId] != wireHash) {
+        throw const ValidationException(
+          'Immutable media payload changed',
+          code: 'aborted',
+        );
+      }
+      return receipt;
+    }
+    updatedEvent = event;
+    fetchedEvent = event;
+    final receipt = <Object?, Object?>{
+      'actorUid': mediaActorUid,
+      'organizerId': event.clubId,
+      'eventId': event.id,
+      'requestId': requestId,
+      'payloadHash': eventPhotoRecoveryHash([
+        mediaActorUid,
+        event.clubId,
+        event.id,
+        requestId,
+        expectedMediaHash,
+        [
+          for (final photo in event.eventPhotos)
+            [photo.id, photo.url, photo.storagePath, photo.position],
+        ],
+      ]),
+    };
+    _mediaWireHashes[requestId] = wireHash;
+    _mediaReceipts[requestId] = receipt;
+    if (loseMediaAcknowledgement && mediaRequests.length == 1) {
+      throw TimeoutException('media acknowledgement lost');
+    }
+    return receipt;
+  }
+
+  String mediaActorUid = 'runner-1';
 
   @override
   Future<void> updateEventDetails({

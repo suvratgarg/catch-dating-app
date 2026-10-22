@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
+import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -26,8 +31,11 @@ import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/hosts/data/event_photo_recovery_journal.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_event_roster_insights.dart';
+import 'package:catch_dating_app/hosts/domain/event_photo_recovery.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';
@@ -38,6 +46,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dar
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_participants_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_section.dart';
+import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -49,8 +58,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../clubs/clubs_test_helpers.dart' show FakeImageUploadRepository;
 import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 import 'host_control_room_test_helpers.dart';
@@ -68,6 +79,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
     });
 
+    runEventPhotoRecoveryUITests();
     _registerCreateEventWizardFlowTests();
     _registerCreateEventSavedVenueTests();
 
@@ -863,6 +875,7 @@ EventDraft _buildEventDraft({
 Future<void> _pumpCreateEventFlow(
   WidgetTester tester, {
   Iterable overrides = const [],
+  CommandJournalStorage? recoveryStorage,
   bool alwaysUse24HourFormat = false,
   DateTime Function()? now,
   Club? clubOverride,
@@ -926,6 +939,10 @@ Future<void> _pumpCreateEventFlow(
     ProviderScope(
       overrides: [
         uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+        commandJournalStorageProvider.overrideWith((ref) {
+          final storage = recoveryStorage ?? MemoryCommandJournalStorage();
+          return () async => storage;
+        }),
         watchOrganizerEventVenuesProvider(
           club.id,
         ).overrideWith((ref) => Stream.value(savedVenues)),

@@ -102,8 +102,9 @@ Commit the exact source tree, publish the branch through ordinary Git/PR
 tooling, and ask CI to verify that head. Cross-environment handoff uses that
 commit, not a downloaded/generated snapshot whose origin or completeness is
 unverified. If push is unavailable, retain the commit and report the exact
-publication barrier to the integration owner. Every ready PR runs full
-CI, and the merge queue validates the combined source before `main` moves. A
+publication barrier to the integration owner. Every ready PR runs CI without
+the queue-only macOS and app-build lanes, and the merge queue validates the
+combined source with every lane before `main` moves. A
 draft intentionally skips CI until it is marked ready: report the draft state as
 the blocker, give the integration owner the readiness action, and do not call
 the skipped lanes test failures. A disconnected
