@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.33.1
-updated: 2026-10-20
+version: 0.34.0
+updated: 2026-10-22
 owner: web_platform
 status: active
 ---
@@ -391,6 +391,59 @@ presentation adapters consumed by the rendered sections. The current contract
 contains 123 configurations across 16 surfaces, including source-aware
 read-only website event detail. Adding a configuration without both
 implementation and proof fails strict mode.
+
+## Public Data Layer
+
+The public website reads Firestore only on the server, through these layers:
+
+| Layer | Owns | Location |
+|---|---|---|
+| Reader | The read-only Firestore surface, `PublicReader`. `firebase-admin`'s Firestore satisfies it; tests pass an in-memory reader. | `website/src/server/repositories/publicReader.ts` |
+| Repositories | One module per entity: bounded queries, fail-closed bounds, projection to the public DTO | `website/src/server/repositories/*Repository.ts` |
+| Assemblers | One function per route shape, composing repositories into a `PublicCatalog` | `website/src/server/publicCatalog.ts` |
+| Route layer | Choosing the assembler for a path, metadata, status codes and redirects | `website/src/server/publicRoute.ts`, `website/proxy.ts` |
+| Browser | Rendering the server's catalog; client controllers own interaction only | `website/src/app/next`, `website/src/features` |
+
+- Repositories are the only code that names a collection or a field. Every
+  query is bounded, and crossing a bound throws
+  `PUBLIC_CATALOG_READ_BOUND_EXCEEDED` instead of truncating.
+- Repositories return projected public DTOs (`projectPublicOrganizer`,
+  `projectLivePublicCatchEvent`, `publicExternalEvent`, `projectPublicReview`).
+  Raw documents never leave a repository.
+- A new public query uses equality filters only, or an index already deployed
+  to production. Equality-only filters need no composite index.
+- A per-route assembler returns the same listing and event record the full
+  catalog would. `website/src/server/publicCatalog.test.ts` enforces that, and
+  that detail routes never read a whole events collection.
+
+| Route | Assembler | Reads |
+|---|---|---|
+| `/`, `/explore/`, `/organizers/`, `/claim/`, sitemap | `assemblePublicCatalog` | Published organizers, Catch events and external events, at most 400 each |
+| `/organizers/<slug>/` and legacy aliases | `assembleOrganizerDetailCatalog` | One to three path reads, that organizer's events (at most 200 per kind, Catch events also by legacy `clubId`), three trust reads for recommendations, bounded reviews |
+| `/events/<id>/` | `assembleEventDetailCatalog` | Two document gets, the organizer plus a path-uniqueness read, bounded reviews |
+
+The detail assemblers are tested but not yet wired. Today every live route
+uses `assemblePublicCatalog`, and `proxy.ts` and the page each run it, so one
+page view performs two full catalog reads. Wiring changes `publicRoute.ts`,
+`PublicPage.tsx`, `proxy.ts` and `publicCatalogResponse.ts` together, so the
+proxy's status and redirect decision and the rendered page use the same
+assembler.
+
+Freshness is unchanged by this layer: there is no cross-request or process
+cache. Unpublishing takes effect on the next server request, and open tabs
+refresh `/api/public-catalog` every 25 seconds and withhold content once a
+read is 30 seconds old (`website/scripts/next/lifecycleAcceptance.mjs`).
+Caching is a separate decision with two forms: accept a bounded staleness
+window for withdrawals, or invalidate from the backend when a listing or event
+is published or withdrawn. The second needs backend Functions delivery.
+Neither is adopted.
+
+Browser code reaches callables through `website/src/firebase.ts`, one module
+of about 84 exports spanning forms, the event runtime, claims, reviews,
+messaging preferences and checkout. Splitting it into one service module per
+backend domain, with `firebase.ts` reduced to runtime bootstrap, needs a
+change to `tool/web/check_website_import_boundaries.mjs`, which today allows
+only `firebase.ts` to import the generated callable types.
 
 ## Current Stack
 
