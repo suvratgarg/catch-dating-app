@@ -64,12 +64,20 @@ class _SwitchingQuery implements HostResponseQueryGateway {
       );
 }
 
+/// Scripted legacy reads shared by every request family. Riverpod gives each
+/// family element its own notifier, so tests must not reuse one instance.
+class _LegacyResponseScript {
+  Completer<HostFormResponsesState>? nextResponse;
+}
+
 class _SwitchingLegacyResponses extends HostFormResponsesController {
-  Completer<HostFormResponsesState>? _nextResponse;
+  _SwitchingLegacyResponses([this._script]);
+
+  final _LegacyResponseScript? _script;
 
   @override
   Future<HostFormResponsesState> build(HostFormResponseListRequest request) =>
-      _nextResponse?.future ??
+      _script?.nextResponse?.future ??
       Future.value(
         HostFormResponsesState(
           responses: [response('Maya', 'response-one')],
