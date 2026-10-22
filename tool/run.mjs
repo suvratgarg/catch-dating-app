@@ -268,12 +268,14 @@ async function affectedToolChecks(args) {
   const changedPaths = options.paths ?? changedPathsSince({...options, committedOnly});
   const importGraph = options.importOwners ?
     JSON.parse(fs.readFileSync(options.importOwners, "utf8")) : null;
+  const baseManifest = options.paths || options.full ? null : manifestAt(options.base);
   const plan = planAffectedToolChecks({
     changedPaths,
     manifest,
     componentGraph,
     mode: options.mode,
     full: options.full,
+    baseManifest,
     importOwners: importGraph && !options.full ?
       new Map(Object.entries(importGraph.owners).map(([file, ids]) => [file, new Set(ids)])) : null,
   });
@@ -426,6 +428,12 @@ function validateManifest(manifest, componentGraph) {
       {required: false, nonEmpty: true},
     );
     validateStringArrayField(
+      manifest.ciImpact.manifestCheckIds,
+      "ciImpact.manifestCheckIds",
+      errors,
+      {required: false, nonEmpty: true},
+    );
+    validateStringArrayField(
       manifest.ciImpact.importOwnerCheckIds,
       "ciImpact.importOwnerCheckIds",
       errors,
@@ -455,6 +463,7 @@ function validateManifest(manifest, componentGraph) {
   const referencedIds = [
     ...(manifest.ciImpact?.mandatoryCheckIds ?? []),
     ...(manifest.ciImpact?.importOwnerCheckIds ?? []),
+    ...(manifest.ciImpact?.manifestCheckIds ?? []),
     ...manifest.tools.flatMap((tool) => tool.alsoCheckIds ?? []),
   ];
   for (const id of new Set(referencedIds)) {
@@ -473,6 +482,12 @@ function validateManifest(manifest, componentGraph) {
   }
 
   return errors;
+}
+
+function manifestAt(ref) {
+  const result = spawnSync("git", ["show", `${ref}:tool/tools_manifest.json`],
+    {cwd: repoRoot, encoding: "utf8", maxBuffer: 16 * 1024 * 1024});
+  return result.status === 0 ? JSON.parse(result.stdout) : null;
 }
 
 function loadComponentGraph() {

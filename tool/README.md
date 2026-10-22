@@ -79,7 +79,10 @@ the dependency-cruiser pinned in `tool/impact/` (`npm ci --prefix tool/impact`),
 and `affected-tools --import-owners <file>` reads that output. A path owned only
 through imports also runs `ciImpact.importOwnerCheckIds`, because imports cannot
 show files read as text. Shared helpers in `ciImpact.importGraphPaths` run the
-full matrix whenever the graph is absent or names no owner. Canonical Harness control-plane paths come from
+full matrix whenever the graph is absent or names no owner. An edit to
+`tool/tools_manifest.json` runs only the tools whose entries changed plus
+`ciImpact.manifestCheckIds`; a `ciImpact` edit, or a plan without a base
+revision, still runs the full matrix. Canonical Harness control-plane paths come from
 `component_graph.json#repo.harness`; the tool manifest declares only additional
 full-matrix paths. Terminal graph classifications override broad Harness
 patterns. Shared control-plane changes, unowned lane inputs, and explicit full

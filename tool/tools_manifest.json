@@ -24,6 +24,9 @@
     ],
     "importOwnerCheckIds": [
       "tool:runner"
+    ],
+    "manifestCheckIds": [
+      "tool:runner"
     ]
   },
   "tools": [
