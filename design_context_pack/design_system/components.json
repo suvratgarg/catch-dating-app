@@ -6508,6 +6508,189 @@
       }
     },
     {
+      "id": "catch.text",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Every variant, recolor, line clamp and alignment renders in the generated Widgetbook contract; parity tests pin the web roles to CatchTextStyles."
+      },
+      "name": "CatchText",
+      "status": "active",
+      "kind": "primitive",
+      "tier": "T1",
+      "aliases": [
+        "Typography",
+        "Paragraph",
+        "BodyText",
+        "HeadingText",
+        "TextBlock"
+      ],
+      "summary": "Text in one function-family CatchTextStyles role: headings, body copy, supporting copy, labels and metrics.",
+      "dart": {
+        "symbol": "CatchText",
+        "file": "packages/catch_ui/lib/src/primitives/catch_text.dart",
+        "constructors": [
+          "CatchText"
+        ]
+      },
+      "react": {
+        "symbol": "CatchText",
+        "file": "packages/web-ui/src/components/CatchText.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/foundations.stories.tsx",
+          "exportName": "Text",
+          "states": [
+            "roles",
+            "dark",
+            "recolored",
+            "clamped",
+            "aligned",
+            "heading-element"
+          ]
+        },
+        "notes": "React takes the text as children so inline links and emphasis stay inside the role, an as prop for the semantic element, and color as a theme role name."
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Text",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Text",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "data",
+            "type": "string",
+            "required": true,
+            "dartType": "String",
+            "tsType": "string",
+            "notes": "Positional in Flutter; React passes it as children."
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "required": true,
+            "dartType": "CatchTextVariant",
+            "tsType": "CatchTextVariant",
+            "values": [
+              "headline",
+              "titleL",
+              "sectionTitle",
+              "titleS",
+              "bodyLead",
+              "bodyL",
+              "bodyM",
+              "bodyS",
+              "supporting",
+              "supportingStrong",
+              "fieldLabel",
+              "statusLabel",
+              "metric"
+            ]
+          },
+          {
+            "name": "color",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?",
+            "tsType": "CatchTextColor",
+            "notes": "Overrides the role's default color; React names the theme role (ink2, danger)."
+          },
+          {
+            "name": "maxLines",
+            "type": "number",
+            "required": false,
+            "dartType": "int?",
+            "tsType": "number",
+            "notes": "Ends the last line with an ellipsis."
+          },
+          {
+            "name": "textAlign",
+            "type": "enum",
+            "required": false,
+            "dartType": "TextAlign?",
+            "tsType": "\"start\" | \"center\" | \"end\"",
+            "values": [
+              "start",
+              "center",
+              "end"
+            ]
+          }
+        ],
+        "states": [
+          "roles",
+          "recolored",
+          "clamped",
+          "aligned"
+        ],
+        "slots": [],
+        "tokens": [
+          "font.family.function",
+          "theme.light.color.ink",
+          "theme.light.color.ink2"
+        ],
+        "dartRoles": [
+          "CatchTextVariant",
+          "CatchTextStyles"
+        ],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use for headings, body and supporting copy, labels and metrics in their CatchTextStyles role; choose the heading element by document outline, not size.",
+          "CatchText is the canonical Flutter text API. Moving Text(style: CatchTextStyles.<role>) call sites onto it, with a shrink-only lint steer, is tracked in Linear CAT-211.",
+          "Kickers and mono metadata stay with catch.typography (CatchKickerText, CatchMetadataText)."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.text",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.text"
+      },
+      "level": "L2",
+      "roleNoun": "Text",
+      "naming": {
+        "useCase": "",
+        "comparedWith": [
+          "catch.typography"
+        ],
+        "reason": "The base text role renders the function-family CatchTextStyles roles in sentence case. KickerText forces uppercase editorial eyebrows and MetadataText is single-line mono data; both stay specialised members of catch.typography."
+      }
+    },
+    {
       "id": "catch.mini_bar_chart",
       "verification": {
         "vehicle": "widgetbook-contract",
@@ -10283,7 +10466,7 @@
       "name": "CatchPageBody",
       "status": "active",
       "kind": "pattern",
-      "tier": "T3",
+      "tier": "T1",
       "aliases": [
         "PageContent",
         "ScreenBody",
@@ -10301,6 +10484,29 @@
           "CatchPageBody.sliver",
           "CatchPageBody.slivers"
         ]
+      },
+      "react": {
+        "symbol": "CatchPageBody",
+        "file": "packages/web-ui/src/components/CatchPageBody.tsx",
+        "api": "styled",
+        "additionalSymbols": [
+          "CatchGap",
+          "CatchInset"
+        ],
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/foundations.stories.tsx",
+          "exportName": "Layout",
+          "states": [
+            "page-insets",
+            "constrained-width",
+            "no-gutter",
+            "custom-insets",
+            "gap-roles",
+            "inset-roles"
+          ]
+        },
+        "notes": "CatchGap and CatchInset carry the CatchGaps and CatchInsets roles on the web, with the same role names as prop values. Flutter composes Column/Row spacing and Padding with those constants, which catch_prefer_semantic_insets governs, so it has no widget of either name (Phase 7 decision, 2026-10-23). They are recorded here because a styled record must reuse its dart symbol, so a concept anchored on the CatchGaps or CatchInsets token class could not carry them."
       },
       "design": {
         "figma": {
@@ -10324,32 +10530,40 @@
             "name": "child",
             "type": "widget",
             "required": true,
-            "dartType": "Widget"
+            "dartType": "Widget",
+            "tsType": "ReactNode"
           },
           {
             "name": "gutter",
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "padding",
             "type": "object",
             "required": false,
-            "dartType": "EdgeInsetsGeometry?"
+            "dartType": "EdgeInsetsGeometry?",
+            "tsType": "CatchInsetPadding",
+            "token": "inset"
           },
           {
             "name": "pt",
             "type": "number",
             "required": false,
-            "dartType": "double?"
+            "dartType": "double?",
+            "tsType": "CatchSpacingStep",
+            "token": "space"
           },
           {
             "name": "pb",
             "type": "number",
             "required": false,
-            "dartType": "double?"
+            "dartType": "double?",
+            "tsType": "CatchSpacingStep",
+            "token": "space"
           },
           {
             "name": "variant",
@@ -10361,7 +10575,17 @@
               "fixed"
             ],
             "dartType": "CatchPageBodyVariant",
+            "tsType": "CatchPageBodyVariant",
             "notes": "Screen recipe only. Fixed content does not acquire a scroll owner."
+          },
+          {
+            "name": "constrainToContentWidth",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "tsType": "boolean",
+            "notes": "Slivers recipe in Flutter; bounds the body to the page content width and centres it."
           },
           {
             "name": "mode",
@@ -10372,6 +10596,7 @@
               "fullBleed"
             ],
             "dartType": "CatchPageBodyMode",
+            "tsType": "CatchPageBodyMode",
             "notes": "Slivers recipe only; explicitly selects standard page insets or an edge-owned body."
           },
           {
@@ -10379,6 +10604,7 @@
             "type": "list",
             "required": true,
             "dartType": "List<Widget>",
+            "tsType": "ReactNode",
             "notes": "Slivers recipe only; receives sliver content under one semantic geometry owner."
           }
         ],
@@ -11154,6 +11380,22 @@
           "CatchSectionList.panes"
         ]
       },
+      "react": {
+        "symbol": "CatchSectionList",
+        "file": "packages/web-ui/src/components/CatchSectionList.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/foundations.stories.tsx",
+          "exportName": "SectionList",
+          "states": [
+            "plain-sections",
+            "empty",
+            "empty-omitted"
+          ]
+        },
+        "notes": "React implements the plain recipe. Inset, responsive, page and panes follow when a web surface first needs them."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -11209,7 +11451,8 @@
             "type": "number",
             "required": false,
             "dartType": "double",
-            "tsType": "number",
+            "tsType": "CatchGapSize",
+            "token": "gap",
             "notes": "Plain defaults to CatchGaps.section; inset and sliver default to zero so sections own their delimiters."
           },
           {
@@ -11247,7 +11490,8 @@
             "type": "number",
             "required": false,
             "dartType": "double",
-            "tsType": "number",
+            "tsType": "CatchGapSize",
+            "token": "gap",
             "default": "CatchGaps.section",
             "notes": "Responsive and page section rhythm."
           },
@@ -11256,7 +11500,8 @@
             "type": "number",
             "required": false,
             "dartType": "double",
-            "tsType": "number",
+            "tsType": "CatchGapSize",
+            "token": "gap",
             "default": "CatchGaps.section",
             "notes": "Responsive and page split-lane rhythm."
           },
@@ -11265,7 +11510,8 @@
             "type": "number",
             "required": false,
             "dartType": "double",
-            "tsType": "number",
+            "tsType": "CatchSpacingStep",
+            "token": "space",
             "default": "CatchSpacing.screenPb",
             "notes": "Page only; the shared terminal-padding owner adds shell clearance."
           },
