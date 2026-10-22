@@ -334,7 +334,10 @@ test("Rules receipts survive test failure but cannot run after plan refusal", ()
       assert.equal(actual, outcome === "success", `${outcome}/${laterTestResult}`);
     }
   }
-  assert.match(rules, /name: backend-integration-execution-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}-\$\{\{ github.sha \}\}/);
+  assert.match(rules, /name: backend-integration-execution-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}-\$\{\{ github.sha \}\}-shard-\$\{\{ matrix.shard \}\}\n/);
+  // Each shard proves its own disjoint subset; together they cover the strict list.
+  assert.match(rules, /^      matrix:\n        shard: \[1, 2, 3\]$/m);
+  assert.match(rules, /^          CATCH_TEST_SHARD: \$\{\{ matrix.shard \}\}\/3$/m);
   assert.match(rules, /path: build\/ci\/backend-integration-execution.json\n          if-no-files-found: error/);
   assert.equal(steps.filter((step) => step.if && /always\(|failure\(|!cancelled\(/.test(step.if)).length, 1);
 });

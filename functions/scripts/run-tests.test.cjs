@@ -8,14 +8,17 @@ const {spawnSync} = require("node:child_process");
 const {test} = require("node:test");
 
 const runner = require.resolve("./run-tests.cjs");
-function fixture(source, {emulators = true, files = ["case.test.cjs"]} = {}) {
+function fixture(source, {emulators = true, files = ["case.test.cjs"], extraFiles = {}, shard} = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-strict-tests-"));
   try {
     fs.writeFileSync(path.join(root, "case.test.cjs"), source);
+    for (const [name, extra] of Object.entries(extraFiles)) fs.writeFileSync(path.join(root, name), extra);
     const env = {...process.env};
     delete env.NODE_TEST_CONTEXT;
     delete env.FIRESTORE_EMULATOR_HOST;
     delete env.FIREBASE_STORAGE_EMULATOR_HOST;
+    delete env.CATCH_TEST_SHARD;
+    if (shard) env.CATCH_TEST_SHARD = shard;
     if (emulators) {
       env.FIRESTORE_EMULATOR_HOST = "127.0.0.1:1";
       env.FIREBASE_STORAGE_EMULATOR_HOST = "127.0.0.1:2";
@@ -69,6 +72,32 @@ test("missing emulators fail before test code runs", () => {
   assert.equal(result.status, 1);
   assert.match(result.stderr, /FIRESTORE_EMULATOR_HOST is required/u);
   assert.doesNotMatch(result.stderr, /should not execute/u);
+});
+
+test("shards partition the strict list round-robin and reject unusable specs", () => {
+  const {shardFiles} = require(runner);
+  const files = ["a", "b", "c", "d", "e", "f", "g"];
+  const shards = [1, 2, 3].map((index) => shardFiles(files, `${index}/3`));
+  assert.deepEqual(shards.map((entry) => entry.files), [["a", "d", "g"], ["b", "e"], ["c", "f"]]);
+  assert.deepEqual(shards[0].shard, {index: 1, total: 3, listed: 7});
+  assert.deepEqual(shardFiles(files, undefined), {files, shard: null});
+  for (const spec of ["0/3", "4/3", "1/0", "a/b", "1-3", " 1/3"]) {
+    assert.throws(() => shardFiles(files, spec), /Invalid CATCH_TEST_SHARD/u, spec);
+  }
+  assert.throws(() => shardFiles(["a", "b"], "3/3"), /selects no backend integration tests/u);
+});
+
+test("a shard executes and proves only its own files", () => {
+  const passing = "require('node:test').test('owned', () => {});";
+  const result = fixture("throw new Error('other shard must not execute');", {
+    files: ["case.test.cjs", "second.test.cjs"], extraFiles: {"second.test.cjs": passing}, shard: "2/2"});
+  assert.equal(result.status, 0, result.stderr);
+  assert.doesNotMatch(result.stderr, /other shard must not execute/u);
+  const evidence = JSON.parse(result.stdout.trim().split("\n").at(-1));
+  assert.deepEqual(evidence.shard, {index: 2, total: 2, listed: 2});
+  assert.equal(evidence.selected.length, 1);
+  assert.match(evidence.selected[0], /second\.test\.cjs$/u);
+  assert.deepEqual(evidence.executed.map((event) => event.name), ["owned"]);
 });
 
 test("empty and duplicate selections fail before execution", () => {

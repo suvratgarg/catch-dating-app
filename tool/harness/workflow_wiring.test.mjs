@@ -1308,9 +1308,14 @@ test("Widgetbook first pass selects every package suite and preserves golden obl
   assert.equal(steps[first].run, "(cd widgetbook && flutter test --concurrency=1 test)");
   assert.equal(steps[second].run, "(cd widgetbook && flutter test --concurrency=1 test/primitive_goldens_test.dart)");
   assert.equal(steps.filter((step) => step.run === steps[first].run).length, 1);
-  for (const name of [steps[first].name, steps[second].name, "Flutter goldens (0.30% raster tolerance)"]) {
+  for (const name of [steps[first].name, "Flutter goldens (0.30% raster tolerance)"]) {
     assert.doesNotMatch(namedStep(source, name), /(?:if:|continue-on-error:|--update-goldens)/u);
   }
+  // The repeat render is a corpus property, checked by nightly full validation only.
+  const determinism = namedStep(source, steps[second].name);
+  assert.match(determinism,
+    /^        if: \$\{\{ github\.event_name == 'schedule' \|\| github\.event_name == 'workflow_dispatch' \}\}$/mu);
+  assert.doesNotMatch(determinism, /(?:continue-on-error:|--update-goldens)/u);
   assert.equal(steps.find((step) => step.name === "Flutter goldens (0.30% raster tolerance)").run,
     "flutter test --concurrency=1 test/goldens");
   const upload = namedStep(source, "Retain golden failure diffs");
