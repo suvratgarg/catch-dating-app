@@ -4,7 +4,8 @@ import path from "node:path";
 import test from "node:test";
 import {FieldValue, Timestamp, type Firestore} from "firebase-admin/firestore";
 import ts from "typescript";
-import {hostCampaignLabels, prepareHostAttribution, expireHostAttribution,
+import {drainWithdrawnHostAttribution, hostCampaignLabels,
+  prepareHostAttribution, expireHostAttribution,
   withdrawHostAttribution} from "./attribution";
 import {newHostConsentAuthority} from "./consentPolicy";
 
@@ -46,7 +47,8 @@ test("old, revoked, mismatched and disabled permissions cannot capture", () => {
     {consentId: "b".repeat(64)}, {eventId: "client-submitted"},
     {now: now - 1}, {now: authority.expiresAt},
     {consentDocument: {consent: {analytics: true}}},
-    {consentDocument: {...consentDocument, status: "revoked"}},
+    {consentDocument: {...consentDocument, status: "revoked",
+      attributionCleanupPending: true}},
     {consentDocument: {...consentDocument, authority: {...authority,
       analytics: false}}}]) {
     assert.equal(prepareHostAttribution({...input, ...changed}), null);
@@ -136,4 +138,120 @@ test("withdrawal and expiry clear only the matching snapshot, rechecking rows",
     assert.equal(await withdrawHostAttribution(db, consentId), 0);
     assert.equal(await withdrawHostAttribution(db, "b".repeat(64)), 1);
     assert.equal(await withdrawHostAttribution(db, "invalid"), 0);
+  });
+
+/** Applies equality/range filters and limits like Firestore so the bounded
+ * pages are real, not stubbed. Document order is stable insertion order. */
+function memoryFirestore(collections: Record<string,
+  Map<string, Record<string, unknown>>>) {
+  const read = (row: Record<string, unknown>, field: string) =>
+    field.split(".").reduce<unknown>((value, key) =>
+      value && typeof value === "object" ?
+        (value as Record<string, unknown>)[key] : undefined, row);
+  const refs = (name: string, id: string) => ({id, path: `${name}/${id}`});
+  const rowOf = (ref: {path: string}) => {
+    const [name, id] = ref.path.split("/");
+    return collections[name].get(id);
+  };
+  return {
+    collection: (name: string) => ({
+      where: (field: string, op: string, value: unknown) => ({
+        limit: (limit: number) => ({get: async () => {
+          assert.ok(limit > 0 && limit <= 500);
+          const docs = [...collections[name]].filter(([, row]) => {
+            const actual = read(row, field);
+            return op === "==" ? actual === value :
+              typeof actual === "number" && actual <= (value as number);
+          }).slice(0, limit).map(([id]) => ({id, ref: refs(name, id)}));
+          return {docs, size: docs.length};
+        }}),
+      }),
+    }),
+    runTransaction: async (run: (tx: unknown) => Promise<unknown>) => run({
+      get: async (ref: {path: string}) => {
+        const row = rowOf(ref);
+        return {exists: row !== undefined, data: () => row};
+      },
+      update: (ref: {path: string}, patch: Record<string, unknown>) => {
+        const row = rowOf(ref)!;
+        for (const [key, value] of Object.entries(patch)) {
+          if (value instanceof FieldValue) delete row[key];
+          else row[key] = value;
+        }
+      },
+    }),
+  } as unknown as Firestore;
+}
+
+test("a 501st withdrawn snapshot is erased by scheduled cleanup before expiry",
+  async () => {
+    const withdrawn = "c".repeat(64);
+    const tombstone = {schemaVersion: 1, classification: "sales_private",
+      consentId: withdrawn, status: "revoked",
+      authority: {...authority, revokedAt: now},
+      createdAt: Timestamp.fromMillis(now - 1000),
+      updatedAt: Timestamp.fromMillis(now),
+      expiresAt: Timestamp.fromMillis(now + 90 * 86400000),
+      attributionCleanupPending: true};
+    const intents = new Map<string, Record<string, unknown>>();
+    for (let index = 0; index < 501; index++) {
+      intents.set(`intent-${index}`, {fullName: `Operational ${index}`,
+        acquisitionAttribution: {consentId: withdrawn,
+          expiresAt: authority.expiresAt}});
+    }
+    intents.set("other-consent", {fullName: "Other",
+      acquisitionAttribution: {consentId, expiresAt: authority.expiresAt}});
+    const consents = new Map<string, Record<string, unknown>>([
+      [withdrawn, tombstone],
+      ["active", {...consentDocument, consentId: "d".repeat(64)}]]);
+    const db = memoryFirestore({salesInboundIntents: intents,
+      hostAcquisitionConsents: consents});
+    const remaining = () => [...intents.values()].filter((row) =>
+      (row.acquisitionAttribution as {consentId?: string} | undefined)
+        ?.consentId === withdrawn).length;
+
+    // The request path keeps its single bounded batch.
+    assert.equal(await withdrawHostAttribution(db, withdrawn), 500);
+    assert.equal(remaining(), 1);
+    assert.equal(tombstone.attributionCleanupPending, true);
+
+    // The next scheduled run, long before snapshot expiry, finishes the job.
+    const scheduledAt = now + 15 * 60 * 1000;
+    assert.ok(scheduledAt < authority.expiresAt);
+    assert.equal(await drainWithdrawnHostAttribution(db, scheduledAt), 1);
+    assert.equal(remaining(), 0);
+    assert.equal(tombstone.attributionCleanupPending, false);
+    assert.equal(await drainWithdrawnHostAttribution(db, scheduledAt), 0);
+
+    for (let index = 0; index < 501; index++) {
+      assert.equal(intents.get(`intent-${index}`)?.fullName,
+        `Operational ${index}`);
+    }
+    assert.ok(intents.get("other-consent")?.acquisitionAttribution);
+    assert.equal(consents.get("active")?.status, "active");
+  });
+
+test("scheduled cleanup resumes across runs and keeps the flag until drained",
+  async () => {
+    const withdrawn = "e".repeat(64);
+    const tombstone = {schemaVersion: 1, classification: "sales_private",
+      consentId: withdrawn, status: "revoked", authority: null,
+      createdAt: Timestamp.fromMillis(now),
+      updatedAt: Timestamp.fromMillis(now),
+      expiresAt: Timestamp.fromMillis(now + 90 * 86400000),
+      attributionCleanupPending: true};
+    const intents = new Map<string, Record<string, unknown>>();
+    for (let index = 0; index < 501; index++) {
+      intents.set(`intent-${index}`, {acquisitionAttribution:
+        {consentId: withdrawn, expiresAt: authority.expiresAt}});
+    }
+    const db = memoryFirestore({salesInboundIntents: intents,
+      hostAcquisitionConsents: new Map<string, Record<string, unknown>>([
+        [withdrawn, tombstone]])});
+    assert.equal(await drainWithdrawnHostAttribution(db, now), 500);
+    assert.equal(tombstone.attributionCleanupPending, true);
+    assert.equal(await drainWithdrawnHostAttribution(db, now), 1);
+    assert.equal(tombstone.attributionCleanupPending, false);
+    assert.equal([...intents.values()].some((row) =>
+      row.acquisitionAttribution), false);
   });

@@ -87488,6 +87488,11 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const hostAcquisitionConsentDocumentAttributionCleanupPending = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.attributionCleanupPending',
+    valueTypes: <String>['boolean'],
+  );
+
   static const hostAcquisitionConsentDocumentAuthorityAcceptedAt = CatchContractFieldConstraints(
     path: 'hostAcquisitionConsentDocument.authority.acceptedAt',
     required: true,
@@ -182161,6 +182166,7 @@ abstract final class CatchContractConstraints {
     'heartbeatEventSuccessPresenceCallableResponse.presenceState': heartbeatEventSuccessPresenceCallableResponsePresenceState,
     'heartbeatEventSuccessPresenceCallableResponse.presentWindowSeconds': heartbeatEventSuccessPresenceCallableResponsePresentWindowSeconds,
     'heartbeatEventSuccessPresenceCallableResponse.serverTimeMillis': heartbeatEventSuccessPresenceCallableResponseServerTimeMillis,
+    'hostAcquisitionConsentDocument.attributionCleanupPending': hostAcquisitionConsentDocumentAttributionCleanupPending,
     'hostAcquisitionConsentDocument.authority.acceptedAt': hostAcquisitionConsentDocumentAuthorityAcceptedAt,
     'hostAcquisitionConsentDocument.authority.advertising': hostAcquisitionConsentDocumentAuthorityAdvertising,
     'hostAcquisitionConsentDocument.authority.analytics': hostAcquisitionConsentDocumentAuthorityAnalytics,

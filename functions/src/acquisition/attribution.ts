@@ -1,8 +1,10 @@
-import {FieldValue, type Firestore} from "firebase-admin/firestore";
+import {FieldValue, Timestamp, type Firestore} from
+  "firebase-admin/firestore";
 import {validateHostAcquisitionConsentDocument} from
   "../shared/generated/validators/hostAcquisitionConsentDocument";
 import {hasCurrentHostConsent, HOST_ATTRIBUTION_LIFETIME_MS} from
   "./consentPolicy";
+import {HOST_CONSENT_COLLECTION} from "./consentStore";
 
 // These are reviewed campaign labels, never arbitrary URL/query values.
 export const hostCampaignLabels: Record<string, readonly string[]> = {
@@ -82,16 +84,23 @@ export function prepareHostAttribution(input: {
     expiresAt: consent.authority.expiresAt, firstTouch, lastTouch};
 }
 
+const CLEANUP_BATCH = 500;
+const WITHDRAWALS_PER_RUN = 100;
+
 /** Erases only optional attribution; operational application history remains.
  * Rechecks query results transactionally. Readers must still recheck current
- * consent because bounded cleanup is not synchronous authorization. */
+ * consent because bounded cleanup is not synchronous authorization. A short
+ * page proves no further row matched when the query ran. */
 async function clearAttribution(db: Firestore, consentId: string | null,
-  now: number): Promise<number> {
-  if (!Number.isSafeInteger(now) || now <= 0) return 0;
+  now: number, limit = CLEANUP_BATCH):
+  Promise<{cleared: number; scanned: number; drained: boolean}> {
+  if (!Number.isSafeInteger(now) || now <= 0) {
+    return {cleared: 0, scanned: 0, drained: false};
+  }
   const field = consentId ? "acquisitionAttribution.consentId" :
     "acquisitionAttribution.expiresAt";
   const rows = await db.collection("salesInboundIntents")
-    .where(field, consentId ? "==" : "<=", consentId ?? now).limit(500).get();
+    .where(field, consentId ? "==" : "<=", consentId ?? now).limit(limit).get();
   let cleared = 0;
   for (const row of rows.docs) {
     const changed = await db.runTransaction(async (tx) => {
@@ -108,12 +117,45 @@ async function clearAttribution(db: Firestore, consentId: string | null,
     });
     if (changed) cleared++;
   }
-  return cleared;
+  return {cleared, scanned: rows.size, drained: rows.size < limit};
 }
 
-export const expireHostAttribution = (db: Firestore, now = Date.now()) =>
-  clearAttribution(db, null, now);
+export const expireHostAttribution = async (db: Firestore, now = Date.now()) =>
+  (await clearAttribution(db, null, now)).cleared;
 
-export const withdrawHostAttribution = (db: Firestore, consentId: string) =>
-  /^[a-f0-9]{64}$/u.test(consentId) ?
-    clearAttribution(db, consentId, Date.now()) : Promise.resolve(0);
+/** Request-path withdrawal stays bounded to one batch. The tombstone keeps
+ * attributionCleanupPending until the expiry worker proves nothing remains. */
+export const withdrawHostAttribution = async (db: Firestore,
+  consentId: string) => /^[a-f0-9]{64}$/u.test(consentId) ?
+  (await clearAttribution(db, consentId, Date.now())).cleared : 0;
+
+/** Resumes withdrawals before snapshot expiry, touching at most one batch of
+ * intents per run. A revoked capability can never create another snapshot, so
+ * a drained query lets the tombstone flag clear under a transactional recheck.
+ * Returns how many snapshots were erased. */
+export async function drainWithdrawnHostAttribution(db: Firestore,
+  now = Date.now()): Promise<number> {
+  if (!Number.isSafeInteger(now) || now <= 0) return 0;
+  const pending = await db.collection(HOST_CONSENT_COLLECTION)
+    .where("attributionCleanupPending", "==", true)
+    .limit(WITHDRAWALS_PER_RUN).get();
+  let budget = CLEANUP_BATCH;
+  let cleared = 0;
+  for (const tombstone of pending.docs) {
+    if (budget <= 0) break;
+    const page = await clearAttribution(db, tombstone.id, now, budget);
+    cleared += page.cleared;
+    budget -= page.scanned;
+    if (!page.drained) continue;
+    await db.runTransaction(async (tx) => {
+      const current = (await tx.get(tombstone.ref)).data();
+      if (!validateHostAcquisitionConsentDocument(current) ||
+          current.consentId !== tombstone.id ||
+          current.status !== "revoked" ||
+          current.attributionCleanupPending !== true) return;
+      tx.update(tombstone.ref, {attributionCleanupPending: false,
+        updatedAt: Timestamp.fromMillis(now)});
+    });
+  }
+  return cleared;
+}

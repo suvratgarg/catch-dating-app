@@ -13,7 +13,8 @@ import {
   expireHostMetaDeliveries, stopHostMetaDeliveriesForConsent,
 } from "./metaDelivery";
 import {hostConsentKey} from "./consentPolicy";
-import {expireHostAttribution, withdrawHostAttribution} from "./attribution";
+import {drainWithdrawnHostAttribution, expireHostAttribution,
+  withdrawHostAttribution} from "./attribution";
 
 // Activation is a separate reviewed source change after end-to-end acceptance.
 export const hostServerMeasurementEnabled = false;
@@ -130,6 +131,7 @@ export const expireHostAcquisitionConsent = onSchedule({
   schedule: "every 15 minutes", region: "asia-south1", maxInstances: 1,
   timeoutSeconds: 300,
 }, async () => {
+  await drainWithdrawnHostAttribution(admin.firestore());
   await expireHostAttribution(admin.firestore());
   await expireHostMetaDeliveries(admin.firestore());
   await expireHostConsentRecords(admin.firestore());

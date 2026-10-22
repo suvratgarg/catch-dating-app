@@ -3649,6 +3649,10 @@ export interface HostAcquisitionConsentDocument {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   expiresAt: FirebaseFirestore.Timestamp;
+  /**
+   * Withdrawal tombstones only. True until the expiry worker drains every optional attribution snapshot bound to this consent; a revoked capability can never create another.
+   */
+  attributionCleanupPending?: boolean;
 }
 
 /**

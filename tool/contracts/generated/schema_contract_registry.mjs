@@ -43678,9 +43678,27 @@ export const hostAcquisitionConsentDocumentSchema = {
           "maximum": 999999999
         }
       }
+    },
+    "attributionCleanupPending": {
+      "description": "Withdrawal tombstones only. True until the expiry worker drains every optional attribution snapshot bound to this consent; a revoked capability can never create another.",
+      "type": "boolean"
     }
   },
   "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "revoked"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "attributionCleanupPending"
+        ]
+      }
+    },
     {
       "if": {
         "properties": {

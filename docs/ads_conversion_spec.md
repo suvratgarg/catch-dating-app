@@ -308,7 +308,11 @@ current waitlist row or an earlier consumer conversion record.
 
 Withdrawal and scheduled expiry clear only this optional attribution field in
 bounded, transactionally rechecked batches. Operational application history is
-preserved. Existing Sales privacy deletion removes the containing intent.
+preserved. The withdrawal request clears one batch of at most 500 snapshots;
+its tombstone records `attributionCleanupPending` until the 15-minute expiry
+worker drains the remainder, one bounded batch per run, well before snapshot
+expiry. A revoked capability cannot create new snapshots, so a short final
+page lets the worker clear that flag under a transactional recheck. Existing Sales privacy deletion removes the containing intent.
 Any report reader must check current consent, snapshot expiry and current Sales
 privacy restrictions before using a snapshot; cleanup completion is not an
 authorization signal. Cohort joins and qualification/response history remain
