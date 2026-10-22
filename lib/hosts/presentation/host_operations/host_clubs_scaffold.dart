@@ -1,10 +1,5 @@
 part of '../host_operations_screen.dart';
 
-const _hostAccountPrivacyPolicyAction = 'privacy-policy';
-const _hostAccountTermsAction = 'terms';
-const _hostAccountHelpAction = 'help';
-const _hostAccountDeleteAction = 'delete';
-
 List<CatchOption<HostClubTab>> _hostClubTabOptions(BuildContext context) => [
   CatchOption(
     value: HostClubTab.edit,
@@ -97,6 +92,10 @@ class HostClubsScaffold extends ConsumerStatefulWidget {
 class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
     with SingleTickerProviderStateMixin {
   static const _editorRevealAlignment = 0.08;
+  static const _privacyPolicyAction = 'privacy-policy';
+  static const _termsAction = 'terms';
+  static const _helpAction = 'help';
+  static const _deleteAction = 'delete';
 
   late HostClubTab _selectedTab;
   late final TabController _tabController;
@@ -174,34 +173,34 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
       items: [
         if (privacyPolicyUrl != null)
           CatchActionMenuItem(
-            value: _hostAccountPrivacyPolicyAction,
+            value: _privacyPolicyAction,
             label: context.l10n.safetySettingsScreenTitlePrivacyPolicy,
             icon: CatchIcons.lockOutline,
           ),
         if (termsUrl != null)
           CatchActionMenuItem(
-            value: _hostAccountTermsAction,
+            value: _termsAction,
             label: context.l10n.safetySettingsScreenTitleTerms,
             icon: CatchIcons.descriptionOutlined,
           ),
         if (helpUrl != null)
           CatchActionMenuItem(
-            value: _hostAccountHelpAction,
+            value: _helpAction,
             label: context.l10n.safetySettingsScreenTitleHelpSupport,
             icon: CatchIcons.helpOutline,
           ),
         CatchActionMenuItem(
-          value: _hostAccountDeleteAction,
+          value: _deleteAction,
           label: context.l10n.safetySettingsScreenTitleDeleteAccount658588,
           icon: CatchIcons.deleteOutline,
           isDestructive: true,
         ),
       ],
       onSelected: (action) => unawaited(switch (action) {
-        _hostAccountPrivacyPolicyAction => _openLegalLink(privacyPolicyUrl),
-        _hostAccountTermsAction => _openLegalLink(termsUrl),
-        _hostAccountHelpAction => _openLegalLink(helpUrl),
-        _hostAccountDeleteAction => _deleteAccount(),
+        _privacyPolicyAction => _openLegalLink(privacyPolicyUrl),
+        _termsAction => _openLegalLink(termsUrl),
+        _helpAction => _openLegalLink(helpUrl),
+        _deleteAction => _deleteAccount(),
         _ => Future<void>.value(),
       }),
     );
