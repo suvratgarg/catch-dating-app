@@ -113,51 +113,52 @@ function Swatch({label}: {label: string}) {
   );
 }
 
-export const Gap: Story = {
-  render: () => (
-    <CatchPageBody>
-      <CatchSectionList emptyStateOmitted gap="formField">
-        {gapSizes.map((size) => (
-          <CatchGap key={size} size="inline">
-            <CatchText variant="fieldLabel">{size}</CatchText>
-            <CatchGap direction="horizontal" size={size} wrap>
-              <Swatch label="One" />
-              <Swatch label="Two" />
-              <Swatch label="Three" />
-            </CatchGap>
+function GapRoles() {
+  return (
+    <CatchSectionList emptyStateOmitted gap="formField">
+      {gapSizes.map((size) => (
+        <CatchGap key={size} size="inline">
+          <CatchText variant="fieldLabel">{size}</CatchText>
+          <CatchGap direction="horizontal" size={size} wrap>
+            <Swatch label="One" />
+            <Swatch label="Two" />
+            <Swatch label="Three" />
           </CatchGap>
-        ))}
-        <CatchGap crossAxisAlignment="center" direction="horizontal" mainAxisAlignment="spaceBetween"
-          size="inline">
-          <Swatch label="spaceBetween" />
-          <Swatch label="centre-aligned" />
         </CatchGap>
-      </CatchSectionList>
-    </CatchPageBody>
-  ),
-};
-
-export const Inset: Story = {
-  render: () => (
-    <CatchPageBody>
-      <CatchGap direction="horizontal" size="related" wrap>
-        {insetPaddings.map((padding) => (
-          <div key={padding} style={{outline: "1px dashed var(--catch-theme-line2)"}}>
-            <CatchInset padding={padding}>
-              <Swatch label={padding} />
-            </CatchInset>
-          </div>
-        ))}
+      ))}
+      <CatchGap crossAxisAlignment="center" direction="horizontal" mainAxisAlignment="spaceBetween"
+        size="inline">
+        <Swatch label="spaceBetween" />
+        <Swatch label="centre-aligned" />
       </CatchGap>
-    </CatchPageBody>
-  ),
-};
+    </CatchSectionList>
+  );
+}
 
-export const PageBody: Story = {
+function InsetRoles() {
+  return (
+    <CatchGap direction="horizontal" size="related" wrap>
+      {insetPaddings.map((padding) => (
+        <div key={padding} style={{outline: "1px dashed var(--catch-theme-line2)"}}>
+          <CatchInset padding={padding}>
+            <Swatch label={padding} />
+          </CatchInset>
+        </div>
+      ))}
+    </CatchGap>
+  );
+}
+
+/** catch.screen_body on the web: CatchPageBody, CatchGap and CatchInset. */
+export const Layout: Story = {
   render: () => (
     <div style={{background: "var(--catch-theme-raised)"}}>
       <CatchPageBody constrainToContentWidth>
-        <Swatch label="Constrained page body with gutter and default insets" />
+        <CatchGap size="majorSection">
+          <Swatch label="Constrained page body with gutter and default insets" />
+          <GapRoles />
+          <InsetRoles />
+        </CatchGap>
       </CatchPageBody>
       <CatchPageBody gutter={false} pb="s8" pt="s0">
         <Swatch label="No gutter, pt s0, pb s8" />
