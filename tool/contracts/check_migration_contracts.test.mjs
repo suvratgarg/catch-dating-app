@@ -8,8 +8,8 @@ import {checkMigrationContracts} from "./check_migration_contracts.mjs";
 test("migration contract check validates the current migration inventory", () => {
   const result = checkMigrationContracts();
   assert.deepEqual(result.errors, []);
-  assert.equal(result.migrationCount, 7);
-  assert.equal(result.phaseCount, 44);
+  assert.equal(result.migrationCount, 8);
+  assert.equal(result.phaseCount, 48);
 });
 
 test("migration contract check rejects incomplete complete-state evidence", () => {
