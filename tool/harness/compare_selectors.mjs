@@ -6,10 +6,12 @@ import os from "node:os";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
+import {queueOnlyCiTargets} from "./lib/component_graph.mjs";
 
 const snapshotPaths = ["tool/harness/component_graph.json",
   "tool/harness/lib/component_graph.mjs", "tool/lib/path_glob.mjs"];
-const selectorControl = /^(?:tool\/harness(?:\.mjs|\/)|tool\/lib\/(?:path_glob|tool_impact|repository_snapshot)\.mjs$|tool\/(?:run\.mjs|tools_manifest\.json)$|\.github\/workflows\/ci\.yml$)/u;
+// Harness tests assert selector behaviour but never feed the snapshot engine.
+const selectorControl = /^(?:tool\/harness(?:\.mjs|\/(?!.*\.test\.mjs$))|tool\/lib\/(?:path_glob|tool_impact|repository_snapshot)\.mjs$|tool\/(?:run\.mjs|tools_manifest\.json)$|\.github\/workflows\/ci\.yml$)/u;
 const sha256 = bytes => createHash("sha256").update(bytes).digest("hex");
 function git(cwd, args) {
   const result = spawnSync("git", args, {cwd, encoding: "utf8", maxBuffer: 32 * 1024 * 1024});
@@ -84,7 +86,12 @@ export function requireComparedTargets(comparison, actualPlan, githubOutput) {
   assert.equal(actualPlan.sourceSha, comparison.headSha, "Planned source differs from selector comparison.");
   assert.equal(actualPlan.baseSha, comparison.baseSha, "Planned base differs from selector comparison.");
   assert.ok(["no-selector-control-change", "full-validation-required"].includes(comparison.status), "Unknown selector comparison status.");
-  const missing = (comparison.requiredTargets ?? []).filter(target => !actualPlan.operations.ciTargets.includes(target));
+  // Only a pull request may defer queue-only lanes; merge_group still owes them.
+  const pullRequest = comparison.mode === "pr" && actualPlan.mode === "pr";
+  const deferred = pullRequest ? actualPlan.queueDeferredCiTargets ?? [] : [];
+  assert.ok(deferred.every(target => queueOnlyCiTargets.includes(target)), "Only queue-only lanes may be deferred.");
+  const missing = (comparison.requiredTargets ?? []).filter(target =>
+    !actualPlan.operations.ciTargets.includes(target) && !deferred.includes(target));
   assert.deepEqual(missing, [], `Actual CI plan suppressed compared obligations: ${missing.join(", ")}`);
   assert.equal(typeof githubOutput, "string", "Actual GitHub output file is required.");
   for (const target of actualPlan.operations.ciTargets) {

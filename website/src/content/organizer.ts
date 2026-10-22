@@ -14,9 +14,18 @@ export const organizerListingCopy = {
   },
   claims: {
     runtimeUnavailable: "Claim submission needs the website Firebase/App Check config.",
+    introEyebrow: "For organisers",
+    introTitle: "Help guests find the right details.",
+    introBody: "Catch builds unclaimed profiles from public sources. The organiser can claim this page to manage what appears here.",
   },
   detail: {
     aboutTitle: (name: string) => `About ${name}`,
+    /** Public summary for a listing whose owner has not written one. */
+    sourcedSummary: (name: string, category: string, city: string) => {
+      const kind = category.charAt(0).toLowerCase() + category.slice(1);
+      const article = /^[aeiou]/iu.test(kind) ? "an" : "a";
+      return `${name} is ${article} ${kind} in ${city}. This profile is built from public sources and hasn’t been confirmed by the organiser yet.`;
+    },
     claimStateLabel: "Claim state",
     eventsEyebrow: "Events",
     formatsLabel: "What they do",
@@ -27,7 +36,6 @@ export const organizerListingCopy = {
     shareAction: "Share",
     sourceCountLabel: "Source count",
     sourcesEyebrow: "Sources",
-    surfaceLabel: "Surface",
     viewEventsAction: "View events",
     viewSourcesAction: "View sources",
   },
@@ -38,33 +46,3 @@ export const organizerListingCopy = {
     runtimeUnavailable: "Review submission is unavailable in this website build.",
   },
 } as const;
-
-export interface OrganizerHeroMedia {
-  alt: string;
-  mobileSrcSet: string;
-  src: string;
-}
-
-const organizerHeroMediaBySlug: Readonly<Record<string, OrganizerHeroMedia>> = {
-  afterfly: {
-    alt:
-      "A social run moving past an outdoor music setup at golden hour; illustrative activity photography, not organizer-supplied media.",
-    mobileSrcSet: "/assets/events/social-run-music-hero-960.jpg",
-    src: "/assets/events/social-run-music-hero.jpg",
-  },
-};
-
-const organizerAboutBySlug: Readonly<Record<string, string>> = {
-  afterfly:
-    "Indore social runs that blend movement, music and community. Public facts are sourced; owner copy is not yet verified.",
-};
-
-export function organizerAboutForSlug(slug: string, fallback: string) {
-  return organizerAboutBySlug[slug] ?? fallback;
-}
-
-export function organizerHeroMediaForSlug(
-  slug: string
-): OrganizerHeroMedia | null {
-  return organizerHeroMediaBySlug[slug] ?? null;
-}

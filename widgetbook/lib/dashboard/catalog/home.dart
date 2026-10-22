@@ -45,9 +45,7 @@ Widget dashboardHowCatchWorksSectionReview(BuildContext context) {
     children: [
       WidgetbookPageStateCard(
         label: 'signed-in idle explainer',
-        child: WidgetbookDashboardPrimitiveFrame(
-          child: HowCatchWorksSection(),
-        ),
+        child: WidgetbookDashboardPrimitiveFrame(child: HowCatchWorksSection()),
       ),
     ],
   );

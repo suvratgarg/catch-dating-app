@@ -4,6 +4,9 @@ const {test} = require("node:test");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+// Protected homes refuse symlinked ancestors, and macOS serves os.tmpdir() through
+// the /var -> /private/var link; fixtures must live under the resolved path.
+const tmpRoot = fs.realpathSync(os.tmpdir());
 const http = require("node:http");
 const {createHash, randomBytes, publicEncrypt, createPublicKey, createCipheriv, constants, verify: verifySignature} = require("node:crypto");
 const {spawnSync} = require("node:child_process");
@@ -17,7 +20,7 @@ function fixtureHelper(options) {
   // unchanged and nested checkout rejection is exercised separately below.
   const original = fs.lstatSync;
   fs.lstatSync = function(file, ...args) {
-    if (file === path.join(os.tmpdir(), ".git")) {
+    if (file === path.join(tmpRoot, ".git")) {
       const error = new Error("synthetic missing ambient Git marker"); error.code = "ENOENT"; throw error;
     }
     return original.call(this, file, ...args);
@@ -25,7 +28,7 @@ function fixtureHelper(options) {
   try {return createSessionHandoff(options);} finally {fs.lstatSync = original;}
 }
 function fixture(t, {existing = false, verify, observer, nowMillis = 1800000000000} = {}) {
-  const home = fs.mkdtempSync(path.join(os.tmpdir(), "catch-session-test-"));
+  const home = fs.mkdtempSync(path.join(tmpRoot, "catch-session-test-"));
   let now = nowMillis, calls = 0;
   const diagnostics = [];
   const binding = {runtime: {sourceSha: "a".repeat(40), executionSha256: "b".repeat(64)}, helperSha256: "c".repeat(64)};
@@ -238,7 +241,7 @@ test("private files reject permissive modes, hardlinks, symlinks and dangling sy
     if (kind === "symlink" || kind === "dangling") {fs.unlinkSync(tokenPath); fs.symlinkSync(path.join(f.home, kind === "symlink" ? "profile.json" : "missing"), tokenPath);}
     assert.equal((await f.save()).status, 400); assert.equal(f.calls(), 0);
   }
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-reject-home-"));
+  const directory = fs.mkdtempSync(path.join(tmpRoot, "catch-reject-home-"));
   t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
   fs.chmodSync(directory, 0o755);
   assert.throws(() => fixtureHelper({home: directory, clientOrigin}));

@@ -276,7 +276,13 @@ fails; unaffected lanes are explicit skips, so path scoping never leaves a
 required check permanently pending. Required CI has no mandatory human backend
 source-review job. The merge queue reruns it on the exact combined source of
 each group before `main` moves, so a pull request result never needs to stay
-current with `main`.
+current with `main`. A `main` push whose exact commit already passed a
+successful merge-queue run reuses that proof for pure-validation lanes (Flutter,
+visual integration, Tools, docs and policy, Admin and Operations). Jobs that
+produce or prove delivery evidence (Functions, Rules, contracts, app builds,
+Marketing and captures, the finalizer and Firebase packaging) still run, and
+the finalizer records the reused run ID. Without a successful queue run of the
+same commit, `main` runs every selected lane.
 
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
 `tool/harness/component_graph.json`, fails closed for an unmapped or ambiguous
@@ -287,7 +293,13 @@ Changes to the shared Harness control plane intentionally run every declared
 target. The graph explicitly owns backend-only Delivery, staging, rebaseline,
 package-verifier and source-review files: those changes run Functions,
 contracts, rules, policy and the affected Tools check closure without compiling
-unrelated clients. The tool planner honors the graph's terminal classifications
+unrelated clients. Files PR validation never executes run only their own Tools
+checks and policy: harness and CI tests, release, deploy and operations
+workflows, and `tool/ci` release scripts no PR workflow invokes
+(`harness-scoped-control`). Selector controls, including the planner, graph and
+`tool/tools_manifest.json`, still run every target. A harness test proves that
+no workflow PR CI runs, and no `tool/ci` module it invokes or imports, is ever
+narrowed. The tool planner honors the graph's terminal classifications
 and includes every declared check plus its transitive dependencies; it does not
 reapply a broader workflow glob or drop graph-required checks. Shared CI
 orchestration, toolchains, the cross-product delivery core,

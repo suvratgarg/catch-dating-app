@@ -9,7 +9,8 @@ export type EventSetupReceiptDocument = {
     | "preferences"
     | "details"
     | "publish"
-    | "unpublish";
+    | "unpublish"
+    | "media";
   actorUid: string;
   organizerId: string;
   requestHash: string;
@@ -23,6 +24,8 @@ export type EventSetupReceiptDocument = {
     _nanoseconds: number;
   };
   outcome?: "discarded";
+  requestId?: string;
+  mediaPayloadHash?: string;
   expectedSetupRevision?: number;
 } & (
   | {
@@ -30,6 +33,10 @@ export type EventSetupReceiptDocument = {
     }
   | {
       operation?: "details";
+      [k: string]: unknown;
+    }
+  | {
+      operation?: "media";
       [k: string]: unknown;
     }
 );

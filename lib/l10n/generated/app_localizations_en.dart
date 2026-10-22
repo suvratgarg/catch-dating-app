@@ -25242,6 +25242,78 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsEventGuestDetailsSave => 'Save guest information';
 
   @override
+  String get hostsEventPhotoRecoveryTitle => 'Event saved · photos pending';
+
+  @override
+  String get hostsEventPhotoRecoveryUploading =>
+      'Your event is saved. Photos are still uploading. You can leave and return to this event’s photo recovery.';
+
+  @override
+  String get hostsEventPhotoRecoveryFailed =>
+      'Your event is saved. Some photos could not upload. Retry photos on this event.';
+
+  @override
+  String get hostsEventPhotoRecoveryUnknown =>
+      'Your event is saved. We are checking whether its photos were attached. Retry to confirm the same request safely.';
+
+  @override
+  String get hostsEventPhotoRecoveryConflict =>
+      'The event’s photos changed elsewhere. Your saved recovery is preserved. Open the event to review its photos.';
+
+  @override
+  String get hostsEventPhotoRecoveryCleanup =>
+      'Your event is saved. Photo cleanup is still pending. Retry cleanup; the saved recovery will remain until it is resolved.';
+
+  @override
+  String get hostsEventPhotoRecoveryUnsettled =>
+      'An earlier photo upload has an unresolved outcome. Its recovery is preserved for review, even after other photos are saved.';
+
+  @override
+  String get hostsEventPhotoRecoveryMissing =>
+      'Select photos again to retry. Selected photo files do not survive every restart.';
+
+  @override
+  String get hostsEventPhotoRecoveryStorage =>
+      'Your event is saved, but photo recovery could not be saved on this device. Keep this screen open and retry before leaving.';
+
+  @override
+  String get hostsEventPhotoRecoveryRetry => 'Retry photos';
+
+  @override
+  String get hostsEventPhotoRecoveryCheck => 'Check photo status';
+
+  @override
+  String get hostsEventPhotoRecoveryReselect => 'Select photos again';
+
+  @override
+  String get hostsEventPhotoRecoveryCleanupAction => 'Retry cleanup';
+
+  @override
+  String get hostsEventPhotoRecoveryLeaveTitle => 'Leave photo recovery?';
+
+  @override
+  String get hostsEventPhotoRecoveryLeaveMessage =>
+      'Your event is already saved. This device could not save its photo recovery. Leaving may lose the selected photos. You can manage the saved event later.';
+
+  @override
+  String get hostsEventPhotoRecoveryLeave => 'Leave saved event';
+
+  @override
+  String get hostsEventPhotoRecoverySession =>
+      'Your sign-in session changed. Reopen event creation to recover the saved event for your current account.';
+
+  @override
+  String get hostsEventPhotoRecoverySavedTitle => 'Your event is saved.';
+
+  @override
+  String get hostsEventPhotoRecoveryInactive =>
+      'This saved event is no longer active. Open the event to review its current status.';
+
+  @override
+  String get hostsEventPhotoRecoveryRefresh =>
+      'Your photos are attached. Check photo status to refresh the current event details.';
+
+  @override
   String get hostAccountDeletionConfirmation =>
       'Permanently delete your Catch account and Host profile? You’ll lose organizer access. Shared business records and required safety/payment records remain. Transfer organizer ownership first if needed.';
 }
