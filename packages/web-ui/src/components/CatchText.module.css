@@ -2,8 +2,11 @@
  * Function roles from CatchTextStyles (packages/catch_ui). Each role reads
  * the platform typography profile its Flutter role reads; web uses the iOS
  * profile until the web type-role token family lands.
+ *
+ * Every declaration carries the variant attribute so a surface's legacy
+ * descendant rule (".panel p") cannot restyle library text.
  */
-.text {
+.text[data-variant] {
   /* Reset so a nested CatchText never inherits its parent's override. */
   --catch-text-color: initial;
   margin: 0;
