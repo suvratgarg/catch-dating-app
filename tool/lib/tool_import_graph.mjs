@@ -1,34 +1,26 @@
-import fs from "node:fs";
 import path from "node:path";
-import {pathToFileURL} from "node:url";
 import {repoRoot} from "./repo_paths.mjs";
+import {cruiseModules, loadDependencyCruiser} from "./dependency_cruiser.mjs";
 
 // The Tools lane derives each check's code inputs from real imports instead of
-// hand-written globs. dependency-cruiser is pinned in this package and
-// installed with `npm ci --prefix tool/impact`; without it, callers keep the
-// declared-inputs plan, whose unexplained paths still run the full matrix.
-export const importGraphPackageDir = "tool/impact";
+// hand-written globs, with the dependency-cruiser pinned in tool/impact. Without
+// it, callers keep the declared-inputs plan, whose unexplained paths still run
+// the full matrix.
+export {importGraphPackageDir} from "./dependency_cruiser.mjs";
 
 const scriptPattern = /\.(?:mjs|cjs|js|ts)$/u;
 
 export async function cruiseToolImports({cwd = repoRoot, roots = ["tool"]} = {}) {
-  const packageDir = path.join(cwd, importGraphPackageDir, "node_modules", "dependency-cruiser");
-  let meta;
-  try {
-    meta = JSON.parse(fs.readFileSync(path.join(packageDir, "package.json"), "utf8"));
-  } catch {
-    return null;
-  }
-  const {cruise} = await import(pathToFileURL(path.join(packageDir, meta.exports["."].import)).href);
+  const depcruise = await loadDependencyCruiser({cwd});
+  if (!depcruise) return null;
   // Files outside tool/ are leaves: the sparse preflight checkout and the full
   // checkout must derive the same owners from the same tool/ sources.
-  const result = await cruise(roots, {
+  const result = await depcruise.cruise(roots, {
     baseDir: cwd,
     doNotFollow: {path: "(^|/)node_modules/|^(?!tool/)"},
     exclude: {path: "(^|/)node_modules/"},
   });
-  const output = typeof result.output === "string" ? JSON.parse(result.output) : result.output;
-  return {version: meta.version, modules: output.modules};
+  return {version: depcruise.version, modules: cruiseModules(result)};
 }
 
 /** Files a tool executes: its script, every script its checks name, and its vacuity proof. */

@@ -1404,6 +1404,19 @@ test("backend integration runs strict execution inside both emulators with a bou
   assert.ok(pkg.scripts["test:rules"].includes("lib/chats/eventChatAccessEmulator.test.js"));
 });
 
+test("only pull requests narrow the strict emulator list", () => {
+  const source = workflow("firestore-rules-ci.yml");
+  const select = namedStep(source, "Select the emulator tests this pull request can affect");
+  assert.match(select, /if: \$\{\{ inputs\.mode == 'pr' && inputs\.base_sha != '' \}\}/u);
+  assert.match(select, /node tool\/impact\/emulator_test_selection\.mjs --paths "\$paths" --output build\/ci\/emulator-selection\.json/u);
+  assert.match(namedStep(source, "Execute backend Rules and integration assertions"),
+    /CATCH_TEST_SELECTION: \$\{\{ steps\.selection\.outcome == 'success' && format\('\{0\}\/build\/ci\/emulator-selection\.json', github\.workspace\) \|\| '' \}\}/u);
+  const ci = workflow("ci.yml");
+  const job = ci.slice(ci.indexOf("\n  firestore-rules:")).split(/\n  [a-z-]+:/u)[1];
+  assert.match(job, /base_sha: \$\{\{ needs\.plan\.outputs\.base_sha \}\}/u);
+  assert.match(job, /mode: \$\{\{ needs\.plan\.outputs\.mode \}\}/u);
+});
+
 test("canonical native captures reach consumers before dependency setup and builds", () => {
   const ci = workflow("ci.yml");
   const capture = workflow("capture-freshness-ci.yml");

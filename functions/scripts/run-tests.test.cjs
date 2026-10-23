@@ -8,7 +8,7 @@ const {spawnSync} = require("node:child_process");
 const {test} = require("node:test");
 
 const runner = require.resolve("./run-tests.cjs");
-function fixture(source, {emulators = true, files = ["case.test.cjs"], extraFiles = {}, shard} = {}) {
+function fixture(source, {emulators = true, files = ["case.test.cjs"], extraFiles = {}, shard, selection} = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-strict-tests-"));
   try {
     fs.writeFileSync(path.join(root, "case.test.cjs"), source);
@@ -18,7 +18,12 @@ function fixture(source, {emulators = true, files = ["case.test.cjs"], extraFile
     delete env.FIRESTORE_EMULATOR_HOST;
     delete env.FIREBASE_STORAGE_EMULATOR_HOST;
     delete env.CATCH_TEST_SHARD;
+    delete env.CATCH_TEST_SELECTION;
     if (shard) env.CATCH_TEST_SHARD = shard;
+    if (selection) {
+      fs.writeFileSync(path.join(root, "selection.json"), JSON.stringify(selection));
+      env.CATCH_TEST_SELECTION = path.join(root, "selection.json");
+    }
     if (emulators) {
       env.FIRESTORE_EMULATOR_HOST = "127.0.0.1:1";
       env.FIREBASE_STORAGE_EMULATOR_HOST = "127.0.0.1:2";
@@ -393,4 +398,29 @@ test("a newly authored emulator test requires selection without a registry edit"
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }
+});
+
+test("a pull request selection runs only its tests and proves an empty selection ran nothing", () => {
+  const passing = 'const {test} = require("node:test"); test("ran", () => {});\n';
+  const files = ["case.test.cjs", "other.test.cjs"];
+  const extraFiles = {"other.test.cjs": passing.replace("ran", "other ran")};
+  const narrowed = fixture(passing, {files, extraFiles, selection: {mode: "selected", tests: ["case.test.cjs"]}});
+  assert.equal(narrowed.status, 0, narrowed.stderr);
+  assert.match(narrowed.stdout, /test:pass: .*case\.test\.cjs:\d+ ran/u);
+  assert.doesNotMatch(narrowed.stdout, /other ran/u);
+  const empty = fixture(passing, {files, extraFiles, selection: {mode: "selected", tests: []}});
+  assert.equal(empty.status, 0, empty.stderr);
+  assert.match(empty.stdout, /No strict emulator test can be affected/u);
+  assert.match(empty.stdout, /"selected":\[\]/u);
+  const full = fixture(passing, {files, extraFiles, selection: {mode: "full", tests: files, reasons: ["x"]}});
+  assert.match(full.stdout, /other ran/u);
+  const outside = fixture(passing, {files, extraFiles, selection: {mode: "selected", tests: ["missing.test.cjs"]}});
+  assert.equal(outside.status, 1);
+  assert.match(outside.stderr, /outside the strict list/u);
+});
+
+test("a narrowed shard may be empty while an unnarrowed shard may not", () => {
+  const {shardFiles} = require(runner);
+  assert.deepEqual(shardFiles(["a"], "2/3", {allowEmpty: true}).files, []);
+  assert.throws(() => shardFiles(["a"], "2/3"), /selects no backend integration tests/u);
 });
