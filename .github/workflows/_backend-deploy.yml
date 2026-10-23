@@ -55,6 +55,13 @@ jobs:
         run: |
           set -euo pipefail
           git fetch --force origin "refs/tags/deployed/*:refs/tags/deployed/*"
+          # A first deploy is full and long, so only a manual run may start it.
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]] &&
+              ! git rev-parse -q --verify "refs/tags/deployed/$DEPLOY_ENVIRONMENT" > /dev/null; then
+            echo "::notice::$DEPLOY_ENVIRONMENT has no deployed/$DEPLOY_ENVIRONMENT tag; run Deploy backend manually to bootstrap it."
+            echo "mode=no-op" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           args=(--environment "$DEPLOY_ENVIRONMENT" --head "$GITHUB_SHA")
           if [[ "$FULL" == "true" ]]; then args+=(--full); fi
           NODE_PATH=functions/node_modules \
@@ -100,6 +107,13 @@ jobs:
         run: |
           set -euo pipefail
           git fetch --force origin "refs/tags/deployed/*:refs/tags/deployed/*"
+          # A first deploy is full and long, so only a manual run may start it.
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]] &&
+              ! git rev-parse -q --verify "refs/tags/deployed/$DEPLOY_ENVIRONMENT" > /dev/null; then
+            echo "::notice::$DEPLOY_ENVIRONMENT has no deployed/$DEPLOY_ENVIRONMENT tag; run Deploy backend manually to bootstrap it."
+            echo "mode=no-op" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           args=(--environment "$DEPLOY_ENVIRONMENT" --head "$GITHUB_SHA")
           if [[ "$FULL" == "true" ]]; then args+=(--full); fi
           NODE_PATH=functions/node_modules \

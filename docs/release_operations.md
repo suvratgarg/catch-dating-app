@@ -1317,6 +1317,10 @@ How a run works:
   on that commit.
 - After a successful deploy the tag moves forward to that commit. It never moves
   backwards, and a failed run leaves it unchanged.
+- Automatic runs never start a first deploy. An environment without a tag is
+  skipped until someone runs the workflow manually, which deploys everything.
+  An environment can also be seeded by pushing its tag at a commit it verifiably
+  matches. Functions changed after that commit then deploy on the next run.
 
 When it runs:
 
