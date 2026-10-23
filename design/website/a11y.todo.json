@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-07-12",
+  "updated": "2026-10-23",
   "owner": "marketing_website",
   "debtId": "WEB-A11Y-001",
   "policy": "Project default is a11y.test=error. Only the exact stories below may use todo while their existing axe findings await a dedicated visual accessibility pass.",
@@ -36,11 +36,6 @@
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
     },
     {
-      "file": "website/src/stories/LayoutPrimitives.stories.tsx",
-      "export": "ControlRowStory",
-      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
-    },
-    {
       "file": "website/src/stories/ClaimSections.stories.tsx",
       "export": "ClaimWorkspace",
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
@@ -72,11 +67,6 @@
     },
     {
       "file": "website/src/stories/RouteShellPrimitives.stories.tsx",
-      "export": "HostFeatureSectionShellStory",
-      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
-    },
-    {
-      "file": "website/src/stories/RouteShellPrimitives.stories.tsx",
       "export": "HostPreviewShellStory",
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
     },
@@ -98,11 +88,6 @@
     {
       "file": "website/src/stories/OrganizerSearchSections.stories.tsx",
       "export": "OrganizerResults",
-      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
-    },
-    {
-      "file": "website/src/stories/HomeSections.stories.tsx",
-      "export": "HomeWaitlistSectionStory",
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
     },
     {

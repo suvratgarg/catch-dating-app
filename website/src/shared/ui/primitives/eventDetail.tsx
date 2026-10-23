@@ -157,27 +157,6 @@ export function EventDetailReviewPreview({
   );
 }
 
-export function EventDetailActionPanel({
-  children,
-  date,
-  description,
-  title,
-}: {
-  children: ReactNode;
-  date: ReactNode;
-  description: ReactNode;
-  title: ReactNode;
-}) {
-  return (
-    <aside className="event-detail-action-panel" data-reveal>
-      <UiLabel>{date}</UiLabel>
-      <h2>{title}</h2>
-      <p>{description}</p>
-      <div className="event-detail-action-panel__actions">{children}</div>
-    </aside>
-  );
-}
-
 export function EventRegistrationForm({
   children,
   className,
@@ -240,38 +219,6 @@ export function EventDetailFactGrid({
 }) {
   return (
     <dl className="event-detail-facts" data-reveal>
-      {items.map((item, index) => (
-        <div key={typeof item.label === "string" ? item.label : index}>
-          <dt>{item.label}</dt>
-          <dd>{item.value}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
-export function EventDetailProvenanceLayout({
-  children,
-  intro,
-}: {
-  children: ReactNode;
-  intro: ReactNode;
-}) {
-  return (
-    <div className="event-detail-provenance">
-      {intro}
-      {children}
-    </div>
-  );
-}
-
-export function EventDetailProvenanceFacts({
-  items,
-}: {
-  items: Array<{label: ReactNode; value: ReactNode}>;
-}) {
-  return (
-    <dl data-reveal>
       {items.map((item, index) => (
         <div key={typeof item.label === "string" ? item.label : index}>
           <dt>{item.label}</dt>

@@ -1,18 +1,16 @@
 import {CatchField} from "@catch/web-ui";
 import {organiserDirectoryCopy as copy} from "@content/organiserDirectory";
 import {interpolateContent as fill} from "@content/interpolate";
-import {websiteCopy} from "@content/generated";
 import {websiteTemplates} from "@content/templates";
 import {useEffect} from "react";
 import {ArrowRight, MapPin, Search, Users} from "lucide-react";
-import {BadgeRow, Button, DirectoryClaimPressureCopy, DirectoryClaimPressureCta, DirectoryClaimPressureList, DirectoryClaimPressureStats, ListingFormatRow, OrganizerEventHighlights, OrganizerResultCardBody, OrganizerResultCardFooter, OrganizerResultCardShell, OrganizerResultCardTopline, OrganizerSearchSection, PlainLink, SearchFormShell, TextActionButton, ToggleChipButton, UiLabel} from "../../../shared/ui/primitives";
+import {BadgeRow, Button, ListingFormatRow, OrganizerEventHighlights, OrganizerResultCardBody, OrganizerResultCardFooter, OrganizerResultCardShell, OrganizerResultCardTopline, PlainLink, SearchFormShell, TextActionButton, ToggleChipButton} from "../../../shared/ui/primitives";
 import {ConsumerEmpty} from "../../../shared/ui/primitives/consumerHome";
 import {DirectoryIntro, DirectoryFilters, DirectoryMoreFilters, DirectoryResults, DirectoryResultsGrid, DirectoryResultsHeading, DirectoryTrust} from "../../../shared/ui/primitives/organiserDirectory";
 import {trackOrganizerSearchAppearance} from "../analytics";
 import {ActivityMark, StatusBadge} from "../OrganizerIdentity";
 import {activityForListing, eventHighlightsForListing} from "../publicDiscovery";
 import {organizerPolicyForListing} from "../organizerPolicy";
-import {claimHrefForListing} from "../routing";
 import {nextFutureCatchEvent, type OrganizerSort, type OrganizerStatusFilter} from "../selectors";
 import type {HostListing} from "../types";
 import type {OrganizerDirectoryController} from "../useOrganizerDirectoryController";
@@ -62,48 +60,6 @@ export function OrganizerSearchHeroSection({controller: c}: {controller: Organiz
       </DirectoryFilters>
     </DirectoryMoreFilters>
   </DirectoryIntro>;
-}
-
-export function DirectoryClaimPressureStrip({
-  claimableListings,
-  eventBackedCount,
-  unclaimedCount,
-}: {
-  claimableListings: HostListing[];
-  eventBackedCount: number;
-  unclaimedCount: number;
-}) {
-  return (
-    <OrganizerSearchSection variant="claim-pressure" aria-labelledby="directory-claim-title">
-      <DirectoryClaimPressureCopy>
-        <UiLabel>{websiteCopy["organizersearchsections_0456"]}</UiLabel>
-        <h2 id="directory-claim-title">{websiteCopy["organizersearchsections_0472"]}</h2>
-        <p>{websiteCopy["organizersearchsections_0479"]}</p>
-        <DirectoryClaimPressureStats
-          items={[
-            {label: websiteCopy["organizersearchsections_0457"], value: unclaimedCount},
-            {label: websiteCopy["organizersearchsections_0461"], value: eventBackedCount},
-          ]}
-        />
-      </DirectoryClaimPressureCopy>
-      <DirectoryClaimPressureList>
-        {claimableListings.map((listing) => (
-          <PlainLink href={claimHrefForListing(listing)} key={listing.id}>
-            <ActivityMark listing={listing} size="sm" />
-            <span>
-              <strong>{listing.name}</strong>
-              <small>
-                {listing.city} · {listing.missingEvidence.length}{" "}
-                {websiteCopy["organizersearchsections_0471"]}
-              </small>
-            </span>
-            <StatusBadge listing={listing} compact />
-          </PlainLink>
-        ))}
-        <DirectoryClaimPressureCta href="/claim/">{websiteCopy["organizersearchsections_0467"]}</DirectoryClaimPressureCta>
-      </DirectoryClaimPressureList>
-    </OrganizerSearchSection>
-  );
 }
 
 export function OrganizerResultsSection({appearanceContext, clearFilters, queryTerms, results, phase = "ready"}: {

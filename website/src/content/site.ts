@@ -11,30 +11,6 @@ export const siteFooterLegalLinks = [
   {href: "/help/", label: "Help"},
 ] as const;
 
-export const siteMenuCopy = {
-  dialogLabel: "Site menu",
-  openLabel: "Menu",
-  closeLabel: "Close",
-  kicker: "Catch · Menu",
-  hint: "The event before the match",
-  navLabel: "Mobile",
-} as const;
-
-export const storeCtaCopy = [
-  {
-    platform: "ios",
-    kicker: "Download on the",
-    label: "App Store",
-    shortLabel: "iOS",
-  },
-  {
-    platform: "android",
-    kicker: "Get it on",
-    label: "Google Play",
-    shortLabel: "Play",
-  },
-] as const satisfies readonly StoreCtaCopy[];
-
 // One authored owner for public marketing chrome across route families.
 export const publicSiteCopy = {
   menu: {

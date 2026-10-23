@@ -1,39 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {
-  ActivityMark,
-  BadgeRow,
-  ButtonLink,
-  ContentGrid,
-  ListingEventDownloadPanel,
-  ListingEventEvidenceList,
-  ListingFactGrid,
-  ListingFormatRow,
-  ListingNoteGrid,
-  ListingPolaroid,
-  ListingProfileLayout,
-  ListingProfilePrimary,
-  ListingProfileRail,
-  ListingRailActions,
-  ListingRailIdentity,
-  ListingRailLinkList,
-  ListingRailSection,
-  ListingReviewLanes,
-  ListingReviewSummary,
-  ListingReviewWorkspace,
-  ListingSection,
-  ListingSectionIntro,
-  ListingSourceLedger,
-  ListingStatusLedger,
-  OrganizerEventHighlights,
-  OrganizerResultCardBody,
-  OrganizerResultCardFooter,
-  OrganizerResultCardShell,
-  OrganizerResultCardTopline,
-  ReviewSignalLane,
-  StatusBadge,
-  type ActivityMeta,
-  type PublicReviewCardModel,
-} from "../shared/ui/primitives";
+import {ActivityMark, BadgeRow, ButtonLink, ContentGrid, ListingEventEvidenceList, ListingFactGrid, ListingFormatRow, ListingPolaroid, ListingProfileLayout, ListingProfilePrimary, ListingProfileRail, ListingRailActions, ListingRailIdentity, ListingRailLinkList, ListingRailSection, ListingReviewLanes, ListingReviewSummary, ListingReviewWorkspace, ListingSection, ListingSectionIntro, ListingStatusLedger, OrganizerEventHighlights, OrganizerResultCardBody, OrganizerResultCardFooter, OrganizerResultCardShell, OrganizerResultCardTopline, ReviewSignalLane, StatusBadge, type ActivityMeta, type PublicReviewCardModel} from "../shared/ui/primitives";
 
 const listingRouteIds = ["organizer_listing_canonical", "organizer_listing_legacy"];
 
@@ -239,7 +205,7 @@ export const ListingCardGridShellStory: Story = {
     catchComponent: {
       id: "shared_listing_card_grid_shell",
       routeIds: listingRouteIds,
-      states: ["fact-grid", "note-grid", "format-row"],
+      states: ["fact-grid", "format-row"],
     },
   },
   render: () => (
@@ -249,12 +215,6 @@ export const ListingCardGridShellStory: Story = {
           {label: "City", value: "Mumbai"},
           {label: "Format", value: "Dinner club"},
           {label: "Owner status", value: "Verified"},
-        ]}
-      />
-      <ListingNoteGrid
-        items={[
-          {body: "Public sources show recurring paid dinners with curated tables."},
-          {body: "Owner claim has enough evidence to unlock response controls."},
         ]}
       />
       <ListingFormatRow items={["Dinner", "Curated seating", "Owner response"]} />
@@ -268,18 +228,11 @@ export const ListingEventSectionShellStory: Story = {
     catchComponent: {
       id: "shared_listing_event_section_shell",
       routeIds: listingRouteIds,
-      states: ["download-panel", "event-evidence"],
+      states: ["event-evidence"],
     },
   },
   render: () => (
     <ListingSection variant="events">
-      <ListingEventDownloadPanel
-        kicker="Catch events"
-        heading="Book app-created events in Catch."
-        body="When the organizer publishes inside Catch, event cards route to owned booking instead of source pages."
-      >
-        <ButtonLink href="/download/">Open Catch</ButtonLink>
-      </ListingEventDownloadPanel>
       <ListingEventEvidenceList
         items={[
           {
@@ -330,34 +283,6 @@ export const ListingReviewShellStory: Story = {
         />
       </ListingReviewLanes>
     </ListingReviewWorkspace>
-  ),
-};
-
-export const ListingSourceLedgerShellStory: Story = {
-  name: "Listing source ledger",
-  parameters: {
-    catchComponent: {
-      id: "shared_listing_source_ledger_shell",
-      routeIds: listingRouteIds,
-      states: ["source-ledger", "missing-link"],
-    },
-  },
-  render: () => (
-    <ListingSourceLedger
-      items={[
-        {
-          confidence: "High",
-          detail: "Organizer name, format, and city match the source event profile.",
-          href: "https://example.com/sunday-table-club",
-          label: "Public event source",
-        },
-        {
-          confidence: "Medium",
-          detail: "Social profile confirms recurring dinners but does not expose booking inventory.",
-          label: "Social profile",
-        },
-      ]}
-    />
   ),
 };
 

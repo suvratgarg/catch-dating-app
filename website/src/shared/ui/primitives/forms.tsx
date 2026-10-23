@@ -8,10 +8,8 @@ import type {
 } from "react";
 import type {FormStatus as FormStatusModel} from "../../forms/types";
 import {usePendingRequestNavigationBlocked} from "../../pendingRequest";
-import type {ChipRailItem} from "./layout2";
 import {LiveStatus} from "./feedback";
 import {classNames} from "@catch/web-ui";
-import {ChipRail} from "./layout2";
 
 export type SearchFormVariant = "organizer" | "public";
 
@@ -51,32 +49,6 @@ export function WaitlistSection({
   );
 }
 
-export function MarketingFormatCard({
-  body,
-  className,
-  mark,
-  reveal = true,
-  title,
-  ...props
-}: HTMLAttributes<HTMLElement> & {
-  body: ReactNode;
-  mark: ReactNode;
-  reveal?: boolean;
-  title: ReactNode;
-}) {
-  return (
-    <article
-      {...props}
-      className={classNames("format-card", className)}
-      data-reveal={reveal || undefined}
-    >
-      <span className="format-card__mark">{mark}</span>
-      <h3>{title}</h3>
-      <p>{body}</p>
-    </article>
-  );
-}
-
 export function ListingFormatRow({
   children,
   className,
@@ -107,90 +79,6 @@ export function SelectedListingCard({
   );
 }
 
-export function PlaybookFormatNote({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLParagraphElement> & {children: ReactNode}) {
-  return <p {...props} className={classNames("playbook-format-note", className)}>{children}</p>;
-}
-
-export interface HostCreateMockField {
-  activeOption?: string;
-  label: string;
-  note?: ReactNode;
-  options?: string[];
-  value: ReactNode;
-  wide?: boolean;
-}
-
-export function HostCreateFieldGrid({
-  className,
-  fields,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  fields: HostCreateMockField[];
-}) {
-  return (
-    <div {...props} className={classNames("host-create-flow__fields", className)}>
-      {fields.map((field) => (
-        <div className={field.wide ? "is-wide" : ""} key={field.label}>
-          <span className="ui-label">{field.label}</span>
-          {field.options ? (
-            <ChipRail
-              aria-label={`${field.label}: ${field.value}`}
-              className="host-create-flow__chips"
-              itemElement="b"
-              items={field.options.map((option) => ({
-                active: option === field.activeOption,
-                key: option,
-                label: option,
-              }))}
-            />
-          ) : (
-            <strong>{field.value}</strong>
-          )}
-          {field.note ? <p>{field.note}</p> : null}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-export function HostPreviewFormatRail({
-  className,
-  items,
-  reveal = true,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  items: ChipRailItem[];
-  reveal?: boolean;
-}) {
-  return (
-    <ChipRail
-      {...props}
-      className={classNames("host-preview-format-rail", className)}
-      items={items}
-      reveal={reveal}
-    />
-  );
-}
-
-export function InlineInputField({
-  className,
-  label,
-  ...props
-}: InputHTMLAttributes<HTMLInputElement> & {
-  label: ReactNode;
-}) {
-  return (
-    <label className={className}>
-      <span>{label}</span>
-      <input {...props} />
-    </label>
-  );
-}
-
 export function CheckboxField({
   children,
   className,
@@ -211,22 +99,6 @@ export function ListingReviewCheckbox({
   ...props
 }: Parameters<typeof CheckboxField>[0]) {
   return <CheckboxField {...props} className={classNames("listing-review-checkbox", className)} />;
-}
-
-export function HoneypotField({
-  name = "website",
-}: {
-  name?: string;
-}) {
-  return (
-    <input
-      aria-hidden="true"
-      autoComplete="off"
-      className="honeypot"
-      name={name}
-      tabIndex={-1}
-    />
-  );
 }
 
 export function FormStatus({
@@ -267,22 +139,6 @@ export const Form = forwardRef<
         </fieldset>
       )}
     </form>
-  );
-});
-
-export const WaitlistFormShell = forwardRef<
-  HTMLFormElement,
-  FormHTMLAttributes<HTMLFormElement> & {pending?: boolean; reveal?: boolean}
->(function WaitlistFormShell({
-  className,
-  ...props
-}, ref) {
-  return (
-    <Form
-      {...props}
-      className={classNames("waitlist-form", className)}
-      ref={ref}
-    />
   );
 });
 

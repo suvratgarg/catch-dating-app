@@ -7,11 +7,6 @@ export const activeEventLiveCities = activeMarket.cities.filter(
   (city) => city.status === "live"
 );
 
-export const activeWaitlistCityOptions = [
-  ...activeMarket.cities.map((city) => city.label),
-  activeMarket.otherCityOptionLabel,
-];
-
 export const activeHostApplicationCityOptions = [
   ...activeMarket.cities.map((city) => city.label),
   activeMarket.otherCityOptionLabel,

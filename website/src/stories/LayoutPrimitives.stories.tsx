@@ -3,39 +3,7 @@ import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {FormEvent} from "react";
 import {useState} from "react";
 import {SectionHeader} from "../shared/site/SectionHeader";
-import {
-  ActionGroup,
-  Button,
-  ButtonLink,
-  ChoiceCard,
-  ChoiceChip,
-  ChoiceChipGrid,
-  ContentGrid,
-  ControlRow,
-  EventSuccessModuleGrid,
-  EvidenceStrip,
-  FeaturedOrganizersCta,
-  FormStatus,
-  HostConsoleGrid,
-  HostConsoleHeader,
-  HostConsoleTimeline,
-  HostCreateFieldGrid,
-  HostCreateMockBar,
-  ListingSuccessMetricGrid,
-  ModuleStack,
-  PanelShell,
-  ProductBoardCard,
-  ProductBoardMain,
-  ProductBoardNav,
-  ProductModuleGrid,
-  ProductShell,
-  ProofLedgerRows,
-  StepRail,
-  UiLabel,
-  VerificationMethodGrid,
-  WaitlistFormShell,
-  WaitlistSection,
-} from "../shared/ui/primitives";
+import {ActionGroup, Button, ButtonLink, Form, ChoiceCard, ChoiceChip, ChoiceChipGrid, ContentGrid, ListingSuccessMetricGrid, PanelShell, StepRail, UiLabel, VerificationMethodGrid, WaitlistSection} from "../shared/ui/primitives";
 
 const meta = {
   title: "Marketing Website/Shared/Layout And Form Primitives",
@@ -184,7 +152,7 @@ export const WaitlistSectionStory: Story = {
       titleId="storybook-waitlist-section-title"
       body="Waitlist sections own the intro and form slot while route sections configure copy."
     >
-      <WaitlistFormShell onSubmit={preventSubmit}>
+      <Form onSubmit={preventSubmit}>
         <CatchField
           recipe="input"
           id="storybook-waitlist-name"
@@ -201,44 +169,8 @@ export const WaitlistSectionStory: Story = {
           keyboardType="emailAddress"
         />
         <Button type="submit">Join the list</Button>
-      </WaitlistFormShell>
+      </Form>
     </WaitlistSection>
-  ),
-};
-
-export const WaitlistFormShellStory: Story = {
-  name: "Waitlist form shell",
-  parameters: {
-    catchComponent: {
-      id: "shared_waitlist_form_shell",
-      routeIds: ["home"],
-      states: ["member-fields", "status"],
-    },
-  },
-  render: () => (
-    <WaitlistFormShell onSubmit={preventSubmit}>
-      <CatchField
-        recipe="input"
-        id="storybook-form-name"
-        title="Full name"
-        name="fullName"
-        autoComplete="name"
-        required
-      />
-      <CatchField
-        recipe="input"
-        id="storybook-form-email"
-        title="Email"
-        name="email"
-        autoComplete="email"
-        required
-        keyboardType="emailAddress"
-      />
-      <CatchField recipe="select" id="storybook-form-city" title="City" name="city"
-        values={["Mumbai", "Indore", "Bengaluru"]} itemLabelBuilder={(city) => city} initialValue="Mumbai" />
-      <Button type="submit">Join the list</Button>
-      <FormStatus status={{message: "Saved locally for Storybook review.", tone: "is-success"}} />
-    </WaitlistFormShell>
   ),
 };
 
@@ -294,154 +226,6 @@ export const PanelShellStory: Story = {
         <p>Claim panels show what unlocks after review.</p>
       </PanelShell>
     </ContentGrid>
-  ),
-};
-
-export const ProductShellStory: Story = {
-  name: "Product shells",
-  parameters: {
-    catchComponent: {
-      id: "shared_product_shell",
-      routeIds: ["home", "host"],
-      states: ["product-board", "host-console", "module-stack", "host-create-mock"],
-    },
-  },
-  render: () => (
-    <ContentGrid variant="surface">
-      <ProductShell variant="product-board" reveal>
-        <ProductBoardNav
-          items={[
-            {key: "discover", label: "Discover", active: true},
-            {key: "claim", label: "Claim"},
-            {key: "publish", label: "Publish"},
-          ]}
-        />
-        <ProductBoardMain>
-          <ProductBoardCard>
-            <UiLabel>Organizer profile</UiLabel>
-            <h3>Source-backed listing</h3>
-            <ControlRow label="Profile strength" value="92%" />
-          </ProductBoardCard>
-          <ProductBoardCard tone="dark">
-            <UiLabel>Launch queue</UiLabel>
-            <h3>3 events ready</h3>
-            <p>Configured product cards reuse the board shell without local wrappers.</p>
-          </ProductBoardCard>
-        </ProductBoardMain>
-      </ProductShell>
-      <ProductShell variant="host-console" reveal>
-        <HostConsoleHeader label="Host console" title="Sunday Table Club" />
-        <HostConsoleGrid
-          items={[
-            {label: "RSVPs", value: "84"},
-            {label: "Review score", value: "4.9"},
-          ]}
-        />
-        <HostConsoleTimeline
-          items={[
-            {label: "Event live", value: "Today"},
-            {label: "Safety brief", value: "Sent"},
-          ]}
-        />
-      </ProductShell>
-      <ModuleStack
-        items={[
-          {label: "Playbook", title: "QR check-in", body: "Attendance and host notes stay tied to the event."},
-          {label: "Safety", title: "Guest list controls", body: "Host controls are surfaced before launch."},
-        ]}
-      />
-      <ProductShell variant="host-create-mock" reveal>
-        <HostCreateMockBar activeIndex={1} items={[{id: "details"}, {id: "proof"}, {id: "publish"}]}>
-          <UiLabel>Create event</UiLabel>
-        </HostCreateMockBar>
-        <HostCreateFieldGrid
-          fields={[
-            {label: "Format", value: "Dinner", options: ["Dinner", "Run", "Social"], activeOption: "Dinner"},
-            {label: "Capacity", value: "18 guests"},
-            {label: "Safety note", value: "Host verified", wide: true},
-          ]}
-        />
-      </ProductShell>
-    </ContentGrid>
-  ),
-};
-
-export const RowShellStory: Story = {
-  name: "Row shells",
-  parameters: {
-    catchComponent: {
-      id: "shared_row_shell",
-      routeIds: ["home", "host"],
-      states: ["evidence-strip", "proof-ledger", "featured-cta"],
-    },
-  },
-  render: () => (
-    <ContentGrid variant="surface">
-      <EvidenceStrip
-        items={[
-          {label: "Source-backed organizers", value: "42"},
-          {label: "Launch cities", value: "9"},
-          {label: "Claim packets", value: "18"},
-        ]}
-      />
-      <ProofLedgerRows
-        items={[
-          {label: "Published source", proof: "Public event URL and organizer identity match."},
-          {label: "Owner response", proof: "Claim request is ready for staff review."},
-        ]}
-      />
-      <FeaturedOrganizersCta body="Route sections configure the CTA; the shared primitive owns the repeated row shell.">
-        <ButtonLink href="/organizers/">Browse organizers</ButtonLink>
-      </FeaturedOrganizersCta>
-    </ContentGrid>
-  ),
-};
-
-export const ControlRowStory: Story = {
-  name: "Control row",
-  parameters: {
-    a11y: {test: "todo"},
-    catchComponent: {
-      id: "shared_control_row",
-      routeIds: ["home"],
-      states: ["label-value"],
-    },
-  },
-  render: () => (
-    <ProductBoardCard>
-      <ControlRow label="Source confidence" value="High" />
-      <ControlRow label="Profile strength" value="92%" />
-      <ControlRow label="Owner claim" value="Ready" />
-    </ProductBoardCard>
-  ),
-};
-
-export const SuccessGridStory: Story = {
-  name: "Success grids",
-  parameters: {
-    catchComponent: {
-      id: "shared_success_grid",
-      routeIds: ["host"],
-      states: ["event-success-module"],
-    },
-  },
-  render: () => (
-    <EventSuccessModuleGrid
-      items={[
-        {
-          attendee: "Clear check-in and safety expectations.",
-          host: "Attendance and outcome notes return to the host console.",
-          stage: "Before",
-          title: "Brief",
-        },
-        {
-          attendee: "Guests see the right event context.",
-          host: "Hosts can reconcile arrivals against bookings.",
-          stage: "During",
-          title: "Check in",
-        },
-      ]}
-    />
   ),
 };
 

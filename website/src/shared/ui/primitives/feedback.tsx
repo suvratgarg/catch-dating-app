@@ -112,51 +112,6 @@ export function MarketingConsentBannerShell({
   );
 }
 
-export function PrivacyGuardrail({
-  children,
-  className,
-  reveal = true,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-  reveal?: boolean;
-}) {
-  return (
-    <div
-      {...props}
-      className={classNames("privacy-guardrail", className)}
-      data-reveal={reveal || undefined}
-    >
-      {children}
-    </div>
-  );
-}
-
-export function ListingHeroShareStatus({
-  className,
-  ...props
-}: Parameters<typeof LiveStatus>[0]) {
-  return <LiveStatus {...props} className={classNames("listing-share-status", className)} />;
-}
-
-export function defaultAppDownloadPendingStatus(item: AppDownloadCtaItem) {
-  return `${item.label} is not live yet. Join the waitlist and we will send the link when it opens.`;
-}
-
-export function EventTicketStatus({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLSpanElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <span {...props} className={classNames("event-ticket__status", className)}>
-      {children}
-    </span>
-  );
-}
-
 export function EmptyState({
   children,
   className,

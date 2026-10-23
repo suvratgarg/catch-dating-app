@@ -1,7 +1,7 @@
 import {forwardRef} from "react";
-import type {FormHTMLAttributes, InputHTMLAttributes, ReactNode} from "react";
+import type {FormHTMLAttributes} from "react";
 import type {SearchFormVariant} from "./forms";
-import {Form, InlineInputField, searchFormClassNames} from "./forms";
+import {Form, searchFormClassNames} from "./forms";
 import {ButtonControl, classNames} from "@catch/web-ui";
 
 export const SearchFormShell = forwardRef<
@@ -28,22 +28,6 @@ export const SearchFormShell = forwardRef<
     </Form>
   );
 });
-
-export function PublicSearchInputField({
-  className,
-  label,
-  ...props
-}: InputHTMLAttributes<HTMLInputElement> & {
-  label: ReactNode;
-}) {
-  return (
-    <InlineInputField
-      {...props}
-      className={classNames("public-search__input", className)}
-      label={label}
-    />
-  );
-}
 
 export function StepRail<TId extends string>({
   currentIndex,

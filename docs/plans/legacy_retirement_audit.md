@@ -1,7 +1,7 @@
 ---
 doc_id: legacy_retirement_audit
-version: 1.1.1
-updated: 2026-10-22
+version: 1.1.2
+updated: 2026-10-24
 owner: data_platform
 status: proposed
 ---
@@ -312,7 +312,7 @@ moderation coverage.
 | Onboarding draft versions | v0/v1 step identifiers are migrated on local-draft load (`lib/onboarding/presentation/onboarding_controller.dart:550-565`). | Clear disposable local drafts and delete migration. Difficulty 1, blast 1. |
 | Consumer Remote Config names | Consumer reads role-prefixed keys with fallback to old unprefixed keys (`lib/force_update/domain/app_version_config.dart:9-33`, `lib/force_update/domain/app_version_config.dart:38-73`); template contains both (`firebase/remote_config.template.json:3-86`). | Publish/reset role-scoped configuration first, then remove fallback/template keys. External live Remote Config was not inspected. Difficulty 2, blast 3. |
 | Explore response aliases | backend returns both `organizerIds` and `clubIds`; Flutter falls back; schema requires both (`functions/src/search/exploreSearch.ts:108-113`, `lib/explore/data/explore_search_repository.dart:58-73`, `contracts/callable_responses/explore_search_response.schema.json:8-15`). It also falls back to old Algolia env names (`functions/src/search/exploreSearch.ts:169-179`). | Rename config, deploy, switch response/client, then delete old field/env names. Host analytics has the same dual list (`contracts/callable_responses/host_analytics_response.schema.json:37-43`). Difficulty 2, blast 2. |
-| Waitlist role `runner` | HTTP schema, website, and Functions normalize `runner` to `member` (`contracts/http/join_waitlist_request.schema.json:34`, `website/src/features/waitlist/useWaitlistFormController.ts:25`, `functions/src/waitlist/joinWaitlist.ts:20-23`, `functions/src/waitlist/joinWaitlist.ts:189-195`, `functions/src/waitlist/joinWaitlist.ts:457`). | Remove old fixture/input branch in one tranche. Difficulty 1, blast 1. |
+| Waitlist role `runner` | HTTP schema, website, and Functions normalize `runner` to `member` (`contracts/http/join_waitlist_request.schema.json:34`, `functions/src/waitlist/joinWaitlist.ts:20-23`, `functions/src/waitlist/joinWaitlist.ts:189-195`, `functions/src/waitlist/joinWaitlist.ts:457`). | Remove old fixture/input branch in one tranche. Difficulty 1, blast 1. |
 | Deleted-user tombstone | schema requires `status`; handler treats missing-status tombstone as completed (`contracts/firestore/deleted_users.schema.json:10-29`, `functions/src/safety/accountDeletion.ts:53-63`). | Clear/reseed tombstones, then delete fallback. Difficulty 1, blast 2. |
 | Event-intake decision shape | admin accepts an old flat decision edit (`functions/src/admin/eventIntakeDashboard.ts:471-488`). | Rewrite/delete synthetic decisions before removing branch. Difficulty 1, blast 1. |
 | Host profile linked clubs | `linkedClubIds` is current persisted nomenclature (`contracts/firestore/host_profiles.schema.json:48-53`, `firestore.rules:496-514`, `lib/hosts/data/host_profile_repository.dart:75-91`). | Prefer deriving access from canonical team membership; otherwise rename to `linkedOrganizerIds` with one rewrite. Difficulty 2, blast 3. |

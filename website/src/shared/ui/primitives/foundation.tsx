@@ -1,19 +1,6 @@
-import {useEffect, useMemo, useRef, useState} from "react";
 import {classNames} from "@catch/web-ui";
-import type {
-  CSSProperties,
-  FormEvent,
-  FormHTMLAttributes,
-  HTMLAttributes,
-  MouseEvent,
-  ReactNode,
-} from "react";
+import type {HTMLAttributes, ReactNode} from "react";
 import type {ActionGroupVariant} from "./actions";
-import type {ChipRailItem} from "./layout2";
-import {PlainLink} from "./actionControls";
-import {PublicSearchCityButton, PublicSearchSubmitButton} from "./actions2";
-import {PublicSearchInputField, SearchFormShell} from "./forms2";
-import {ChipRail, PublicSearchResultsPanel} from "./layout2";
 
 export {emptyStateClassNames} from "./feedback";
 export {buttonClassName} from "./actionControls";
@@ -31,29 +18,6 @@ export interface PublicSearchSuggestion {
   meta: string;
   type: "organizer" | "event" | "format";
   activityToken?: string;
-}
-
-export interface PublicSearchBarProps
-  extends Omit<FormHTMLAttributes<HTMLFormElement>, "onSubmit"> {
-  cityHref: string;
-  cityName: string;
-  onCityClick?: (
-    href: string,
-    event: MouseEvent<HTMLButtonElement>
-  ) => void;
-  onSearchSubmit?: (
-    href: string,
-    query: string,
-    event: FormEvent<HTMLFormElement>
-  ) => void;
-  onSuggestionClick?: (
-    suggestion: PublicSearchSuggestion,
-    event: MouseEvent<HTMLAnchorElement>
-  ) => void;
-  placeholder?: string;
-  reveal?: boolean;
-  searchHrefForQuery: (query: string) => string;
-  suggestions: PublicSearchSuggestion[];
 }
 
 export {classNames};
@@ -83,53 +47,6 @@ export const actionGroupClassNames: Record<ActionGroupVariant, string> = {
   marketing: "marketing-actions",
   "host-create-flow": "host-create-flow__actions",
 };
-
-export const listingHeroClassNames = {
-  copy: "listing-hero__copy",
-  eyebrow: "listing-hero__eyebrow",
-  inner: "listing-hero__inner",
-  shell: "listing-hero",
-};
-
-export function LiveMeter({
-  className,
-  items,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  items: readonly ReactNode[];
-}) {
-  return (
-    <div {...props} className={classNames("live-meter", className)}>
-      {items.map((item, index) => (
-        <span key={index}>{item}</span>
-      ))}
-    </div>
-  );
-}
-
-export function ProductBoardNav({
-  className,
-  items,
-  ...props
-}: Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
-  items: ChipRailItem[];
-}) {
-  return <ChipRail {...props} className={classNames("product-board__nav", className)} items={items} />;
-}
-
-export function ProductBoardMain({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("product-board__main", className)}>
-      {children}
-    </div>
-  );
-}
 
 export interface StatStripItem {
   key?: string;
@@ -176,109 +93,5 @@ export function OperationalNote({
       <strong>{title}</strong>
       <p>{body}</p>
     </div>
-  );
-}
-
-export function PublicSearchResultGlyph({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLSpanElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <span
-      {...props}
-      className={classNames("public-search__glyph", className)}
-      aria-hidden={props["aria-hidden"] ?? "true"}
-    >
-      {children}
-    </span>
-  );
-}
-
-export function PublicSearchBar({
-  cityHref,
-  cityName,
-  onCityClick,
-  onSearchSubmit,
-  onSuggestionClick,
-  placeholder = "Clubs, organizers, venues, formats, events...",
-  reveal = true,
-  searchHrefForQuery,
-  suggestions,
-  ...props
-}: PublicSearchBarProps) {
-  const [query, setQuery] = useState("");
-  const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLFormElement | null>(null);
-  const normalizedQuery = query.trim().toLowerCase();
-  const results = useMemo(() => {
-    if (normalizedQuery.length < 2) return suggestions.slice(0, 5);
-    return suggestions
-      .filter((item) =>
-        [item.label, item.meta, item.type].join(" ").toLowerCase().includes(normalizedQuery)
-      )
-      .slice(0, 7);
-  }, [normalizedQuery, suggestions]);
-
-  useEffect(() => {
-    const handlePointerDown = (event: globalThis.MouseEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handlePointerDown);
-    return () => document.removeEventListener("mousedown", handlePointerDown);
-  }, []);
-
-  function submitSearch(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const trimmedQuery = query.trim();
-    onSearchSubmit?.(searchHrefForQuery(trimmedQuery), trimmedQuery, event);
-  }
-
-  return (
-    <SearchFormShell {...props} variant="public" onSubmit={submitSearch} ref={rootRef} reveal={reveal}>
-      <PublicSearchCityButton
-        type="button"
-        onClick={(event) => onCityClick?.(cityHref, event)}
-      >
-        {cityName}
-      </PublicSearchCityButton>
-      <PublicSearchInputField
-        label={"Search Catch"}
-        name="q"
-        value={query}
-        placeholder={placeholder}
-        onChange={(event) => {
-          setQuery(event.currentTarget.value);
-          setOpen(true);
-        }}
-        onFocus={() => setOpen(true)}
-      />
-      <PublicSearchSubmitButton />
-      {open && results.length ? (
-        <PublicSearchResultsPanel>
-          {results.map((item) => (
-            <PlainLink
-              href={item.href}
-              key={item.id}
-              onClick={(event) => onSuggestionClick?.(item, event)}
-              style={{"--activity": item.activityToken ?? "var(--website-accent)"} as CSSProperties}
-            >
-              <PublicSearchResultGlyph>
-                {item.type === "event" ? "EV" : item.type === "format" ? "FT" : "OR"}
-              </PublicSearchResultGlyph>
-              <span>
-                <strong>{item.label}</strong>
-                <small>{item.meta}</small>
-              </span>
-              <em>{item.type}</em>
-            </PlainLink>
-          ))}
-        </PublicSearchResultsPanel>
-      ) : null}
-    </SearchFormShell>
   );
 }

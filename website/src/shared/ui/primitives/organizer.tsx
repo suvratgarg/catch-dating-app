@@ -5,8 +5,8 @@ import type {
   ReactNode,
 } from "react";
 import {PlainLink} from "./actions";
-import {StatStrip, classNames, listingHeroClassNames} from "./foundation";
-import {UiLabel, listingGridClassNames, listingSectionClassNames, organizerSearchSectionClassNames} from "./layout";
+import {classNames} from "./foundation";
+import {UiLabel, listingGridClassNames, listingSectionClassNames} from "./layout";
 import {CardGrid} from "./layout2";
 
 export interface ActivityListing {
@@ -38,23 +38,6 @@ export type ListingFactGridItem = {
   value: ReactNode;
 };
 
-export type ListingNoteGridItem = {
-  body: ReactNode;
-  key?: string;
-};
-
-export type ListingSourceLedgerItem = {
-  confidence: ReactNode;
-  detail: ReactNode;
-  href?: string;
-  key?: string;
-  label: ReactNode;
-  linkLabel?: ReactNode;
-  onClick?: AnchorHTMLAttributes<HTMLAnchorElement>["onClick"];
-  rel?: AnchorHTMLAttributes<HTMLAnchorElement>["rel"];
-  target?: AnchorHTMLAttributes<HTMLAnchorElement>["target"];
-};
-
 export type ListingEventEvidenceItem = {
   date: ReactNode;
   facts: ReactNode[];
@@ -84,10 +67,6 @@ export type ListingRailLinkItem = {
   target?: AnchorHTMLAttributes<HTMLAnchorElement>["target"];
 };
 
-export type OrganizerSearchSectionVariant = "claim-pressure" | "hero" | "results";
-
-export type ListingHeroElement = "section";
-
 export type ListingGridVariant = "default" | "fit";
 
 export type ListingSectionVariant =
@@ -96,173 +75,6 @@ export type ListingSectionVariant =
   | "reviews"
   | "split"
   | "success";
-
-export function OrganizerSearchSection({
-  children,
-  className,
-  reveal = false,
-  variant,
-  ...props
-}: HTMLAttributes<HTMLElement> & {
-  children: ReactNode;
-  reveal?: boolean;
-  variant: OrganizerSearchSectionVariant;
-}) {
-  return (
-    <section
-      {...props}
-      className={classNames(organizerSearchSectionClassNames[variant], className)}
-      data-reveal={reveal || undefined}
-    >
-      {children}
-    </section>
-  );
-}
-
-export function OrganizerSearchStats({
-  className,
-  ...props
-}: Parameters<typeof StatStrip>[0]) {
-  return <StatStrip {...props} className={classNames("organizer-search-stats", className)} />;
-}
-
-export function OrganizerResultSummary({
-  children,
-  className,
-  reveal = true,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-  reveal?: boolean;
-}) {
-  return (
-    <div
-      {...props}
-      className={classNames("organizer-result-summary", className)}
-      data-reveal={reveal || undefined}
-    >
-      {children}
-    </div>
-  );
-}
-
-export function DirectoryClaimPressureCopy({
-  children,
-  className,
-  reveal = true,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-  reveal?: boolean;
-}) {
-  return (
-    <div
-      {...props}
-      className={classNames("directory-claim-pressure__copy", className)}
-      data-reveal={reveal || undefined}
-    >
-      {children}
-    </div>
-  );
-}
-
-export function DirectoryClaimPressureStats({
-  className,
-  ...props
-}: Parameters<typeof StatStrip>[0]) {
-  return <StatStrip {...props} className={classNames("directory-claim-pressure__stats", className)} />;
-}
-
-export function DirectoryClaimPressureList({
-  children,
-  className,
-  reveal = true,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-  reveal?: boolean;
-}) {
-  return (
-    <div
-      {...props}
-      className={classNames("directory-claim-pressure__list", className)}
-      data-reveal={reveal || undefined}
-    >
-      {children}
-    </div>
-  );
-}
-
-export function ListingHeroShell({
-  as: Element = "section",
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLElement> & {
-  as?: ListingHeroElement;
-  children: ReactNode;
-}) {
-  return (
-    <Element {...props} className={classNames(listingHeroClassNames.shell, className)}>
-      {children}
-    </Element>
-  );
-}
-
-export function ListingHeroInner({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames(listingHeroClassNames.inner, className)}>
-      {children}
-    </div>
-  );
-}
-
-export function ListingHeroCopy({
-  children,
-  className,
-  reveal = true,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-  reveal?: boolean;
-}) {
-  return (
-    <div
-      {...props}
-      className={classNames(listingHeroClassNames.copy, className)}
-      data-reveal={reveal || undefined}
-    >
-      {children}
-    </div>
-  );
-}
-
-export function ListingHeroEyebrow({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames(listingHeroClassNames.eyebrow, className)}>
-      {children}
-    </div>
-  );
-}
-
-export function ListingHeroMetrics({
-  className,
-  ...props
-}: Parameters<typeof StatStrip>[0]) {
-  return <StatStrip {...props} className={classNames("listing-panel__metrics", className)} />;
-}
 
 export function ListingProfileLayout({
   activityToken,

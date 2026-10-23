@@ -1,19 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {
-  ActivityMark,
-  AppDownloadCtaGroup,
-  Button,
-  ContentGrid,
-  FeaturedOrganizerCardGrid,
-  LiveMeter,
-  MarketingConsentBannerShell,
-  MarketingLoopList,
-  MarketingSection,
-  MarketingSectionCopy,
-  StatusBadge,
-  type ActivityMeta,
-  type FeaturedOrganizerCardItem,
-} from "../shared/ui/primitives";
+import {ActivityMark, Button, FeaturedOrganizerCardGrid, MarketingConsentBannerShell, MarketingLoopList, StatusBadge, type ActivityMeta, type FeaturedOrganizerCardItem} from "../shared/ui/primitives";
 import {memberLoop} from "@content/marketing";
 
 const appStoreItems = [
@@ -88,30 +74,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const MarketingSectionShellStory: Story = {
-  name: "Section shell",
-  parameters: {
-    catchComponent: {
-      id: "shared_marketing_section_shell",
-      routeIds: ["home", "host", "organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["section-shell", "section-copy", "live-meter"],
-    },
-  },
-  render: () => (
-    <MarketingSection variant="proof" aria-labelledby="storybook-marketing-section-title">
-      <MarketingSectionCopy
-        eyebrow="Host proof"
-        titleId="storybook-marketing-section-title"
-        title="A marketing section configures copy, proof, and live signals."
-        body="Feature sections provide the content; shared primitives own spacing, copy rails, and repeated shell styling."
-        variant="proof"
-      >
-        <LiveMeter items={["42 source-backed organizers", "9 cities", "3 launch loops"]} />
-      </MarketingSectionCopy>
-    </MarketingSection>
-  ),
-};
-
 export const MarketingLoopListStory: Story = {
   name: "Loop list",
   parameters: {
@@ -148,31 +110,6 @@ export const MarketingConsentBannerShellStory: Story = {
         </>
       )}
     />
-  ),
-};
-
-export const AppDownloadCtaGroupStory: Story = {
-  name: "App download CTA group",
-  parameters: {
-    catchComponent: {
-      id: "shared_app_download_shell",
-      routeIds: ["home", "organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["default", "panel", "pending-status"],
-    },
-  },
-  render: () => (
-    <ContentGrid variant="surface">
-      <AppDownloadCtaGroup
-        items={appStoreItems}
-        placement="storybook_default"
-      />
-      <AppDownloadCtaGroup
-        initialStatus="Store links are queued for launch."
-        items={appStoreItems}
-        placement="storybook_panel"
-        variant="panel"
-      />
-    </ContentGrid>
   ),
 };
 

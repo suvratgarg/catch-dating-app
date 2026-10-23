@@ -55,13 +55,13 @@ groups, website control rows, website waitlist/application sections, website wai
 website configured success grids, website claim shells, website claim-flow route/root/auth-row shells, website content grids, and
 website panel shells, website product shells including product-module grids, website row/list shells, website page shells,
 Host Preview route shells, Host Page route shells, Host Application flow shells,
-Host feature section shells, marketing section shells, marketing info-card shells, marketing loop-list shells, marketing consent banner shells, featured organizer card shells, app-download CTA group/shells through `AppDownloadCtaGroup`,
+Host feature section shells, marketing section shells, marketing info-card shells, marketing loop-list shells, marketing consent banner shells, featured organizer card shells, raw app-download CTA and store-button shells (retired in CAT-218),
 organizer listing shells, organizer listing hero shells, organizer listing review shells,
 organizer listing claim shells, organizer listing intro shells, organizer listing card-grid shells,
 organizer listing event section shells including event-action cards, organizer listing source ledger shells,
 organizer search section shells,
-organizer search result shells, and search-form shells including PublicSearchBar
-ownership, direct public-search slot composition, public event-card shells, and
+organizer search result shells, and search-form shells, the retired public-search and public event-card
+shells, and
 the retired website legacy site barrel/import boundary.
 Admin feature UI exports are part of this same boundary: route/workspace entry
 components may be exported from `admin/src/features/**`, while reusable panels,

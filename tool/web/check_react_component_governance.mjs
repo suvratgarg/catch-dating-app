@@ -1497,7 +1497,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use AppDownloadCtaGroup with marketing useAppDownloadCtas configuration instead of local AppDownloadCtas components, direct app-download shell composition, or raw store-button classes.",
+    guidance: "App-download CTAs and store buttons were retired in CAT-218 (record in CAT-224). Rebuild store links on @catch/web-ui components instead of reviving raw app-download or store-button classes.",
   },
   {
     family: "website-badge-status",
@@ -1582,7 +1582,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use PublicSearchBar, SearchFormShell, and PublicEventCard instead of rendering website public discovery shells directly.",
+    guidance: "Use SearchFormShell for the organizer search form. The public search bar and PublicEventCard were retired in CAT-218 (record in CAT-224); rebuild discovery on @catch/web-ui instead of raw public-search or public-event-card shells.",
   },
   {
     family: "website-section-heading",

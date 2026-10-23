@@ -1,24 +1,4 @@
-export interface SectionCopy {
-  readonly eyebrow?: string;
-  readonly title: string;
-  readonly body?: string;
-}
 
-export interface CardCopy {
-  readonly title: string;
-  readonly body: string;
-  readonly label?: string;
-}
-
-export type Card = CardCopy;
-
-export interface LoopStepCopy {
-  readonly step: string;
-  readonly title: string;
-  readonly body: string;
-}
-
-export type LoopStep = LoopStepCopy;
 
 export type StorePlatform = "android" | "ios";
 
@@ -27,32 +7,6 @@ export interface StoreCtaCopy {
   readonly kicker: string;
   readonly label: string;
   readonly shortLabel: string;
-}
-
-export interface FaqItemCopy {
-  readonly question: string;
-  readonly answer: string;
-}
-
-export type FaqItem = FaqItemCopy;
-
-export interface PlaybookStage {
-  readonly id: string;
-  readonly label: string;
-  readonly sub: string;
-  readonly guestLine: string;
-  readonly hostLine: string;
-}
-
-export interface PlaybookModule {
-  readonly id: string;
-  readonly anchor: string;
-  readonly publicName: string;
-  readonly stageId: string;
-  readonly chip?: "NEW POWER" | "OFF YOUR PLATE";
-  readonly oneLiner: string;
-  readonly more: string;
-  readonly fits: string;
 }
 
 export interface StaticPageMetaCopy {

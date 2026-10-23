@@ -1,11 +1,7 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {MemoryRouter} from "react-router";
 import {hostListings} from "./fixtures/hostListings";
-import {
-  DirectoryClaimPressureStrip,
-  OrganizerResultsSection,
-  OrganizerSearchHeroSection,
-} from "../features/organizers/sections/OrganizerSearchSections";
+import {OrganizerResultsSection, OrganizerSearchHeroSection} from "../features/organizers/sections/OrganizerSearchSections";
 import {isUnclaimedListing} from "../features/organizers/selectors";
 import {useOrganizerDirectoryController} from "../features/organizers/useOrganizerDirectoryController";
 
@@ -40,26 +36,6 @@ export const OrganizerSearchHero: Story = {
     <MemoryRouter initialEntries={["/organizers/?q=dinner&status=unclaimed"]}>
       <OrganizerSearchHeroFrame />
     </MemoryRouter>
-  ),
-};
-
-export const DirectoryClaimPressure: Story = {
-  name: "Claim pressure strip",
-  parameters: {
-    catchComponent: {
-      id: "organizer_directory_claim_pressure",
-      routeIds: ["organizer_search"],
-      states: ["default", "claimable-listings"],
-    },
-  },
-  render: () => (
-    <DirectoryClaimPressureStrip
-      claimableListings={claimableListings}
-      eventBackedCount={hostListings.filter((listing) =>
-        Boolean(listing.catchEvents?.length || listing.externalEvents?.length || listing.eventEvidence?.length)
-      ).length}
-      unclaimedCount={claimableListings.length}
-    />
   ),
 };
 
