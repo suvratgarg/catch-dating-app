@@ -9,10 +9,11 @@ const read = (relative: string) =>
   fs.readFileSync(fileURLToPath(new URL(relative, import.meta.url)), "utf8");
 
 const gapsDart = read("../../../catch_tokens/lib/src/semantic/catch_gaps.dart");
+const generatedTokensDart = read("../../../catch_tokens/lib/generated/catch_design_tokens.g.dart");
+const generatedTokensCss = read("../../../web-config/generated/catch-tokens.css");
 const insetsDart = read("../../../catch_tokens/lib/src/semantic/catch_insets.dart");
 const textStylesDart = read("../../../catch_ui/lib/src/foundations/catch_text_styles.dart");
 const textVariantDart = read("../../../catch_ui/lib/src/primitives/catch_text_variant.dart");
-const foundationsCss = read("../foundations.css");
 const gapCss = read("./CatchGap.module.css");
 const sectionListCss = read("./CatchSectionList.module.css");
 const insetCss = read("./CatchInset.module.css");
@@ -37,20 +38,41 @@ function selectorValues(css: string, attribute: string) {
 }
 
 describe("CatchGaps parity", () => {
-  const dartGaps = Object.fromEntries(
-    [...gapsDart.matchAll(/static const double (\w+) = CatchSpacing\.(\w+);/g)]
-      .map((match) => [match[1], match[2]]),
+  // CatchGaps names each role after the generated gap token it reads; the web
+  // reads the same generated values as --catch-gap-*.
+  const roles = [...gapsDart.matchAll(/static const double (\w+) =\s*GeneratedCatchGapTokens\.(\w+);/g)]
+    .map((match) => {
+      expect(match[2], `CatchGaps.${match[1]} reads another token`).toBe(match[1]);
+      return match[1];
+    })
+    .sort();
+  const generatedClass = generatedTokensDart.match(
+    /abstract final class GeneratedCatchGapTokens \{([^}]*)\}/,
+  )?.[1] ?? "";
+  const generatedValues = Object.fromEntries(
+    [...generatedClass.matchAll(/static const double (\w+) = ([\d.]+);/g)]
+      .map((match) => [match[1], Number(match[2])]),
   );
 
-  it("declares every Flutter gap role with the same spacing step", () => {
-    expect(Object.keys(dartGaps).length).toBeGreaterThan(0);
-    for (const [role, step] of Object.entries(dartGaps)) {
-      expect(foundationsCss).toContain(`--catch-gap-${kebab(role)}: var(--catch-space-${step});`);
+  it("generates every Flutter gap role for the web with the Flutter value", () => {
+    expect(roles.length).toBeGreaterThan(0);
+    expect(Object.keys(generatedValues).sort()).toEqual(roles);
+    for (const role of roles) {
+      expect(generatedTokensCss, role)
+        .toContain(`--catch-gap-${kebab(role)}: ${generatedValues[role]}px;`);
+    }
+  });
+
+  it("binds every Flutter gap role to its generated token", () => {
+    for (const role of roles) {
+      const token = `var(--catch-gap-${kebab(role)})`;
+      expect(declaration(cssRule(gapCss, `.gap[data-size="${role}"]`), "gap"), role).toBe(token);
+      expect(declaration(cssRule(sectionListCss, `.list[data-gap="${role}"]`), "gap"), role)
+        .toBe(token);
     }
   });
 
   it("offers exactly the Flutter gap roles on CatchGap and CatchSectionList", () => {
-    const roles = Object.keys(dartGaps).sort();
     expect(selectorValues(gapCss, "size").sort()).toEqual(roles);
     expect(selectorValues(sectionListCss, "gap").sort()).toEqual(roles);
   });
@@ -151,7 +173,7 @@ describe("CatchTextStyles parity", () => {
     for (const variant of variants) {
       const flutter = flutterRole(variant);
       const rule = cssRule(textCss, `.text[data-variant="${variant}"]`);
-      const profile = `--catch-typography-ios-${kebab(flutter.profile)}`;
+      const profile = `--catch-typography-web-${kebab(flutter.profile)}`;
       expect(declaration(rule, "--catch-text-size"), variant).toBe(`var(${profile}-size)`);
       expect(declaration(rule, "--catch-text-line-height"), variant)
         .toBe(`var(${profile}-line-height)`);

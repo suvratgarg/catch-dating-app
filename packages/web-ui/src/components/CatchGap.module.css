@@ -1,4 +1,4 @@
-/* Gap roles read the semantic gap variables declared in foundations.css. */
+/* Gap roles read the generated CatchGaps tokens (--catch-gap-*). */
 .gap {
   display: flex;
   min-width: 0;

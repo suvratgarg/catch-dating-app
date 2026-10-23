@@ -1,6 +1,6 @@
 /*
  * Page insets mirror CatchPageBody.screen and CatchInsets.pageBody in
- * packages/catch_ui: page gutter, page body start, and CatchSpacing.screenPb.
+ * packages/catch_ui: page gutter, page body start and page body end.
  */
 .body {
   /* Reset so a nested body never inherits its parent's insets. */
@@ -11,7 +11,7 @@
   min-width: 0;
   margin: 0;
   padding-block: var(--catch-page-body-pt, var(--catch-layout-page-body-start))
-    var(--catch-page-body-pb, var(--catch-space-s5));
+    var(--catch-page-body-pb, var(--catch-layout-page-body-end));
   padding-inline: var(--catch-page-body-gutter);
 }
 
