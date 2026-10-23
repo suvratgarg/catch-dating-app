@@ -47,8 +47,16 @@
       },
       "appPrivacy": {
         "publishedOn": "2026-10-20",
-        "dataTypes": 18,
-        "allLinked": true,
+        "updatedOn": "2026-10-23",
+        "dataTypes": 20,
+        "linkedDataTypes": 19,
+        "notLinkedDataTypes": [
+          "Performance Data"
+        ],
+        "addedOn20261023": [
+          "Performance Data",
+          "Other Data Types"
+        ],
         "tracking": false
       },
       "dsaTraderStatus": "submitted_in_review",
