@@ -150,16 +150,25 @@ String _buildWebsiteCss({
 /// Theme roles let a component read one colour name in either theme. Light is
 /// the default; a subtree opts into dark with `data-catch-theme="dark"`.
 void _writeThemeRoles(StringBuffer buffer, _TokenRegistry registry) {
-  List<String> roles(String mode) => [
-    for (final token in registry.tokens.values.where(_isThemeColorToken))
-      if (token.path[1] == mode) token.path[3],
+  List<String> roles(String mode, String group) => [
+    for (final token in registry.tokens.values)
+      if (token.path.length == 4 &&
+          token.path[0] == 'theme' &&
+          token.path[1] == mode &&
+          token.path[2] == group)
+        token.path[3],
   ];
-  final light = roles('light');
-  final dark = roles('dark');
-  if (light.isEmpty ||
-      light.length != dark.length ||
-      !light.toSet().containsAll(dark)) {
-    throw const FormatException('Light and dark colour roles must match.');
+  // Colours resolve to --catch-theme-<role>; themed shadows resolve to the
+  // same --catch-elevation-<role> name in both themes.
+  final groups = {'color': '--catch-theme-', 'elevation': '--catch-elevation-'};
+  for (final group in groups.keys) {
+    final light = roles('light', group);
+    final dark = roles('dark', group);
+    if ((group == 'color' && light.isEmpty) ||
+        light.length != dark.length ||
+        !light.toSet().containsAll(dark)) {
+      throw FormatException('Light and dark $group roles must match.');
+    }
   }
   for (final (selector, mode) in [
     (':root,\n[data-catch-theme="light"]', 'light'),
@@ -168,11 +177,13 @@ void _writeThemeRoles(StringBuffer buffer, _TokenRegistry registry) {
     buffer
       ..writeln()
       ..writeln('$selector {');
-    for (final role in light) {
-      buffer.writeln(
-        '  --catch-theme-${_kebab(role)}: '
-        'var(${_cssVariableName(['theme', mode, 'color', role])});',
-      );
+    for (final MapEntry(key: group, value: prefix) in groups.entries) {
+      for (final role in roles('light', group)) {
+        buffer.writeln(
+          '  $prefix${_kebab(role)}: '
+          'var(${_cssVariableName(['theme', mode, group, role])});',
+        );
+      }
     }
     buffer.writeln('}');
   }
@@ -1096,6 +1107,27 @@ void _writeFoundationTokens(StringBuffer buffer, _TokenRegistry registry) {
   }
   buffer.writeln('}');
   _writeDimensionGroup(buffer, registry, 'gap', 'GeneratedCatchGapTokens');
+  _writeNumberGroup(buffer, registry, 'opacity', 'GeneratedCatchOpacityTokens');
+  _writeNumberGroup(buffer, registry, 'field', 'GeneratedCatchFieldTokens');
+  buffer
+    ..writeln()
+    ..writeln('abstract final class GeneratedCatchThemeElevationTokens {');
+  for (final token in registry.tokens.values.where(
+    (t) =>
+        t.path.length == 4 && t.path[0] == 'theme' && t.path[2] == 'elevation',
+  )) {
+    if (token.type != 'shadow') {
+      throw FormatException(
+        'Unsupported theme elevation: ${token.referencePath}',
+      );
+    }
+    buffer.writeln(
+      '  static const List<BoxShadow> ${_dartThemeTokenName(token)} = <BoxShadow>[',
+    );
+    _writeDartShadowLayers(buffer, registry.resolvedValue(token));
+    buffer.writeln('  ];');
+  }
+  buffer.writeln('}');
   _writeDimensionGroup(
     buffer,
     registry,
@@ -1108,6 +1140,33 @@ void _writeFoundationTokens(StringBuffer buffer, _TokenRegistry registry) {
     'windowSize',
     'GeneratedCatchWindowSizeTokens',
   );
+}
+
+/// A flat group of plain numbers, emitted as doubles named by their keys.
+void _writeNumberGroup(
+  StringBuffer buffer,
+  _TokenRegistry registry,
+  String group,
+  String className,
+) {
+  final tokens = registry.tokens.values
+      .where((t) => t.path.length == 2 && t.path[0] == group)
+      .toList();
+  if (tokens.isEmpty) throw FormatException('Missing $group tokens.');
+  buffer
+    ..writeln()
+    ..writeln('abstract final class $className {');
+  for (final token in tokens) {
+    final value = registry.resolvedValue(token);
+    if (token.type != 'number' || value is! num) {
+      throw FormatException('Unsupported $group token: ${token.referencePath}');
+    }
+    buffer.writeln(
+      '  static const double ${token.path.last} = '
+      '${_formatDartNumber(value.toDouble())};',
+    );
+  }
+  buffer.writeln('}');
 }
 
 /// A flat group of px dimensions, emitted as doubles named by their keys.

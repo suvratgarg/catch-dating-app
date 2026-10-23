@@ -1820,6 +1820,41 @@
             }
           }
         }
+      },
+      "elevation": {
+        "fieldActive": {
+          "$type": "shadow",
+          "$description": "Lift under the active field row: CatchElevation.fieldActive.",
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.08627450980392157,
+                  0.0784313725490196,
+                  0.058823529411764705
+                ],
+                "alpha": 0.08
+              },
+              "offsetX": {
+                "value": 0,
+                "unit": "px"
+              },
+              "offsetY": {
+                "value": 6,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 18,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 0,
+                "unit": "px"
+              }
+            }
+          ]
+        }
       }
     },
     "dark": {
@@ -2104,6 +2139,41 @@
               "note": "Hero/wow gradients should derive from ActivityPalette or ink."
             }
           }
+        }
+      },
+      "elevation": {
+        "fieldActive": {
+          "$type": "shadow",
+          "$description": "Lift under the active field row: CatchElevation.fieldActive.",
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "alpha": 0.55
+              },
+              "offsetX": {
+                "value": 0,
+                "unit": "px"
+              },
+              "offsetY": {
+                "value": 8,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 22,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 0,
+                "unit": "px"
+              }
+            }
+          ]
         }
       }
     }
@@ -2503,6 +2573,13 @@
         "unit": "px"
       }
     },
+    "interactiveTile": {
+      "$description": "Active field and interactive tile corners: CatchRadius.interactiveTile.",
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      }
+    },
     "pill": {
       "$value": {
         "value": 999,
@@ -2699,6 +2776,23 @@
     "$type": "number",
     "activityMapPinShadow": {
       "$value": 0.3
+    },
+    "controlOverlayHover": {
+      "$description": "Ink tint over a row or control on hover: CatchOpacity.controlOverlayHover.",
+      "$value": 0.04
+    }
+  },
+  "field": {
+    "$type": "number",
+    "$description": "Field row state values: CatchFieldTokens in Flutter, --catch-field-* on the web. Tint alphas apply to ink over the row surface.",
+    "activeTintAlpha": {
+      "$value": 0.04
+    },
+    "pressedTintAlpha": {
+      "$value": 0.06
+    },
+    "disabledOpacity": {
+      "$value": 0.4
     }
   },
   "font": {

@@ -1,3 +1,4 @@
+import 'package:catch_tokens/generated/catch_design_tokens.g.dart';
 import 'package:catch_tokens/src/primitives/catch_icon.dart';
 import 'package:catch_tokens/src/primitives/catch_radius.dart';
 import 'package:catch_tokens/src/primitives/catch_spacing.dart';
@@ -104,9 +105,12 @@ abstract final class CatchFieldTokens {
   static const double underlineSweepBottomOffset =
       CatchStroke.underline - CatchStroke.hairline;
 
-  static const double activeTintAlpha = 0.04;
-  static const double pressedTintAlpha = 0.06;
-  static const double disabledOpacity = 0.40;
+  static const double activeTintAlpha =
+      GeneratedCatchFieldTokens.activeTintAlpha;
+  static const double pressedTintAlpha =
+      GeneratedCatchFieldTokens.pressedTintAlpha;
+  static const double disabledOpacity =
+      GeneratedCatchFieldTokens.disabledOpacity;
   static const double boundedStepperOpacity = 0.32;
   static const double savingCancelOpacity = 0.45;
   static const double savingToggleOpacity = 0.55;

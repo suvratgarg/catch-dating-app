@@ -61,15 +61,10 @@ abstract final class CatchElevation {
   /// Exact active-field lift from the Field handoff. Field rows deliberately
   /// use one shadow layer so the pressed-to-focused handoff reads as one tile
   /// instead of two competing elevations.
-  static List<BoxShadow> fieldActive(Brightness brightness) => <BoxShadow>[
-    BoxShadow(
-      color: brightness == Brightness.dark
-          ? const Color.fromRGBO(0, 0, 0, 0.55)
-          : const Color.fromRGBO(22, 20, 15, 0.08),
-      blurRadius: brightness == Brightness.dark ? 22 : 18,
-      offset: Offset(0, brightness == Brightness.dark ? 8 : 6),
-    ),
-  ];
+  static List<BoxShadow> fieldActive(Brightness brightness) =>
+      brightness == Brightness.dark
+      ? GeneratedCatchThemeElevationTokens.darkFieldActive
+      : GeneratedCatchThemeElevationTokens.lightFieldActive;
 
   static List<BoxShadow> segmentedSelected(CatchTokens t) => <BoxShadow>[
     BoxShadow(

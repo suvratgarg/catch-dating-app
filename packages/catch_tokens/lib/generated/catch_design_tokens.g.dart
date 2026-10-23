@@ -95,6 +95,7 @@ abstract final class GeneratedCatchRadiusTokens {
   static const double sm = 8.0;
   static const double md = 14.0;
   static const double lg = 20.0;
+  static const double interactiveTile = 12.0;
   static const double pill = 999.0;
 }
 
@@ -445,6 +446,34 @@ abstract final class GeneratedCatchGapTokens {
   static const double formField = 16.0;
   static const double section = 24.0;
   static const double majorSection = 32.0;
+}
+
+abstract final class GeneratedCatchOpacityTokens {
+  static const double activityMapPinShadow = 0.3;
+  static const double controlOverlayHover = 0.04;
+}
+
+abstract final class GeneratedCatchFieldTokens {
+  static const double activeTintAlpha = 0.04;
+  static const double pressedTintAlpha = 0.06;
+  static const double disabledOpacity = 0.4;
+}
+
+abstract final class GeneratedCatchThemeElevationTokens {
+  static const List<BoxShadow> lightFieldActive = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(22, 20, 15, 0.08),
+      blurRadius: 18.0,
+      offset: Offset(0.0, 6.0),
+    ),
+  ];
+  static const List<BoxShadow> darkFieldActive = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(0, 0, 0, 0.55),
+      blurRadius: 22.0,
+      offset: Offset(0.0, 8.0),
+    ),
+  ];
 }
 
 abstract final class GeneratedCatchStrokeTokens {
