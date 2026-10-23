@@ -65,7 +65,7 @@
   font-size: 13px;
   line-height: 1.4;
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-sm);
 }
 
@@ -78,7 +78,7 @@
   gap: var(--catch-space-micro6);
   padding: var(--catch-space-micro6) var(--catch-space-s2);
   background: color-mix(in srgb, var(--surface) 96%, transparent);
-  border-block-end: 1px solid var(--line);
+  border-block-end: var(--catch-stroke-hairline) solid var(--line);
   backdrop-filter: blur(12px);
 }
 
@@ -159,7 +159,7 @@
   color: var(--muted);
   font-size: 12px;
   background: var(--surface-subtle);
-  border: 1px solid var(--line);
+  border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-xs);
 }
 
@@ -198,7 +198,7 @@
   font: inherit;
   font-size: 12px;
   background: var(--surface);
-  border: 1px solid var(--line-strong);
+  border: var(--catch-stroke-hairline) solid var(--line-strong);
   border-radius: var(--catch-radius-xs);
   cursor: pointer;
 }
@@ -289,7 +289,7 @@
   max-width: min(560px, calc(100% - 20px));
   padding: var(--catch-space-s1) var(--catch-space-s2);
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-xs);
   box-shadow: 0 8px 20px color-mix(in srgb, var(--ink) 12%, transparent);
 }
@@ -323,7 +323,7 @@
   padding: var(--catch-space-s3);
   font-size: 12px;
   background: var(--surface);
-  border: 1px solid var(--line-strong);
+  border: var(--catch-stroke-hairline) solid var(--line-strong);
   border-radius: var(--catch-radius-sm);
   box-shadow: 0 12px 32px color-mix(in srgb, var(--ink) 16%, transparent);
 }
@@ -345,7 +345,7 @@
   place-items: center;
   font: 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
   background: var(--surface-subtle);
-  border: 1px solid var(--line);
+  border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-xs);
 }
 
@@ -392,7 +392,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   background: var(--surface);
-  border-block-end: 1px solid var(--line);
+  border-block-end: var(--catch-stroke-hairline) solid var(--line);
 }
 
 .intake-batch-table thead th {
@@ -517,7 +517,7 @@
   font-size: 12px;
   line-height: 1.4;
   background: var(--surface-subtle);
-  border: 1px solid var(--line);
+  border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-xs);
 }
 
@@ -557,7 +557,7 @@
 .intake-batch-status.warning,
 .intake-batch-status.danger {
   padding: var(--catch-space-micro3) var(--catch-space-micro6);
-  border: 1px solid currentcolor;
+  border: var(--catch-stroke-hairline) solid currentcolor;
   border-radius: var(--catch-radius-pill);
 }
 
@@ -591,7 +591,7 @@
     linear-gradient(90deg, transparent, color-mix(in srgb, var(--surface) 70%, transparent), transparent),
     var(--surface-subtle);
   background-size: 220px 100%, 100% 100%;
-  border-block-end: 1px solid var(--line);
+  border-block-end: var(--catch-stroke-hairline) solid var(--line);
   animation: intake-skeleton 1.4s linear infinite;
 }
 
@@ -628,7 +628,7 @@
   color: var(--danger);
   font-size: 12px;
   background: var(--danger-soft);
-  border-block-end: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+  border-block-end: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--danger) 35%, transparent);
 }
 
 .intake-inline-error button {
@@ -637,7 +637,7 @@
   padding: var(--catch-space-micro3) var(--catch-space-s2);
   color: inherit;
   background: var(--surface);
-  border: 1px solid currentcolor;
+  border: var(--catch-stroke-hairline) solid currentcolor;
   border-radius: var(--catch-radius-xs);
   cursor: pointer;
 }
@@ -659,7 +659,7 @@
   min-height: 0;
   overflow: hidden;
   background: var(--surface);
-  border-inline-start: 1px solid var(--line-strong);
+  border-inline-start: var(--catch-stroke-hairline) solid var(--line-strong);
 }
 
 .intake-batch-inspector.open {
@@ -673,7 +673,7 @@
   gap: var(--catch-space-s2);
   align-items: center;
   padding: var(--catch-space-s3) var(--catch-space-s3);
-  border-block-end: 1px solid var(--line);
+  border-block-end: var(--catch-stroke-hairline) solid var(--line);
 }
 
 .intake-batch-inspector > header h3 {
@@ -690,7 +690,7 @@
   padding: var(--catch-space-micro10) var(--catch-space-s3);
   overflow: auto;
   background: var(--surface-subtle);
-  border-block-end: 1px solid var(--line);
+  border-block-end: var(--catch-stroke-hairline) solid var(--line);
 }
 
 .intake-inspector-blockers > div {
@@ -734,7 +734,7 @@
   gap: var(--catch-space-s2);
   padding: var(--catch-space-s3);
   font-size: 13px;
-  border-block-end: 1px solid var(--line);
+  border-block-end: var(--catch-stroke-hairline) solid var(--line);
 }
 
 .intake-inspector-section.diagnostics summary {
@@ -782,7 +782,7 @@
   gap: var(--catch-space-s3);
   padding: var(--catch-space-s1) 0;
   font-size: 12px;
-  border-block-end: 1px solid var(--line);
+  border-block-end: var(--catch-stroke-hairline) solid var(--line);
 }
 
 .intake-inspector-impact dt,
@@ -800,7 +800,7 @@
   gap: var(--catch-space-s2);
   padding: var(--catch-space-micro10) var(--catch-space-s3);
   background: var(--surface);
-  border-block-start: 1px solid var(--line-strong);
+  border-block-start: var(--catch-stroke-hairline) solid var(--line-strong);
 }
 
 .intake-inspector-actions p {
@@ -857,7 +857,7 @@
 }
 
 .intake-batch-workbench :focus-visible {
-  outline: 2px solid var(--catch-focus-ring-color);
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-focus-ring-color);
   outline-offset: 2px;
 }
 
