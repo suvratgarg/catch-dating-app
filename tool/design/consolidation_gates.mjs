@@ -11,6 +11,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {collectPrimitiveContractUseCases} from "./check_widgetbook_contract_refs.mjs";
 
 const gatesPath = "design/components/consolidation_gates.json";
 const registryPath = "design/components/catch.components.json";
@@ -54,7 +55,21 @@ export function parseRawColorDebt(source) {
   return [...list[1].matchAll(/"([^"]+)"/gu)].map((match) => match[1]);
 }
 
-export function registryMeasures(registry, priorityIds) {
+/**
+ * Catalog parity, state-coverage half: a T1 contract counts only when it has a
+ * styled React component whose ready Storybook story exists and declares every
+ * state its Widgetbook contract preview renders. Screenshot baselines for both
+ * frameworks join the rule when Phase 7f lands them.
+ */
+function hasCatalogParity(contract, widgetbookStates, storyExports) {
+  const story = contract.react?.storybook;
+  const flutterStates = widgetbookStates.get(contract.id) ?? [];
+  return contract.react?.api === "styled" && story?.status === "ready" &&
+    storyExports(story.story, story.exportName) && flutterStates.length > 0 &&
+    flutterStates.every((state) => story.states?.includes(state));
+}
+
+export function registryMeasures(registry, priorityIds, {widgetbookStates = new Map(), storyExports = () => false} = {}) {
   const contracts = Object.entries(registry.components ?? registry)
     .map(([id, contract]) => ({id, ...contract}));
   const styled = (contract) => contract.react?.api === "styled";
@@ -67,7 +82,8 @@ export function registryMeasures(registry, priorityIds) {
     priorityWithoutStyledReact: priorityIds.filter((id) => !styled(byId.get(id))),
     headlessControls: contracts.filter((contract) => contract.react?.api === "headless-control")
       .map((contract) => contract.id),
-    t1WithoutParityRecord: t1.filter((contract) => contract.parity == null).map((contract) => contract.id),
+    t1WithoutCatalogParity: t1.filter((contract) => !hasCatalogParity(contract, widgetbookStates, storyExports))
+      .map((contract) => contract.id),
   };
 }
 
@@ -124,7 +140,12 @@ function runJson(root, args) {
 /** Every measure the gate file can name. Values are counts; zero is the target. */
 export function measureAll({root = repoRoot, priorityIds = [], similarity = false} = {}) {
   const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
-  const registry = registryMeasures(JSON.parse(read(registryPath)), priorityIds);
+  const storyExports = (file, exportName) => fs.existsSync(path.join(root, file)) &&
+    new RegExp(`export const ${exportName}\\b`, "u").test(read(file));
+  const registry = registryMeasures(JSON.parse(read(registryPath)), priorityIds, {
+    widgetbookStates: collectPrimitiveContractUseCases({root}).statesByContractId,
+    storyExports,
+  });
   const inventory = runJson(root, ["tool/web/check_shared_web_ui_adoption.mjs", "--json"]).summary;
   const inventoryCount = (kind) => bySurface({
     website: inventory.website?.[kind] ?? 0,
@@ -145,7 +166,7 @@ export function measureAll({root = repoRoot, priorityIds = [], similarity = fals
     t1WithoutStyledReact: {value: registry.t1WithoutStyledReact.length, ids: registry.t1WithoutStyledReact},
     priorityWithoutStyledReact: {value: registry.priorityWithoutStyledReact.length, ids: registry.priorityWithoutStyledReact},
     headlessControls: {value: registry.headlessControls.length, ids: registry.headlessControls},
-    t1WithoutParityRecord: {value: registry.t1WithoutParityRecord.length},
+    t1WithoutCatalogParity: {value: registry.t1WithoutCatalogParity.length, ids: registry.t1WithoutCatalogParity},
     webAdapters: inventoryCount("adapter"),
     webDeadExports: inventoryCount("delete"),
     webSingleUseShared: inventoryCount("t4-move"),

@@ -1906,7 +1906,7 @@ Migration Protocol v2.
 | Layer | Gates |
 |---|---|
 | Tokens | Flutter raw values (enforced at zero); website raw-colour exemptions; recorded raw CSS values in the website and Admin |
-| Library | T1 contracts without a styled `@catch/web-ui` component; priority-1 T2 entities without one; contracts still on a headless `*Control`; T1 contracts without a cross-framework parity record (7f) |
+| Library | T1 contracts without a styled `@catch/web-ui` component; priority-1 T2 entities without one; contracts still on a headless `*Control`; T1 contracts whose Widgetbook states their styled Storybook story does not cover (the state-coverage half of 7f; both frameworks' screenshot baselines join it when 7f lands them) |
 | Screens | React adapters; unused React exports; shared exports one feature renders; bare HTML outside the library; page-scoped CSS; Flutter text styled in place (CAT-211); hand-built Flutter decoration and tap targets; near-duplicate Flutter widget clusters; library absorb candidates |
 
 On 2026-10-23, 1 of 16 gates was at target.

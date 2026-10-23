@@ -107,18 +107,18 @@
     {
       "id": "library.cross_framework_parity",
       "layer": "library",
-      "title": "T1 contracts without a cross-framework parity record",
-      "measure": "t1WithoutParityRecord",
+      "title": "T1 contracts whose Widgetbook states their styled Storybook story does not cover",
+      "measure": "t1WithoutCatalogParity",
       "target": 0,
       "baseline": {
         "date": "2026-10-23",
-        "value": 25
+        "value": 24
       },
       "owner": "UI blueprint Phase 7f",
       "linear": [
         "CAT-216"
       ],
-      "enforcement": "None yet: Phase 7f adds a per-contract parity record backed by both catalogs and screenshot comparison. Until then every T1 contract counts as unverified."
+      "enforcement": "None yet. This is the state-coverage half of Phase 7f: a contract counts once it has a styled @catch/web-ui component whose ready Storybook story, keyed through its registry record, declares every state of its Widgetbook contract preview. Screenshot baselines for both frameworks join the rule when 7f lands them."
     },
     {
       "id": "screens.web_adapters",

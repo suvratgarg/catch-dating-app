@@ -46,18 +46,31 @@ test("raw colour debt reads the exported list and fails closed without it", () =
 });
 
 test("registry measures separate styled, headless and missing React implementations", () => {
+  const story = (states) => ({status: "ready", story: "x.stories.tsx", exportName: "X", states});
   const registry = {components: {
-    "catch.text": {tier: "T1", react: {api: "styled"}},
-    "catch.button": {tier: "T1", react: {api: "headless-control"}},
+    "catch.text": {tier: "T1", react: {api: "styled", storybook: story(["roles", "clamped", "dark"])}},
+    "catch.screen_body": {tier: "T1", react: {api: "styled", storybook: story(["layout"])}},
+    "catch.button": {tier: "T1", react: {api: "headless-control", storybook: story(["default"])}},
     "catch.banner": {tier: "T1"},
     "catch.ticket": {tier: "T2"},
   }};
-  assert.deepEqual(registryMeasures(registry, ["catch.ticket"]), {
+  const catalogs = {
+    widgetbookStates: new Map([
+      ["catch.text", ["roles", "clamped"]],
+      ["catch.screen_body", ["layout", "sliver-insets"]],
+      ["catch.button", ["default"]],
+    ]),
+    storyExports: () => true,
+  };
+  assert.deepEqual(registryMeasures(registry, ["catch.ticket"], catalogs), {
     t1WithoutStyledReact: ["catch.button", "catch.banner"],
     priorityWithoutStyledReact: ["catch.ticket"],
     headlessControls: ["catch.button"],
-    t1WithoutParityRecord: ["catch.text", "catch.button", "catch.banner"],
+    // screen_body misses a Widgetbook state; a headless control never counts as parity.
+    t1WithoutCatalogParity: ["catch.screen_body", "catch.button", "catch.banner"],
   });
+  assert.deepEqual(registryMeasures(registry, [], {...catalogs, storyExports: () => false}).t1WithoutCatalogParity,
+    ["catch.text", "catch.screen_body", "catch.button", "catch.banner"]);
   assert.throws(() => registryMeasures(registry, ["catch.missing"]), /catch\.missing/);
 });
 
