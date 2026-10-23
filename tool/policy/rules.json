@@ -2720,14 +2720,15 @@
       },
       "applies_to": [
         "tool/app_targets.json",
-        "lib/main*.dart",
+        "apps/*/lib/main*.dart",
         "lib/core/app_config.dart",
         "lib/routing/**",
         "firebase/**",
         "tool/firebase/client_callable_dependencies.json",
         "tool/firebase/check_client_callable_dependencies.mjs",
         "ios/**",
-        "android/**",
+        "apps/*/ios/**",
+        "apps/*/android/**",
         ".github/workflows/**",
         "lib/force_update/**"
       ],
