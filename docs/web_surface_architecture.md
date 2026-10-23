@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.37.0
+version: 0.38.0
 updated: 2026-10-24
 owner: web_platform
 status: active
@@ -673,6 +673,18 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
   package export or same-named website/admin primitive without a tracker entry
   fails that gate. Marking a candidate adopted also requires both surface
   adapters to import and use a classified package symbol.
+
+  The same adoption check enforces `tool/web/react_consolidation_baseline.json`:
+  missing styled T1/priority T2 contracts, headless controls, catalog-parity
+  gaps, adapters and single-owner shared components cannot gain debt identities.
+  Page CSS outside the two website foundation layers has a separate newline
+  ceiling for each file, so another file or surface cannot spend its allowance.
+  Fixed identities and shorter files must leave the baseline in the same slice.
+  Regenerate with `node tool/web/check_shared_web_ui_adoption.mjs
+  --update-consolidation-baseline`; the generator rejects growth against both
+  the local baseline and fetched-main merge base. `--write` still writes only
+  the ignored inventory. Bare `--json` is the scorecard's read-only inventory
+  feed; `--check --json` also enforces the ratchet.
 
 ## Admin Console Route and Information Architecture
 
