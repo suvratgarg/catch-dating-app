@@ -6,7 +6,6 @@ import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 const catalogPath = fromRepo("copy/native_en.json");
 // Each iOS project reads the permission prose of the app role it ships.
 const iosTargets = [
-  {role: "consumer", runner: "ios/Runner"},
   {role: "consumer", runner: "apps/consumer/ios/Runner"},
   {role: "host", runner: "apps/host/ios/Runner"},
 ];

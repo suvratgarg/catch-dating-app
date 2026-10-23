@@ -706,12 +706,6 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
     }
   }
 
-  const macosProjectPath = path.join(root, "macos/Runner.xcodeproj/project.pbxproj");
-  const macosProject = fs.existsSync(macosProjectPath)
-    ? fs.readFileSync(macosProjectPath, "utf8")
-    : "";
-  const macosConfigurations = parseAppleBuildConfigurations(macosProject);
-
   for (const target of manifest.targets ?? []) {
     const appleProjectPath = path.join(
       root,
@@ -721,6 +715,14 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
     const appleProject = fs.existsSync(appleProjectPath)
       ? fs.readFileSync(appleProjectPath, "utf8")
       : "";
+    const macosProjectPath = path.join(
+      root,
+      target.projectRoot,
+      "macos/Runner.xcodeproj/project.pbxproj",
+    );
+    // Only the Consumer project ships the macOS runner that hosts the native
+    // app-shell smoke suite; a Consumer target without it is drift.
+    const hasMacosRunner = target.role === "consumer" || fs.existsSync(macosProjectPath);
     validateTarget({
       root,
       manifest,
@@ -729,7 +731,9 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
       read,
       appleGenerator,
       appleConfigurations: parseAppleBuildConfigurations(appleProject),
-      macosConfigurations,
+      macosConfigurations: hasMacosRunner && fs.existsSync(macosProjectPath)
+        ? parseAppleBuildConfigurations(fs.readFileSync(macosProjectPath, "utf8"))
+        : hasMacosRunner ? parseAppleBuildConfigurations("") : null,
     });
   }
 
@@ -870,7 +874,15 @@ function validateTarget({
     platform: "ios",
     findings,
   });
-  validateAppleScheme({root, target, platform: "macos", findings});
+  if (macosConfigurations) {
+    validateAppleScheme({
+      root,
+      projectRoot: target.projectRoot,
+      target,
+      platform: "macos",
+      findings,
+    });
+  }
 
   validateAppleTargetConfigurations({
     manifest,
@@ -879,18 +891,19 @@ function validateTarget({
     configurations: appleConfigurations,
     findings,
   });
-  validateAppleTargetConfigurations({
-    manifest,
-    target,
-    platform: "macos",
-    configurations: macosConfigurations,
-    findings,
-  });
-  for (const platform of ["ios", "macos"]) {
-    const platformRoot = platform === "ios" ? target.projectRoot : "";
+  if (macosConfigurations) {
+    validateAppleTargetConfigurations({
+      manifest,
+      target,
+      platform: "macos",
+      configurations: macosConfigurations,
+      findings,
+    });
+  }
+  for (const platform of macosConfigurations ? ["ios", "macos"] : ["ios"]) {
     const iconPath = path.join(
       root,
-      platformRoot,
+      target.projectRoot,
       platform,
       "Runner/Assets.xcassets",
       `${target.ios.iconSet}.appiconset/Contents.json`,
@@ -961,10 +974,7 @@ function validateAppleTargetConfigurations({
     PRODUCT_NAME: target.displayName,
     ASSETCATALOG_COMPILER_APPICON_NAME: target.ios.iconSet,
     CATCH_APP_TARGET_ID: target.id,
-    FLUTTER_TARGET:
-      platform === "ios"
-        ? `$(SRCROOT)/../${target.packageEntrypoint}`
-        : `$(SRCROOT)/../${target.entrypoint}`,
+    FLUTTER_TARGET: `$(SRCROOT)/../${target.packageEntrypoint}`,
     FLAVOR: target.ios.scheme,
     FIREBASE_ENV: target.environment,
     FIREBASE_ROLE: target.role,

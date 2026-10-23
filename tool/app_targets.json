@@ -9,10 +9,6 @@
     "firebaseAppleSdkVersion": "12.19.0",
     "podProjects": [
       {
-        "podfile": "ios/Podfile",
-        "lockfile": "ios/Podfile.lock"
-      },
-      {
         "podfile": "apps/consumer/ios/Podfile",
         "lockfile": "apps/consumer/ios/Podfile.lock"
       },
@@ -21,8 +17,8 @@
         "lockfile": "apps/host/ios/Podfile.lock"
       },
       {
-        "podfile": "macos/Podfile",
-        "lockfile": "macos/Podfile.lock"
+        "podfile": "apps/consumer/macos/Podfile",
+        "lockfile": "apps/consumer/macos/Podfile.lock"
       }
     ]
   },

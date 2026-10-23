@@ -151,8 +151,6 @@ void main() {
     final icon = _buildVariantIcon(sourceIcon, variant, tokens);
     final generatedSourcePath = '$_generatedIconDir/${variant.generatedName}';
     _writePng(generatedSourcePath, icon);
-    _writeIosIconSet(variant, icon);
-    _writeMacosIconSet(variant, icon);
     if (variant.iconBase == _IconBase.consumer) {
       _writeAndroidIcons(
         variant.androidSourceSet,
@@ -160,6 +158,7 @@ void main() {
         projectRoot: _consumerProjectRoot,
       );
       _writeIosIconSet(variant, icon, projectRoot: _consumerProjectRoot);
+      _writeMacosIconSet(variant, icon);
     } else {
       _writeAndroidIcons(
         variant.androidSourceSet,
@@ -278,7 +277,7 @@ void _writeAndroidIcons(
 void _writeIosIconSet(
   _IconVariant variant,
   image.Image source, {
-  String projectRoot = '',
+  required String projectRoot,
 }) {
   final opaqueSource = source.convert(numChannels: 3);
   final basePath = _projectPath(
@@ -414,9 +413,10 @@ void _writeHostSplashAssets(image.Image light, image.Image dark) {
 }
 
 void _writeMacosIconSet(_IconVariant variant, image.Image source) {
-  final basePath = 'macos/Runner/Assets.xcassets/AppIcon.appiconset';
+  final basePath =
+      '$_consumerProjectRoot/macos/Runner/Assets.xcassets/AppIcon.appiconset';
   final outputPath =
-      'macos/Runner/Assets.xcassets/${variant.appleIconSet}.appiconset';
+      '$_consumerProjectRoot/macos/Runner/Assets.xcassets/${variant.appleIconSet}.appiconset';
   final contents = _readJsonMap('$basePath/Contents.json');
   final images = contents['images'] as List<dynamic>;
 
@@ -606,9 +606,8 @@ void _writeNativeBrandManifest(_NativeBrandTokens tokens) {
       for (final variant in _iconVariants.values)
         'assets/branding/generated/${variant.generatedName}',
       for (final variant in _iconVariants.values)
-        'ios/Runner/Assets.xcassets/${variant.appleIconSet}.appiconset',
-      for (final variant in _iconVariants.values)
-        'macos/Runner/Assets.xcassets/${variant.appleIconSet}.appiconset',
+        if (variant.iconBase == _IconBase.consumer)
+          '$_consumerProjectRoot/macos/Runner/Assets.xcassets/${variant.appleIconSet}.appiconset',
       'apps/consumer/android/app/src/main/res/**/ic_launcher.png',
       'apps/consumer/android/app/src/main/res/**/ic_launcher_round.png',
       'apps/consumer/android/app/src/consumerDev/res/**/ic_launcher.png',

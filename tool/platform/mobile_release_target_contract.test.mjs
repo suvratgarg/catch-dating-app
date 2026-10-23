@@ -64,8 +64,6 @@ test("native and Firebase owners authorize only their role-platform intersection
     ["firebase/prod/host/android/google-services.json", ["host-android"]],
     ["firebase/prod/ios/GoogleService-Info.plist", ["consumer-ios"]],
     ["firebase/prod/android/google-services.json", ["consumer-android"]],
-    ["ios/Runner.xcodeproj/project.pbxproj", ["consumer-ios", "host-ios"]],
-    ["android/gradle.properties", ["consumer-android", "host-android"]],
   ];
 
   for (const [path, targets] of fixtures) {
@@ -102,8 +100,7 @@ test("web-native and desktop ownership remains buildable but cannot sign mobile 
   const fixtures = [
     ["apps/host/web/index.html", ["host-web"]],
     ["apps/consumer/web/index.html", ["consumer-web"]],
-    ["web/index.html", ["consumer-web", "host-web"]],
-    ["macos/Runner/Info.plist", ["consumer-web", "host-web"]],
+    ["apps/consumer/macos/Runner/Info.plist", ["consumer-web", "host-web"]],
   ];
 
   for (const [path, buildTargets] of fixtures) {
