@@ -75,7 +75,7 @@ app.
 | --- | --- |
 | App Review contact, reviewer sign-in and notes | Saved. The notes were extended on 2026-10-22. Values live only in App Store Connect and the private local credential file. |
 | Content rights | Saved |
-| App Privacy | Published 2026-10-20: 18 data types, all linked, tracking No. See `privacy_inventory.md`. |
+| App Privacy | Published 2026-10-20 with 18 data types, all linked, tracking No. Updated 2026-10-23 with Performance Data (not linked) and Other Data Types (linked), both for Analytics, for 20 types. See `privacy_inventory.md`. |
 | EU Digital Services Act trader status | Trader declaration submitted. Status In Review, last updated 2026-10-21. |
 | Export compliance | `ITSAppUsesNonExemptEncryption` = `false` in the submitted `apps/host/ios/Runner/Info.plist`. Standard TLS and Apple platform crypto only; `package:crypto` is used for SHA-256 hashing only. |
 
