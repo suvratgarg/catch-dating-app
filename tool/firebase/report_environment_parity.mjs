@@ -392,6 +392,14 @@ export function evaluatePolicy(state, {now = new Date()} = {}) {
          typeof entry.note !== "string")) {
       violations.push(`${name}: a retired switch still allowed somewhere needs a CAT ticket and note.`);
     }
+    const hold = entry?.liveHold;
+    if (hold !== undefined && (!Array.isArray(hold?.environments) ||
+        hold.environments.length === 0 ||
+        hold.environments.some((env) => !environments.includes(env)) ||
+        typeof hold.value !== "string" ||
+        [hold.reason, hold.until].some((text) => typeof text !== "string" || !text.trim()))) {
+      violations.push(`${name}: a live hold needs environments, a value, a reason and an until condition.`);
+    }
   }
   for (const {file, name} of state.retiredReferences ?? []) {
     violations.push(`${name}: retired switch is referenced again in ${file}.`);
@@ -502,12 +510,22 @@ function comparableValue(value) {
 export function classifySwitchRow({policy, name, columns, compared,
   retiredCompatible = false}) {
   if (policy.retired?.[name]) {
-    const live = Object.values(columns).some((value) =>
+    // A live hold keeps a retired key at its old value for builds that still
+    // read it; anywhere else a remaining value is cleanup.
+    const hold = policy.retired[name].liveHold;
+    const held = new Set(hold?.environments ?? []);
+    const live = Object.entries(columns).some(([column, value]) => !held.has(column) &&
       value !== UNAVAILABLE && comparableValue(value) !== null);
+    const flags = live ? [retiredCompatible ? "RETIRED-COMPAT" : "RETIRED-STILL-LIVE"] : [];
+    for (const env of held) {
+      if (!(env in columns) || columns[env] === UNAVAILABLE) continue;
+      flags.push(comparableValue(columns[env]) === hold.value ?
+        `RETIRED-LIVE-HOLD:${env}` : `RETIRED-HOLD-BROKEN:${env}`);
+    }
     return {
       class: "retired",
-      differs: live,
-      flags: live ? [retiredCompatible ? "RETIRED-COMPAT" : "RETIRED-STILL-LIVE"] : [],
+      differs: flags.length > 0,
+      flags,
       name,
       values: Object.fromEntries(Object.entries(columns)
         .map(([column, value]) => [column, displayValue(policy, name, value)])),
@@ -911,6 +929,10 @@ export function compareRemoteConfig({policy, template, live}) {
   for (const parameters of Object.values(liveParameters)) {
     for (const name of Object.keys(parameters ?? {})) names.add(name);
   }
+  // A held key must stay live, so its absence is reported too.
+  for (const [name, entry] of Object.entries(policy.retired ?? {})) {
+    if (entry?.liveHold) names.add(name);
+  }
   const rows = [];
   for (const name of [...names].sort()) {
     const valueOf = (parameter) =>
@@ -921,7 +943,9 @@ export function compareRemoteConfig({policy, template, live}) {
       columns[env] = liveParameters[env] ? valueOf(liveParameters[env][name]) : UNAVAILABLE;
     }
     const row = classifySwitchRow({columns, compared: envs, name, policy});
-    if (!(name in templateParameters)) row.flags.push("NOT-IN-TEMPLATE");
+    if (!(name in templateParameters) && !policy.retired?.[name]) {
+      row.flags.push("NOT-IN-TEMPLATE");
+    }
     for (const env of envs) {
       if (Object.keys(liveParameters[env]?.[name]?.conditionalValues ?? {}).length) {
         row.flags.push(`CONDITIONAL-IN-${env.toUpperCase()}`);
@@ -1244,6 +1268,10 @@ export function buildReport({envs, live, now = new Date(), repo, sourceSha, surf
   report.undeclaredDifferences = Object.entries(report.surfaces).flatMap(([surface, result]) =>
     result.rows.filter((row) => row.flags.includes("UNDECLARED-DIFFERENCE"))
       .map((row) => ({name: row.name, surface, values: row.values})));
+  report.liveHolds = Object.entries(report.surfaces).flatMap(([surface, result]) =>
+    result.rows.filter((row) => row.flags.some((flag) => flag.startsWith("RETIRED-LIVE-HOLD:")))
+      .map((row) => ({name: row.name, surface,
+        until: policy.retired?.[row.name]?.liveHold?.until ?? null, values: row.values})));
   report.attention = Object.entries(report.surfaces).flatMap(([surface, result]) =>
     result.rows.map((row) => ({
       flags: row.flags.filter((flag) => attentionFlag.test(flag)),
@@ -1257,7 +1285,7 @@ const attentionFlag = new RegExp(
   "^(?:SHARED-IDENTITY|PROD-ENVIRONMENTS-DISAGREE|UNREFERENCED-BY-WORKFLOWS|UNREAD-IN:.*|" +
     "DORMANT-BUT-LIVE-IN-.*|MIXED-VALUES-IN-.*|PENDING-DEPLOY-.*|NOT-IN-TEMPLATE|" +
     "STALE-DORMANT-ENTRY|REQUIRED-CALLABLE-ABSENT|UNCLASSIFIED|ENVIRONMENTS-DISAGREE|" +
-    "RETIRED-STILL-LIVE)$",
+    "RETIRED-STILL-LIVE|RETIRED-HOLD-BROKEN:.*)$",
   "u",
 );
 
@@ -1312,6 +1340,14 @@ export function formatReport(report) {
       `  - [${entry.surface}] ${entry.name}: ${Object.entries(entry.values)
         .map(([column, value]) => `${column}=${value}`).join(", ")}`),
   ];
+  if (report.liveHolds.length) {
+    lines.push("", `${report.liveHolds.length} retired gate(s) still live for old builds ` +
+      "(hold; do not delete the live value or publish the template over it):");
+    for (const entry of report.liveHolds) {
+      lines.push(`  - [${entry.surface}] ${entry.name}: ${Object.entries(entry.values)
+        .map(([column, value]) => `${column}=${value}`).join(", ")}; until ${entry.until}`);
+    }
+  }
   if (report.attention.length) {
     lines.push("", `${report.attention.length} other row(s) need attention:`);
     for (const entry of report.attention) {

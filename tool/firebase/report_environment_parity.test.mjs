@@ -211,11 +211,38 @@ test("live leftovers of retired switches are reported for cleanup, not as gate d
     policy: rules,
     template: {parameters: {}},
   });
-  assert.deepEqual(remote.rows[0].flags, ["RETIRED-STILL-LIVE", "NOT-IN-TEMPLATE"]);
+  assert.deepEqual(remote.rows[0].flags, ["RETIRED-STILL-LIVE"]);
   assert.deepEqual(remote.rows[0].values, {dev: "absent", main: "absent", prod: "true"});
   assert.deepEqual(classifySwitchRow({columns: {dev: "true", prod: "false"},
     compared: ["dev", "prod"], name: "LEGACY_ENABLED", policy: rules,
     retiredCompatible: true}).flags, ["RETIRED-COMPAT"]);
+});
+
+test("a live hold reports retired keys old builds still read, and flags a broken hold", () => {
+  const hold = {environments: ["prod"], reason: "Host 1.0.1 reads it", until: "1.0.1 is retired", value: "true"};
+  const rules = {...policy(), retired: {OLD_FLAG: {allowedIn: [], liveHold: hold}}};
+  const remote = (prodValue) => compareRemoteConfig({
+    live: {dev: {parameters: {}}, prod: {parameters: prodValue === undefined ? {} :
+      {OLD_FLAG: {defaultValue: {value: prodValue}}}}},
+    policy: rules,
+    template: {parameters: {}},
+  }).rows[0];
+  assert.deepEqual(remote("true").flags, ["RETIRED-LIVE-HOLD:prod"]);
+  assert.deepEqual(remote("false").flags, ["RETIRED-HOLD-BROKEN:prod"]);
+  // Deleting a held key by hand is the regression the hold exists to catch.
+  assert.deepEqual(remote(undefined).flags, ["RETIRED-HOLD-BROKEN:prod"]);
+  const leftover = compareRemoteConfig({
+    live: {dev: {parameters: {OLD_FLAG: {defaultValue: {value: "true"}}}},
+      prod: {parameters: {OLD_FLAG: {defaultValue: {value: "true"}}}}},
+    policy: rules, template: {parameters: {}},
+  }).rows[0];
+  assert.deepEqual(leftover.flags, ["RETIRED-STILL-LIVE", "RETIRED-LIVE-HOLD:prod"]);
+  const state = repoState();
+  state.policy.retired = {OLD_FLAG: {allowedIn: [], liveHold: {...hold, until: " "}}};
+  assert.match(evaluatePolicy(state, {now}).violations.join("\n"),
+    /OLD_FLAG: a live hold needs environments, a value, a reason and an until condition/u);
+  state.policy.retired = {OLD_FLAG: {allowedIn: [], liveHold: hold}};
+  assert.equal(evaluatePolicy(state, {now}).ok, true);
 });
 
 test("workflow scanning records defaults and the reading job's environment", () => {

@@ -2205,6 +2205,28 @@ Its default values are deliberately non-blocking. Use it to seed a project or
 recover missing parameters, then raise `min_build_*` only as a deliberate
 release action after the compatible binary is available.
 
+### Retired Host release gates: live hold
+
+Current Host builds no longer read `host_private_event_setup_enabled`,
+`host_progressive_event_defaults_enabled` or `host_wedding_phone_import_enabled`.
+Host builds released before their removal, including Host 1.0.1 (build
+202610200000357901), still read them with a bundled default of `false`.
+
+- Prod's live Remote Config keeps all three at `true` until every Catch Host
+  build that predates the removal is retired: no longer distributed and blocked
+  by the `host_min_build_*` force-update floors.
+- Until then, nobody deletes these keys by hand or publishes the checked-in
+  template to prod. A template publish replaces the whole live template, so it
+  would remove them and switch the features off for those installs. It would
+  also reset any raised `min_build_*` floors.
+- `tool/firebase/environment_difference_policy.json` records the hold.
+  `node tool/firebase/report_environment_parity.mjs --surfaces remote-config`
+  lists the keys as retired gates still live for old builds and reports
+  `RETIRED-HOLD-BROKEN` if one is changed or removed.
+- The server-only `CATCH_*_READY` keys need no client hold: no app build reads
+  them. Delete them only after the Functions build that stopped reading them is
+  live in prod.
+
 Production release builds throttle Remote Config fetches to a one-hour minimum
 interval. Debug builds, emulator builds, and non-production environments keep a
 zero interval so config changes are easy to validate during QA.
@@ -2427,7 +2449,9 @@ Typical commands:
 ./tool/deploy_firebase_targets.sh prod firestore:indexes,functions,firestore:rules,storage
 ```
 
-Remote Config is intentionally separate from the standard backend deploy:
+Remote Config is intentionally separate from the standard backend deploy. Do
+not publish to prod while the retired Host release gates are on hold; see
+[Retired Host release gates: live hold](#retired-host-release-gates-live-hold).
 
 ```bash
 ./tool/firebase_with_env.sh dev deploy --only remoteconfig
