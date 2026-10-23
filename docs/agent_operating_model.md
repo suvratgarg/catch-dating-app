@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 3.5.0
-updated: 2026-10-16
+version: 3.6.0
+updated: 2026-10-23
 owner: agent_operating_model
 status: active
 ---
@@ -306,7 +306,12 @@ For a task awaiting acceptance, keep the claim until `retire` rather than
 calling `finish` without an explicit retention reason. `retire` reports
 eligibility and exact retention reasons; its explicit `--apply` performs only non-forced `git worktree remove`
 and releases the own claim after verifying path and registration absence.
-It preserves every branch, recovery ref and stash. Repeat after successful
+It preserves every branch, recovery ref and stash. Unique task commits count
+as remotely preserved when the task branch, or the `refs/pull/<number>/head`
+ref GitHub keeps after the merge queue deletes a merged branch, points at the
+exact head on `origin`; acceptance is still proven only by the task-path
+comparison, never by PR status. Disposable task branches are `codex/` and
+`claude/` branches outside `*/backup/`. Repeat after successful
 closure returns `already_absent` without another removal; absence alone never
 claims acceptance or a newly retired task. Missing claims on existing worktrees
 remain blocked and must not be recreated to bypass ownership review.
