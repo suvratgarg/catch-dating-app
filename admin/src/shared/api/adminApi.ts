@@ -1,7 +1,6 @@
 import {httpsCallable as firebaseHttpsCallable} from "firebase/functions";
 import {functions} from "./firebaseFunctions";
 import {dataMode} from "./dataMode";
-export {dataMode} from "./dataMode";
 import type {AdminListCrossPathsShowcaseCandidatesCallablePayload} from
   "../../generated/contracts/adminListCrossPathsShowcaseCandidatesCallablePayload";
 import type {AdminListCrossPathsShowcaseCandidatesCallableResponse} from
