@@ -1,0 +1,67 @@
+name: Deploy backend
+
+# The one path from main to the Firebase backend (indexes, Functions, Firestore
+# and Storage rules). Dev deploys on every backend-relevant merge; prod then
+# deploys the same commit once a prod reviewer approves, and only when the
+# commit changes something prod has not received. Run it manually for prod,
+# dev or staging, optionally as a full deploy. Operator guide:
+# docs/release_operations.md, "Deploy backend".
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - functions/**
+      - operations/**
+      - contracts/**
+      - firestore.rules
+      - firestore.indexes.json
+      - storage.rules
+      - firebase.json
+      - .firebaserc
+      - tool/deploy_firebase_targets.sh
+      - tool/firebase_with_env.sh
+      - tool/firebase/**
+      - .github/workflows/backend-deploy.yml
+      - .github/workflows/_backend-deploy.yml
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to deploy
+        type: choice
+        options: [prod, dev, staging]
+        default: prod
+      full:
+        description: Deploy every stage and Function, not only what changed
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  dev:
+    if: ${{ github.event_name == 'push' || inputs.environment == 'dev' }}
+    uses: ./.github/workflows/_backend-deploy.yml
+    with:
+      environment: dev
+      full: ${{ inputs.full == true }}
+
+  prod:
+    needs: dev
+    if: >-
+      ${{ !cancelled() && (
+        github.event_name == 'push' && needs.dev.result == 'success' ||
+        github.event_name == 'workflow_dispatch' && inputs.environment == 'prod') }}
+    uses: ./.github/workflows/_backend-deploy.yml
+    with:
+      environment: prod
+      full: ${{ inputs.full == true }}
+
+  staging:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.environment == 'staging' }}
+    uses: ./.github/workflows/_backend-deploy.yml
+    with:
+      environment: staging
+      full: ${{ inputs.full == true }}

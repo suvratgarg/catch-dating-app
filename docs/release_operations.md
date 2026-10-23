@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.13.0
+version: 2.14.0
 updated: 2026-10-23
 owner: recursive_audit_loop
 status: active
@@ -1288,6 +1288,74 @@ track and its Google Group testers, and deletes the edit without uploading or
 committing. It is not part of package production and must not be replaced by a
 trial upload. The promoter still refuses every track except `qa`.
 
+## Deploy Backend
+
+`Deploy backend` (`.github/workflows/backend-deploy.yml`) is the one path from
+`main` to each environment's Firebase backend: Firestore indexes, Functions,
+Firestore rules and Storage rules. Hosting and app releases stay separate.
+
+How a run works:
+
+- Each environment records the commit it last received in the Git tag
+  `deployed/<environment>`. To see the tags, run
+  `git ls-remote origin 'refs/tags/deployed/*'`.
+- A run deploys its own exact commit.
+  `tool/firebase/affected_function_targets.mjs --environment <env>` plans the run
+  from the tagged commit:
+  - Functions whose transitive imports changed, plus the index, Firestore-rules
+    or Storage-rules stage when its file changed.
+  - A Function that loads modules dynamically redeploys whenever Functions
+    source or the Operations files copied into its build change.
+  - Dependency, build or backend `firebase.json` changes, or a missing tag,
+    deploy everything.
+  - Dormant targets stay excluded.
+- The job builds Functions and materializes non-secret parameters from the
+  environment's GitHub variables. It deploys new indexes and waits until they
+  are `READY`. It then deploys the rest through `tool/deploy_firebase_targets.sh`,
+  which handles batches, retries, callable-invoker sync and the parity check.
+  Firebase predeploy test hooks are skipped because required CI already ran them
+  on that commit.
+- After a successful deploy the tag moves forward to that commit. It never moves
+  backwards, and a failed run leaves it unchanged.
+- Automatic runs never start a first deploy. An environment without a tag is
+  skipped until someone runs the workflow manually, which deploys everything.
+  An environment can also be seeded by pushing its tag at a commit it verifiably
+  matches. Functions changed after that commit then deploy on the next run.
+
+When it runs:
+
+- **Dev:** every merge to `main` that touches backend inputs deploys to dev
+  automatically.
+- **Prod:** deploys the same commit after a `prod` environment reviewer
+  approves, but only when prod has something to receive. A merge with nothing
+  to deploy never asks for approval.
+- **One deploy per environment at a time.** Newer runs wait, and GitHub keeps
+  only the newest waiting run. Each run deploys everything since the tag, so
+  skipping intermediate commits loses nothing.
+- **Manual runs:** use Actions → Deploy backend → Run workflow for `prod`, `dev`
+  or `staging`. Tick `full` to redeploy every stage and Function, for example
+  after a manual or partial deploy you are unsure about.
+
+A manual `./tool/deploy_firebase_targets.sh` deploy leaves the tag unchanged.
+The next run redeploys whatever changed since the tag, which is safe. Recovery
+is fix-forward: merge the fix or re-run the workflow. Rollback follows the
+target-specific steps in this document; the job never reverses remote state.
+
+`Delivery`, `Backend Rebaseline`, `Backend Staging Refresh` and the one-off
+backend release workflows are superseded by this job:
+
+- `selective-backend-release`
+- `host-acquisition-release`
+- `host-deletion-release`
+- `host-deletion-indexes`
+- `host-store-rules-release`
+- `wedding-phone-import-release`
+- `website-review-index`
+- the CAT151 receipt release
+
+Do not dispatch them. They and their sections below are deleted after the first
+successful prod run of `Deploy backend`.
+
 ## CD Policy
 
 Staging is refreshed independently on the first day of each month at 02:17 UTC
@@ -1297,6 +1365,9 @@ and rules lanes, then promotes their exact tested package only to staging.
 It does not write the production cursor or block routine releases. Its separate
 workflow lock and the shared per-environment promotion lock prevent overlapping
 staging mutations. Start a fresh refresh instead of partially rerunning it.
+
+> Superseded by [Deploy Backend](#deploy-backend); kept until the old
+> workflows are deleted.
 
 Firebase backend delivery is one ordered promotion chain. After a successful
 same-repository `main` push, CI packages only the backend groups authorized by
@@ -1864,6 +1935,10 @@ a dormant scheduled Function.
 
 ## Exact-Artifact Promotion And Resume
 
+> For the Firebase backend this is superseded by
+> [Deploy Backend](#deploy-backend), which deploys from an exact commit instead
+> of a CI artifact.
+
 Validation and deployment are separate trust decisions. A green CI run proves
 the source and checks that ran in that job; it does not prove that bytes rebuilt
 later by a deployment job are identical. Delivery paths should therefore build
@@ -2309,7 +2384,7 @@ its durable retry scheduler is new and must be proved explicitly:
    legacy-client fallback or duplicate compatibility path.
 
 `./tool/deploy_firebase_targets.sh` is the bounded stage executor beneath
-Delivery and an operator-only recovery helper. It plans selected targets in the
+`Deploy backend` and an operator-only recovery helper. It plans selected targets in the
 same index → Functions → Firestore-rules → Storage-rules order regardless of
 the caller's CSV order. The logical `functions` target expands
 deployment-eligible exports from `functions/src/index.ts` into explicit
@@ -2329,9 +2404,9 @@ continuing to rules. Historical packages without that protocol retain their
 original full callable reconciliation; invoking the callable-invoker helper
 directly without `--targets` also retains full reconciliation. The deploy
 identity therefore needs permission to list Cloud Functions and get/set Cloud
-Run IAM policies. Delivery additionally owns artifact verification,
-checkpointing, and the index-`READY` wait; invoking this helper directly is not
-normal promotion.
+Run IAM policies. `Deploy backend` additionally owns the deployed-commit
+tag and the index-`READY` wait; invoking this helper directly is not normal
+promotion.
 Do not use a broad `firebase deploy --only functions --force` unless deleting
 legacy Functions is the intended release action.
 The helper passes extra Firebase arguments to every phase except `--force`
