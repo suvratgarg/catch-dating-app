@@ -70,6 +70,7 @@ describe("CatchField input recipe", () => {
     expect(document.getElementById(input.getAttribute("aria-describedby")!)?.textContent)
       .toBe("Enter your name");
     expect(screen.queryByText("As on your ID")).toBeNull();
+    expect(screen.getByRole("alert").textContent).toBe("Enter your name");
   });
 
   it("maps input modes to read-only and disabled controls", () => {
@@ -130,6 +131,18 @@ describe("CatchField select recipe", () => {
     expect(onChanged).toHaveBeenCalledWith(null);
     fireEvent.change(select, {target: {value: "owner"}});
     expect(onChanged).toHaveBeenLastCalledWith(roles[0]);
+  });
+
+  it("starts an uncontrolled select from its initial value", () => {
+    const onChanged = vi.fn();
+    render(<CatchField recipe="select" title="Role" name="role" values={["guest", "host"]}
+      itemLabelBuilder={(role) => role} initialValue="host" onChanged={onChanged} />);
+
+    const select = screen.getByLabelText("Role") as HTMLSelectElement;
+    expect(select.value).toBe("host");
+    expect(select.name).toBe("role");
+    fireEvent.change(select, {target: {value: "guest"}});
+    expect(onChanged).toHaveBeenCalledWith("guest");
   });
 
   it("does not add a second empty choice when a value is empty", () => {

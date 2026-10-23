@@ -6,6 +6,9 @@
  * generator will emit them under these exact names; delete each declaration
  * in the slice that adopts the generated token. foundationParity.test.ts pins
  * them to the Dart sources.
+ *
+ * Inner rules are scoped under .field so a surface's legacy element rule
+ * (".claim-request-form input") cannot restyle the field.
  */
 .field {
   --catch-radius-interactive-tile: 12px;
@@ -56,7 +59,7 @@
   opacity: var(--catch-field-disabled-opacity);
 }
 
-.caption {
+.field .caption {
   color: var(--catch-theme-ink2);
   font-family: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
@@ -70,7 +73,7 @@
   color: var(--catch-theme-danger);
 }
 
-.hiddenLabel {
+.field .hiddenLabel {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -79,7 +82,7 @@
   white-space: nowrap;
 }
 
-.control {
+.field .control {
   width: 100%;
   min-width: 0;
   margin: 0;
@@ -96,32 +99,32 @@
   letter-spacing: var(--catch-typography-web-field-value-tracking);
 }
 
-.control:focus,
-.control:focus-visible {
+.field .control:focus,
+.field .control:focus-visible {
   outline: none;
 }
 
-.control::placeholder {
+.field .control::placeholder {
   color: var(--catch-theme-ink3);
   opacity: 1;
 }
 
-textarea.control {
+.field textarea.control {
   resize: vertical;
 }
 
-.selectLane {
+.field .selectLane {
   position: relative;
   display: block;
 }
 
-select.control {
+.field select.control {
   appearance: none;
   padding-inline-end: calc(var(--catch-space-s4) + var(--catch-space-s2));
   cursor: pointer;
 }
 
-.chevron {
+.field .chevron {
   position: absolute;
   top: 50%;
   right: 0;
@@ -136,14 +139,14 @@ select.control {
   pointer-events: none;
 }
 
-.support {
+.field .support {
   display: flex;
   justify-content: space-between;
   gap: var(--catch-space-s3);
   margin-top: var(--catch-space-micro6);
 }
 
-.supportText {
+.field .supportText {
   margin: 0;
   color: var(--catch-theme-ink2);
   font-family: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
@@ -153,11 +156,11 @@ select.control {
   line-height: var(--catch-typography-web-field-label-line-height);
 }
 
-.supportText[data-tone="brand"] { color: var(--catch-theme-primary); }
-.supportText[data-tone="success"] { color: var(--catch-theme-positive-text); }
-.supportText[data-tone="danger"] { color: var(--catch-theme-danger); }
+.field .supportText[data-tone="brand"] { color: var(--catch-theme-primary); }
+.field .supportText[data-tone="success"] { color: var(--catch-theme-positive-text); }
+.field .supportText[data-tone="danger"] { color: var(--catch-theme-danger); }
 
-.counter {
+.field .counter {
   flex: none;
   margin-inline-start: auto;
   color: var(--catch-theme-ink3);

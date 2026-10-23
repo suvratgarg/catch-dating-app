@@ -85,13 +85,16 @@ export interface CatchFieldInputProps extends CatchFieldCommonProps {
 export interface CatchFieldSelectProps<T> extends CatchFieldCommonProps {
   /** An empty first choice that selects null. */
   hintText?: string;
+  /** Uncontrolled starting choice, for forms read through FormData. */
+  initialValue?: T | null;
   itemLabelBuilder: (item: T) => string;
   /** The option key; required when values are not strings. */
   itemValueBuilder?: (item: T) => string;
   onBlur?: () => void;
   onChanged?: (value: T | null) => void;
   recipe: "select";
-  value: T | null | undefined;
+  /** The controlled choice; omit it and use initialValue for an uncontrolled select. */
+  value?: T | null;
   values: readonly T[];
 }
 
@@ -199,7 +202,9 @@ export function CatchField<T = string>(props: CatchFieldProps<T>) {
   } else {
     const select = props;
     const keyOf = select.itemValueBuilder ?? ((item: T) => String(item));
-    const selectedKey = select.value === null || select.value === undefined ? "" : keyOf(select.value);
+    const controlled = select.value !== undefined;
+    const current = controlled ? select.value : select.initialValue;
+    const selectedKey = current === null || current === undefined ? "" : keyOf(current);
     // An unset value needs an empty choice unless one of the values is empty.
     const showsEmptyChoice = select.hintText !== undefined ||
       (selectedKey === "" && !select.values.some((item) => keyOf(item) === ""));
@@ -214,8 +219,9 @@ export function CatchField<T = string>(props: CatchFieldProps<T>) {
           form={select.form}
           id={id}
           name={select.name}
+          defaultValue={controlled ? undefined : selectedKey}
           required={select.required}
-          value={selectedKey}
+          value={controlled ? selectedKey : undefined}
           {...focusHandlers}
           onBlur={() => {
             setFocused(false);
@@ -260,6 +266,7 @@ export function CatchField<T = string>(props: CatchFieldProps<T>) {
               className={styles.supportText}
               data-tone={error ? "danger" : props.helperTone ?? "neutral"}
               id={supportId}
+              role={error ? "alert" : undefined}
             >
               {support}
             </p>
