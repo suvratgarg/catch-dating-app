@@ -1,5 +1,5 @@
 import {forwardRef} from "react";
-import {CatchField, CheckboxControl} from "@catch/web-ui";
+import {CheckboxControl} from "@catch/web-ui";
 import type {
   FormHTMLAttributes,
   HTMLAttributes,
@@ -174,18 +174,6 @@ export function HostPreviewFormatRail({
       reveal={reveal}
     />
   );
-}
-
-/**
- * Interim: the last caller is a story in a file another task holds. Delete
- * this with that call site's move to CatchField.
- */
-export function TextField({id, label, placeholder}: {
-  id: string;
-  label: string;
-  placeholder?: string;
-}) {
-  return <CatchField recipe="input" id={id} title={label} inputHint={placeholder} />;
 }
 
 export function InlineInputField({

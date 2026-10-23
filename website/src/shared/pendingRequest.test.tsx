@@ -5,7 +5,7 @@ import {
   PendingRequestProvider,
   usePendingRequestRegistration,
 } from "./pendingRequest";
-import {Button, ButtonLink, Form, TextField} from "./ui/primitives";
+import {Button, ButtonLink, Form} from "./ui/primitives";
 
 function PendingLink({
   onClick,

@@ -1,4 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
+import {CatchField} from "@catch/web-ui";
 import {consumerHomeStoryListings} from "./fixtures/consumerHome";
 import {publicEventListingsContext} from "../features/organizers/usePublicEventListingsController";
 import {MemoryRouter} from "react-router";
@@ -37,7 +38,6 @@ import {
   EventRuntimeLiveHeader,
   EventRuntimePanel,
   EventRuntimeStageMarquee,
-  TextField,
 } from "../shared/ui/primitives";
 import {
   deriveEventRuntimeMarqueeParticles,
@@ -161,10 +161,12 @@ export const EventRuntime: Story = {
           title={eventRuntimeCopy.phoneTitle}
         >
           <EventRuntimeForm onSubmit={(event) => event.preventDefault()}>
-            <TextField
+            <CatchField
+              recipe="input"
               id="storybook-event-runtime-phone"
-              label={eventRuntimeCopy.phoneLabel}
-              placeholder={eventRuntimeCopy.phonePlaceholder}
+              title={eventRuntimeCopy.phoneLabel}
+              inputHint={eventRuntimeCopy.phonePlaceholder}
+              keyboardType="phone"
             />
             <Button type="submit">{eventRuntimeCopy.sendCode}</Button>
           </EventRuntimeForm>

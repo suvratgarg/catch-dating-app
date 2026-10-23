@@ -1921,42 +1921,6 @@
       "notes": "Website adapter of catch.button over the @catch/web-ui ButtonControl; Phase 7e replaces it with the styled CatchButton. Route coverage is the 2026-10-18 TypeScript reference measurement."
     },
     {
-      "id": "shared_text_field",
-      "kind": "supporting-component",
-      "routeIds": [
-        "claim",
-        "claim_lookup",
-        "event_booking",
-        "event_detail_canonical",
-        "event_invite",
-        "event_offer",
-        "event_runtime",
-        "host_apply",
-        "household_rsvp",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy",
-        "organizer_search",
-        "public_form",
-        "sales_demo",
-        "visitor_discovery"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/forms.tsx",
-      "exportName": "TextField",
-      "componentId": "catch.field",
-      "css": [],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "default",
-          "described",
-          "invalid",
-          "required"
-        ]
-      },
-      "notes": "Interim pass-through to the @catch/web-ui CatchField. Its last caller is website/src/stories/MarketingRoutes.stories.tsx, held by another task; delete it with that call site's move to CatchField."
-    },
-    {
       "id": "shared_site_header",
       "kind": "supporting-component",
       "routeIds": [

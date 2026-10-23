@@ -3,7 +3,7 @@ import {eventOfferCopy as text, offerCodeSent, offerHoldEnds, offerRefundDeadlin
 import type {OfferCredential} from "./offerCredential";
 import {useOfferCheckoutController} from "./useOfferCheckoutController";
 import {formatOfferAmount, paymentCopy} from "./offerCheckoutModel";
-import {Button, ButtonLink, TextField, FormStatus, EventRuntimeFrame,
+import {Button, ButtonLink, FormStatus, EventRuntimeFrame,
   EventRuntimePanel, EventRuntimeLoading, EventRuntimeForm,
   EventRuntimeModule} from
   "../../shared/ui/primitives";
