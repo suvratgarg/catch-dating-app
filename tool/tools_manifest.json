@@ -4407,6 +4407,7 @@
         ".github/workflows/*.yml",
         "firebase/remote_config.template.json",
         "functions/src/**/*.ts",
+        "lib/**/*.dart",
         "tool/env/dart_defines/*.json",
         "tool/firebase/check_deploy_parity.mjs",
         "tool/firebase/client_callable_dependencies.json",
@@ -4432,7 +4433,8 @@
           "policy guard requires every discovered switch to be classified",
           "an allowed difference needs a feature gate, owner, reason, CAT ticket and unexpired date",
           "policy-only mode reads a real repository layout offline and fails closed on a new switch",
-          "the CLI collects only read-only metadata, survives an unavailable source and never prints identities"
+          "the CLI collects only read-only metadata, survives an unavailable source and never prints identities",
+          "retired switches may not return outside their allowed sources"
         ]
       }
     },
@@ -8311,6 +8313,27 @@
         "path": "tool/firebase/probe_chat_storage_rules.test.mjs",
         "contains": [
           "unauthorized upload is reported at the upload stage"
+        ]
+      }
+    },
+    {
+      "id": "firebase:synthetic-backend-probe",
+      "category": "firebase",
+      "path": "tool/firebase/synthetic_backend_probe.mjs",
+      "command": "node tool/firebase/synthetic_backend_probe.mjs --help",
+      "safety": "remote-read-write-apply-guarded",
+      "status": "active",
+      "description": "Signs in as a synthetic Host that manages a synthetic organizer and runs the Host app's rules-checked Firestore reads and read callables against one deployed environment. Dry-run by default; production runs Firestore reads only unless --allow-prod-callables.",
+      "checks": [
+        "node --check tool/firebase/synthetic_backend_probe.mjs",
+        "node --test tool/firebase/synthetic_backend_probe.test.mjs"
+      ],
+      "role": "operator",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/synthetic_backend_probe.test.mjs",
+        "contains": [
+          "callable steps fail when undeployed, denied, or outside main's contract"
         ]
       }
     },

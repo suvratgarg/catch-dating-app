@@ -215,8 +215,6 @@ export async function createOrganizerHandler(
         sourceSummary: null,
         formats: [],
         facts: [],
-        fitNotes: [],
-        missingEvidence: [],
         eventEvidence: [],
       },
       publicSources: [],

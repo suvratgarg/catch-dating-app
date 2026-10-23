@@ -56,6 +56,8 @@ import {
   organizerAdminSearchQueryTokens,
 } from "./organizerAdminSearch";
 import {marketForIdOrAlias} from "../locations/marketConfig";
+import {assertOrganizerPublicContent} from
+  "../organizers/organizerPublicContent";
 
 const clubDetailsRoles = ["admin", "adminOwner", "support"] as const;
 
@@ -125,8 +127,6 @@ export interface AdminClubDetailsSnapshot {
     summary: string | null;
     sourceSummary: string | null;
     formats: string[];
-    fitNotes: string[];
-    missingEvidence: string[];
   };
 }
 
@@ -379,6 +379,11 @@ export async function adminUpdateClubDetailsHandler(
       "A review note is required for audited organizer edits."
     );
   }
+  assertOrganizerPublicContent({
+    description: data.fields.description,
+    publicPage: data.fields.publicPage,
+    publicProfile: data.fields.publicProfile,
+  }, "This organizer edit");
 
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, adminContext.uid, "adminUpdateClubDetails");
@@ -429,6 +434,12 @@ export async function adminUpdateClubDetailsHandler(
         {countryName: patch.countryName} :
         {}),
     });
+    if (data.fields.publicPage?.publishStatus === "published") {
+      assertOrganizerPublicContent(
+        nextClubForSearch,
+        "Publishing this organizer"
+      );
+    }
     patch.adminSearch = buildOrganizerAdminSearchProjection(
       data.clubId,
       nextClubForSearch,
@@ -632,8 +643,6 @@ function publicClubDetails(
       summary: club.publicProfile?.summary ?? null,
       sourceSummary: club.publicProfile?.sourceSummary ?? null,
       formats: club.publicProfile?.formats ?? [],
-      fitNotes: club.publicProfile?.fitNotes ?? [],
-      missingEvidence: club.publicProfile?.missingEvidence ?? [],
     },
   };
 }
@@ -787,8 +796,6 @@ function buildFirestorePatch(
     "summary",
     "sourceSummary",
     "formats",
-    "fitNotes",
-    "missingEvidence",
   ]);
   copyNestedDefined(patch, "provenance", fields.provenance, [
     "sourceConfidence",
@@ -1021,8 +1028,6 @@ function normalizePublicProfile(
     summary: normalizeNullableString(value.summary),
     sourceSummary: normalizeNullableString(value.sourceSummary),
     formats: normalizeStringArray(value.formats),
-    fitNotes: normalizeStringArray(value.fitNotes),
-    missingEvidence: normalizeStringArray(value.missingEvidence),
   };
 }
 

@@ -18,7 +18,6 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/domain/host_application_import.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
@@ -452,9 +451,6 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
                           : hostResponseQueryCapability(
                               context.l10n,
                               versionId: responseVersionId,
-                              offersEnabled: ref.watch(
-                                privateEventSetupAvailableProvider,
-                              ),
                             ),
                       query: _responseQuery,
                       contactId: _responseContactId,

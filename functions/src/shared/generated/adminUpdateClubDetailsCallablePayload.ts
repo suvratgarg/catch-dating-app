@@ -73,14 +73,6 @@ export interface AdminUpdateClubDetailsCallablePayload {
        * @maxItems 12
        */
       formats?: string[];
-      /**
-       * @maxItems 8
-       */
-      fitNotes?: string[];
-      /**
-       * @maxItems 12
-       */
-      missingEvidence?: string[];
     };
   };
   reviewNote?: string | null;

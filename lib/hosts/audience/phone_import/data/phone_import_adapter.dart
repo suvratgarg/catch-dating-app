@@ -10,7 +10,6 @@ import 'package:catch_dating_app/programs/domain/program_models.dart';
 /// No offline import, direct Firestore write, synthetic grant or contact store.
 class PhoneImportAdapter {
   PhoneImportAdapter({
-    required this.isEnabled,
     required this.workRepository,
     required this.setupRepository,
     required this.currentAccountId,
@@ -19,7 +18,6 @@ class PhoneImportAdapter {
   }) : _now = now ?? DateTime.now;
 
   final ProgramWorkRepository workRepository;
-  final bool Function() isEnabled;
   final ProgramSetupRepository setupRepository;
   final String? Function() currentAccountId;
   final String? Function() currentProgramId;
@@ -127,9 +125,6 @@ class PhoneImportAdapter {
   }
 
   void _assertScope(PhoneImportBatch batch) {
-    if (!isEnabled()) {
-      throw const PermissionException('Phone import is not available.');
-    }
     if (_disposed ||
         currentAccountId() != batch.accountId ||
         currentProgramId() != batch.programId) {

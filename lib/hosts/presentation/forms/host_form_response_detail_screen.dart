@@ -15,7 +15,6 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_context.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_detail_sheet.dart';
@@ -184,9 +183,7 @@ class _HostFormResponseDetailScreenState
               offerActionLabel: widget.returnToOffer
                   ? context.l10n.hostResponseContinueOffer
                   : null,
-              onOfferEvent: ref.watch(privateEventSetupAvailableProvider)
-                  ? () => _offerEvent(loaded)
-                  : null,
+              onOfferEvent: () => _offerEvent(loaded),
             ),
       body: CatchRouteBody.standard(
         child: CatchAsyncBoundary<HostResponseReviewDetail>(
@@ -269,9 +266,7 @@ class _HostFormResponseDetailScreenState
                   onOpenAsset: _openAsset,
                   onContact: _openContact,
                   onOpenPayment: _openPayment,
-                  onChooseEvent:
-                      !widget.returnToOffer &&
-                          ref.watch(privateEventSetupAvailableProvider)
+                  onChooseEvent: !widget.returnToOffer
                       ? () => _offerEvent(value)
                       : null,
                 ),
@@ -545,9 +540,7 @@ class _HostFormResponseDetailScreenState
       );
 
   Future<void> _offerEvent(HostResponseReviewDetail detail) async {
-    if (_busy ||
-        !ref.read(privateEventSetupAvailableProvider) ||
-        !detail.canChooseEvent) {
+    if (_busy || !detail.canChooseEvent) {
       return;
     }
     if (widget.returnToOffer) {

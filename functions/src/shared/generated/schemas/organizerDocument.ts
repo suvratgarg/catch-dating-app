@@ -2474,7 +2474,7 @@ export const organizerDocumentSchema: Record<string, unknown> = {
     "publicProfile": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.",
+      "description": "Visitor-facing organizer listing content derived from sources or owner edits. Operator evidence (fit rationale, evidence checklists, intake requests, claim and index state) and raw scrape snapshots belong in private intake and evidence collections; operator writes are checked by functions/src/organizers/organizerPublicContent.ts.",
       "properties": {
         "headline": {
           "type": [
@@ -2528,24 +2528,6 @@ export const organizerDocumentSchema: Record<string, unknown> = {
                 "maxLength": 240
               }
             }
-          }
-        },
-        "fitNotes": {
-          "type": "array",
-          "maxItems": 8,
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 400
-          }
-        },
-        "missingEvidence": {
-          "type": "array",
-          "maxItems": 12,
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200
           }
         },
         "eventEvidence": {

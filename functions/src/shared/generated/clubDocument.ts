@@ -376,14 +376,6 @@ export interface ClubDocument {
       value: string;
     }[];
     /**
-     * @maxItems 8
-     */
-    fitNotes?: string[];
-    /**
-     * @maxItems 12
-     */
-    missingEvidence?: string[];
-    /**
      * @maxItems 12
      */
     eventEvidence?: {

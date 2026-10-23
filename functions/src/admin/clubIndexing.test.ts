@@ -396,6 +396,53 @@ test("adminSetClubIndexStatusHandler rejects incomplete index checklist",
   }
 );
 
+test("adminSetClubIndexStatusHandler refuses to publish operator content",
+  async () => {
+    const leaked = clubDoc({
+      publicProfile: {
+        summary: "This unclaimed profile stays out of search until verified.",
+        facts: [{label: "Indexing", value: "Noindex until verified"}],
+      },
+    });
+    const h = harness({"organizers/afterfly-run-club-indore": leaked});
+
+    await assert.rejects(
+      () => adminSetClubIndexStatusHandler(
+        callableRequest("admin-1", {
+          clubId: "afterfly-run-club-indore",
+          indexStatus: "indexReady",
+          checklist: completeChecklist(),
+          reviewNote: "Sources, cadence, media rights, and owner contact.",
+        }, {support: true}),
+        h.deps
+      ),
+      (error) => {
+        assertHttpsCode(error, "failed-precondition");
+        assert.match((error as Error).message, /publicProfile\.summary/u);
+        assert.match((error as Error).message, /publicProfile\.facts\[0\]/u);
+        return true;
+      }
+    );
+    assert.deepEqual(h.firestore.get("organizers/afterfly-run-club-indore"),
+      leaked);
+
+    await adminSetClubIndexStatusHandler(
+      callableRequest("admin-1", {
+        clubId: "afterfly-run-club-indore",
+        indexStatus: "noindex",
+        checklist: completeChecklist(),
+        reviewNote: "Taking the page out of the index.",
+      }, {support: true}),
+      h.deps
+    );
+    assert.equal(
+      ((h.firestore.get("organizers/afterfly-run-club-indore")
+        ?.publicPage) as FakeData).publishStatus,
+      "qa",
+      "unpublishing stays available while content needs repair"
+    );
+  });
+
 test("adminSetClubIndexStatusHandler blocks viewer-only admins", async () => {
   const h = harness({
     "organizers/afterfly-run-club-indore": clubDoc(),

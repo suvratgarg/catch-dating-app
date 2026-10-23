@@ -1115,8 +1115,20 @@ function validateRemoteConfigOwnership({root, manifest, findings}) {
   }));
 }
 
-/** Prevent the retired binary production hold in the phone import path.
+/** Prevent the retired binary production hold in the phone import path and
+ * the retired Remote Config release gates from returning to the template.
  * App environment checks elsewhere retain their identity/security meaning. */
+// Features ship identically in every environment; these switches were removed.
+export const retiredHostReleaseKeys = Object.freeze([
+  "CATCH_EVENT_OFFER_INTEGRATION_READY",
+  "CATCH_PRIVATE_EVENT_PRIVACY_READY",
+  "CATCH_PRIVATE_EVENT_SEAT_WRITERS_READY",
+  "CATCH_WEDDING_PHONE_IMPORT_READY",
+  "host_private_event_setup_enabled",
+  "host_progressive_event_defaults_enabled",
+  "host_wedding_phone_import_enabled",
+]);
+
 export function validateHostReleaseVisibility({accessSource, routeSource,
   workSource, parameters}) {
   const findings = [];
@@ -1130,10 +1142,9 @@ export function validateHostReleaseVisibility({accessSource, routeSource,
       findings.push(`${label}: compiled environment release hold is forbidden`);
     }
   }
-  for (const key of ["host_wedding_phone_import_enabled",
-    "CATCH_WEDDING_PHONE_IMPORT_READY"]) {
-    if (parameters[key]?.defaultValue?.value !== "false") {
-      findings.push(`Host release template must default ${key} to false`);
+  for (const key of retiredHostReleaseKeys) {
+    if (Object.hasOwn(parameters, key)) {
+      findings.push(`Remote Config template must not reintroduce retired release gate ${key}`);
     }
   }
   return findings;

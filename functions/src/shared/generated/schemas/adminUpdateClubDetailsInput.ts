@@ -292,24 +292,6 @@ export const adminUpdateClubDetailsCallablePayloadSchema: Record<string, unknown
                 "minLength": 1,
                 "maxLength": 80
               }
-            },
-            "fitNotes": {
-              "type": "array",
-              "maxItems": 8,
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 400
-              }
-            },
-            "missingEvidence": {
-              "type": "array",
-              "maxItems": 12,
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 200
-              }
             }
           }
         }

@@ -4,7 +4,6 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -194,7 +193,6 @@ void main() {
       container.updateOverrides([
         uidProvider.overrideWithValue(const AsyncData('account-b')),
         eventRepositoryProvider.overrideWithValue(repository),
-        privateEventSetupAvailableProvider.overrideWithValue(true),
         privateEventSetupTimelineRepositoryProvider.overrideWithValue(setups),
       ]);
       await Future.wait([
@@ -247,54 +245,44 @@ void main() {
     },
   );
 
-  for (final privateEnabled in [false, true]) {
-    for (final oldFails in [false, true]) {
-      test('old initial Upcoming is fenced after account switch '
-          'private=$privateEnabled fails=$oldFails', () async {
-        final old = PendingTimelineReads('old');
-        final fresh = PendingTimelineReads('fresh');
-        final repository = timelineRepositoryFor([old, fresh]);
-        final setups = ControlledSetupRepository([old, fresh]);
-        final container = timelineContainer(
-          repository,
-          setups: privateEnabled ? setups : null,
-        );
-        var provider = timelineProvider(container);
-        var subscription = container.listen(provider, (_, _) {});
-        addTearDown(() => subscription.close());
-        container.updateOverrides([
-          uidProvider.overrideWithValue(const AsyncData('account-b')),
-          eventRepositoryProvider.overrideWithValue(repository),
-          privateEventSetupAvailableProvider.overrideWithValue(privateEnabled),
-          if (privateEnabled)
-            privateEventSetupTimelineRepositoryProvider.overrideWithValue(
-              setups,
-            ),
-        ]);
-        await container.pump();
-        provider = timelineProvider(container);
-        subscription.close();
-        subscription = container.listen(provider, (_, _) {});
-        fresh.completeUpcoming();
-        fresh.completeHistory();
-        await settledTimeline(container, provider);
-        old.completeUpcoming(
-          failures: oldFails
-              ? {
-                  TimelineSource.active: StateError('old active'),
-                  if (privateEnabled)
-                    TimelineSource.privateUpcoming: StateError('old upcoming'),
-                }
-              : const {},
-        );
-        old.completeHistory();
-        await flushTimeline();
-        expect(
-          container.read(provider).requireValue.activeEvents.single.id,
-          'fresh-active',
-        );
-      });
-    }
+  for (final oldFails in [false, true]) {
+    test('old initial Upcoming is fenced after account switch '
+        ' fails=$oldFails', () async {
+      final old = PendingTimelineReads('old');
+      final fresh = PendingTimelineReads('fresh');
+      final repository = timelineRepositoryFor([old, fresh]);
+      final setups = ControlledSetupRepository([old, fresh]);
+      final container = timelineContainer(repository, setups: setups);
+      var provider = timelineProvider(container);
+      var subscription = container.listen(provider, (_, _) {});
+      addTearDown(() => subscription.close());
+      container.updateOverrides([
+        uidProvider.overrideWithValue(const AsyncData('account-b')),
+        eventRepositoryProvider.overrideWithValue(repository),
+        privateEventSetupTimelineRepositoryProvider.overrideWithValue(setups),
+      ]);
+      await container.pump();
+      provider = timelineProvider(container);
+      subscription.close();
+      subscription = container.listen(provider, (_, _) {});
+      fresh.completeUpcoming();
+      fresh.completeHistory();
+      await settledTimeline(container, provider);
+      old.completeUpcoming(
+        failures: oldFails
+            ? {
+                TimelineSource.active: StateError('old active'),
+                TimelineSource.privateUpcoming: StateError('old upcoming'),
+              }
+            : const {},
+      );
+      old.completeHistory();
+      await flushTimeline();
+      expect(
+        container.read(provider).requireValue.activeEvents.single.id,
+        'fresh-active',
+      );
+    });
   }
 
   for (final transition in ['refresh', 'account', 'dispose']) {
@@ -340,7 +328,6 @@ void main() {
             container.updateOverrides([
               uidProvider.overrideWithValue(const AsyncData('account-b')),
               eventRepositoryProvider.overrideWithValue(repository),
-              privateEventSetupAvailableProvider.overrideWithValue(true),
               privateEventSetupTimelineRepositoryProvider.overrideWithValue(
                 setups,
               ),
@@ -520,128 +507,107 @@ void main() {
     );
   }
 
-  for (final privateEnabled in [false, true]) {
-    for (final transition in [
-      'refresh',
-      'account',
-      'signout',
-      'reopen',
-      'organizer',
-    ]) {
-      for (final oldFails in [false, true]) {
-        test(
-          'late history is fenced: $transition private=$privateEnabled fails=$oldFails',
-          () async {
-            final old = PendingTimelineReads('old');
-            final fresh = PendingTimelineReads('fresh');
-            final repository = timelineRepositoryFor([old, fresh]);
-            final setups = ControlledSetupRepository([old, fresh]);
-            final container = timelineContainer(
-              repository,
-              setups: privateEnabled ? setups : null,
-            );
-            var provider = timelineProvider(container);
-            var subscription = container.listen(provider, (_, _) {});
-            addTearDown(() => subscription.close());
-            old.completeUpcoming();
-            await container.read(provider.future);
-            if (transition == 'refresh') {
-              container.invalidate(provider);
-            } else if (transition == 'account' || transition == 'signout') {
-              container.updateOverrides([
-                uidProvider.overrideWithValue(
-                  AsyncData<String?>(
-                    transition == 'signout' ? null : 'account-b',
+  for (final transition in [
+    'refresh',
+    'account',
+    'signout',
+    'reopen',
+    'organizer',
+  ]) {
+    for (final oldFails in [false, true]) {
+      test('late history is fenced: $transition fails=$oldFails', () async {
+        final old = PendingTimelineReads('old');
+        final fresh = PendingTimelineReads('fresh');
+        final repository = timelineRepositoryFor([old, fresh]);
+        final setups = ControlledSetupRepository([old, fresh]);
+        final container = timelineContainer(repository, setups: setups);
+        var provider = timelineProvider(container);
+        var subscription = container.listen(provider, (_, _) {});
+        addTearDown(() => subscription.close());
+        old.completeUpcoming();
+        await container.read(provider.future);
+        if (transition == 'refresh') {
+          container.invalidate(provider);
+        } else if (transition == 'account' || transition == 'signout') {
+          container.updateOverrides([
+            uidProvider.overrideWithValue(
+              AsyncData<String?>(transition == 'signout' ? null : 'account-b'),
+            ),
+            eventRepositoryProvider.overrideWithValue(repository),
+            privateEventSetupTimelineRepositoryProvider.overrideWithValue(
+              setups,
+            ),
+          ]);
+          await container.pump();
+          provider = timelineProvider(container);
+          subscription.close();
+          subscription = container.listen(provider, (_, _) {});
+          await container.pump();
+          expect(
+            container.read(provider).hasValue,
+            isFalse,
+            reason: 'Old account rows must disappear before new reads resolve',
+          );
+          if (transition == 'signout') {
+            expect(container.read(provider).hasError, isTrue);
+            expect(repository.activeStartAfterCalls, hasLength(1));
+            container.updateOverrides([
+              uidProvider.overrideWithValue(const AsyncData('account-a')),
+              eventRepositoryProvider.overrideWithValue(repository),
+              privateEventSetupTimelineRepositoryProvider.overrideWithValue(
+                setups,
+              ),
+            ]);
+            provider = timelineProvider(container);
+            subscription.close();
+            subscription = container.listen(provider, (_, _) {});
+          }
+        } else {
+          subscription.close();
+          await container.pump();
+          if (transition == 'organizer') {
+            provider = timelineProvider(container, 'club-2');
+          }
+          subscription = container.listen(provider, (_, _) {});
+        }
+        final current = container.read(provider);
+        if (transition == 'refresh') {
+          expect(
+            current.hasValue,
+            isTrue,
+            reason: 'Same-session refresh retains usable rows',
+          );
+        }
+        fresh.completeUpcoming();
+        fresh.completeHistory();
+        final result = await settledTimeline(container, provider);
+        expect(result.activeEvents.single.id, 'fresh-active');
+        // Old history finishes only after the replacement is fully usable.
+        old.completeHistory(
+          failures: oldFails
+              ? {
+                  TimelineSource.privatePast: StateError('old private history'),
+                  TimelineSource.privateCancelled: StateError(
+                    'old private cancelled',
                   ),
-                ),
-                eventRepositoryProvider.overrideWithValue(repository),
-                privateEventSetupAvailableProvider.overrideWithValue(
-                  privateEnabled,
-                ),
-                if (privateEnabled)
-                  privateEventSetupTimelineRepositoryProvider.overrideWithValue(
-                    setups,
-                  ),
-              ]);
-              await container.pump();
-              provider = timelineProvider(container);
-              subscription.close();
-              subscription = container.listen(provider, (_, _) {});
-              await container.pump();
-              expect(
-                container.read(provider).hasValue,
-                isFalse,
-                reason:
-                    'Old account rows must disappear before new reads resolve',
-              );
-              if (transition == 'signout') {
-                expect(container.read(provider).hasError, isTrue);
-                expect(repository.activeStartAfterCalls, hasLength(1));
-                container.updateOverrides([
-                  uidProvider.overrideWithValue(const AsyncData('account-a')),
-                  eventRepositoryProvider.overrideWithValue(repository),
-                  privateEventSetupAvailableProvider.overrideWithValue(
-                    privateEnabled,
-                  ),
-                  if (privateEnabled)
-                    privateEventSetupTimelineRepositoryProvider
-                        .overrideWithValue(setups),
-                ]);
-                provider = timelineProvider(container);
-                subscription.close();
-                subscription = container.listen(provider, (_, _) {});
-              }
-            } else {
-              subscription.close();
-              await container.pump();
-              if (transition == 'organizer') {
-                provider = timelineProvider(container, 'club-2');
-              }
-              subscription = container.listen(provider, (_, _) {});
-            }
-            final current = container.read(provider);
-            if (transition == 'refresh') {
-              expect(
-                current.hasValue,
-                isTrue,
-                reason: 'Same-session refresh retains usable rows',
-              );
-            }
-            fresh.completeUpcoming();
-            fresh.completeHistory();
-            final result = await settledTimeline(container, provider);
-            expect(result.activeEvents.single.id, 'fresh-active');
-            // Old history finishes only after the replacement is fully usable.
-            old.completeHistory(
-              failures: oldFails
-                  ? {
-                      TimelineSource.privatePast: StateError(
-                        'old private history',
-                      ),
-                      TimelineSource.privateCancelled: StateError(
-                        'old private cancelled',
-                      ),
-                      TimelineSource.past: StateError('old past'),
-                      TimelineSource.cancelled: StateError('old cancelled'),
-                    }
-                  : const {},
-              includePrivate: privateEnabled,
-            );
-            await flushTimeline();
-            final finalState = container.read(provider).requireValue;
-            expect(finalState.activeEvents.single.id, 'fresh-active');
-            expect(finalState.pastEvents.single.id, 'fresh-past');
-            expect(finalState.cancelledEvents.single.id, 'fresh-cancelled');
-            expect(finalState.pastError, isNull);
-            expect(finalState.pastCursor, isNull);
-            expect(
-              finalState.unpublishedCursors.values,
-              everyElement(startsWith('fresh-')),
-            );
-            expect(setups.calls, hasLength(privateEnabled ? 6 : 0));
-          },
+                  TimelineSource.past: StateError('old past'),
+                  TimelineSource.cancelled: StateError('old cancelled'),
+                }
+              : const {},
         );
-      }
+        await flushTimeline();
+        final finalState = container.read(provider).requireValue;
+        expect(finalState.activeEvents.single.id, 'fresh-active');
+        expect(finalState.pastEvents.single.id, 'fresh-past');
+        expect(finalState.cancelledEvents.single.id, 'fresh-cancelled');
+        expect(finalState.pastError, isNull);
+        expect(finalState.pastCursor, isNull);
+        expect(
+          finalState.unpublishedCursors.values,
+          everyElement(startsWith('fresh-')),
+        );
+        expect(setups.calls, hasLength(6));
+      });
     }
   }
 
@@ -661,7 +627,9 @@ void main() {
       container.updateOverrides([
         uidProvider.overrideWithValue(const AsyncLoading<String?>()),
         eventRepositoryProvider.overrideWithValue(repository),
-        privateEventSetupAvailableProvider.overrideWithValue(false),
+        privateEventSetupTimelineRepositoryProvider.overrideWithValue(
+          emptySetupRepository,
+        ),
       ]);
       await container.pump();
       provider = timelineProvider(container);
@@ -673,7 +641,9 @@ void main() {
       container.updateOverrides([
         uidProvider.overrideWithValue(const AsyncData('account-a')),
         eventRepositoryProvider.overrideWithValue(repository),
-        privateEventSetupAvailableProvider.overrideWithValue(false),
+        privateEventSetupTimelineRepositoryProvider.overrideWithValue(
+          emptySetupRepository,
+        ),
       ]);
       provider = timelineProvider(container);
       subscription.close();

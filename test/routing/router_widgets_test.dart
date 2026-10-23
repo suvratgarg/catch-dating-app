@@ -12,7 +12,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
@@ -416,8 +416,11 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(find.byKey(CreateEventFormKeys.distance), findsOneWidget);
+      expect(find.byType(PrivateEventCreateScreen), findsOneWidget);
       expect(find.text('Club not found.'), findsNothing);
+      // The private create flow schedules draft timers; unmount to settle them.
+      await tester.pumpWidget(const SizedBox.shrink());
+      await pumpFeatureUiFor(tester, const Duration(seconds: 5));
     },
   );
 

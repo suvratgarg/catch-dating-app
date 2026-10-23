@@ -20,7 +20,6 @@ bool canMountHostResponseQuery({
 HostResponseQueryCapability hostResponseQueryCapability(
   AppLocalizations l10n, {
   required String versionId,
-  bool offersEnabled = false,
 }) => HostResponseQueryCapability(
   versionId: versionId,
   copy: HostResponseQueryWorkspaceCopy(
@@ -89,7 +88,7 @@ HostResponseQueryCapability hostResponseQueryCapability(
       },
     ),
   ),
-  offerWorkspace: offersEnabled ? hostEventOfferWorkspaceCopy(l10n) : null,
+  offerWorkspace: hostEventOfferWorkspaceCopy(l10n),
 );
 
 HostEventOfferWorkspaceCopy hostEventOfferWorkspaceCopy(

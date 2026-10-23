@@ -18,7 +18,7 @@ import {projectManagerEventSetupDefaults} from
 import {eventSetupDefaultsDependencies} from
   "../../organizers/eventSetupDefaults/dependencies";
 import {
-  assertPrivacyReady, assertReceipt, authorizeSetupManager, hashRequest,
+  assertReceipt, authorizeSetupManager, hashRequest,
   ProgressiveSetupDependencies, ProgressiveSetupResult, receiptFor,
   requireRevision,
 } from "./service";
@@ -36,7 +36,6 @@ export async function updatePrivateEventPreferences(params: {
   if (!validateUpdatePrivateEventPreferencesCallablePayload(command)) {
     throw new HttpsError("invalid-argument", "Invalid event preferences.");
   }
-  assertPrivacyReady(deps);
   if (command.expectedActorUid && command.expectedActorUid !== actorUid) {
     throw new HttpsError("permission-denied", "The signed-in account changed.");
   }

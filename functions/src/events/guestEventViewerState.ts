@@ -1,5 +1,3 @@
-import {eventOfferIntegrationReady} from
-  "../organizerEventOffers/offerIntegration";
 import {assertUnpartitionedAdmission} from
   "../organizerFormAdmission/admissionEligibility";
 import {eventParticipationId} from "../shared/relationshipDocuments";
@@ -45,7 +43,6 @@ export async function readGuestEventViewerState(params: {
   db: FirebaseFirestore.Firestore; uid: string; eventId: string;
   phoneE164: string; nowMillis: number;
   loadCurrentAuthUser?: LoadRecipientAuth;
-  offersEnabled?: () => Promise<boolean>;
 }): Promise<(EventViewerStateSource & {guest: Guest}) | null> {
   const {db, uid, eventId, nowMillis} = params;
   return db.runTransaction(async (tx) => {
@@ -230,9 +227,7 @@ export async function readGuestEventViewerState(params: {
     if (guest.offerGrantId || guest.offerPaymentId) {
       try {
         assertUnpartitionedAdmission(event);
-        guest.action = guest.offerPaymentId ||
-          await (params.offersEnabled ?? eventOfferIntegrationReady)() ?
-          "offer" : "unsupported";
+        guest.action = "offer";
       } catch {
         guest.action = guest.offerPaymentId ? "offer" : "unsupported";
       }

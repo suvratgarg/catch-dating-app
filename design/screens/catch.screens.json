@@ -429,8 +429,8 @@
           "routes": [
             "hostCreateEventScreen"
           ],
-          "file": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-          "symbol": "_CreateEventScreenState",
+          "file": "lib/hosts/presentation/event_management/create/private_event_create_screen.dart",
+          "symbol": "_PrivateEventCreateScreenState",
           "family": "step-flow",
           "expression": "CatchScaffold.stepFlow",
           "bodyGeometry": "intrinsic",
@@ -446,17 +446,6 @@
           "expression": "CatchScaffold.stepFlow",
           "bodyGeometry": "intrinsic",
           "topEdge": "safe-area"
-        },
-        {
-          "routes": [
-            "hostCreateEventScreen"
-          ],
-          "file": "lib/core/celebration/celebration_screen.dart",
-          "symbol": "PaperCelebrationScaffold",
-          "family": "step-flow",
-          "expression": "CatchScaffold.stepFlow",
-          "bodyGeometry": "intrinsic",
-          "topEdge": "body-owned"
         }
       ],
       "reason": "Event creation and its loading state share the explicit step-flow owner."

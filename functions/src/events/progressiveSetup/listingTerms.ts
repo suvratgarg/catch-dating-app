@@ -48,7 +48,6 @@ export async function preparePrivateListingTerms(params: {
   eventId: string;
   before: EventDocument;
   after: EventDocument;
-  allWritersIntegrated?: () => boolean;
 }): Promise<{ledger: SeatLedger | null;
   fence?: Record<string, unknown>} | null> {
   const {db, tx, eventId, before, after} = params;
@@ -66,10 +65,6 @@ export async function preparePrivateListingTerms(params: {
         "Admission terms cannot change while places are reserved.");
     }
     return {ledger: state.update};
-  }
-  if (params.allWritersIntegrated?.() !== true) {
-    throw new HttpsError("failed-precondition",
-      "Seat accounting is not ready for this event.");
   }
   const markers = before as unknown as Record<string, unknown>;
   if (markers.demoOps === true || markers.synthetic === true ||

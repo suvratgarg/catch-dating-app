@@ -135,7 +135,7 @@ async function setup() {
   const defaults = await getManagerEventSetupDefaults({actorUid: "host1",
     organizerId: "org1", deps: eventSetupDefaultsDependencies(db)});
   const deps: ProgressiveSetupDependencies = {
-    db, privacyMigrationReady: () => true,
+    db,
     timestampFromMillis: admin.firestore.Timestamp.fromMillis,
     serverTimestamp: () => admin.firestore.Timestamp.fromMillis(2) as
       unknown as FirebaseFirestore.FieldValue,

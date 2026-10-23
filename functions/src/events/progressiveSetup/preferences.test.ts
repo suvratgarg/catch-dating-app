@@ -23,7 +23,6 @@ async function setup() {
   rows.set("organizerEventSetupDefaults/org1", {organizerId: "org1",
     revision: 1, eventSetup: {currency: "INR", offerValidityMinutes: 60,
       paymentInstructions: "Pay the organizer", timezone: "Asia/Kolkata"}});
-  let migrationReady = true;
   const db = {
     collection: (name: string) => ({doc: (id = "event1") =>
       ({path: `${name}/${id}`, id}),
@@ -60,7 +59,6 @@ async function setup() {
     },
   } as unknown as FirebaseFirestore.Firestore;
   const deps: ProgressiveSetupDependencies = {db,
-    privacyMigrationReady: () => migrationReady,
     serverTimestamp: () => Timestamp.fromMillis(10) as unknown as
       FirebaseFirestore.FieldValue,
     timestampFromMillis: Timestamp.fromMillis};
@@ -91,7 +89,6 @@ async function setup() {
     },
   };
   return {rows, db, deps, command, readPaths,
-    setReady: (ready: boolean) => migrationReady = ready,
     save: (overrides = {}) => updatePrivateEventPreferences({actorUid: "host1",
       command: {...command, ...overrides}, deps})};
 }
@@ -196,8 +193,6 @@ test("client authority, inherited amounts and bypasses reject", async () => {
     expectedAmountMinor: {mode: "inherit"}}}), isCode("invalid-argument"));
   await assert.rejects(h.save({providerActivated: true}),
     isCode("invalid-argument"));
-  h.setReady(false);
-  await assert.rejects(h.save(), isCode("failed-precondition"));
   assert.equal(h.rows.get("eventSetupPreferences/event1"), undefined);
 });
 

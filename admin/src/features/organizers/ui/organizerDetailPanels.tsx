@@ -717,26 +717,12 @@ function OrganizerEditor({
                 rows={4}
                 value={form.sourceSummary}
               />
-              <AdminFieldGrid columns={3}>
-                <TextareaField
-                  label="Formats"
-                  onChange={(value) => update("formatsText", value)}
-                  rows={5}
-                  value={form.formatsText}
-                />
-                <TextareaField
-                  label="Fit notes"
-                  onChange={(value) => update("fitNotesText", value)}
-                  rows={5}
-                  value={form.fitNotesText}
-                />
-                <TextareaField
-                  label="Missing evidence"
-                  onChange={(value) => update("missingEvidenceText", value)}
-                  rows={5}
-                  value={form.missingEvidenceText}
-                />
-              </AdminFieldGrid>
+              <TextareaField
+                label="Formats"
+                onChange={(value) => update("formatsText", value)}
+                rows={5}
+                value={form.formatsText}
+              />
             </AdminEditorSection>
 
             <AdminEditorSection>

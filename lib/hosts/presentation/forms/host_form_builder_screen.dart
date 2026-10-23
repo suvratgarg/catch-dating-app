@@ -7,7 +7,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_actions.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_notice.dart';
@@ -294,9 +293,6 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                       ? hostResponseQueryCapability(
                           context.l10n,
                           versionId: value.editor.form.activeVersionId!,
-                          offersEnabled: ref.watch(
-                            privateEventSetupAvailableProvider,
-                          ),
                         )
                       : null,
                 ),
@@ -313,9 +309,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                       definition: value.editor.definition,
                       notifier: notifier,
                       accountId: responseAccountId,
-                      enableEventTargetSettings: ref.watch(
-                        privateEventSetupAvailableProvider,
-                      ),
+                      enableEventTargetSettings: true,
                       hasPublishedVersion:
                           value.editor.form.activeVersionId != null,
                     ),

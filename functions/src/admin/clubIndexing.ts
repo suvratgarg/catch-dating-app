@@ -19,6 +19,8 @@ import {
   buildOrganizerAdminSearchProjection,
   clubWithPublicPageForSearch,
 } from "./organizerAdminSearch";
+import {assertOrganizerPublicContent} from
+  "../organizers/organizerPublicContent";
 
 const indexReviewRoles = ["admin", "adminOwner", "support"] as const;
 
@@ -89,6 +91,7 @@ export async function adminSetClubIndexStatusHandler(
     }
     const before = requireDoc<ClubDocument>(clubSnap, "ClubDocument");
     if (data.indexStatus !== "noindex") {
+      assertOrganizerPublicContent(before, "Publishing this organizer");
       await reserveOrganizerCanonicalRoute(tx, db, {
         clubId: data.clubId,
         canonicalPath: before.publicPage?.canonicalPath ?? "",

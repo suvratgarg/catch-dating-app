@@ -21,8 +21,6 @@ import {validateManageEventOfferCheckoutCallableResponse as validateResponse}
   from "../shared/generated/validators/manageEventOfferCheckoutOutput";
 import {validatePrepareEventOfferInvitationCallablePayload} from
   "../shared/generated/validators/prepareEventOfferInvitationInput";
-import {eventOfferIntegrationReady} from
-  "../organizerEventOffers/offerIntegration";
 import {prepareRazorpayCollectionRouting} from
   "../payments/razorpayCollectionRouting";
 import {offerPaymentId, OFFER_PAYMENT_COLLECTION, parseOfferPayment,
@@ -41,7 +39,7 @@ import {cancelPaidOfferForCancelledEvent} from
 
 export const recipientCallableDefaults = {
   db: () => admin.firestore(), rateLimit: checkRateLimit,
-  enabled: eventOfferIntegrationReady, now: Date.now,
+  now: Date.now,
   issue: issueOfferRecipientInvitation, claim: claimOfferRecipientInvitation,
   readRecipient: readVerifiedOfferRecipient,
   prepareRouting: prepareRazorpayCollectionRouting,
@@ -57,7 +55,6 @@ export async function prepareEventOfferInvitationHandler(
   const uid = requireAuth(request);
   const data = validateCallableWithAjv<InvitationInput>(request,
     validatePrepareEventOfferInvitationCallablePayload);
-  if (!await deps.enabled()) unavailable();
   const db = deps.db();
   await deps.rateLimit(db, uid, "prepareEventOfferInvitation");
   const invitation = await deps.issue({db, actorUid: uid,
@@ -93,7 +90,6 @@ export async function manageEventOfferCheckoutHandler(
     delete result.admission;
     result.payment = await findOwnedPayment(db, uid, grantId, deps);
     if (result.payment) return respond();
-    if (!await deps.enabled()) unavailable();
     const claimed = await deps.claim({db, uid, token: data.token,
       authTokenPhoneNumber: phone, nowMillis: deps.now});
     result.grant = await currentGrant(db, uid, claimed.grantId, deps);
@@ -103,11 +99,9 @@ export async function manageEventOfferCheckoutHandler(
     delete result.admission;
     result.payment = await findOwnedPayment(db, uid, data.grantId, deps);
     if (!result.payment) {
-      if (!await deps.enabled()) unavailable();
       result.grant = await currentGrant(db, uid, data.grantId, deps);
     }
   } else if (data.action === "acceptFree") {
-    if (!await deps.enabled()) unavailable();
     const {grant} = await db.runTransaction((tx) => deps.readRecipient({
       db, tx, grantId: data.grantId, uid, nowMillis: deps.now()}));
     const receipt = await deps.commitAdmission({db, actorUid: uid,
@@ -133,7 +127,7 @@ export async function manageEventOfferCheckoutHandler(
       if (payment.recipientUid !== uid || data.action === "prepare" &&
           payment.grantId !== data.grantId) unavailable();
     } else {
-      if (data.action !== "prepare" || !await deps.enabled()) unavailable();
+      if (data.action !== "prepare") unavailable();
       const {grant, source} = await db.runTransaction((tx) =>
         deps.readRecipient({db, tx, grantId: data.grantId,
           uid, nowMillis: deps.now()}));

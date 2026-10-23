@@ -18,7 +18,7 @@ import {UpdatePrivateEventDetailsCommand, updatePrivateEventDetails,
   privateDetailsReviewStale, isDiscardedDetailsReceipt} from
   "./details";
 import {eventListingTermsPatch} from "./listingTerms";
-import {assertPrivacyReady, assertReceipt, authorizeSetupManager,
+import {assertReceipt, authorizeSetupManager,
   hashRequest, receiptFor, requireRevision, ProgressiveSetupDependencies,
   ProgressiveSetupResult} from "./service";
 
@@ -53,11 +53,6 @@ export async function reconcilePrivateEventSeats(params: {
       Object.keys(command.details).length !== 1) {
     throw new HttpsError("invalid-argument",
       "Review admission settings separately before reconciling guests.");
-  }
-  assertPrivacyReady(deps);
-  if (deps.freshEventSeatWritersReady?.() !== true) {
-    throw new HttpsError("failed-precondition",
-      "Seat accounting is not ready for this event.");
   }
   const {db} = deps;
   const hash = hashRequest("details", command);
@@ -180,7 +175,6 @@ export async function reconcilePrivateEventSeats(params: {
     eventId: command.eventId, requestId: command.requestId};
   if (initial.discarded) return discardedResult;
   const migrationDeps: PagedSeatBootstrapDeps = {db, auth: deps.auth,
-    allWritersIntegrated: deps.freshEventSeatWritersReady,
     authorizeTransaction: async (tx) => {
       await authorize(tx);
     },

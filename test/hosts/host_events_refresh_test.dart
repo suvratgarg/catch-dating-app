@@ -14,7 +14,6 @@ import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_stat
 import 'package:catch_dating_app/hosts/events/presentation/host_events_screen.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
@@ -265,7 +264,6 @@ class _Fixture {
             _actor,
           ).overrideWithValue(AsyncData([_club])),
           eventRepositoryProvider.overrideWithValue(events),
-          privateEventSetupAvailableProvider.overrideWithValue(true),
           privateEventSetupTimelineRepositoryProvider.overrideWithValue(setups),
           clubEventDraftsProvider(
             clubId: _organizer,
