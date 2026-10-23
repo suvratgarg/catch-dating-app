@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {collectComponentApi, componentApiProblems} from "./lib/component_api.mjs";
+import {reactSymbolFiles} from "./component_concepts.mjs";
 
 const knownBad = process.argv.includes("--known-bad");
 const knownBadWebsite = process.argv.includes("--known-bad-website");
@@ -43,11 +44,10 @@ for (const component of registry.components ?? []) {
   }
   const react = component.react;
   if (!react) continue;
-  const exported = typeScriptExports(react.file);
-  for (const symbol of [react.symbol, ...(react.additionalSymbols ?? [])]) {
+  for (const [symbol, file] of reactSymbolFiles(react)) {
     reactLinks += 1;
-    if (!exported.has(symbol)) {
-      failures.push(`${component.id}: react symbol '${symbol}' was not found in ${react.file}`);
+    if (!typeScriptExports(file).has(symbol)) {
+      failures.push(`${component.id}: react symbol '${symbol}' was not found in ${file}`);
     } else if (!barrelExports.has(symbol)) {
       failures.push(`${component.id}: react symbol '${symbol}' is not exported from ${webUiBarrel}`);
     }

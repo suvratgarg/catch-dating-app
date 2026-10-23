@@ -142,8 +142,40 @@ String _buildWebsiteCss({
   }
 
   buffer.writeln('}');
+  _writeThemeRoles(buffer, registry);
 
   return buffer.toString();
+}
+
+/// Theme roles let a component read one colour name in either theme. Light is
+/// the default; a subtree opts into dark with `data-catch-theme="dark"`.
+void _writeThemeRoles(StringBuffer buffer, _TokenRegistry registry) {
+  List<String> roles(String mode) => [
+    for (final token in registry.tokens.values.where(_isThemeColorToken))
+      if (token.path[1] == mode) token.path[3],
+  ];
+  final light = roles('light');
+  final dark = roles('dark');
+  if (light.isEmpty ||
+      light.length != dark.length ||
+      !light.toSet().containsAll(dark)) {
+    throw const FormatException('Light and dark colour roles must match.');
+  }
+  for (final (selector, mode) in [
+    (':root,\n[data-catch-theme="light"]', 'light'),
+    ('[data-catch-theme="dark"]', 'dark'),
+  ]) {
+    buffer
+      ..writeln()
+      ..writeln('$selector {');
+    for (final role in light) {
+      buffer.writeln(
+        '  --catch-theme-${_kebab(role)}: '
+        'var(${_cssVariableName(['theme', mode, 'color', role])});',
+      );
+    }
+    buffer.writeln('}');
+  }
 }
 
 String _buildDartTokens(_TokenRegistry registry) {
@@ -1060,6 +1092,45 @@ void _writeFoundationTokens(StringBuffer buffer, _TokenRegistry registry) {
     }
     buffer.writeln(
       '  static const double ${token.path.last} = ${_formatDartNumber(value)};',
+    );
+  }
+  buffer.writeln('}');
+  _writeDimensionGroup(buffer, registry, 'gap', 'GeneratedCatchGapTokens');
+  _writeDimensionGroup(
+    buffer,
+    registry,
+    'stroke',
+    'GeneratedCatchStrokeTokens',
+  );
+  _writeDimensionGroup(
+    buffer,
+    registry,
+    'windowSize',
+    'GeneratedCatchWindowSizeTokens',
+  );
+}
+
+/// A flat group of px dimensions, emitted as doubles named by their keys.
+void _writeDimensionGroup(
+  StringBuffer buffer,
+  _TokenRegistry registry,
+  String group,
+  String className,
+) {
+  final tokens = registry.tokens.values
+      .where((t) => t.path.length == 2 && t.path[0] == group)
+      .toList();
+  if (tokens.isEmpty) throw FormatException('Missing $group tokens.');
+  buffer
+    ..writeln()
+    ..writeln('abstract final class $className {');
+  for (final token in tokens) {
+    if (token.type != 'dimension') {
+      throw FormatException('Unsupported $group token: ${token.referencePath}');
+    }
+    buffer.writeln(
+      '  static const double ${token.path.last} = '
+      '${_dartDimensionNumber(registry.resolvedValue(token))};',
     );
   }
   buffer.writeln('}');

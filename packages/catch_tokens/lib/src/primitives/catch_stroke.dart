@@ -1,15 +1,18 @@
+import 'package:catch_tokens/generated/catch_design_tokens.g.dart';
+
 /// Stroke widths that are part of reusable component geometry.
 abstract final class CatchStroke {
-  static const double hairline = 1.0;
-  static const double emphasis = 1.5;
-  static const double progressIndicator = 2.0;
-  static const double avatarRing = 2.0;
+  static const double hairline = GeneratedCatchStrokeTokens.hairline;
+  static const double emphasis = GeneratedCatchStrokeTokens.emphasis;
+  static const double progressIndicator =
+      GeneratedCatchStrokeTokens.progressIndicator;
+  static const double avatarRing = GeneratedCatchStrokeTokens.avatarRing;
 
   /// Typographic underline compatibility alias. Border emphasis should use
   /// `CatchBorderRole.selected`, `CatchBorderRole.danger`, or
   /// `CatchBorderRole.warning` instead of selecting this width directly.
-  static const double underline = 1.5;
-  static const double focusRing = 2.0;
-  static const double selection = 3.0;
-  static const double passProgress = 2.6;
+  static const double underline = GeneratedCatchStrokeTokens.underline;
+  static const double focusRing = GeneratedCatchStrokeTokens.focusRing;
+  static const double selection = GeneratedCatchStrokeTokens.selection;
+  static const double passProgress = GeneratedCatchStrokeTokens.passProgress;
 }

@@ -373,6 +373,7 @@ abstract final class GeneratedCatchLayoutTokens {
   static const double statusVerticalPadding = 2.0;
   static const double pageGutter = 20.0;
   static const double pageBodyStart = 16.0;
+  static const double pageBodyEnd = 20.0;
 }
 
 abstract final class GeneratedCatchInteractionTokens {
@@ -435,4 +436,31 @@ abstract final class GeneratedCatchAccessibilityTokens {
   static const double minimumTextContrast = 4.5;
   static const double largeTextContrast = 3.0;
   static const double minimumTextScaleTest = 2.0;
+}
+
+abstract final class GeneratedCatchGapTokens {
+  static const double inline = 8.0;
+  static const double headerTitleToSubtitle = 4.0;
+  static const double related = 12.0;
+  static const double formField = 16.0;
+  static const double section = 24.0;
+  static const double majorSection = 32.0;
+}
+
+abstract final class GeneratedCatchStrokeTokens {
+  static const double hairline = 1.0;
+  static const double emphasis = 1.5;
+  static const double underline = 1.5;
+  static const double focusRing = 2.0;
+  static const double progressIndicator = 2.0;
+  static const double avatarRing = 2.0;
+  static const double selection = 3.0;
+  static const double passProgress = 2.6;
+}
+
+abstract final class GeneratedCatchWindowSizeTokens {
+  static const double mediumMinWidth = 600.0;
+  static const double expandedMinWidth = 840.0;
+  static const double largeMinWidth = 1200.0;
+  static const double extraLargeMinWidth = 1600.0;
 }
