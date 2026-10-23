@@ -17,6 +17,8 @@ import {AlertRow, Panel} from "./data";
 import {AdminDecisionFooterShell, AdminIntakeDecisionActions, AdminIntakeDecisionState} from "./intake";
 import {AdminButton} from "./overview";
 
+export {selectOptionLabeller, selectOptionValues} from "./shared";
+
 export {StateRow} from "./data";
 
 type FieldValidationProps = {
