@@ -104,6 +104,7 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
     ["privacy", "Privacy policy"],
     ["terms", "Terms of use"],
     ["help", "Help and safety"],
+    ["delete-account", "Delete your account"],
   ]) {
     const legalHtml = fs.readFileSync(path.join(distRoot, route, "index.html"), "utf8");
     assert.match(legalHtml, new RegExp(`<h1>${title}<\\/h1>`));
@@ -139,6 +140,7 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
     ["privacy", path.join("privacy", "index.html")],
     ["terms", path.join("terms", "index.html")],
     ["help", path.join("help", "index.html")],
+    ["account_deletion", path.join("delete-account", "index.html")],
     ["not_found", "404.html"],
   ]) {
     assertStaticRouteMeta(
