@@ -293,7 +293,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 
 | Widget | Source | Role | Canonical concept | Purpose |
 |---|---|---|---|---|
-| <code>ForceUpdateGate</code> | <code>lib/app.dart:115</code> | — | — | No class documentation or registry summary. |
+| <code>ForceUpdateGate</code> | <code>lib/app.dart:113</code> | — | — | No class documentation or registry summary. |
 | <code>HostAuthScaffold</code> | <code>lib/auth/presentation/auth_screen.dart:83</code> | — | — | Host auth frame shares its initial brand anchor with Flutter startup. The inset card enters below it, and one scroll owner can reveal any focused control on short screens or when the keyboard reduces the available height. |
 | <code>HostAuthCard</code> | <code>lib/auth/presentation/host_auth_card.dart:6</code> | — | — | The inset card shared by every Catch Host authentication state. |
 | <code>HostAuthHeader</code> | <code>lib/auth/presentation/host_auth_card.dart:22</code> | — | — | No class documentation or registry summary. |
@@ -760,8 +760,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>UpdateRequiredBody</code> | <code>lib/force_update/presentation/update_required_screen.dart:55</code> | — | — | Provider-free full-screen update prompt rendered by [UpdateRequiredScreen]. |
 | <code>PhoneImportGuestSection</code> | <code>lib/hosts/audience/phone_import/presentation/widgets/phone_import_guest_section.dart:9</code> | — | — | One guest's local review fields. Controller commands own all draft changes; text-controller lifetime and focus remain Flutter mechanics here. |
 | <code>PhoneImportSavedReviewSection</code> | <code>lib/hosts/audience/phone_import/presentation/widgets/phone_import_saved_review_section.dart:9</code> | — | — | Read-only confirmed command, including after a process restart. No native contact identifiers, unused numbers or draft data are rendered here. |
-| <code>HostEventEntrySheet</code> | <code>lib/hosts/events/presentation/host_event_entry_sheet.dart:44</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventsRouteScaffold</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:108</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventEntrySheet</code> | <code>lib/hosts/events/presentation/host_event_entry_sheet.dart:42</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventsRouteScaffold</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:109</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerMomentsEntryField</code> | <code>lib/hosts/events/presentation/moments/organizer_moments_entry_field.dart:10</code> | — | — | Manage-screen entry into the event's organizer Moments workspace. |
 | <code>HostEventsClubCard</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:34</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsClubSection</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:180</code> | — | — | No class documentation or registry summary. |
@@ -832,7 +832,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CreateEventDockSkeleton</code> | <code>lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart:92</code> | — | — | No class documentation or registry summary. |
 | <code>CreateEventLoadingBody</code> | <code>lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart:39</code> | — | — | No class documentation or registry summary. |
 | <code>LoadingChipRow</code> | <code>lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart:70</code> | — | — | No class documentation or registry summary. |
-| <code>HostCreateEventRouteBody</code> | <code>lib/hosts/presentation/event_management/host_create_event_screen.dart:149</code> | — | — | No class documentation or registry summary. |
+| <code>HostCreateEventRouteBody</code> | <code>lib/hosts/presentation/event_management/host_create_event_screen.dart:146</code> | — | — | No class documentation or registry summary. |
 | <code>HostPrivateEventSetupInventorySection</code> | <code>lib/hosts/presentation/event_management/host_private_event_setup_inventory_section.dart:22</code> | — | — | Private events are read from the manager API, never from the public rich Event feed or this device's local draft store. |
 | <code>CreateEventAdaptiveWorkspace</code> | <code>lib/hosts/presentation/event_management/widgets/create_event_adaptive_workspace.dart:13</code> | — | — | Route-owned adaptive composition for Create Event. |
 | <code>CreateEventConsequenceSection</code> | <code>lib/hosts/presentation/event_management/widgets/create_event_adaptive_workspace.dart:133</code> | — | — | No class documentation or registry summary. |
@@ -1098,8 +1098,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramEventsRow</code> | <code>lib/programs/presentation/program_events_row.dart:10</code> | — | — | One identifiable program destination. Its constituent events remain in the program workspace rather than appearing as unrelated timeline duplicates. |
 | <code>ProgramGuestEditDialog</code> | <code>lib/programs/presentation/program_guest_edit_dialog.dart:19</code> | — | — | Edits one guest's contact details, household, and group selections. |
 | <code>ProgramGuestGroupEditDialog</code> | <code>lib/programs/presentation/program_guest_group_edit_dialog.dart:8</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramGuestsFunctionRow</code> | <code>lib/programs/presentation/program_guests_screen.dart:642</code> | — | — | One guest row: per-function status chips for the whole program plus the RSVP editor for the currently selected function. |
-| <code>ProgramGuestsPageBody</code> | <code>lib/programs/presentation/program_guests_screen.dart:206</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramGuestsFunctionRow</code> | <code>lib/programs/presentation/program_guests_screen.dart:637</code> | — | — | One guest row: per-function status chips for the whole program plus the RSVP editor for the currently selected function. |
+| <code>ProgramGuestsPageBody</code> | <code>lib/programs/presentation/program_guests_screen.dart:201</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramHotelInboundTripTile</code> | <code>lib/programs/presentation/program_hotel_desk_screen.dart:250</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramRoomBlockRow</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:291</code> | — | — | A reserved room block with live capacity — read-only on the desk board. |
 | <code>ProgramStayRow</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:219</code> | — | — | One stay row: guest, room, block, lifecycle status; tap to manage. |
@@ -1124,7 +1124,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramTimezoneField</code> | <code>lib/programs/presentation/program_timezone_field.dart:9</code> | — | — | A searchable disclosure using Catch's existing field and choice rows. The form owns selection, search and expansion; search text is never saved. |
 | <code>ProgramTripLedgerRow</code> | <code>lib/programs/presentation/program_trips_screen.dart:254</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramTripVoidSheet</code> | <code>lib/programs/presentation/program_trips_screen.dart:387</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramWorkPageBody</code> | <code>lib/programs/presentation/program_work_screen.dart:136</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramWorkPageBody</code> | <code>lib/programs/presentation/program_work_screen.dart:131</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramWorkspaceFunctionTile</code> | <code>lib/programs/presentation/program_workspace_screen.dart:470</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramWorkspacePageBody</code> | <code>lib/programs/presentation/program_workspace_screen.dart:73</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramFunctionEditDialog</code> | <code>lib/programs/presentation/program_workspace_surface.dart:24</code> | — | — | No class documentation or registry summary. |
@@ -1249,8 +1249,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 |---|---|---|---|---|
 | <code>ConsumerPlatformApp</code> | <code>apps/consumer/lib/consumer_platform_app.dart:12</code> | — | — | Consumer-owned native capability bindings around the shared Consumer UI. |
 | <code>HostPlatformApp</code> | <code>apps/host/lib/host_platform_app.dart:6</code> | — | — | Host-owned app root selecting only the Host router and default capabilities. |
-| <code>ForceUpdateCheckErrorScreen</code> | <code>lib/app.dart:229</code> | — | — | No class documentation or registry summary. |
-| <code>MyApp</code> | <code>lib/app.dart:44</code> | — | — | No class documentation or registry summary. |
+| <code>ForceUpdateCheckErrorScreen</code> | <code>lib/app.dart:224</code> | — | — | No class documentation or registry summary. |
+| <code>MyApp</code> | <code>lib/app.dart:42</code> | — | — | No class documentation or registry summary. |
 | <code>AuthScreen</code> | <code>lib/auth/presentation/auth_screen.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>ChatScreen</code> | <code>lib/chats/presentation/chat_screen.dart:36</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatParticipantsScreen</code> | <code>lib/chats/presentation/event_chat_participants_screen.dart:15</code> | — | — | No class documentation or registry summary. |
@@ -1290,8 +1290,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>UpdateRequiredScreen</code> | <code>lib/force_update/presentation/update_required_screen.dart:15</code> | — | — | Blocking screen shown when the running app version is below [minVersion]. |
 | <code>HostApp</code> | <code>lib/host_app.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>PhoneImportReviewScreen</code> | <code>lib/hosts/audience/phone_import/presentation/phone_import_review_screen.dart:15</code> | — | — | Shared review view. Without a canonical submission controller this remains an explicitly labelled demo with sharing permanently disabled. |
-| <code>PhoneImportScreen</code> | <code>lib/hosts/audience/phone_import/presentation/phone_import_screen.dart:19</code> | — | — | Native-first program import. Both entry and every gateway operation require live canonical access; a cached program page can only navigate here. |
-| <code>HostEventsScreen</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:25</code> | — | — | No class documentation or registry summary. |
+| <code>PhoneImportScreen</code> | <code>lib/hosts/audience/phone_import/presentation/phone_import_screen.dart:18</code> | — | — | Native-first program import. Both entry and every gateway operation require live canonical access; a cached program page can only navigate here. |
+| <code>HostEventsScreen</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:26</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerMomentEditScreen</code> | <code>lib/hosts/events/presentation/moments/organizer_moment_edit_screen.dart:6</code> | — | — | Creates or revises a moment through upsertOrganizerMoment. Revising an armed moment drops it back to draft with approval cleared — the backend owns that lifecycle; the form only submits the new definition. |
 | <code>OrganizerMomentsScreen</code> | <code>lib/hosts/events/presentation/moments/organizer_moments_screen.dart:20</code> | — | — | Moments for one event or program scope: the organizer's send rules with their approve-the-rule-once lifecycle (draft → armed → paused/done). |
 | <code>HostApplicationDetailScreen</code> | <code>lib/hosts/presentation/applications/host_application_detail_screen.dart:5</code> | — | — | Compatibility entry for saved application URLs; all detail UI has one owner. |
@@ -1312,20 +1312,20 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PrivateEventPreferencesScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_preferences_screen.dart:19</code> | — | — | Manager-only settings on a saved event. Private and published events share controls; each controller retains its own authoritative command protocol. |
 | <code>PrivateEventSetupScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_setup_screen.dart:14</code> | — | — | Progressive actions for one already-saved canonical event. |
 | <code>HostCreateEventRouteLoadingScreen</code> | <code>lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart:7</code> | — | — | No class documentation or registry summary. |
-| <code>HostCreateEventRouteScreen</code> | <code>lib/hosts/presentation/event_management/host_create_event_screen.dart:56</code> | — | — | No class documentation or registry summary. |
+| <code>HostCreateEventRouteScreen</code> | <code>lib/hosts/presentation/event_management/host_create_event_screen.dart:53</code> | — | — | No class documentation or registry summary. |
 | <code>RoutePathBuilderScreen</code> | <code>lib/hosts/presentation/event_management/widgets/route_path_builder_screen.dart:10</code> | — | — | Tap-to-build route geometry used by moving event formats. |
 | <code>HostFormAnalyticsScreen</code> | <code>lib/hosts/presentation/forms/host_form_analytics_screen.dart:22</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormAutomationsScreen</code> | <code>lib/hosts/presentation/forms/host_form_automations_screen.dart:22</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormBuilderScreen</code> | <code>lib/hosts/presentation/forms/host_form_builder_screen.dart:33</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormBuilderScreen</code> | <code>lib/hosts/presentation/forms/host_form_builder_screen.dart:32</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormPreviewScreen</code> | <code>lib/hosts/presentation/forms/host_form_preview_screen.dart:10</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormResponseDetailScreen</code> | <code>lib/hosts/presentation/forms/host_form_response_detail_screen.dart:63</code> | — | — | One detail surface for submitted forms and imported application records. |
+| <code>HostFormResponseDetailScreen</code> | <code>lib/hosts/presentation/forms/host_form_response_detail_screen.dart:62</code> | — | — | One detail surface for submitted forms and imported application records. |
 | <code>HostFormShareScreen</code> | <code>lib/hosts/presentation/forms/host_form_share_screen.dart:20</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormTemplatesScreen</code> | <code>lib/hosts/presentation/forms/host_form_templates_screen.dart:18</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormsScreen</code> | <code>lib/hosts/presentation/forms/host_forms_screen.dart:51</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormsScreen</code> | <code>lib/hosts/presentation/forms/host_forms_screen.dart:50</code> | — | — | No class documentation or registry summary. |
 | <code>HostResponseOfferPreferencesRouteScreen</code> | <code>lib/hosts/presentation/forms/host_response_offer_preferences_route_screen.dart:5</code> | — | — | Public route boundary for the shared offer settings editor. |
-| <code>HostResponseOfferScreen</code> | <code>lib/hosts/presentation/forms/host_response_offer_screen.dart:31</code> | — | — | Shared continuation for one response or a reviewed query selection. The originating page stays mounted; save/cancel returns to the same context. |
+| <code>HostResponseOfferScreen</code> | <code>lib/hosts/presentation/forms/host_response_offer_screen.dart:30</code> | — | — | Shared continuation for one response or a reviewed query selection. The originating page stays mounted; save/cancel returns to the same context. |
 | <code>HostEventManageRouteScreen</code> | <code>lib/hosts/presentation/host_event_manage_route_screen.dart:5</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventManageScreen</code> | <code>lib/hosts/presentation/host_event_manage_screen.dart:59</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventManageScreen</code> | <code>lib/hosts/presentation/host_event_manage_screen.dart:58</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventOperatorScreen</code> | <code>lib/hosts/presentation/host_event_operator_screen.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventPublicationRouteScreen</code> | <code>lib/hosts/presentation/host_event_publication_route_screen.dart:5</code> | — | — | The publication editor uses its existing step-flow content after the same uid/organizer/event authorization boundary as management. |
 | <code>HostClubEventDefaultsScreen</code> | <code>lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart:3</code> | — | — | No class documentation or registry summary. |
@@ -1355,7 +1355,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramDispatchScreen</code> | <code>lib/programs/presentation/program_dispatch_screen.dart:26</code> | — | — | The dispatcher's desk for one pickup station: the deterministic batch suggestions plus the dispatch sheet that captures plate, vendor and class at the moment the vehicle departs — the act that generates the reconciliation record. |
 | <code>ProgramFunctionDoorScreen</code> | <code>lib/programs/presentation/program_door_screen.dart:25</code> | — | — | Door workspace for one program function. `functionCheckIn` and `functionLead` staff land here from the work shell; the durable journal owns every attendance transition and queued work replays through the program operations outbox when the venue network drops. |
 | <code>ProgramGuestDeskScreen</code> | <code>lib/programs/presentation/program_guest_desk_screen.dart:14</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramGuestsScreen</code> | <code>lib/programs/presentation/program_guests_screen.dart:31</code> | — | — | Household × function RSVP grid for the organizer workspace. One function is selected at a time; each household card lists members with their join state and a segmented RSVP editor that writes through `recordProgramFunctionRsvp`. |
+| <code>ProgramGuestsScreen</code> | <code>lib/programs/presentation/program_guests_screen.dart:30</code> | — | — | Household × function RSVP grid for the organizer workspace. One function is selected at a time; each household card lists members with their join state and a segmented RSVP editor that writes through `recordProgramFunctionRsvp`. |
 | <code>ProgramHotelDeskScreen</code> | <code>lib/programs/presentation/program_hotel_desk_screen.dart:18</code> | — | — | The hotel welcome team's inbound view: vehicles on the way with their manifest names and plates, plus parties still expected at the airport. Deliberately narrow — no contact fields, no other hotels. |
 | <code>ProgramHotelRoomsScreen</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:20</code> | — | — | The hotel desk's room board for one property: routed guests still needing a room, every stay with its block/room/status, and the reserved blocks with live capacity. Mutations go through `upsertProgramStay` — the server re-counts block occupancy inside the transaction, so a stale board can never overbook. |
 | <code>ProgramImportScreen</code> | <code>lib/programs/presentation/program_import_screen.dart:19</code> | — | — | Manifest import flow: pick a CSV/XLSX, map its columns to manifest fields, preview server-side counts, then commit. The commit retries are idempotent through `clientOperationId`; preview and commit use separate operation ids because the receipt hash includes the mode. |
@@ -1364,7 +1364,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramStakeholderScreen</code> | <code>lib/programs/presentation/program_stakeholder_screen.dart:16</code> | — | — | Counts-only overview for stakeholderViewer staff: guest/household headcounts, per-function RSVP and door counts, and per-hotel occupancy from routed travel legs. The callable never returns names — function and hotel labels join from the work-access payload on the client. |
 | <code>ProgramTeamScreen</code> | <code>lib/programs/presentation/program_team_screen.dart:20</code> | — | — | Program team roster — active staff grants with their duty scopes, plus grant/invite/revoke actions. Duty sets are program-wide in W1 (empty resource scopes); per-station/hotel/function scoping lands with the assignment picker surfaces. |
 | <code>ProgramTripsScreen</code> | <code>lib/programs/presentation/program_trips_screen.dart:18</code> | — | — | The trip ledger: every dispatch as a reconciliation record — plate, vendor, class, manifest and outcome. Voided trips keep their row so the vendor invoice can be checked line by line. Rows that are not yet arrived surface in the needs-review strip for reconciliation viewers, and the whole ledger exports to CSV. |
-| <code>ProgramWorkScreen</code> | <code>lib/programs/presentation/program_work_screen.dart:25</code> | — | — | Scoped entry point for private program staff. |
+| <code>ProgramWorkScreen</code> | <code>lib/programs/presentation/program_work_screen.dart:24</code> | — | — | Scoped entry point for private program staff. |
 | <code>ProgramWorkspaceScreen</code> | <code>lib/programs/presentation/program_workspace_screen.dart:23</code> | — | — | Organizer program workspace — program header, schedule day rail and function management. Guests/team/import live on pushed sibling routes so the schedule stays the focus here. |
 | <code>PublicProfileScreen</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewsHistoryScreen</code> | <code>lib/reviews/presentation/reviews_history_screen.dart:18</code> | — | — | No class documentation or registry summary. |

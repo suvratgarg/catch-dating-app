@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.173.0
-updated: 2026-10-20
+version: 1.174.0
+updated: 2026-10-22
 owner: recursive_audit_loop
 status: active
 ---
@@ -2072,7 +2072,7 @@ authority, event source revision, preference revision and reviewed organizer
 defaults. Its actor-scoped request receipt returns the original revision after a
 lost response; changed requests cannot reuse that identity. Events and issued
 offer snapshots are never rewritten. Clients cannot read or write the receipt
-collection directly; the endpoint remains release gated with the offer flow.
+collection directly.
 Offer preview and commit recheck these facts rather than trusting a picker row.
 
 ### Functions Runtime Schema Modules

@@ -12,7 +12,6 @@ import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart'
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_admission.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_admission_controller.dart';
@@ -81,10 +80,7 @@ class _HostResponseOfferScreenState
   Future<void> _createEvent() async {
     final account = _accountId;
     final selection = widget.queryController?.selectionIntent;
-    if (_creating ||
-        account == null ||
-        !_current(account) ||
-        !ref.read(privateEventSetupAvailableProvider)) {
+    if (_creating || account == null || !_current(account)) {
       return;
     }
     setState(() => _creating = true);
@@ -194,19 +190,14 @@ class _HostResponseOfferScreenState
         ),
       );
     }
-    final enabled = ref.watch(privateEventSetupAvailableProvider);
-    final account = enabled
-        ? catchAsyncStateFromAsyncValue(ref.watch(uidProvider))
-        : null;
-    final uid = account?.isSettledData == true ? account!.value : null;
-    final liveUid = enabled
-        ? ref.watch(firebaseAuthProvider).currentUser?.uid
-        : null;
+    final account = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+    final uid = account.isSettledData ? account.value : null;
+    final liveUid = ref.watch(firebaseAuthProvider).currentUser?.uid;
     if (_accountId != null && (uid != _accountId || liveUid != _accountId)) {
       _accountLost = true;
       _offerScope = null;
     }
-    final available = enabled && !_accountLost && uid != null && uid == liveUid;
+    final available = !_accountLost && uid != null && uid == liveUid;
     if (available) {
       _accountId = uid;
       _offerScope = (

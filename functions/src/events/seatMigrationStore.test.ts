@@ -32,18 +32,16 @@ function setup(count = 1) {
     store.rows.set(`eventAttendees/att${String(index).padStart(3, "0")}`,
       attendee(index));
   }
-  let integrated = true;
   let authCalls = 0;
   const command = {eventId: "event1", organizerId: "org1",
     migrationRevision: 1, asOfMillis: 1000};
-  const deps = {db: store.db(), allWritersIntegrated: () => integrated,
+  const deps = {db: store.db(),
     auth: {getUser: async (uid: string) => {
       authCalls++;
       return {uid, phoneNumber: null};
     }}};
   return {store, command, deps,
     authCalls: () => authCalls,
-    setIntegrated: (value: boolean) => integrated = value,
     bootstrap: () => bootstrapEventSeatLedger({command, deps})};
 }
 const denied = (error: unknown) => error instanceof HttpsError &&
@@ -278,13 +276,6 @@ test("missing final page checkpoint cannot claim complete source", async () => {
   await assert.rejects(h.bootstrap(), denied);
   assert.equal(h.store.rows.get("eventSeatLedgers/event1")?.state,
     "unreconciled");
-});
-
-test("deployment gate denies before acquiring fence", async () => {
-  const h = setup(150);
-  h.setIntegrated(false);
-  await assert.rejects(h.bootstrap(), denied);
-  assert.equal(h.store.writes.length, 0);
 });
 
 test("integrated source writer is blocked while a scan is in progress",

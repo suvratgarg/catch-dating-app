@@ -9,8 +9,8 @@ export type CatchWebhookEvent = Pick<CatchWhatsappWebhookEventDocument,
   "schema" | "eventId" | "wabaId" | "phoneNumberId" | "payloadHash" |
   "eventKind" | "messageId" | "providerTimestampSeconds" | "participantId" |
   "messageType" | "text" | "textTruncated" | "deliveryStatus" | "errorCodes">;
+/** Credentials activate the receiver; any missing value keeps it inert. */
 export interface CatchWebhookConfig {
-  enabled: boolean;
   wabaId: string;
   phoneNumberId: string;
   appSecret: string;
@@ -51,7 +51,7 @@ export async function handleCatchWhatsappWebhook(request: CatchWebhookRequest,
   if (request.method !== "GET" && request.method !== "POST") {
     return {status: 405, body: "Method not allowed."};
   }
-  if (!config.enabled || !/^[0-9]{1,32}$/.test(config.wabaId) ||
+  if (!/^[0-9]{1,32}$/.test(config.wabaId) ||
       !/^[0-9]{1,32}$/.test(config.phoneNumberId) || !config.appSecret ||
       config.verifyToken.length < 32) {
     return {status: 503, body: "Webhook not configured."};

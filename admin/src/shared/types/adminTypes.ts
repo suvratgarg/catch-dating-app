@@ -815,8 +815,6 @@ export interface AdminClubDetails {
     summary: string | null;
     sourceSummary: string | null;
     formats: string[];
-    fitNotes: string[];
-    missingEvidence: string[];
   };
 }
 
@@ -906,8 +904,6 @@ export interface AdminUpdateClubDetailsPayload {
       summary?: string | null;
       sourceSummary?: string | null;
       formats?: string[];
-      fitNotes?: string[];
-      missingEvidence?: string[];
     };
   };
   reviewNote?: string | null;

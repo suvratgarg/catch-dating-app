@@ -55,7 +55,7 @@ for (const mode of ["preview", "commit"] as const) {
       const result = await importWeddingPhoneContactsHandler(request({
         programId: "program-1", mode, clientOperationId: "creator-import",
         rows: [row],
-      }, "program-creator"), deps(store), async () => true);
+      }, "program-creator"), deps(store));
       assert.equal(result.guestsCreated, 1);
       const guests = [...store.docs.entries()].filter(([path]) =>
         path.startsWith("programGuests/"));
@@ -91,7 +91,7 @@ for (const mode of ["preview", "commit"] as const) {
       await assert.rejects(importWeddingPhoneContactsHandler(request({
         programId: "program-1", mode, clientOperationId: "organizer-import",
         rows: [row],
-      }, "organizer-account"), deps(store), async () => true),
+      }, "organizer-account"), deps(store)),
       (error: unknown) => error instanceof HttpsError &&
         error.code === "permission-denied");
       assert.deepEqual(store.docs, before);
@@ -122,7 +122,7 @@ for (const mode of ["preview", "commit"] as const) {
         const importContacts = () => importWeddingPhoneContactsHandler(
           request({programId: "program-1", mode,
             clientOperationId: "collaborator-import", rows: [row]}, "desk-1"),
-          deps(store), async () => true);
+          deps(store));
         if (grantCase === "owner-approved") {
           assert.equal((await importContacts()).guestsCreated, 1);
         } else {
@@ -144,7 +144,7 @@ test("deleted program creator cannot import contacts", async () => {
   await assert.rejects(importWeddingPhoneContactsHandler(request({
     programId: "program-1", mode: "commit", clientOperationId: "deleted-import",
     rows: [row],
-  }, "program-creator"), deps(store), async () => true),
+  }, "program-creator"), deps(store)),
   (error: unknown) => error instanceof HttpsError &&
     error.code === "permission-denied");
   assert.deepEqual(store.docs, before);
@@ -178,43 +178,22 @@ test("manifest preview retries revocation before returning reconciliation",
       path.startsWith("transportOperationReceipts/")), false);
   });
 
-test("phone endpoint fails closed while general manifest import remains usable",
+test("phone endpoint and general manifest import preview the same rows",
   async () => {
     const fixture = seed();
     fixture["organizerPrograms/program-1"].kind = "wedding";
     const store = new MiniFirestore(fixture);
     const payload = {programId: "program-1", mode: "preview" as const,
       clientOperationId: "phone-op-0001", rows: [row]};
-    await assert.rejects(importWeddingPhoneContactsHandler(
-      request(payload), deps(store), async () => false),
-    (error: unknown) => error instanceof HttpsError &&
-      error.code === "failed-precondition");
-    assert.equal(store.docs.size, 4);
     const general = await importProgramManifestHandler(
       request(payload), deps(store));
     assert.equal(general.guestsCreated, 1);
     const phone = await importWeddingPhoneContactsHandler(
-      request(payload), deps(store), async () => true);
+      request(payload), deps(store));
     assert.equal(phone.guestsCreated, 1);
   });
 
-test("phone readiness denies replay after a completed commit", async () => {
-  const fixture = seed();
-  fixture["organizerPrograms/program-1"].kind = "wedding";
-  const store = new MiniFirestore(fixture);
-  const payload = {programId: "program-1", mode: "commit" as const,
-    clientOperationId: "phone-op-0003", rows: [row]};
-  await importWeddingPhoneContactsHandler(request(payload), deps(store),
-    async () => true);
-  const committedCount = store.docs.size;
-  await assert.rejects(importWeddingPhoneContactsHandler(request(payload),
-    deps(store), async () => false),
-  (error: unknown) => error instanceof HttpsError &&
-    error.code === "failed-precondition");
-  assert.equal(store.docs.size, committedCount);
-});
-
-test("phone endpoint requires a wedding even when rollout is enabled",
+test("phone endpoint requires a wedding program",
   async () => {
     const fixture = seed();
     fixture["organizerPrograms/program-1"].kind = "conference";
@@ -222,7 +201,7 @@ test("phone endpoint requires a wedding even when rollout is enabled",
     await assert.rejects(importWeddingPhoneContactsHandler(request({
       programId: "program-1", mode: "preview",
       clientOperationId: "phone-op-0002", rows: [row],
-    }), deps(store), async () => true),
+    }), deps(store)),
     (error: unknown) => error instanceof HttpsError &&
       error.code === "permission-denied");
     assert.equal(store.docs.size, 4);

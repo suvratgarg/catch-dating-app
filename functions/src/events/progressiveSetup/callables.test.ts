@@ -23,13 +23,6 @@ const create = {organizerId: "org1", requestId: "request-1", basics: {
   timezone: {mode: "set", value: "Asia/Kolkata"},
 }};
 
-test("deployed private-create callable is closed before Firebase access",
-  async () => {
-    await assert.rejects(createPrivateEventSetupHandler(
-      request(create, "host1")),
-    (e) => e instanceof HttpsError && e.code === "failed-precondition");
-  });
-
 test("callable auth and payload validation precede rate or database access",
   async () => {
     const deps: SetupCallableDependencies = {
@@ -56,29 +49,26 @@ test("callable auth and payload validation precede rate or database access",
     }
   });
 
-test("create and edit use separate budgets and cannot bypass migration gate",
+test("create and edit use separate budgets and reject server-owned fields",
   async () => {
     const actions: string[] = [];
     const deps: SetupCallableDependencies = {
       firestore: () => ({}) as FirebaseFirestore.Firestore,
       checkRateLimit: async (_db, _uid, action) => {
         actions.push(action);
+        throw new HttpsError("resource-exhausted", "Budget spent.");
       },
-      service: (db) => ({db, privacyMigrationReady: () => false,
-        timestampFromMillis: () => {
-          throw new Error("Unexpected timestamp");
-        },
-        serverTimestamp: () => {
-          throw new Error("Unexpected write");
-        }}),
+      service: () => {
+        throw new Error("Unexpected service access");
+      },
     };
     await assert.rejects(createPrivateEventSetupHandler(
       request(create, "host1"), deps),
-    (e) => e instanceof HttpsError && e.code === "failed-precondition");
+    (e) => e instanceof HttpsError && e.code === "resource-exhausted");
     await assert.rejects(updatePrivateEventBasicsHandler(request({
       ...create, eventId: "event1", expectedSetupRevision: 1,
     }, "host1"), deps),
-    (e) => e instanceof HttpsError && e.code === "failed-precondition");
+    (e) => e instanceof HttpsError && e.code === "resource-exhausted");
     assert.deepEqual(actions,
       ["createPrivateEventSetup", "updatePrivateEventBasics"]);
     await assert.rejects(createPrivateEventSetupHandler(request({
@@ -116,24 +106,4 @@ test("details rejects unsupported activation fields before a database read",
         request({...command, details}, "host1"), deps),
       (e) => e instanceof HttpsError && e.code === "invalid-argument");
     }
-  });
-
-test("publication cannot bypass the production privacy gate", async () => {
-  await assert.rejects(setEventPublicationHandler(request({
-    organizerId: "org1", eventId: "event1", requestId: "publish-one",
-    expectedSetupRevision: 1, publicationState: "published",
-  }, "host1")),
-  (e) => e instanceof HttpsError && e.code === "failed-precondition");
-});
-
-
-test("guest reconciliation cannot bypass the production privacy gate",
-  async () => {
-    await assert.rejects(reconcilePrivateEventSeatsHandler(request({
-      organizerId: "org1", eventId: "event1", requestId: "reconcile-one",
-      expectedSetupRevision: 1, reviewedDefaultsHash: "a".repeat(64),
-      details: {admissionTerms: {capacityLimit: 20, priceInPaise: 0,
-        currency: "INR", cancellationPolicyId: "notApplicable"}},
-    }, "host1")),
-    (e) => e instanceof HttpsError && e.code === "failed-precondition");
   });

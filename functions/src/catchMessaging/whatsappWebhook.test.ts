@@ -17,7 +17,7 @@ import {assertCatchIngressAccepted, CATCH_INGRESS_EVIDENCE} from
   "./whatsappIngressStore";
 import {readCatchReceipt} from "./whatsappEndpointStops";
 
-const config: CatchWebhookConfig = {enabled: true, wabaId: "123",
+const config: CatchWebhookConfig = {wabaId: "123",
   phoneNumberId: "456", appSecret: "test-app-secret-keep-private",
   verifyToken: "test-only-verification-token-32-characters"};
 const incoming = {id: "wamid.inbound", from: "919000000001",
@@ -51,7 +51,7 @@ test("verification echoes the exact challenge without persisting", async () => {
   assert.deepEqual(result, {status: 200, body: "0042143"});
 });
 
-test("wrong tokens and disabled configuration fail closed",
+test("wrong tokens and any missing credential fail closed before persistence",
   async () => {
     for (const token of ["wrong", [config.verifyToken], undefined]) {
       assert.equal((await handleCatchWhatsappWebhook({method: "GET", query: {
@@ -59,8 +59,8 @@ test("wrong tokens and disabled configuration fail closed",
         "hub.challenge": "challenge",
       }}, config, mustNotWrite)).status, 403);
     }
-    for (const patch of [{enabled: false}, {wabaId: ""}, {phoneNumberId: ""},
-      {appSecret: ""}, {verifyToken: ""}]) {
+    for (const patch of [{wabaId: ""}, {phoneNumberId: ""}, {wabaId: " "},
+      {appSecret: ""}, {verifyToken: ""}, {verifyToken: "t".repeat(31)}]) {
       assert.equal((await handleCatchWhatsappWebhook(signed(payload()),
         {...config, ...patch}, mustNotWrite)).status, 503);
     }

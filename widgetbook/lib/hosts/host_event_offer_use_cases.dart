@@ -3,13 +3,10 @@ import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gatew
 import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'event_editor_preview.dart';
 import 'host_form_workspace_use_cases.dart';
@@ -385,19 +382,6 @@ HostEventOffer _previewOffer() => HostEventOffer(
     reviewedAt: null,
     reviewNote: null,
     bankReceiptChecked: false,
-  ),
-);
-
-@widgetbook.UseCase(
-  name: 'Event offer release gate',
-  type: HostResponseOfferScreen,
-  path: '[P1 product surfaces]/Host operations/RSVP review',
-)
-Widget hostResponseOfferReleaseGate(BuildContext context) => ProviderScope(
-  overrides: [privateEventSetupAvailableProvider.overrideWithValue(false)],
-  child: const HostResponseOfferScreen(
-    organizerId: 'org_demo',
-    responseId: 'response_1',
   ),
 );
 

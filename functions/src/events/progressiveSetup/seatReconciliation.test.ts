@@ -30,7 +30,6 @@ async function setup() {
     organizerId: "org1", deps: eventSetupDefaultsDependencies(db)});
   const deps: SeatReconciliationDependencies = {db,
     auth: {getUser: async (uid) => ({uid})}, nowMillis: () => 100,
-    privacyMigrationReady: () => true, freshEventSeatWritersReady: () => true,
     timestampFromMillis: Timestamp.fromMillis,
     serverTimestamp: () => Timestamp.fromMillis(100) as unknown as
       FirebaseFirestore.FieldValue};
@@ -88,12 +87,9 @@ test("existing configured terms cannot change during reconciliation",
     assert.equal(store.writes.length, 0);
   });
 
-test("writer gate, manager authority, revision and defaults fail closed",
+test("manager authority, revision and defaults fail closed",
   async () => {
-    const {store, deps, command, next} = await setup();
-    deps.freshEventSeatWritersReady = () => false;
-    await assert.rejects(next(), (error) => code(error, "failed-precondition"));
-    deps.freshEventSeatWritersReady = () => true;
+    const {store, command, next} = await setup();
     await assert.rejects(next(1, command, "stranger"),
       (error) => code(error, "permission-denied"));
     await assert.rejects(next(1, {...command, expectedSetupRevision: 2}),

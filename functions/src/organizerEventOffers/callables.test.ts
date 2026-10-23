@@ -39,11 +39,9 @@ function offer(): EventOffer {
 
 function fixture() {
   const actions: string[] = [];
-  let ready = true;
   let authorized = true;
   let saved = offer();
   const deps: OfferCallableDependencies = {
-    integrationReady: () => ready,
     firestore: () => ({}) as FirebaseFirestore.Firestore,
     checkRateLimit: async (_db, uid, action) => {
       assert.equal(uid, "host1");
@@ -64,7 +62,7 @@ function fixture() {
       listOffers: async () => [saved],
     } as unknown as OfferTransaction)}),
   };
-  return {deps, actions, setReady: (value: boolean) => ready = value,
+  return {deps, actions,
     setAuthorized: (value: boolean) => authorized = value,
     setOffer: (value: EventOffer) => saved = value};
 }
@@ -88,24 +86,10 @@ test("all offer endpoints require auth and exact input before database access",
     assert.equal(h.actions.length, 0);
   });
 
-test("release gate cannot be bypassed using payload flags", async () => {
+test("server-owned payload flags are rejected before any access", async () => {
   const h = fixture();
-  h.setReady(false);
-  await assert.rejects(getEventOfferHandler(request(scope), h.deps),
-    code("failed-precondition"));
   await assert.rejects(getEventOfferHandler(request({...scope,
     integrationReady: true}), h.deps), code("invalid-argument"));
-  assert.equal(h.actions.length, 0);
-});
-
-test("async release denial remains closed", async () => {
-  const h = fixture();
-  h.deps.integrationReady = async () => false;
-  h.deps.firestore = () => {
-    throw new Error("Unexpected database access");
-  };
-  await assert.rejects(getEventOfferHandler(request(scope), h.deps),
-    code("failed-precondition"));
   assert.equal(h.actions.length, 0);
 });
 
@@ -173,9 +157,8 @@ test("configuration reports missing private terms", async () => {
   assert.deepEqual(h.actions, ["getEventOfferConfiguration"]);
 });
 
-test("event preference write cannot bypass release gate", async () => {
+test("event preference payload cannot carry server-owned fields", async () => {
   const h = fixture();
-  h.setReady(false);
   h.deps.firestore = () => {
     throw new Error("Unexpected database access");
   };
@@ -188,8 +171,6 @@ test("event preference write cannot bypass release gate", async () => {
     requestId: "settings-1", expectedPreferencesRevision: 0,
     expectedEventSourceRevision: 1, reviewedDefaultsHash: "a".repeat(64),
     intents};
-  await assert.rejects(configureEventOfferPreferencesHandler(
-    request(data), h.deps), code("failed-precondition"));
   await assert.rejects(configureEventOfferPreferencesHandler(
     request({...data, configurationReady: true}), h.deps),
   code("invalid-argument"));

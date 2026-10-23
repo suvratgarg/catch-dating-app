@@ -252,7 +252,7 @@ async function assertActiveParticipant({app, matchId, uid}) {
   }
 }
 
-async function exchangeCustomToken({fetchImpl, apiKey, customToken}) {
+export async function exchangeCustomToken({fetchImpl, apiKey, customToken}) {
   const response = await fetchImpl(
     "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken" +
       `?key=${encodeURIComponent(apiKey)}`,
@@ -269,7 +269,7 @@ async function exchangeCustomToken({fetchImpl, apiKey, customToken}) {
   return body.idToken;
 }
 
-async function exchangeAppCheckDebugToken({
+export async function exchangeAppCheckDebugToken({
   fetchImpl,
   apiKey,
   appId,
@@ -293,7 +293,7 @@ async function exchangeAppCheckDebugToken({
   return body.token;
 }
 
-function readWebConfig(env) {
+export function readWebConfig(env) {
   return parseFirebaseWebConfig(
     fs.readFileSync(
       new URL(

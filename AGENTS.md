@@ -1,7 +1,7 @@
 ---
 doc_id: agent_entrypoint
-version: 3.5.0
-updated: 2026-10-16
+version: 3.6.0
+updated: 2026-10-23
 owner: agent_operating_model
 status: active
 ---
@@ -47,27 +47,11 @@ tests and scanners prove correctness, and CI stores run evidence.
 
 ## Execution Venue And Handoff
 
-Start new coding tasks in the saved Codex Cloud environment when its pinned
-toolchain and required checks are available. Use hosted GitHub Actions macOS
-jobs for native build and visual gates where the existing workflow supports
-them. Reserve the local iMac for connected-device checks and macOS-specific
-work that hosted runners cannot perform. On the saved cloud VM, source
-`/workspace/catch-cloud-setup/env.sh` when present and compare the actual Node,
-Flutter, and Java versions with `tool/ci/toolchain.env` before relying on it.
-Install only the dependency family needed for the selected check with
-`bash tool/git/bootstrap_worktree.sh --target <family>` (`root`, `functions`,
-or `flutter`). Use `--target all` explicitly only for tasks that need all three;
-an omitted target is an error. Docs-only tasks with dependency-free checks need
-no bootstrap.
-
-Publish source through an exact commit and normal branch/PR handoff, then use
-required CI on that head. A downloaded or generated source snapshot is not a
-published handoff. Report draft PR admission errors separately from test
-failures. If an environment disconnects, recover its branch, command or CI run
-state before calling the task stopped or done. A blocked status names the exact
-commit, last observed running command or CI run, accountable owner, and next
-action. Keep the guarded claim until accepted closeout and follow the existing
-retirement checklist below.
+Where tasks run, which dependency family to install, and how source is handed
+off through an exact commit and PR are owned by
+[`docs/agent_operating_model.md`](docs/agent_operating_model.md#execution-venue-and-source-handoff).
+A blocked status names the exact commit, last observed command or CI run,
+accountable owner and next action.
 
 ## Source-Of-Truth Routing
 
@@ -151,17 +135,9 @@ the code. Each was resolved by measuring the thing itself.
 
 ## Completion Standard
 
-A local contribution is ready for handoff when its intended source and contract
-changes are present, focused checks pass, compile-critical generated outputs
-are current, and the exact commit is preserved. Shipped task completion and
-retirement of the task's own worktree and branches follow the mandatory
-checklist in `docs/agent_operating_model.md#completion`. Keep the guarded task's
-claim through acceptance, run the guard's dry-run `retire`, then its admitted
-`retire --apply` from outside the worktree. Record the returned exact retention
-reason, accountable owner and next action when blocked; a reminder or claim-only
-`finish` is not retirement. Plain `finish` refuses claim-only closeout;
-`finish --retain --reason <blocker-and-next-action>` preserves the original
-claim for later `retire`. Clean up verified generated dependencies during the
-same closeout, then retry retirement; do not report an ignored-file blocker as
-successful cleanup. Ordinary product work must not
-recreate or replace the removed evidence layer.
+A local contribution is ready for handoff when its intended changes are present,
+focused checks pass, compile-critical generated outputs are current, and the
+exact commit is preserved. Shipping, Linear status and retirement of the task's
+own worktree follow the mandatory checklist in
+[`docs/agent_operating_model.md`](docs/agent_operating_model.md#completion).
+Ordinary product work must not recreate or replace the removed evidence layer.

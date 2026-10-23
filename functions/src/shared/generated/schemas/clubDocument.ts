@@ -2202,24 +2202,6 @@ export const clubDocumentSchema: Record<string, unknown> = {
             }
           }
         },
-        "fitNotes": {
-          "type": "array",
-          "maxItems": 8,
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 400
-          }
-        },
-        "missingEvidence": {
-          "type": "array",
-          "maxItems": 12,
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200
-          }
-        },
         "eventEvidence": {
           "type": "array",
           "maxItems": 12,

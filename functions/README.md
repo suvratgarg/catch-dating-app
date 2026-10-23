@@ -25,8 +25,9 @@ omit callback bodies, participant identifiers, verify tokens and app secrets.
 Before live setup, provision the exact Catch app's `CATCH_WHATSAPP_APP_SECRET`
 and an independently generated, at least 32-character
 `CATCH_WHATSAPP_WEBHOOK_VERIFY_TOKEN` in that environment's Secret Manager.
-Set `CATCH_WHATSAPP_WABA_ID`, `CATCH_WHATSAPP_PHONE_NUMBER_ID` and intentionally
-set `CATCH_WHATSAPP_WEBHOOK_ENABLED=true` only for the reviewed sender.
+Set `CATCH_WHATSAPP_WABA_ID` and `CATCH_WHATSAPP_PHONE_NUMBER_ID` only for the
+reviewed sender. Those ids plus both secrets activate the receiver; any missing
+value keeps it inert with a 503 before persistence.
 No access token is required by this receiving endpoint. Secrets, public endpoint
 deployment and Meta subscriptions require separate operator approval. The
 metadata-only deployment readiness gate requires both enabled secrets and an
@@ -110,7 +111,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `createStripeCheckoutSession` | `src/payments/createStripeCheckoutSession.ts` | Create a non-INR Stripe destination checkout for an enabled host account |
 | `verifyRazorpayPayment` | `src/payments/` | Verify payment signature + sign up |
 | `previewOrganizerFormAdmission` / `commitOrganizerFormAdmission` | `src/organizerFormAdmission/callable.ts` | Read-only preview and atomic manager-reviewed free/manual-payment admission; validates current response, CRM origin or native application approval, issued offer, and ready seat ledger before roster and receipt writes |
-| `previewEventOffers` / `commitEventOffers` / `mutateEventOffer` / `getEventOffer` / `listEventOffers` / `prepareEventOfferHandoff` / `getEventOfferConfiguration` / `configureEventOfferPreferences` / `previewEventOfferPreferences` | `src/organizerEventOffers/` | Reviewed event-specific offers and manual bank-reference review; private storage, historical payment snapshots, no admission/provider effects; release gated |
+| `previewEventOffers` / `commitEventOffers` / `mutateEventOffer` / `getEventOffer` / `listEventOffers` / `prepareEventOfferHandoff` / `getEventOfferConfiguration` / `configureEventOfferPreferences` / `previewEventOfferPreferences` | `src/organizerEventOffers/` | Reviewed event-specific offers and manual bank-reference review; private storage, historical payment snapshots, no admission/provider effects |
 | `createPrivateEventSetup` / `updatePrivateEventBasics` / `updatePrivateEventPreferences` / `getPrivateEventSetup` / `listPrivateEventSetups` / `updatePrivateEventDetails` / `listOfferEventTargets` | `src/events/progressiveSetup/` | Manager-only basic event setup, private event-local payment/preferences snapshots and sanitized reopen; mutations remain closed pending privacy migration |
 | `queryOrganizerFormResponses` | `src/organizerResponseQuery/` | Manager-only bounded typed filtering/sorting, safe display page and structured stale-result errors |
 | `createEvent` / `updateEvent` / `cancelEvent` / `deleteEvent` | `src/events/` | Host-owned event mutation surface |

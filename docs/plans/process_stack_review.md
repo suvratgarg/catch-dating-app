@@ -21,8 +21,7 @@ operating standard for Catch. It serves two audiences at once:
 
 This is the durable owner for that comparison and improvement backlog. The
 implementation mechanics remain owned by
-[`agent_operating_model.md`](../agent_operating_model.md),
-[`ai_first_workflow_guide.md`](../ai_first_workflow_guide.md), and
+[`agent_operating_model.md`](../agent_operating_model.md) and
 [`release_operations.md`](../release_operations.md). Do not create a second
 process tracker or a tracked metrics ledger. Update this document when the
 standard or backlog changes; keep time-series evidence in GitHub, CI summaries,
@@ -716,8 +715,6 @@ The program is complete when:
   execution rules.
 - [`agent_operating_model.md`](../agent_operating_model.md) — task contracts,
   Git preservation, worktrees, delegation, and completion.
-- [`ai_first_workflow_guide.md`](../ai_first_workflow_guide.md) — planner,
-  checks, Git/CI evidence, and exact-artifact workflow.
 - [`release_operations.md`](../release_operations.md) — branch hygiene,
   branch protection, environments, delivery, and release proof.
 - [`branch_hygiene.mjs`](../../tool/git/branch_hygiene.mjs) and

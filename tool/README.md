@@ -734,6 +734,29 @@ Do not enable a production callable-backed client flag in the same release step
 that first creates the backend. Deploy and prove the backend while the flag is
 dark, then enable the client in a later merge.
 
+`--from-source` derives the Functions client source references instead of
+reading the hand list: any string literal in authored `lib/`, `website/src` or
+`admin/src` source (generated and test files excluded) that names a Function
+export. It fails offline when a literal `httpsCallable` call names something
+`functions/src/index.ts` does not export, or when a client references a dormant
+export. `check_deploy_parity.mjs --client-callables` compares that derived set
+with one environment's deployed inventory, using the same metadata-only reads;
+`--client-root` checks a newer client checkout against older deployed source.
+
+`synthetic_backend_probe.mjs` signs in as a synthetic Host that manages a
+synthetic organizer (both documents must carry `synthetic: true`) and runs the
+Host app's rules-checked Firestore reads, plus two read callables outside
+production, validating callable responses against the generated contracts. It
+is a dry run unless `--apply`; production also needs `--allow-prod`, and runs
+callables only with `--allow-prod-callables` because each writes the caller's
+`rateLimits` counter.
+
+```sh
+node tool/firebase/check_client_callable_dependencies.mjs --from-source --surface website
+node tool/firebase/check_deploy_parity.mjs --env prod --client-callables all --client-root .
+node tool/firebase/synthetic_backend_probe.mjs --env dev --uid <uid> --organizer-id <id>
+```
+
 ### What's live where
 
 `tool/firebase/report_environment_parity.mjs` is the one on-demand answer to
@@ -756,7 +779,13 @@ reason, `CAT-` Linear ticket and unexpired date; the report marks every other
 gate difference `UNDECLARED-DIFFERENCE`. `--policy-only` is the offline CI
 guard: a new Functions param, workflow variable, Dart define or Remote Config
 template key fails until it is classified, and an expired allowance fails
-until the gate is flipped or renewed.
+until the gate is flipped or renewed. Removed switches move to `retired`: they
+may not reappear in source, the template or a workflow outside their listed
+`allowedIn` sources, and the live report marks leftovers `RETIRED-STILL-LIVE`
+so the owner can delete them. A retired key that older app builds still read
+carries a `liveHold` instead: the report lists it as a retired gate still live
+for old builds and flags `RETIRED-HOLD-BROKEN` if the held live value changes
+or disappears.
 
 ```sh
 node tool/firebase/report_environment_parity.mjs

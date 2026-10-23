@@ -10,7 +10,7 @@ import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/today/data/host_attention_repository.dart';
@@ -34,6 +34,7 @@ import 'package:go_router/go_router.dart';
 import '../../clubs/clubs_test_helpers.dart' show buildClub;
 import '../../events/events_test_helpers.dart' show buildEvent;
 import '../../test_pump_helpers.dart';
+import '../support/host_events_timeline_test_support.dart';
 
 typedef _EventPage = CursorPage<Event, DocumentSnapshot<Event>>;
 typedef _Read = ({String organizerId, DateTime boundary, int limit});
@@ -568,7 +569,9 @@ class _Fixture {
           hostAttendanceOutboxProvider.overrideWithValue(
             HostAttendanceOutbox(outbox, _NoMutations()),
           ),
-          privateEventSetupAvailableProvider.overrideWithValue(false),
+          privateEventSetupTimelineRepositoryProvider.overrideWithValue(
+            emptySetupRepository,
+          ),
           for (final actor in ['actor-a', 'actor-b'])
             hostOperableClubsProvider(actor).overrideWithValue(
               AsyncData([

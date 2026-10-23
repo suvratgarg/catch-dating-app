@@ -22,7 +22,7 @@ import {createSyntheticCatchAuthority} from "./whatsappAuthorityTestHarness";
 import {CATCH_INGRESS_EVIDENCE} from "./whatsappIngressStore";
 
 const now = 1800000000000;
-const webhook = {enabled: true, wabaId: "123", phoneNumberId: "456",
+const webhook = {wabaId: "123", phoneNumberId: "456",
   appSecret: "mock-app-secret", verifyToken: "t".repeat(32)};
 const reply: CatchReplyConfig = {enabled: true, wabaId: "123",
   phoneNumberId: "456", atomicStopIngressReady: true,

@@ -14,7 +14,7 @@ import {preparePublishedEventPatch, publicationRegistrationPatch} from
   "./publicationReadiness";
 import {claimClubScheduleInTransaction} from "../scheduleConflicts";
 import {
-  assertPrivacyReady, assertReceipt, authorizeSetupManager, hashRequest,
+  assertReceipt, authorizeSetupManager, hashRequest,
   receiptFor, requireRevision, ProgressiveSetupDependencies,
 } from "./service";
 
@@ -33,7 +33,6 @@ export async function setEventPublication(params: {
       !validateSetEventPublicationCallablePayload(command)) {
     throw new HttpsError("invalid-argument", "Invalid publication change.");
   }
-  assertPrivacyReady(deps);
   const operation = command.publicationState === "published" ?
     "publish" : "unpublish";
   const hash = hashRequest(operation, command);

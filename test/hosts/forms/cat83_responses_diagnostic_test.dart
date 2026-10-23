@@ -11,7 +11,6 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
@@ -382,7 +381,6 @@ class _Harness {
           hostOperableClubsProvider(uid).overrideWithValue(
             AsyncData([buildClub(id: 'org', ownerUserId: uid)]),
           ),
-        privateEventSetupAvailableProvider.overrideWithValue(false),
         hostFormsRepositoryProvider.overrideWithValue(repo),
       ],
     );

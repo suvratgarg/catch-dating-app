@@ -306,6 +306,12 @@ void _registerHostOperationsTeamFailuresTests() {
           watchHostPaymentAccountsProvider(
             _hostUid,
           ).overrideWithValue(const AsyncData<List<HostPaymentAccount>>([])),
+          hostManagerEventSetupDefaultsDependenciesProvider.overrideWithValue(
+            HostManagerEventSetupDefaultsDependencies(
+              read: (_) => Completer<ManagerEventSetupDefaults>().future,
+              write: (_) => throw UnimplementedError(),
+            ),
+          ),
         ],
       );
 

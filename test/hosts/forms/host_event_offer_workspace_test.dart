@@ -11,7 +11,6 @@ import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_admission.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_controller.dart';
@@ -44,32 +43,6 @@ part 'host_offer_preparation_cases.dart';
 @Dependencies([HostEventOfferWorkspaceController])
 void main() {
   _preparationRegressionTests();
-  testWidgets(
-    'release-gated shared route renders without Firebase initialization',
-    (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(
-            theme: AppTheme.light,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const HostResponseOfferScreen(
-              organizerId: 'org',
-              responseId: 'response-one',
-            ),
-          ),
-        ),
-      );
-      await pumpFeatureUi(tester);
-      expect(
-        find.text(AppLocalizationsEn().hostEventOfferUnavailable),
-        findsOneWidget,
-      );
-      expect(find.byType(HostEventOfferWorkspaceSection), findsNothing);
-      expect(tester.takeException(), isNull);
-    },
-  );
-
   testWidgets('route footer follows event choice and clears on account loss', (
     tester,
   ) async {
@@ -82,7 +55,6 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          privateEventSetupAvailableProvider.overrideWithValue(true),
           uidProvider.overrideWith((ref) => accounts.stream),
           firebaseAuthProvider.overrideWithValue(auth),
           firebaseFunctionsProvider.overrideWithValue(functions),
@@ -322,20 +294,12 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  test('answer filtering does not require the offer rollout', () {
+  test('published response queries always include the offer workspace', () {
     final capability = hostResponseQueryCapability(
       AppLocalizationsEn(),
       versionId: 'form_v1',
     );
-    expect(capability.offerWorkspace, isNull);
-    expect(
-      hostResponseQueryCapability(
-        AppLocalizationsEn(),
-        versionId: 'form_v1',
-        offersEnabled: true,
-      ).offerWorkspace,
-      isNotNull,
-    );
+    expect(capability.offerWorkspace, isNotNull);
   });
 
   test('response query mount preserves external search and contact scope', () {

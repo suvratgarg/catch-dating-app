@@ -55,6 +55,8 @@ const defaultRepoRoot = path.resolve(toolDir, "../..");
 const commandTimeoutMs = 180_000;
 const policyPath = "tool/firebase/environment_difference_policy.json";
 const policyClasses = new Set(["identity", "feature-gate", "release-state"]);
+const discoverySources = new Set(["functions-param", "materialized-param",
+  "github-variable", "dart-define", "remote-config-template"]);
 const environments = ["dev", "staging", "prod"];
 // GitHub environments whose variables feed each Firebase environment's builds
 // and deploys. Production promotion may approve through either backend env.
@@ -243,6 +245,20 @@ export function scanSourceGates(sources) {
     left.file.localeCompare(right.file) || left.line - right.line);
 }
 
+// A retired switch must not come back as a quoted key in app or Functions
+// source, whatever API reads it.
+export function scanRetiredReferences(sources, names) {
+  const references = [];
+  for (const {file, contents} of sources) {
+    for (const name of names) {
+      if (contents.includes(`"${name}"`) || contents.includes(`'${name}'`)) {
+        references.push({file, name});
+      }
+    }
+  }
+  return references;
+}
+
 function readSources(repoRoot, directory, predicate) {
   const root = path.join(repoRoot, directory);
   if (!fs.existsSync(root)) return [];
@@ -268,10 +284,12 @@ export function loadRepositoryState(repoRoot = defaultRepoRoot) {
       .map((file) => [file.slice(0, -".json".length),
         JSON.parse(fs.readFileSync(path.join(dartDefinesDir, file), "utf8"))]),
   );
+  const dartSources = readSources(repoRoot, "lib", (file) =>
+    file.endsWith(".dart") && !file.endsWith(".g.dart"));
+  const policy = readJson(repoRoot, policyPath);
   const gateSources = [
     ...functionSources,
-    ...readSources(repoRoot, "lib", (file) =>
-      file.endsWith(".dart") && !file.endsWith(".g.dart")),
+    ...dartSources,
     ...["apps/host/ios/Runner/Info.plist",
       "apps/host/android/app/src/main/AndroidManifest.xml",
       "apps/consumer/ios/Runner/Info.plist",
@@ -293,7 +311,7 @@ export function loadRepositoryState(repoRoot = defaultRepoRoot) {
     functionParamNames: scanFunctionParamNames(functionSources),
     indexes: readJson(repoRoot, "firestore.indexes.json"),
     materializedParams: [...materializedNonSecretParams],
-    policy: readJson(repoRoot, policyPath),
+    policy,
     readinessTtl: (readJson(repoRoot, "tool/firebase/environment_readiness.json").requirements ?? [])
       .filter((requirement) => requirement.kind === "firestore-ttl")
       .map((requirement) => ({
@@ -302,6 +320,8 @@ export function loadRepositoryState(repoRoot = defaultRepoRoot) {
       })),
     remoteConfigTemplate: readJson(repoRoot, "firebase/remote_config.template.json"),
     ruleTargets: readConfiguredRuleTargets({repoRoot}),
+    retiredReferences: scanRetiredReferences([...functionSources, ...dartSources],
+      Object.keys(policy.retired ?? {})),
     sourceGates: scanSourceGates(gateSources),
     workflowVariables: scanWorkflowVariables(
       readSources(repoRoot, ".github/workflows", (file) => /\.ya?ml$/u.test(file)),
@@ -324,7 +344,7 @@ export function discoverSwitchNames(state) {
     sources.add(source);
     discovered.set(name, sources);
   };
-  for (const name of state.materializedParams) add(name, "functions-param");
+  for (const name of state.materializedParams) add(name, "materialized-param");
   for (const name of state.functionParamNames) add(name, "functions-param");
   for (const name of state.workflowVariables.keys()) add(name, "github-variable");
   for (const defines of Object.values(state.dartDefines)) {
@@ -358,9 +378,41 @@ export function evaluatePolicy(state, {now = new Date()} = {}) {
       violations.push(`${name}: live-only switches need a note naming their reader.`);
     }
   }
+  const retired = policy.retired ?? {};
+  for (const [name, entry] of Object.entries(retired)) {
+    if (policy.switches[name]) {
+      violations.push(`${name}: listed as both a switch and retired.`);
+    }
+    const allowedIn = entry?.allowedIn;
+    if (!Array.isArray(allowedIn) ||
+        allowedIn.some((source) => !discoverySources.has(source))) {
+      violations.push(`${name}: retired allowedIn must list discovery sources.`);
+    } else if (allowedIn.length > 0 &&
+        (!/^CAT-[1-9][0-9]*$/u.test(entry.ticket ?? "") ||
+         typeof entry.note !== "string")) {
+      violations.push(`${name}: a retired switch still allowed somewhere needs a CAT ticket and note.`);
+    }
+    const hold = entry?.liveHold;
+    if (hold !== undefined && (!Array.isArray(hold?.environments) ||
+        hold.environments.length === 0 ||
+        hold.environments.some((env) => !environments.includes(env)) ||
+        typeof hold.value !== "string" ||
+        [hold.reason, hold.until].some((text) => typeof text !== "string" || !text.trim()))) {
+      violations.push(`${name}: a live hold needs environments, a value, a reason and an until condition.`);
+    }
+  }
+  for (const {file, name} of state.retiredReferences ?? []) {
+    violations.push(`${name}: retired switch is referenced again in ${file}.`);
+  }
   const discovered = discoverSwitchNames(state);
   for (const [name, sources] of [...discovered].sort(([a], [b]) => a.localeCompare(b))) {
-    if (!policy.switches[name]) {
+    if (retired[name]) {
+      const allowed = new Set(retired[name].allowedIn ?? []);
+      const reappeared = [...sources].filter((source) => !allowed.has(source)).sort();
+      if (reappeared.length) {
+        violations.push(`${name}: retired switch reappeared as ${reappeared.join("/")}.`);
+      }
+    } else if (!policy.switches[name]) {
       violations.push(
         `${name}: environment-conditional ${[...sources].sort().join("/")} is not ` +
           `classified in ${policyPath}.`,
@@ -432,7 +484,7 @@ export function displayValue(policy, name, value) {
   if (normalized === null) return "unset";
   const switchClass = policy.switches?.[name]?.class;
   if (switchClass === "feature-gate" || switchClass === "release-state" ||
-      isBooleanText(normalized)) {
+      policy.retired?.[name] || isBooleanText(normalized)) {
     return normalized.length > 48 ? `${normalized.slice(0, 45)}...` : normalized;
   }
   return `set#${fingerprint(normalized)}`;
@@ -455,7 +507,30 @@ function comparableValue(value) {
  * Classify one switch row. `columns` maps column -> raw value; `compared`
  * names the environment columns whose agreement the policy governs.
  */
-export function classifySwitchRow({policy, name, columns, compared}) {
+export function classifySwitchRow({policy, name, columns, compared,
+  retiredCompatible = false}) {
+  if (policy.retired?.[name]) {
+    // A live hold keeps a retired key at its old value for builds that still
+    // read it; anywhere else a remaining value is cleanup.
+    const hold = policy.retired[name].liveHold;
+    const held = new Set(hold?.environments ?? []);
+    const live = Object.entries(columns).some(([column, value]) => !held.has(column) &&
+      value !== UNAVAILABLE && comparableValue(value) !== null);
+    const flags = live ? [retiredCompatible ? "RETIRED-COMPAT" : "RETIRED-STILL-LIVE"] : [];
+    for (const env of held) {
+      if (!(env in columns) || columns[env] === UNAVAILABLE) continue;
+      flags.push(comparableValue(columns[env]) === hold.value ?
+        `RETIRED-LIVE-HOLD:${env}` : `RETIRED-HOLD-BROKEN:${env}`);
+    }
+    return {
+      class: "retired",
+      differs: flags.length > 0,
+      flags,
+      name,
+      values: Object.fromEntries(Object.entries(columns)
+        .map(([column, value]) => [column, displayValue(policy, name, value)])),
+    };
+  }
   const switchClass = policy.switches?.[name]?.class ?? null;
   const comparable = compared
     .map((column) => comparableValue(columns[column]))
@@ -596,6 +671,8 @@ export function compareFunctionParams({repo, policy, liveParams, githubVariables
       compared: envs.map((env) => `${env}:live`),
       name,
       policy,
+      retiredCompatible:
+        policy.retired?.[name]?.allowedIn?.includes("materialized-param") === true,
     });
     for (const env of mixed) row.flags.push(`MIXED-VALUES-IN-${env.toUpperCase()}`);
     for (const env of envs) {
@@ -852,6 +929,10 @@ export function compareRemoteConfig({policy, template, live}) {
   for (const parameters of Object.values(liveParameters)) {
     for (const name of Object.keys(parameters ?? {})) names.add(name);
   }
+  // A held key must stay live, so its absence is reported too.
+  for (const [name, entry] of Object.entries(policy.retired ?? {})) {
+    if (entry?.liveHold) names.add(name);
+  }
   const rows = [];
   for (const name of [...names].sort()) {
     const valueOf = (parameter) =>
@@ -862,7 +943,9 @@ export function compareRemoteConfig({policy, template, live}) {
       columns[env] = liveParameters[env] ? valueOf(liveParameters[env][name]) : UNAVAILABLE;
     }
     const row = classifySwitchRow({columns, compared: envs, name, policy});
-    if (!(name in templateParameters)) row.flags.push("NOT-IN-TEMPLATE");
+    if (!(name in templateParameters) && !policy.retired?.[name]) {
+      row.flags.push("NOT-IN-TEMPLATE");
+    }
     for (const env of envs) {
       if (Object.keys(liveParameters[env]?.[name]?.conditionalValues ?? {}).length) {
         row.flags.push(`CONDITIONAL-IN-${env.toUpperCase()}`);
@@ -1185,6 +1268,10 @@ export function buildReport({envs, live, now = new Date(), repo, sourceSha, surf
   report.undeclaredDifferences = Object.entries(report.surfaces).flatMap(([surface, result]) =>
     result.rows.filter((row) => row.flags.includes("UNDECLARED-DIFFERENCE"))
       .map((row) => ({name: row.name, surface, values: row.values})));
+  report.liveHolds = Object.entries(report.surfaces).flatMap(([surface, result]) =>
+    result.rows.filter((row) => row.flags.some((flag) => flag.startsWith("RETIRED-LIVE-HOLD:")))
+      .map((row) => ({name: row.name, surface,
+        until: policy.retired?.[row.name]?.liveHold?.until ?? null, values: row.values})));
   report.attention = Object.entries(report.surfaces).flatMap(([surface, result]) =>
     result.rows.map((row) => ({
       flags: row.flags.filter((flag) => attentionFlag.test(flag)),
@@ -1197,7 +1284,8 @@ export function buildReport({envs, live, now = new Date(), repo, sourceSha, surf
 const attentionFlag = new RegExp(
   "^(?:SHARED-IDENTITY|PROD-ENVIRONMENTS-DISAGREE|UNREFERENCED-BY-WORKFLOWS|UNREAD-IN:.*|" +
     "DORMANT-BUT-LIVE-IN-.*|MIXED-VALUES-IN-.*|PENDING-DEPLOY-.*|NOT-IN-TEMPLATE|" +
-    "STALE-DORMANT-ENTRY|REQUIRED-CALLABLE-ABSENT|UNCLASSIFIED|ENVIRONMENTS-DISAGREE)$",
+    "STALE-DORMANT-ENTRY|REQUIRED-CALLABLE-ABSENT|UNCLASSIFIED|ENVIRONMENTS-DISAGREE|" +
+    "RETIRED-STILL-LIVE|RETIRED-HOLD-BROKEN:.*)$",
   "u",
 );
 
@@ -1252,6 +1340,14 @@ export function formatReport(report) {
       `  - [${entry.surface}] ${entry.name}: ${Object.entries(entry.values)
         .map(([column, value]) => `${column}=${value}`).join(", ")}`),
   ];
+  if (report.liveHolds.length) {
+    lines.push("", `${report.liveHolds.length} retired gate(s) still live for old builds ` +
+      "(hold; do not delete the live value or publish the template over it):");
+    for (const entry of report.liveHolds) {
+      lines.push(`  - [${entry.surface}] ${entry.name}: ${Object.entries(entry.values)
+        .map(([column, value]) => `${column}=${value}`).join(", ")}; until ${entry.until}`);
+    }
+  }
   if (report.attention.length) {
     lines.push("", `${report.attention.length} other row(s) need attention:`);
     for (const entry of report.attention) {

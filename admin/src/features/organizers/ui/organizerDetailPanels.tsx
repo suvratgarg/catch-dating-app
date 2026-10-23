@@ -739,28 +739,12 @@ function OrganizerEditor({
                   maxLines={4}
                   value={form.sourceSummary}
                 />
-              </AdminFieldGrid>
-              <AdminFieldGrid columns={3}>
                 <CatchField
                   recipe="input"
                   title="Formats"
                   onChanged={(value) => update("formatsText", value)}
                   maxLines={5}
                   value={form.formatsText}
-                />
-                <CatchField
-                  recipe="input"
-                  title="Fit notes"
-                  onChanged={(value) => update("fitNotesText", value)}
-                  maxLines={5}
-                  value={form.fitNotesText}
-                />
-                <CatchField
-                  recipe="input"
-                  title="Missing evidence"
-                  onChanged={(value) => update("missingEvidenceText", value)}
-                  maxLines={5}
-                  value={form.missingEvidenceText}
                 />
               </AdminFieldGrid>
             </AdminEditorSection>

@@ -100,12 +100,9 @@ async function setup(event = richEvent()) {
       reusablePaymentPage: {mode: "clear"},
       expectedAmountMinor: {mode: "set", value: 25000}},
   };
-  let ready = true;
   const deps = {db, serverTimestamp: () => Timestamp.fromMillis(50) as
-    unknown as FirebaseFirestore.FieldValue,
-  configurationReady: () => ready};
+    unknown as FirebaseFirestore.FieldValue};
   return {rows, updateTimes, readPaths, writePaths, command, deps,
-    setReady: (value: boolean) => ready = value,
     save: (overrides: Partial<ConfigureEventOfferPreferencesCommand> = {},
       actorUid = "host1") => configureEventOfferPreferences({actorUid,
       command: {...command, ...overrides}, deps})};
@@ -211,11 +208,8 @@ test("tenant, cancelled, manager, deleted and missing revision deny",
     }
   });
 
-test("closed gate and unrecognized client fields cannot write", async () => {
+test("unrecognized client fields cannot write", async () => {
   const h = await setup();
-  h.setReady(false);
-  await assert.rejects(h.save(), code("failed-precondition"));
-  h.setReady(true);
   await assert.rejects(h.save({providerActivated: true} as
     Partial<ConfigureEventOfferPreferencesCommand>),
   code("invalid-argument"));

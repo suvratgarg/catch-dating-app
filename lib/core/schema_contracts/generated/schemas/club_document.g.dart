@@ -2204,24 +2204,6 @@ const schemaClubDocumentSchema = <String, Object?>{
             },
           },
         },
-        'fitNotes': <String, Object?>{
-          'type': 'array',
-          'maxItems': 8,
-          'items': <String, Object?>{
-            'type': 'string',
-            'minLength': 1,
-            'maxLength': 400,
-          },
-        },
-        'missingEvidence': <String, Object?>{
-          'type': 'array',
-          'maxItems': 12,
-          'items': <String, Object?>{
-            'type': 'string',
-            'minLength': 1,
-            'maxLength': 200,
-          },
-        },
         'eventEvidence': <String, Object?>{
           'type': 'array',
           'maxItems': 12,

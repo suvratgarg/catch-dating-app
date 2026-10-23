@@ -4,20 +4,17 @@
   "classes": {
     "identity": "Environment identity, credentials, provider account ids, endpoints, secret version references and local test tooling. Values may differ and are fingerprinted, never printed.",
     "feature-gate": "Decides whether a feature or behavior exists. Must be identical in every environment unless an allowedDifferences entry applies.",
-    "release-state": "Per-environment release bookkeeping such as force-update floors and store listing URLs. Values may differ and are printed."
+    "release-state": "Per-environment release bookkeeping such as force-update floors and store listing URLs. Values may differ and are printed.",
+    "retired": "A removed switch. It may not reappear in source, the Remote Config template or a workflow outside its allowedIn sources; live leftovers are reported for cleanup."
   },
   "switches": {
     "ALGOLIA_APPLICATION_ID": {"class": "identity"},
     "APP_ENV": {"class": "identity"},
-    "CATCH_EVENT_OFFER_INTEGRATION_READY": {"class": "feature-gate", "discovery": "live", "note": "Server-read Remote Config release authority (functions/src/shared/privateEventReleaseConfig.ts); absent from the checked-in template."},
     "CATCH_HELP_URL": {"class": "feature-gate"},
     "CATCH_HOST_OPERATOR_ALERTS_ENABLED": {"class": "feature-gate"},
     "CATCH_HOST_OPERATOR_ALERTS_SINCE": {"class": "feature-gate"},
     "CATCH_PRIVACY_POLICY_URL": {"class": "feature-gate"},
-    "CATCH_PRIVATE_EVENT_PRIVACY_READY": {"class": "feature-gate", "discovery": "live", "note": "Server-read Remote Config release authority; absent from the checked-in template."},
-    "CATCH_PRIVATE_EVENT_SEAT_WRITERS_READY": {"class": "feature-gate", "discovery": "live", "note": "Server-read Remote Config release authority; absent from the checked-in template."},
     "CATCH_TERMS_URL": {"class": "feature-gate"},
-    "CATCH_WEDDING_PHONE_IMPORT_READY": {"class": "feature-gate"},
     "CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY": {"class": "feature-gate"},
     "CATCH_WHATSAPP_PHONE_NUMBER_ID": {"class": "identity"},
     "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED": {"class": "feature-gate"},
@@ -29,7 +26,6 @@
     "CATCH_WHATSAPP_REPLY_RECIPIENT_E164": {"class": "identity"},
     "CATCH_WHATSAPP_REPLY_RECIPIENT_UID": {"class": "identity"},
     "CATCH_WHATSAPP_WABA_ID": {"class": "identity"},
-    "CATCH_WHATSAPP_WEBHOOK_ENABLED": {"class": "feature-gate"},
     "EMIT_OBSERVABILITY_SMOKE_EVENT": {"class": "feature-gate"},
     "ENABLE_OBSERVABILITY_COLLECTION": {"class": "feature-gate"},
     "ENABLE_PUSH_MESSAGING": {"class": "feature-gate"},
@@ -91,11 +87,8 @@
     "host_min_build_macos": {"class": "release-state"},
     "host_min_build_web": {"class": "release-state"},
     "host_min_version": {"class": "release-state"},
-    "host_private_event_setup_enabled": {"class": "feature-gate", "discovery": "live", "note": "Host client Remote Config flag (lib/hosts/data/host_release_config.dart); absent from the checked-in template."},
-    "host_progressive_event_defaults_enabled": {"class": "feature-gate", "discovery": "live", "note": "Host client Remote Config flag (lib/hosts/data/host_release_config.dart); absent from the checked-in template."},
     "host_store_url_android": {"class": "release-state"},
     "host_store_url_ios": {"class": "release-state"},
-    "host_wedding_phone_import_enabled": {"class": "feature-gate"},
     "min_build_android": {"class": "release-state"},
     "min_build_ios": {"class": "release-state"},
     "min_build_macos": {"class": "release-state"},
@@ -103,6 +96,16 @@
     "min_version": {"class": "release-state"},
     "store_url_android": {"class": "release-state"},
     "store_url_ios": {"class": "release-state"}
+  },
+  "retired": {
+    "CATCH_EVENT_OFFER_INTEGRATION_READY": {"replacedBy": "always on", "allowedIn": []},
+    "CATCH_PRIVATE_EVENT_PRIVACY_READY": {"replacedBy": "always on", "allowedIn": []},
+    "CATCH_PRIVATE_EVENT_SEAT_WRITERS_READY": {"replacedBy": "always on", "allowedIn": []},
+    "CATCH_WEDDING_PHONE_IMPORT_READY": {"replacedBy": "always on", "allowedIn": []},
+    "CATCH_WHATSAPP_WEBHOOK_ENABLED": {"replacedBy": "configured WABA id, phone-number id, app secret and verify token", "allowedIn": ["github-variable", "materialized-param"], "ticket": "CAT-186", "note": "Frozen promotion workflows still forward the ignored variable, and the materializer derives the value from the configured ids for Functions packages built before the change. Remove both with the post-rebaseline release-workflow cleanup."},
+    "host_private_event_setup_enabled": {"replacedBy": "always on", "allowedIn": [], "liveHold": {"environments": ["prod"], "value": "true", "reason": "Catch Host builds released before this removal (Host 1.0.1, build 202610200000357901, is in App Store review) still read this key with a bundled default of false. Deleting it or publishing the checked-in template, which replaces the whole live template, would switch the feature off for those installs.", "until": "every Catch Host build that predates this removal is retired: no longer distributed and blocked by the host_min_build_* force-update floors"}},
+    "host_progressive_event_defaults_enabled": {"replacedBy": "always on", "allowedIn": [], "liveHold": {"environments": ["prod"], "value": "true", "reason": "Catch Host builds released before this removal (Host 1.0.1, build 202610200000357901, is in App Store review) still read this key with a bundled default of false. Deleting it or publishing the checked-in template, which replaces the whole live template, would switch the feature off for those installs.", "until": "every Catch Host build that predates this removal is retired: no longer distributed and blocked by the host_min_build_* force-update floors"}},
+    "host_wedding_phone_import_enabled": {"replacedBy": "always on", "allowedIn": [], "liveHold": {"environments": ["prod"], "value": "true", "reason": "Catch Host builds released before this removal (Host 1.0.1, build 202610200000357901, is in App Store review) still read this key with a bundled default of false. Deleting it or publishing the checked-in template, which replaces the whole live template, would switch the feature off for those installs.", "until": "every Catch Host build that predates this removal is retired: no longer distributed and blocked by the host_min_build_* force-update floors"}}
   },
   "allowedDifferences": []
 }
