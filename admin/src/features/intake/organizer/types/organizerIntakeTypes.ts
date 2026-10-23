@@ -2042,39 +2042,3 @@ export interface OrganizerDecisionCommands {
   suppress: string;
 }
 
-export interface OrganizerDetailsFormState {
-  clubId: string;
-  name: string;
-  description: string;
-  location: string;
-  area: string;
-  tagsText: string;
-  instagramHandle: string;
-  phoneNumber: string;
-  email: string;
-  imageUrl: string;
-  profileImageUrl: string;
-  entityKind: OrganizerEntityKind;
-  entitySubtypesText: string;
-  displayCategory: string;
-  cityName: string;
-  regionName: string;
-  countryCode: string;
-  countryName: string;
-  appVisibility: OrganizerAppVisibility;
-  publicPageSlug: string;
-  publicPageCitySlug: string;
-  canonicalPath: string;
-  publishStatus: OrganizerPublishStatus;
-  seoTitle: string;
-  seoDescription: string;
-  sourceConfidence: OrganizerSourceConfidence;
-  verificationStatus: OrganizerVerificationStatus;
-  headline: string;
-  summary: string;
-  sourceSummary: string;
-  formatsText: string;
-  fitNotesText: string;
-  missingEvidenceText: string;
-  reviewNote: string;
-}
