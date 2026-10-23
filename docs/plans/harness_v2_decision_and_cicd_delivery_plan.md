@@ -1,7 +1,7 @@
 ---
 doc_id: harness_v2_decision_and_cicd_delivery_plan
-version: 1.2.4
-updated: 2026-08-10
+version: 1.3.0
+updated: 2026-10-23
 owner: agent_operating_model
 status: active
 ---
@@ -123,6 +123,19 @@ disposable; a Git branch remains the durable work unit.
 
 ### 5. Delivery Promotes Exact Bytes From An Exact Commit
 
+> **Superseded for the Firebase backend (2026-10-23, owner decision).** Backend
+> promotion through artifact authorities, a cursor and resumable checkpoints
+> proved fragile:
+> - Main moving mid-run broke the cursor, as did artifact-listing errors and any
+>   manual deploy.
+> - Each break required a frozen-main rebaseline.
+>
+> The backend now deploys from an exact `main` commit through `Deploy backend`.
+> That job records each environment's deployed commit in a `deployed/<env>` Git
+> tag and deploys only what changed since then. Firebase rebuilds Functions from
+> source either way. See `docs/release_operations.md`, "Deploy Backend". The rest
+> of this section still describes Hosting and mobile promotion.
+
 A successful CI result for a commit is necessary but does not prove that a
 later independent rebuild produced the same bytes. Delivery therefore uses a
 small provenance contract:
@@ -243,7 +256,7 @@ database violates this decision even if it is generated automatically.
 | Optional context guidance | Implemented as source-derived stdout/JSON output | Keep project-skill paths and active tool ids valid |
 | Tracked evidence retirement | Deleted; source metadata plus Git history now own document and change history | Root hygiene rejects the retired paths if they return |
 | Thin worktree guard | Implemented with focused Git-repository tests and used only for concurrent local claims | Keep it local and disposable; Git branches remain durable |
-| Exact-artifact delivery core | Provenance verification, ordered checkpoint/resume, the Firebase backend adapter, the Admin/Marketing Hosting build/promote adapters, the signed mobile package producer, and the separate no-rebuild internal-store promoter are implemented with adversarial and workflow-wiring tests | Keep adapter-specific postconditions and live environment prerequisites current |
+| Exact-artifact delivery core (backend lane superseded 2026-10-23 by `Deploy backend`) | Provenance verification, ordered checkpoint/resume, the Firebase backend adapter, the Admin/Marketing Hosting build/promote adapters, the signed mobile package producer, and the separate no-rebuild internal-store promoter are implemented with adversarial and workflow-wiring tests | Keep adapter-specific postconditions and live environment prerequisites current |
 | Exact mobile release routing | The Harness plan carries role-and-platform-specific signed release targets and the mobile producer consumes the CI-authorized target list without widening web or desktop changes | Keep the compatibility role output only until downstream non-release consumers no longer read it |
 | Owner settings | GitHub secret scanning, push protection, dependency alerts, and Dependabot security updates are enabled. Routine updates are limited to one grouped minor/patch PR per npm, Pub, and GitHub Actions ecosystem; majors remain manual | The initial 38-alert npm backlog is zero. Alerts 1–9 were reviewed and resolved as generated Firebase public client configuration. Observe grouped PR quality and keep environment approvals, token rotation, and any organization migration separate |
 

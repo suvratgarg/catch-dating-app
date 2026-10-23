@@ -1,4 +1,5 @@
 import {execFileSync} from "node:child_process";
+import fs from "node:fs";
 import {createRequire} from "node:module";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -333,19 +334,34 @@ export function backendDeployTargets({
   };
 }
 
+// --environment reads the base from that environment's deployed/<environment>
+// tag; in GitHub Actions the plan is also written to the step outputs.
 function main() {
   const {values} = parseArgs({options: {
-    base: {type: "string"}, head: {type: "string"}, full: {type: "boolean", default: false},
+    base: {type: "string"}, head: {type: "string"}, environment: {type: "string"},
+    full: {type: "boolean", default: false},
   }});
   const sourceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+  let baseSha = values.base || undefined;
+  if (values.environment !== undefined) {
+    if (!/^[a-z][a-z0-9-]*$/.test(values.environment)) throw new Error("Invalid environment name.");
+    try {
+      baseSha = git(sourceRoot, ["rev-parse", "-q", "--verify",
+        `refs/tags/deployed/${values.environment}^{commit}`], {stdio: ["ignore", "pipe", "ignore"]}).trim();
+    } catch {
+      baseSha = undefined;
+    }
+  }
   const plan = backendDeployTargets({
-    sourceRoot,
-    baseSha: values.base || undefined,
-    headSha: values.head,
-    eligibleFunctionTargets: listFirebaseFunctionTargets(sourceRoot),
-    fullDeploy: values.full,
+    sourceRoot, baseSha, headSha: values.head,
+    eligibleFunctionTargets: listFirebaseFunctionTargets(sourceRoot), fullDeploy: values.full,
   });
+  process.stderr.write(`${plan.mode}: ${plan.targets.length} targets from ${baseSha ?? "no recorded deploy"} ` +
+    `to ${values.head} (${plan.reason})\n`);
   process.stdout.write(`${JSON.stringify(plan)}\n`);
+  if (process.env.GITHUB_OUTPUT) {
+    fs.appendFileSync(process.env.GITHUB_OUTPUT, `mode=${plan.mode}\ntargets=${plan.targets.join(",")}\n`);
+  }
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) main();

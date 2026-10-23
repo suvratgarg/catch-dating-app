@@ -1,0 +1,186 @@
+name: Backend deploy (one environment)
+
+# Deploys one environment's Firebase backend from the commit this run was
+# started on. The environment remembers the commit it last received in the tag
+# deployed/<environment>; only what changed since then is deployed
+# (tool/firebase/affected_function_targets.mjs) through
+# tool/deploy_firebase_targets.sh, and the tag then moves forward.
+# Operator guide: docs/release_operations.md, "Deploy backend".
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      full:
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  # Plans without credentials or approval, so a merge with nothing to deploy
+  # never asks for a production approval.
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      mode: ${{ steps.plan.outputs.mode }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Install the pinned TypeScript parser
+        run: npm --prefix functions ci --ignore-scripts
+
+      - id: plan
+        name: Plan from the last deployed commit
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          FULL: ${{ inputs.full }}
+        run: |
+          set -euo pipefail
+          git fetch --force origin "refs/tags/deployed/*:refs/tags/deployed/*"
+          args=(--environment "$DEPLOY_ENVIRONMENT" --head "$GITHUB_SHA")
+          if [[ "$FULL" == "true" ]]; then args+=(--full); fi
+          NODE_PATH=functions/node_modules \
+            node tool/firebase/affected_function_targets.mjs "${args[@]}" > /dev/null
+
+  deploy:
+    needs: plan
+    if: ${{ needs.plan.outputs.mode != 'no-op' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    environment: ${{ inputs.environment }}
+    # One deploy per environment at a time. A newer run waits; GitHub keeps
+    # only the newest waiting run, and each run deploys everything since the tag.
+    concurrency:
+      group: backend-deploy-${{ inputs.environment }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Install and build Functions
+        run: |
+          set -euo pipefail
+          npm --prefix functions ci
+          npm --prefix functions run build
+
+      # Replans after approval: an earlier run may have moved the tag meanwhile.
+      - id: plan
+        name: Plan from the last deployed commit
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          FULL: ${{ inputs.full }}
+        run: |
+          set -euo pipefail
+          git fetch --force origin "refs/tags/deployed/*:refs/tags/deployed/*"
+          args=(--environment "$DEPLOY_ENVIRONMENT" --head "$GITHUB_SHA")
+          if [[ "$FULL" == "true" ]]; then args+=(--full); fi
+          NODE_PATH=functions/node_modules \
+            node tool/firebase/affected_function_targets.mjs "${args[@]}" > /dev/null
+
+      - name: Authenticate to Google Cloud
+        if: ${{ steps.plan.outputs.mode != 'no-op' }}
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Install Google Cloud CLI
+        if: ${{ steps.plan.outputs.mode != 'no-op' }}
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Install Firebase CLI
+        if: ${{ steps.plan.outputs.mode != 'no-op' }}
+        run: npm install -g firebase-tools@${{ steps.toolchain.outputs.firebase-tools-version }}
+
+      - name: Materialize Functions parameters from this environment's variables
+        if: ${{ steps.plan.outputs.mode != 'no-op' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          # Non-secret configuration only; secret values stay in Secret Manager.
+          ENVIRONMENT_VARIABLES: ${{ toJSON(vars) }}
+        run: |
+          set -euo pipefail
+          project_id="$(jq -er --arg env "$DEPLOY_ENVIRONMENT" '.projects[$env]' .firebaserc)"
+          node -e '
+            const env = {...process.env, ...JSON.parse(process.env.ENVIRONMENT_VARIABLES)};
+            const run = require("node:child_process").spawnSync(
+              process.execPath, process.argv.slice(1), {env, stdio: "inherit"});
+            process.exit(run.status ?? 1);
+          ' tool/firebase/prepare_functions_params_for_deploy.mjs \
+            --functions-dir functions --project "$project_id"
+          node tool/firebase/check_functions_params_coverage.mjs \
+            --functions-dir functions --env-file "functions/.env.$project_id"
+
+      # CI already ran the predeploy test suites for this commit, and the build
+      # above produced lib, so deploy from a copy of firebase.json without hooks.
+      # New indexes must be READY before Functions that query them deploy.
+      # --force only reaches exact Function batches (deploy_firebase_targets.sh).
+      - name: Deploy only what changed
+        if: ${{ steps.plan.outputs.mode != 'no-op' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          DEPLOY_TARGETS: ${{ steps.plan.outputs.targets }}
+          # This run deploys its own exact commit; the tag records which one.
+          CATCH_DEPLOY_ALLOW_BEHIND: "1"
+        run: |
+          set -euo pipefail
+          project_id="$(jq -er --arg env "$DEPLOY_ENVIRONMENT" '.projects[$env]' .firebaserc)"
+          jq 'walk(if type == "object" then del(.predeploy) else . end)' \
+            firebase.json > firebase.deploy.json
+          remaining="$DEPLOY_TARGETS"
+          if [[ ",$DEPLOY_TARGETS," == *",firestore:indexes,"* ]]; then
+            ./tool/deploy_firebase_targets.sh "$DEPLOY_ENVIRONMENT" firestore:indexes \
+              --config firebase.deploy.json
+            node tool/firebase/wait_firestore_indexes_ready.mjs \
+              --indexes firestore.indexes.json --project "$project_id" \
+              --timeout-seconds 1800 --poll-seconds 20
+            remaining="$(tr ',' '\n' <<< "$DEPLOY_TARGETS" | grep -vx 'firestore:indexes' | paste -sd, - || true)"
+          fi
+          if [[ -n "$remaining" ]]; then
+            ./tool/deploy_firebase_targets.sh "$DEPLOY_ENVIRONMENT" "$remaining" \
+              --config firebase.deploy.json --force
+          fi
+
+      - name: Record the deployed commit
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          set -euo pipefail
+          tag="deployed/$DEPLOY_ENVIRONMENT"
+          git fetch --force origin "refs/tags/$tag:refs/tags/$tag" 2>/dev/null || true
+          current="$(git rev-parse -q --verify "refs/tags/$tag^{commit}" || true)"
+          if [[ -n "$current" ]] && ! git merge-base --is-ancestor "$current" "$GITHUB_SHA"; then
+            echo "::error::$tag is at $current, which $GITHUB_SHA does not contain; refusing to move it backwards."
+            exit 1
+          fi
+          git tag -f "$tag" "$GITHUB_SHA"
+          git push --force origin "refs/tags/$tag"
+          echo "$tag -> $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
