@@ -1,4 +1,4 @@
-/* Section rhythm mirrors CatchSectionList; gaps read foundations.css. */
+/* Section rhythm mirrors CatchSectionList; gaps read the CatchGaps tokens. */
 .list {
   display: flex;
   flex-direction: column;
