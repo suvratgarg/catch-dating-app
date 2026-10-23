@@ -72,6 +72,12 @@ jobs:
 
       - run: npm ci
 
+      - name: Check unused code and undeclared imports (Knip ratchet)
+        run: >-
+          node tool/audit/check_unused_code.mjs --check
+          --workspace ${{ inputs.surface == 'admin' && 'admin' || 'website' }}
+          --workspace packages/web-ui --workspace packages/web-config
+
       - name: Check React dependency topology
         run: node tool/web/react_dependency_graph.mjs --check
 

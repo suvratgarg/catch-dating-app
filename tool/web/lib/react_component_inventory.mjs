@@ -18,6 +18,9 @@ export function areaOf(file) {
   if (match) return `${match[1]}:${match[2]}`;
   match = file.match(/^(website|admin)\/src\/[^/]+$/u);
   if (match) return `${match[1]}:app`;
+  // The Next App Router tree (website/app) is the website's app shell too.
+  match = file.match(/^(website|admin)\/app\//u);
+  if (match) return `${match[1]}:app`;
   match = file.match(/^(website|admin)\/src\/([^/]+)\//u);
   if (match) return `${match[1]}:${match[2]}`;
   if (file.startsWith("packages/web-ui/")) return "web-ui";

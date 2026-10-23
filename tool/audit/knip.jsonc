@@ -1,0 +1,80 @@
+// Knip finds unused files, exports, types and dependencies, and imports of
+// packages a workspace does not declare. tool/audit/check_unused_code.mjs runs
+// it as a shrink-only ratchet against tool/audit/unused_code_baseline.json.
+// Ignore only what Knip cannot see; real findings belong in the baseline.
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  "workspaces": {
+    ".": {
+      "entry": [
+        "tool/**/*.{mjs,cjs,js}",
+        "operations/**/*.{mjs,cjs,js}",
+        "integration_test/**/*.mjs"
+      ],
+      "project": [
+        "tool/**/*.{mjs,cjs,js}",
+        "operations/**/*.{mjs,cjs,js}"
+      ],
+      // The workspaces' Vitest coverage (provider "v8") loads it from the root
+      // install; only a whole-repository run can see those workspace configs.
+      "ignoreDependencies": ["@vitest/coverage-v8"]
+    },
+    "admin": {},
+    "website": {},
+    "packages/web-ui": {},
+    "packages/web-config": {},
+    "functions": {
+      "entry": [
+        "src/index.ts",
+        "src/**/*.test.ts",
+        "test/**/*.cjs",
+        "scripts/**/*.{cjs,mjs}"
+      ],
+      "project": [
+        "src/**/*.ts",
+        "test/**/*.cjs",
+        "scripts/**/*.{cjs,mjs}"
+      ],
+      "ignoreDependencies": [
+        // eslint.config.cjs loads these through FlatCompat's string extends
+        // ("plugin:import/...", "google", "plugin:@typescript-eslint/...").
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint-config-google",
+        "eslint-plugin-import",
+        // tool/contracts/generate_schema_contracts.mjs requires it from
+        // functions/node_modules through createRequire.
+        "json-schema-to-typescript"
+      ]
+    }
+  },
+  "ignore": [
+    "**/generated/**",
+    "design/**",
+    "tool/contracts/generated/**"
+  ],
+  "ignoreIssues": {
+    // Loads firebase-admin, google-auth-library and compiled functions/lib
+    // modules through createFunctionsRequire(), rooted at functions/.
+    "tool/firebase/form_domain_operator.mjs": ["unlisted", "unresolved"],
+    // The Tools lane installs Playwright through its "playwright" setup step.
+    "tool/web/check_storybook_visuals.mjs": ["unlisted"]
+  },
+  "ignoreExportsUsedInFile": true,
+  "ignoreBinaries": [
+    "bq",
+    "dart",
+    "firebase",
+    "flutter",
+    "gcloud",
+    "jar",
+    "jarsigner",
+    "jq",
+    "keytool",
+    "mkfifo"
+  ],
+  // Functions tests require compiled output (../lib/...) built by `npm run build`.
+  "ignoreUnresolved": [
+    "^(\\.\\./)+lib/"
+  ]
+}
