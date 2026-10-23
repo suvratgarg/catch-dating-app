@@ -85,7 +85,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as fw;
 
-Widget probe(BuildContext context, dynamic data) => Column(children: [
+Widget probe(BuildContext context, dynamic data, int? nullableLines) => Column(children: [
   Text('plain', style: CatchTextStyles.supporting(context)),
   fw.Text('clamped', maxLines: 1, overflow: TextOverflow.ellipsis,
     style: CatchTextStyles.sectionTitle(context)),
@@ -95,6 +95,8 @@ Widget probe(BuildContext context, dynamic data) => Column(children: [
   Text('modified', style: CatchTextStyles.supporting(context).copyWith(color: null)),
   Text('uncovered', style: CatchTextStyles.mono(context)),
   Text(data, style: CatchTextStyles.supporting(context)),
+  Text('nullable clamp', maxLines: nullableLines, overflow: TextOverflow.ellipsis,
+    style: CatchTextStyles.supporting(context)),
   const CatchText('library', variant: CatchTextVariant.supporting),
 ]);
 ''');
@@ -140,10 +142,11 @@ Widget probe(BuildContext context, dynamic data) => Column(children: [
         'supporting',
         'sectionTitle',
         'titleL',
+        'supporting',
       ]);
       expect(
         sites.map((site) => site.node.argumentList.arguments.first.toSource()),
-        ["'plain'", "'clamped'", "'aligned'"],
+        ["'plain'", "'clamped'", "'aligned'", 'data'],
       );
       final part =
           await collection

@@ -58,7 +58,6 @@ class _TextCalls extends RecursiveAstVisitor<void> {
         .where((arg) => arg is! NamedExpression)
         .toList();
     if (data.length != 1 ||
-        data.single.staticType?.getDisplayString() != 'String' ||
         named.keys.any(
           (name) => !{
             'key',
@@ -91,7 +90,10 @@ class _TextCalls extends RecursiveAstVisitor<void> {
       return;
     }
     if (named.containsKey('maxLines')) {
-      if (named['overflow']?.toSource() != 'TextOverflow.ellipsis') return;
+      if (named['maxLines']?.staticType?.getDisplayString() != 'int' ||
+          named['overflow']?.toSource() != 'TextOverflow.ellipsis') {
+        return;
+      }
     } else if (named.containsKey('overflow')) {
       return;
     }
