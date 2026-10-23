@@ -163,6 +163,13 @@ class HostMessagingSetup {
 
   bool get canComposeCampaign =>
       campaignReadiness == HostWhatsappCampaignReadiness.ready;
+
+  /// Whether this client can show sender management for the organizer.
+  ///
+  /// Connecting a new sender requires Meta Embedded Signup, so a client without
+  /// it can only manage a sender that is already connected.
+  bool canManageWhatsappSender({required bool embeddedSignupSupported}) =>
+      providerConfigured && (embeddedSignupSupported || connection != null);
 }
 
 class HostWhatsappSignupResult {

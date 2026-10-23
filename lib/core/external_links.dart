@@ -37,21 +37,6 @@ class ExternalLinkController {
 
   Future<bool> openHostApp() => openExternal(AppConfig.hostAppUrl);
 
-  Future<bool> openHostMessagingSetup(String organizerId) {
-    final normalizedOrganizerId = organizerId.trim();
-    if (normalizedOrganizerId.isEmpty) return Future.value(false);
-    final base = AppConfig.hostAppUrl;
-    final uri = base.replace(
-      pathSegments: [
-        ...base.pathSegments.where((segment) => segment.isNotEmpty),
-        'organizer',
-        normalizedOrganizerId,
-        'messaging',
-      ],
-    );
-    return openExternal(uri);
-  }
-
   /// Opens a one-person WhatsApp handoff with editable text prefilled.
   ///
   /// This route intentionally returns only whether the external application

@@ -60,30 +60,6 @@ void main() {
   });
 
   test(
-    'openHostMessagingSetup preserves the configured Host base path',
-    () async {
-      Uri? launchedUri;
-      final controller = ExternalLinkController((
-        uri, {
-        mode = LaunchMode.platformDefault,
-      }) async {
-        launchedUri = uri;
-        return true;
-      });
-
-      final opened = await controller.openHostMessagingSetup('organizer 1');
-
-      expect(opened, isTrue);
-      expect(
-        launchedUri,
-        Uri.parse(
-          'https://catchdates.com/host/organizer/organizer%201/messaging',
-        ),
-      );
-    },
-  );
-
-  test(
     'openWhatsappHandoff opens the native app scheme with prefilled text',
     () async {
       Uri? launchedUri;

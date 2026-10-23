@@ -1590,7 +1590,7 @@
             "tests"
           ],
           "debtId": "HOST-MESSAGING-EVIDENCE-001",
-          "reason": "The disconnected native-to-web handoff, ready sender and initial campaign route are tested; remaining sender and campaign lifecycle variants need focused rendered tests."
+          "reason": "The unavailable-sender gates, ready sender and initial campaign route are tested; remaining sender and campaign lifecycle variants need focused rendered tests."
         },
         {
           "stateIds": [

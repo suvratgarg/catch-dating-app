@@ -18,6 +18,7 @@ import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_whatsapp_embedded_signup.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
@@ -219,6 +220,11 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
         : const AsyncLoading<HostMessagingSetup>();
     final summaryState = catchAsyncStateFromAsyncValue(summary);
     final messagingSetupState = catchAsyncStateFromAsyncValue(messagingSetup);
+    final canManageWhatsappSender =
+        messagingSetupState.value?.canManageWhatsappSender(
+          embeddedSignupSupported: hostWhatsappEmbeddedSignupSupported,
+        ) ??
+        false;
     final visibleFilters = hostCustomerFiltersForSmsReadiness(
       summaryState.value?.smsReadiness,
     );
@@ -461,8 +467,9 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                                       : null,
                                   onReviewSenderSetup:
                                       campaignBridgePhase ==
-                                          HostCustomerCampaignBridgePhase
-                                              .senderSetupRequired
+                                              HostCustomerCampaignBridgePhase
+                                                  .senderSetupRequired &&
+                                          canManageWhatsappSender
                                       ? () => _reviewWhatsappSenderSetup(
                                           selectedClub,
                                         )
