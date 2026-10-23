@@ -1839,15 +1839,36 @@ than building its own. Changes to the remaining phases:
 
 - **7e lands its foundations first.** Web `CatchGap`, `CatchInset`,
   `CatchPageBody` and `catch.section_stack`, plus a `CatchText` with role
-  variants, ship before any concept migration (first slice: #767), because a
-  screen cannot be assembled only from library components until layout and
-  text exist in the library. The concepts then follow measured duplication:
-  field, button, badge, table, chip.field, section, banner, typography. 7e
-  owns `packages/web-ui`, `catch.components.json` and the adapters, and lowers
-  the 7g suppressions as it migrates screens.
+  variants, ship before any concept migration, because a screen cannot be
+  assembled only from library components until layout and text exist in the
+  library. They landed in #767, with #773 repairing the gap parity test and
+  golden pin after #768. Their cross-framework (D9) decisions:
+  - `CatchText` is a new T1 concept, `catch.text`, with a thin Flutter twin in
+    `catch_ui`, `CatchText(data, variant:)`, whose variants are exactly the
+    `CatchTextStyles` role names. Migrating Flutter's roughly 1,013
+    `Text(style: CatchTextStyles.x)` call sites is Linear CAT-211.
+  - `CatchGap` and `CatchInset` are React-only `additionalSymbols` on
+    `catch.screen_body`, with no Flutter widget twins; their prop values reuse
+    the `CatchGaps` and `CatchInsets` role names. The registry rule that a
+    styled React record reuses its Dart symbol rules out anchoring them to a
+    token class.
+  - `catch.screen_body` (`CatchPageBody`) moves from T3 to T1.
+
+  The T1 concepts then follow measured duplication: field, button, badge,
+  table, chip.field, section, banner, typography. After them come the
+  website's priority-1 T2 entities, which gate website Phase 4:
+  `catch.event_card`, `catch.ticket`, `catch.organizer_poster` /
+  `catch.club_cover`, `catch.person_polaroid` and `catch.meta_row`. Priority 2
+  follows: `catch.graded_image`, `catch.detail_media`,
+  `catch.event_detail_sections`, `catch.metric_strip`, `catch.journey_steps`,
+  `catch.network_image` and `catch.map_preview`. 7e owns `packages/web-ui`,
+  `catch.components.json` and the adapters, and lowers the 7g suppressions as
+  it migrates screens.
 - **7g — Web tokens and lint preset.** Landed so far: Admin colours, spacing,
   radius and transition timing on tokens (#756); gap, stroke, window-size,
-  layer, web type, brand type and theme-role token families (#768); and one
+  layer, web type, brand type and theme-role token families (#768), plus the
+  field radius, opacity, tint and themed elevation tokens 7e's field slice
+  needs (#776); and one
   stylelint preset for both apps with per-app suppressions and a freshness
   check (#769). Next: the ESLint preset (no raw controls, no `className` or
   `style` outside the library, no bare text or layout elements in features),
