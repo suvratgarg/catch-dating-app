@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.35.0
-updated: 2026-10-23
+version: 1.34.0
+updated: 2026-10-18
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -288,18 +288,6 @@ disclosure glyphs remain fixed and custom actions retain their full hit targets.
    Material fallback text use the same platform profiles. Compact visual controls
    can remain smaller than their 44/48 hit areas, but padding must actually
    respond to input and neighboring targets must not overlap.
-
-The web reads the same source. `gap` holds the six `CatchGaps` relationships,
-`stroke` the `CatchStroke` widths, `windowSize` the Material 3 class lower
-bounds behind `CatchWindowSize`, and `layout.pageBodyEnd` the page body's
-bottom inset; Flutter reads all four from the generated constants. `layer` is a
-web-only z-index scale. `typography.web` is the function profile for the web,
-aliasing the iOS profile, and `typography.brand` holds the Archivo voice and
-IBM Plex Mono data roles under their `CatchTextStyles` names. The generator also
-emits `--catch-theme-<role>` for every colour role: light on `:root` and
-`[data-catch-theme="light"]`, dark on `[data-catch-theme="dark"]`.
-`test/core/theme/web_token_families_parity_test.dart` pins the generated CSS to
-the Flutter values.
 
 The floating navigation label has its own generated `navigationLabel` role
 (13/13, weight 600, zero tracking on both platforms). It deliberately does not
