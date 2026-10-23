@@ -13,6 +13,7 @@ import 'catch_ui_rules_tables.g.dart';
 part 'catch_ui_test_rules.dart';
 part 'catch_ui_mutation_rules.dart';
 part 'catch_ui_feedback_rules.dart';
+part 'catch_ui_text_rules.dart';
 
 const _eventDetailPathFragments = <String>[
   '/lib/events/presentation/widgets/event_detail_',
@@ -1243,39 +1244,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     return RegExp(
       r'\b(?:BottomNavigationBar|NavigationBar|CupertinoTabBar|CatchTabBar|AdaptiveTabScaffold)\s*\(',
     ).hasMatch(bottomNavigation.toSource());
-  }
-
-  bool _hasSanctionedAmbientTextAncestor(InstanceCreationExpression node) {
-    var current = node.parent;
-    while (current != null) {
-      if (current is InstanceCreationExpression) {
-        final typeName = _constructorTypeName(current);
-        if (typeName == 'PopupMenuItem' ||
-            typeName == 'Badge' ||
-            typeName == 'AlertDialog' ||
-            typeName == 'CupertinoAlertDialog' ||
-            typeName == 'CupertinoDialogAction' ||
-            typeName == 'InputDecoration') {
-          return true;
-        }
-      }
-      if (current is Statement ||
-          current is FunctionBody ||
-          current is ClassDeclaration) {
-        return false;
-      }
-      current = current.parent;
-    }
-    return false;
-  }
-
-  bool _textOwnsStyle(InstanceCreationExpression node) {
-    if (_hasNamedArgument(node, 'style')) return true;
-    if (_constructorMemberName(node) != 'rich' ||
-        node.argumentList.arguments.isEmpty) {
-      return false;
-    }
-    return node.argumentList.arguments.first.toSource().contains('style:');
   }
 
   bool _looksLikeRawErrorSurface(InstanceCreationExpression node) {
