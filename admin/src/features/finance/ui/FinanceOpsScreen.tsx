@@ -30,8 +30,7 @@ import {
   QualityList,
   RiskBadge,
   SearchField,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
   TableActionButton,
 } from "../../../shared/ui/AdminPrimitives";
@@ -171,8 +170,7 @@ export function FinanceOpsWorkspace({
             recipe="select"
             title="Issue type"
             onChanged={(value) => controller.setKindFilter((value ?? "") as FinanceIssueKind)}
-            values={selectOptionValues(kindOptions)}
-            itemLabelBuilder={selectOptionLabeller(kindOptions)}
+            {...selectOptions(kindOptions)}
             value={controller.kindFilter}
           />
           <AdminButton

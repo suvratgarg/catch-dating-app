@@ -32,6 +32,7 @@ import {
   AdminEditorGrid,
   AdminEditorPanel,
   AdminEditorSection,
+  AdminFieldGrid,
   AdminEventSupplyDetail,
   AdminEventSupplyDetailStack,
   AdminEventSupplyEmptyState,
@@ -990,19 +991,21 @@ export const AdminPublishingFormShellStory: Story = {
       <AdminPublishingFormShell>
         <AdminEditorSection>
           <legend>Publishing details</legend>
-          <CatchField
-            recipe="input"
-            title="Public title"
-            value="Rooftop Social"
-            onChanged={noop}
-          />
-          <CatchField
-            recipe="input"
-            title="Summary"
-            maxLines={3}
-            value="Verified organizer profile."
-            onChanged={noop}
-          />
+          <AdminFieldGrid columns={1}>
+            <CatchField
+              recipe="input"
+              title="Public title"
+              value="Rooftop Social"
+              onChanged={noop}
+            />
+            <CatchField
+              recipe="input"
+              title="Summary"
+              maxLines={3}
+              value="Verified organizer profile."
+              onChanged={noop}
+            />
+          </AdminFieldGrid>
         </AdminEditorSection>
       </AdminPublishingFormShell>
     </AdminWorkspace>
@@ -1021,12 +1024,14 @@ export const AdminEditorSectionStory: Story = {
     <AdminWorkspace>
       <AdminEditorSection>
         <legend>Review fields</legend>
-        <CatchField
-          recipe="input"
-          title="Canonical owner"
-          value="Organizer team"
-          onChanged={noop}
-        />
+        <AdminFieldGrid columns={1}>
+          <CatchField
+            recipe="input"
+            title="Canonical owner"
+            value="Organizer team"
+            onChanged={noop}
+          />
+        </AdminFieldGrid>
       </AdminEditorSection>
     </AdminWorkspace>
   ),

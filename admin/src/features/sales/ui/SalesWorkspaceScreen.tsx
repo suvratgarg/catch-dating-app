@@ -3,22 +3,9 @@ import {renderSalesPartnerOffer} from "./salesPartnerOffer";
 import {useEffect, useMemo, useState} from "react";
 import {ArrowLeft, CalendarDays, ClipboardList, Search} from "lucide-react";
 import {
-  AdminButton,
-  AdminDetailScreenStack,
-  AdminDirectoryScreenStack,
-  AdminForm,
-  AdminTableRow,
-  AdminTag,
-  AdminToolbar,
-  DataTable,
-  EmptyState,
-  PageHeader,
-  Panel,
-  SearchField,
-  SegmentedControl,
-  selectOptionLabeller,
-  selectOptionValues,
-  StateRow,
+  AdminButton, AdminDetailScreenStack, AdminDirectoryScreenStack,
+  AdminForm, AdminTableRow, AdminTag, AdminToolbar, DataTable, EmptyState,
+  PageHeader, Panel, SearchField, SegmentedControl, selectOptions, StateRow,
   TableActionButton,
 } from "../../../shared/ui/AdminPrimitives";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
@@ -301,26 +288,15 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
     {controller.canonicalMatches.isPending ? <p>Searching organizers…</p> : null}
     {controller.canonicalMatches.error ? <p role="alert">
       Organizer search failed. Try again.</p> : null}
-    {controller.canonicalMatches.data?.length ? <CatchField
-      recipe="select"
-      title="Reviewed organizer"
-      value={selectedCanonicalId}
-      onChanged={(value) => setSelectedCanonicalId(value ?? "")}
-      values={selectOptionValues([
+    {controller.canonicalMatches.data?.length ? <CatchField recipe="select"
+      title="Reviewed organizer" value={selectedCanonicalId}
+      onChanged={(value) => setSelectedCanonicalId(value ?? "")} {...selectOptions([
         {value: "", label: "Choose a matching organizer"},
         ...controller.canonicalMatches.data.map((item) => ({
           value: item.clubId,
           label: `${item.name} · ${item.cityName || "Location unknown"} · ${labelFor(item.publishStatus)}`,
         })),
-      ])}
-      itemLabelBuilder={selectOptionLabeller([
-        {value: "", label: "Choose a matching organizer"},
-        ...controller.canonicalMatches.data.map((item) => ({
-          value: item.clubId,
-          label: `${item.name} · ${item.cityName || "Location unknown"} · ${labelFor(item.publishStatus)}`,
-        })),
-      ])}
-    /> : null}
+      ])} /> : null}
     <AdminToolbar>
       <AdminButton variant="primary" disabled={!selectedCanonicalId || controller.isSaving}
         onClick={() => void controller.addAccount({
@@ -343,30 +319,17 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
         onChange={(query) => controller.setAccountFilters({query})} />
       {!controller.validAccountQuery ? <p role="status">
         Search one word of 2–80 letters or numbers.</p> : null}
-      <CatchField
-        recipe="select"
-        title="Research status"
-        value={controller.researchStatus}
+      <CatchField recipe="select" title="Research status" value={controller.researchStatus}
         onChanged={(value) => controller.setAccountFilters({
           researchStatus: (value ?? "") as "all" | SalesResearchStatus,
-        })}
-        values={selectOptionValues([{value: "all", label: "All research statuses"},
-          ...researchStatusOptions])}
-        itemLabelBuilder={selectOptionLabeller([{value: "all", label: "All research statuses"},
-          ...researchStatusOptions])}
-      />
-      {assignedStaffOnly ? null : <CatchField
-        recipe="select"
-        title="Owner"
+        })} {...selectOptions([{value: "all", label: "All research statuses"},
+          ...researchStatusOptions])} />
+      {assignedStaffOnly ? null : <CatchField recipe="select" title="Owner"
         value={controller.ownerUid ? "mine" : "all"}
         onChanged={(value) => controller.setAccountFilters({
           ownerUid: (value ?? "") === "mine" ? currentUserUid : "",
-        })}
-        values={selectOptionValues([{value: "all", label: "All owners"},
-          {value: "mine", label: "Assigned to me"}])}
-        itemLabelBuilder={selectOptionLabeller([{value: "all", label: "All owners"},
-          {value: "mine", label: "Assigned to me"}])}
-      />}
+        })} {...selectOptions([{value: "all", label: "All owners"},
+          {value: "mine", label: "Assigned to me"}])} />}
     </AdminToolbar>
     <QueryState loading={controller.accounts.isPending} error={controller.accounts.error}
       empty={!rows.length} onRetry={() => void controller.accounts.refetch()} />
@@ -414,13 +377,8 @@ function PipelineView({controller, currentUserUid, onOpenHost}: {
   const rows = controller.opportunities.data?.rows ?? [];
   return <Panel title="Opportunities" icon={<ClipboardList size={18} />}>
     <p>Stages describe commercial work. Organizer ownership and product activation are managed separately.</p>
-    <CatchField
-      recipe="select"
-      title="Stage"
-      value={controller.opportunityStage}
-      onChanged={(value) => controller.setStageFilter(value ?? "")}
-      values={selectOptionValues(stageOptions)}
-      itemLabelBuilder={selectOptionLabeller(stageOptions)}
+    <CatchField recipe="select" title="Stage" value={controller.opportunityStage}
+      onChanged={(value) => controller.setStageFilter(value ?? "")} {...selectOptions(stageOptions)}
     />
     <QueryState loading={controller.opportunities.isPending}
       error={controller.opportunities.error} empty={!rows.length}
@@ -454,16 +412,10 @@ function ResearchView({controller, onOpenHost, onOpenIntake}: {
     <Panel title="Research review" icon={<Search size={18} />}>
       <p>Use the host record to capture a sourced summary, owner and next action.
         Qualification and fit remain separate decisions.</p>
-      <CatchField
-        recipe="select"
-        title="Research status"
-        value={controller.researchStatus}
+      <CatchField recipe="select" title="Research status" value={controller.researchStatus}
         onChanged={(value) => controller.setAccountFilters({
           researchStatus: (value ?? "") as "all" | SalesResearchStatus,
-        })}
-        values={selectOptionValues([{value: "all", label: "All"}, ...researchStatusOptions])}
-        itemLabelBuilder={selectOptionLabeller([{value: "all", label: "All"}, ...researchStatusOptions])}
-      />
+        })} {...selectOptions([{value: "all", label: "All"}, ...researchStatusOptions])} />
       <QueryState loading={controller.accounts.isPending} error={controller.accounts.error}
         empty={!controller.accounts.data?.rows.length}
         onRetry={() => void controller.accounts.refetch()} />
@@ -528,18 +480,11 @@ function InboundReview({controller, onOpenIntake}: {
         icon={<Search size={16} />} placeholder="One name, city, or market word"
         value={controller.identitySearch}
         onChange={(value) => {controller.setIdentitySearch(value); setMatchId("");}} />
-      <CatchField
-        recipe="select"
-        title="Existing host"
-        value={matchId}
+      <CatchField recipe="select" title="Existing host" value={matchId}
         onChanged={(value) => setMatchId(value ?? "")}
-        values={selectOptionValues([{value: "", label: "Choose a reviewed match"},
+        {...selectOptions([{value: "", label: "Choose a reviewed match"},
           ...matches.map((row) => ({value: row.organizerId,
-            label: `${row.name} · ${row.city || row.marketLabel || "Location unknown"}`}))])}
-        itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose a reviewed match"},
-          ...matches.map((row) => ({value: row.organizerId,
-            label: `${row.name} · ${row.city || row.marketLabel || "Location unknown"}`}))])}
-      />
+            label: `${row.name} · ${row.city || row.marketLabel || "Location unknown"}`}))])} />
       {controller.identityMatches.isPending ? <p>Searching hosts…</p> : null}
       {controller.identitySearch.trim() &&
         !/^[A-Za-z0-9]{2,80}$/u.test(controller.identitySearch.trim()) ?
@@ -564,22 +509,12 @@ function PilotsView({controller, onOpenHost}: {
   return <Panel title="Pilots" icon={<ClipboardList size={18} />}>
     <p>Select a pilot stage to see its opportunities and next commitments. Pilot outcomes
       require linked evidence before a commercial or reference claim is made.</p>
-    <CatchField
-      recipe="select"
-      title="Pilot stage"
-      value={controller.opportunityStage}
-      onChanged={(value) => controller.setStageFilter(value ?? "")}
-      values={selectOptionValues([
+    <CatchField recipe="select" title="Pilot stage" value={controller.opportunityStage}
+      onChanged={(value) => controller.setStageFilter(value ?? "")} {...selectOptions([
         {value: "", label: "All opportunities"},
         {value: "pilot_agreed", label: "Pilot agreed"},
         {value: "pilot_running", label: "Pilot running"},
-      ])}
-      itemLabelBuilder={selectOptionLabeller([
-        {value: "", label: "All opportunities"},
-        {value: "pilot_agreed", label: "Pilot agreed"},
-        {value: "pilot_running", label: "Pilot running"},
-      ])}
-    />
+      ])} />
     <QueryState loading={controller.opportunities.isPending}
       error={controller.opportunities.error}
       empty={!controller.opportunities.data?.rows.length}
@@ -709,30 +644,15 @@ function CustomFieldValueEditor({field, detail, controller}: {
   };
   const update = (value: string) => {setTextValue(value); setDirty(true);};
   return <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
-    {field.type === "enum" ? <CatchField
-      recipe="select"
-      title={field.label}
-      value={textValue}
-      onChanged={(value) => update(value ?? "")}
-      values={selectOptionValues([{value: "", label: "Choose"},
+    {field.type === "enum" ? <CatchField recipe="select" title={field.label} value={textValue}
+      onChanged={(value) => update(value ?? "")} {...selectOptions([{value: "", label: "Choose"},
         ...(field.enumOptions ?? []).map((option) => ({
           value: option, label: option,
-        }))])}
-      itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose"},
-        ...(field.enumOptions ?? []).map((option) => ({
-          value: option, label: option,
-        }))])}
-    /> : field.type === "boolean" ?
-      <CatchField
-        recipe="select"
-        title={field.label}
-        value={textValue}
+        }))])} /> : field.type === "boolean" ?
+      <CatchField recipe="select" title={field.label} value={textValue}
         onChanged={(value) => update(value ?? "")}
-        values={selectOptionValues([{value: "", label: "Unknown"}, {value: "true", label: "Yes"},
-          {value: "false", label: "No"}])}
-        itemLabelBuilder={selectOptionLabeller([{value: "", label: "Unknown"}, {value: "true", label: "Yes"},
-          {value: "false", label: "No"}])}
-      /> :
+        {...selectOptions([{value: "", label: "Unknown"}, {value: "true", label: "Yes"},
+          {value: "false", label: "No"}])} /> :
       <CatchField recipe="input" title={field.label} value={textValue} onChanged={update}
         keyboardType={field.type === "number" ? "decimal" :
           field.type === "date" ? "date" : "text"} />}
@@ -793,17 +713,12 @@ function HostAccountEditor({detail, controller, currentUserUid, assignedStaffOnl
     {changedElsewhere ? <p role="alert">This host changed since you started editing.
       Compare the latest version below; your edits are retained.</p> : null}
     <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
-      {assignedStaffOnly ? null : <CatchField
-        recipe="select"
-        title="Research status"
-        value={form.researchStatus}
-        values={selectOptionValues(researchStatusOptions)}
-        itemLabelBuilder={selectOptionLabeller(researchStatusOptions)}
+      {assignedStaffOnly ? null : <CatchField recipe="select" title="Research status"
+        value={form.researchStatus} {...selectOptions(researchStatusOptions)}
         onChanged={(value) => {
           setForm((current) => ({...current,
             researchStatus: (value ?? "") as SalesResearchStatus})); setDirty(true);
-        }}
-      />}
+        }} />}
       {assignedStaffOnly ? null : <StateRow label="Owner" value={ownerLabel(form.assignedOwnerUid,
         currentUserUid)} />}
       {!assignedStaffOnly && form.assignedOwnerUid !== currentUserUid ? <AdminButton
@@ -811,23 +726,14 @@ function HostAccountEditor({detail, controller, currentUserUid, assignedStaffOnl
           assignedOwnerUid: currentUserUid})); setDirty(true);}}>
         Assign to me
       </AdminButton> : null}
-      <CatchField
-        recipe="input"
-        title="Working summary"
-        maxLines={4}
-        value={form.summary}
+      <CatchField recipe="input" title="Working summary" maxLines={4} value={form.summary}
         onChanged={(summary) => {
           setForm((current) => ({...current, summary})); setDirty(true);
-        }}
-      />
-      <CatchField
-        recipe="input"
-        title="Next action"
-        value={form.nextAction}
+        }} />
+      <CatchField recipe="input" title="Next action" value={form.nextAction}
         onChanged={(nextAction) => {
           setForm((current) => ({...current, nextAction})); setDirty(true);
-        }}
-      />
+        }} />
     </AdminForm>
     {changedElsewhere ? <StateRow label="Latest saved version" value={<>
       Summary: {detail.account.summary || "None"}<br />
@@ -863,61 +769,28 @@ function HostActivity({detail, controller}: {
   };
   return <Panel title="Activity" icon={<ClipboardList size={18} />}>
     <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
-      <CatchField
-        recipe="select"
-        title="What happened?"
-        value={type}
-        onChanged={(value) => setType((value ?? "") as typeof type)}
-        values={selectOptionValues([
+      <CatchField recipe="select" title="What happened?" value={type}
+        onChanged={(value) => setType((value ?? "") as typeof type)} {...selectOptions([
           {value: "note", label: "Research or conversation note"},
           {value: "call", label: "Call"},
           {value: "reply", label: "Reply received"},
           {value: "demo", label: "Demo"},
           {value: "pilot", label: "Pilot update"},
           {value: "outreach_sent_manual", label: "Sent elsewhere (manual log)"},
-        ])}
-        itemLabelBuilder={selectOptionLabeller([
-          {value: "note", label: "Research or conversation note"},
-          {value: "call", label: "Call"},
-          {value: "reply", label: "Reply received"},
-          {value: "demo", label: "Demo"},
-          {value: "pilot", label: "Pilot update"},
-          {value: "outreach_sent_manual", label: "Sent elsewhere (manual log)"},
-        ])}
-      />
+        ])} />
       {type === "outreach_sent_manual" ? <>
-        <CatchField
-          recipe="select"
-          title="Channel"
-          value={channel}
-          onChanged={(value) => setChannel((value ?? "") as typeof channel)}
-          values={selectOptionValues([
+        <CatchField recipe="select" title="Channel" value={channel}
+          onChanged={(value) => setChannel((value ?? "") as typeof channel)} {...selectOptions([
             {value: "email", label: "Email"},
             {value: "whatsapp", label: "WhatsApp"},
             {value: "other", label: "Other"},
-          ])}
-          itemLabelBuilder={selectOptionLabeller([
-            {value: "email", label: "Email"},
-            {value: "whatsapp", label: "WhatsApp"},
-            {value: "other", label: "Other"},
-          ])}
-        />
+          ])} />
         <p>You attest this was sent outside Catch. Delivery is unconfirmed.</p>
       </> : null}
-      <CatchField
-        recipe="input"
-        title="When"
-        value={occurredAt}
-        onChanged={setOccurredAt}
-        keyboardType="datetime"
-      />
-      <CatchField
-        recipe="input"
-        title="What should the team know?"
-        maxLines={3}
-        value={note}
-        onChanged={setNote}
-      />
+      <CatchField recipe="input" title="When" value={occurredAt} onChanged={setOccurredAt}
+        keyboardType="datetime" />
+      <CatchField recipe="input" title="What should the team know?" maxLines={3} value={note}
+        onChanged={setNote} />
       <AdminButton type="submit" variant="primary"
         disabled={!note.trim() || controller.isSaving}>Record activity</AdminButton>
     </AdminForm>
@@ -983,57 +856,29 @@ function HostOpportunities({detail, controller, currentUserUid}: {
         next step before saving.
         <AdminButton onClick={() => select(selected)}>Use latest version</AdminButton>
       </p> : null}
-      <CatchField
-        recipe="select"
-        title="Motion"
-        value={motion}
-        onChanged={(value) => setMotion(value ?? "")}
-        values={selectOptionValues([
+      <CatchField recipe="select" title="Motion" value={motion}
+        onChanged={(value) => setMotion(value ?? "")} {...selectOptions([
         {value: "first_workflow_pilot", label: "First workflow pilot"},
         {value: "listing_claim_assistance", label: "Listing claim assistance"},
         {value: "inbound_stack_review", label: "Inbound stack review"},
         {value: "expansion", label: "Expansion"},
         {value: "renewal", label: "Renewal"},
-      ])}
-        itemLabelBuilder={selectOptionLabeller([
-        {value: "first_workflow_pilot", label: "First workflow pilot"},
-        {value: "listing_claim_assistance", label: "Listing claim assistance"},
-        {value: "inbound_stack_review", label: "Inbound stack review"},
-        {value: "expansion", label: "Expansion"},
-        {value: "renewal", label: "Renewal"},
-      ])}
-      />
-      <CatchField
-        recipe="select"
-        title="Stage"
-        value={stage}
+      ])} />
+      <CatchField recipe="select" title="Stage" value={stage}
         onChanged={(value) => setStage(value ?? "")}
-        values={selectOptionValues(stageOptions.filter((item) => item.value &&
-          (item.value !== "closed_won" || selected?.stage === "closed_won")))}
-        itemLabelBuilder={selectOptionLabeller(stageOptions.filter((item) => item.value &&
-          (item.value !== "closed_won" || selected?.stage === "closed_won")))}
-      />
+        {...selectOptions(stageOptions.filter((item) => item.value &&
+          (item.value !== "closed_won" || selected?.stage === "closed_won")))} />
       <StateRow label="Owner" value={ownerLabel(ownerUid, currentUserUid)} />
       {ownerUid !== currentUserUid ? <AdminButton onClick={() =>
         setOwnerUid(currentUserUid)}>Assign to me</AdminButton> : null}
       {stage === "closed_lost" || selected?.stage === "closed_lost" ? (
-        <CatchField
-          recipe="input"
-          title="Reason for closing or reopening"
-          value={transitionReason}
-          onChanged={setTransitionReason}
-          maxLines={3}
-        />
+        <CatchField recipe="input" title="Reason for closing or reopening" value={transitionReason}
+          onChanged={setTransitionReason} maxLines={3} />
       ) : null}
       {stage === "closed_won" ? <p>Payment-backed closing is managed in Pilot &amp; terms.</p> : null}
       <CatchField recipe="input" title="Next step" value={nextStep} onChanged={setNextStep} />
-      <CatchField
-        recipe="input"
-        title="Due"
-        value={nextStepAt}
-        onChanged={setNextStepAt}
-        keyboardType="datetime"
-      />
+      <CatchField recipe="input" title="Due" value={nextStepAt} onChanged={setNextStepAt}
+        keyboardType="datetime" />
       <AdminButton type="submit" variant="primary" disabled={controller.isSaving ||
         (selected && selected.revision !== selectedRevision) ||
         stage === "closed_won" ||

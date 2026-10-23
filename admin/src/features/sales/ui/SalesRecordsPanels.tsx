@@ -6,8 +6,7 @@ import {
   AdminForm,
   EmptyState,
   Panel,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
 } from "../../../shared/ui/AdminPrimitives";
 import {toLocalDateTimeInput, type SalesWorkspaceController} from
@@ -103,13 +102,7 @@ function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
         title="Decision influence"
         value={influence}
         onChanged={(value) => setInfluence((value ?? "") as typeof influence)}
-        values={selectOptionValues([
-          {value: "unknown", label: "Unknown"},
-          {value: "decision_maker", label: "Decision maker"},
-          {value: "influencer", label: "Influencer"},
-          {value: "operator", label: "Operator"},
-        ])}
-        itemLabelBuilder={selectOptionLabeller([
+        {...selectOptions([
           {value: "unknown", label: "Unknown"},
           {value: "decision_maker", label: "Decision maker"},
           {value: "influencer", label: "Influencer"},
@@ -121,18 +114,14 @@ function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
         title="Primary contact"
         value={primary}
         onChanged={(value) => setPrimary(value ?? "")}
-        values={selectOptionValues([{value: "false", label: "No"}, {value: "true", label: "Yes"}])}
-        itemLabelBuilder={selectOptionLabeller([{value: "false", label: "No"}, {value: "true", label: "Yes"}])}
+        {...selectOptions([{value: "false", label: "No"}, {value: "true", label: "Yes"}])}
       />
       <CatchField
         recipe="select"
         title="Contact method (optional)"
         value={endpointKind}
         onChanged={(value) => setEndpointKind((value ?? "") as typeof endpointKind)}
-        values={selectOptionValues([
-          {value: "email", label: "Email"}, {value: "phone", label: "Phone"},
-        ])}
-        itemLabelBuilder={selectOptionLabeller([
+        {...selectOptions([
           {value: "email", label: "Email"}, {value: "phone", label: "Phone"},
         ])}
       />
@@ -153,10 +142,7 @@ function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
         value={selectedContact}
         onChanged={(value) => selectContact(contacts.find((item) =>
           item.contactId === (value ?? "")))}
-        values={selectOptionValues([{value: "", label: "Choose contact"}, ...contacts.map((item) => ({
-          value: item.contactId, label: item.displayName,
-        }))])}
-        itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose contact"}, ...contacts.map((item) => ({
+        {...selectOptions([{value: "", label: "Choose contact"}, ...contacts.map((item) => ({
           value: item.contactId, label: item.displayName,
         }))])}
       />
@@ -171,13 +157,7 @@ function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
         title="New status"
         value={status}
         onChanged={(value) => setStatus((value ?? "") as typeof status)}
-        values={selectOptionValues([
-          {value: "unknown", label: "Unknown"},
-          {value: "draft_reviewed", label: "Reviewed for draft consideration"},
-          {value: "held", label: "Hold"},
-          {value: "suppressed", label: "Suppress"},
-        ])}
-        itemLabelBuilder={selectOptionLabeller([
+        {...selectOptions([
           {value: "unknown", label: "Unknown"},
           {value: "draft_reviewed", label: "Reviewed for draft consideration"},
           {value: "held", label: "Hold"},
@@ -189,13 +169,7 @@ function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
         title="Reviewed contact evidence on this page"
         value={evidenceId}
         onChanged={(value) => setEvidenceId(value ?? "")}
-        values={selectOptionValues([
-          {value: "", label: "Choose evidence"}, ...matchingEvidence.map((item) => ({
-            value: item.evidenceId,
-            label: `${item.claimKey}: ${item.sourceRef}`,
-          })),
-        ])}
-        itemLabelBuilder={selectOptionLabeller([
+        {...selectOptions([
           {value: "", label: "Choose evidence"}, ...matchingEvidence.map((item) => ({
             value: item.evidenceId,
             label: `${item.claimKey}: ${item.sourceRef}`,
@@ -317,11 +291,7 @@ function SalesEvidencePanel({detail, controller, assignedStaffOnly}: {
         title="Related contact on this page (optional)"
         value={contactId}
         onChanged={(value) => setContactId(value ?? "")}
-        values={selectOptionValues([{value: "", label: "Host account"},
-          ...(controller.contacts.data?.rows ?? []).map((item) => ({
-            value: item.contactId, label: item.displayName,
-          }))])}
-        itemLabelBuilder={selectOptionLabeller([{value: "", label: "Host account"},
+        {...selectOptions([{value: "", label: "Host account"},
           ...(controller.contacts.data?.rows ?? []).map((item) => ({
             value: item.contactId, label: item.displayName,
           }))])}
@@ -331,10 +301,7 @@ function SalesEvidencePanel({detail, controller, assignedStaffOnly}: {
         title="What this helps establish"
         value={claimKey}
         onChanged={(next) => setClaimKey((next ?? "") as typeof claimKey)}
-        values={selectOptionValues([
-          "identity", "recurrence", "operation", "stack", "other",
-        ])}
-        itemLabelBuilder={selectOptionLabeller([
+        {...selectOptions([
           "identity", "recurrence", "operation", "stack", "other",
         ])}
       />
@@ -350,13 +317,7 @@ function SalesEvidencePanel({detail, controller, assignedStaffOnly}: {
         title="Source type"
         value={sourceType}
         onChanged={(next) => setSourceType((next ?? "") as typeof sourceType)}
-        values={selectOptionValues([
-          {value: "first_party", label: "First party"},
-          {value: "public_web", label: "Public web"},
-          {value: "human_note", label: "Human note"},
-          {value: "import_artifact", label: "Import artifact"},
-        ])}
-        itemLabelBuilder={selectOptionLabeller([
+        {...selectOptions([
           {value: "first_party", label: "First party"},
           {value: "public_web", label: "Public web"},
           {value: "human_note", label: "Human note"},
@@ -384,10 +345,7 @@ function SalesEvidencePanel({detail, controller, assignedStaffOnly}: {
         title="Confidence"
         value={confidence}
         onChanged={(next) => setConfidence((next ?? "") as typeof confidence)}
-        values={selectOptionValues([
-          "low", "medium", "high",
-        ])}
-        itemLabelBuilder={selectOptionLabeller([
+        {...selectOptions([
           "low", "medium", "high",
         ])}
       />
@@ -456,12 +414,7 @@ function SalesSuppressionPanel({detail, controller}: {
         title="New status"
         value={status}
         onChanged={(value) => setStatus((value ?? "") as typeof status)}
-        values={selectOptionValues([
-          {value: "clear", label: "Clear hold"},
-          {value: "held", label: "Hold"},
-          {value: "suppressed", label: "Suppress"},
-        ])}
-        itemLabelBuilder={selectOptionLabeller([
+        {...selectOptions([
           {value: "clear", label: "Clear hold"},
           {value: "held", label: "Hold"},
           {value: "suppressed", label: "Suppress"},
@@ -548,10 +501,7 @@ function SalesTasksPanel({detail, controller, currentUserUid, assignedStaffOnly}
         title="Task purpose"
         value={kind}
         onChanged={(value) => {setKind((value ?? "") as typeof kind); setContactId("");}}
-        values={selectOptionValues([{value: "research", label: "Internal research"},
-          {value: "follow_up", label: "Follow up with a contact"},
-          {value: "demo", label: "Arrange a demo with a contact"}])}
-        itemLabelBuilder={selectOptionLabeller([{value: "research", label: "Internal research"},
+        {...selectOptions([{value: "research", label: "Internal research"},
           {value: "follow_up", label: "Follow up with a contact"},
           {value: "demo", label: "Arrange a demo with a contact"}])}
       />
@@ -561,10 +511,7 @@ function SalesTasksPanel({detail, controller, currentUserUid, assignedStaffOnly}
           title="Reviewed contact on this page"
           value={contactId}
           onChanged={(value) => setContactId(value ?? "")}
-          values={selectOptionValues([{value: "", label: "Choose contact"},
-            ...reviewedContacts.map((contact) => ({value: contact.contactId,
-              label: contact.displayName}))])}
-          itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose contact"},
+          {...selectOptions([{value: "", label: "Choose contact"},
             ...reviewedContacts.map((contact) => ({value: contact.contactId,
               label: contact.displayName}))])}
         />

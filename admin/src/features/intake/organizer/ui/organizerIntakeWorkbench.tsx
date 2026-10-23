@@ -13,8 +13,7 @@ import {
   AdminOrganizerIntakeCheckboxField,
   AdminWorkbenchNote,
   SearchField,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
 } from "../../../../shared/ui/AdminPrimitives";
 import type {AdminDecideOrganizerIntakeResponse} from
   "../../../../shared/types/adminTypes";
@@ -300,8 +299,8 @@ function OrganizerTaskWorkbench({
         <CatchField
           recipe="select"
           title="City"
-          values={selectOptionValues(cityOptions)}
-          itemLabelBuilder={selectOptionLabeller(cityOptions)}
+          labelMode="hidden"
+          {...selectOptions(cityOptions)}
           value={city}
           onChanged={(value) => {
             setCity((value ?? ""));
@@ -311,13 +310,8 @@ function OrganizerTaskWorkbench({
         <CatchField
           recipe="select"
           title="Priority"
-          values={selectOptionValues([
-            {value: "all", label: "All priorities"},
-            {value: "p0", label: "P0"},
-            {value: "p1", label: "P1"},
-            {value: "p2", label: "P2"},
-          ])}
-          itemLabelBuilder={selectOptionLabeller([
+          labelMode="hidden"
+          {...selectOptions([
             {value: "all", label: "All priorities"},
             {value: "p0", label: "P0"},
             {value: "p1", label: "P1"},
@@ -509,11 +503,7 @@ function OrganizerTaskWorkbench({
               onChanged={(value) => setSelectedMatchByCandidate((current) => ({
                 ...current, [candidate.candidateId]: (value ?? ""),
               }))}
-              values={selectOptionValues([{value: "", label: "Choose a matched organizer"},
-                ...candidate.existingEntityMatches.map((match) => ({
-                  value: match.entityId, label: match.entityId,
-                }))])}
-              itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose a matched organizer"},
+              {...selectOptions([{value: "", label: "Choose a matched organizer"},
                 ...candidate.existingEntityMatches.map((match) => ({
                   value: match.entityId, label: match.entityId,
                 }))])}
@@ -633,8 +623,7 @@ function OrganizerTaskWorkbench({
                         <CatchField
                           recipe="select"
                           title="Organizer type"
-                          values={selectOptionValues(organizerTypeOptions)}
-                          itemLabelBuilder={selectOptionLabeller(organizerTypeOptions)}
+                          {...selectOptions(organizerTypeOptions)}
                           value={candidateDraftForm.organizerType}
                           onChanged={(organizerType) => setOrganizerDraftForms((current) => ({
                               ...current,

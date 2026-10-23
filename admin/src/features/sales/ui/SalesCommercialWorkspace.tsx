@@ -7,8 +7,7 @@ import {
   AdminForm,
   EmptyState,
   Panel,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
 } from "../../../shared/ui/AdminPrimitives";
 import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
@@ -114,11 +113,7 @@ function SalesCommercialWorkspace({detail, evidence, isAdminOwner}: {
         title="Opportunity"
         value={opportunityId}
         onChanged={(value) => setOpportunityId(value ?? "")}
-        values={selectOptionValues(selectableOpportunities.map((item) => ({
-          value: item.opportunityId,
-          label: `${item.motion.replaceAll("_", " ")} · ${item.stage.replaceAll("_", " ")}`,
-        })))}
-        itemLabelBuilder={selectOptionLabeller(selectableOpportunities.map((item) => ({
+        {...selectOptions(selectableOpportunities.map((item) => ({
           value: item.opportunityId,
           label: `${item.motion.replaceAll("_", " ")} · ${item.stage.replaceAll("_", " ")}`,
         })))}
@@ -223,9 +218,7 @@ function PilotEditor({organizerId, opportunityId, record, evidence, saving, save
         onChanged={(value) => {
         setStatus((value ?? "") as CommercialStatus); setDirty(true);
       }}
-        values={selectOptionValues(["draft", "reviewed", "active", "completed", "cancelled"].map(
-        (value) => ({value, label: value})))}
-        itemLabelBuilder={selectOptionLabeller(["draft", "reviewed", "active", "completed", "cancelled"].map(
+        {...selectOptions(["draft", "reviewed", "active", "completed", "cancelled"].map(
         (value) => ({value, label: value})))}
       />
       <CatchField
@@ -274,8 +267,7 @@ function PilotEditor({organizerId, opportunityId, record, evidence, saving, save
         title="Reviewed plan evidence"
         value={reviewEvidence}
         onChanged={(value) => {setReviewEvidence((value ?? "")); setDirty(true);}}
-        values={selectOptionValues(evidenceOptions(evidence))}
-        itemLabelBuilder={selectOptionLabeller(evidenceOptions(evidence))}
+        {...selectOptions(evidenceOptions(evidence))}
       />
       {status === "completed" ? <CatchField
         recipe="select"
@@ -284,8 +276,7 @@ function PilotEditor({organizerId, opportunityId, record, evidence, saving, save
         onChanged={(value) => {
           setOutcomeEvidence((value ?? "")); setDirty(true);
         }}
-        values={selectOptionValues(evidenceOptions(evidence))}
-        itemLabelBuilder={selectOptionLabeller(evidenceOptions(evidence))}
+        {...selectOptions(evidenceOptions(evidence))}
       /> : null}
       {changed ? <p role="alert">Pilot changed since you opened this form.
         Compare it before saving. <AdminButton type="button" onClick={refresh}>
@@ -370,8 +361,7 @@ function QuoteEditor({organizerId, opportunityId, record, evidence, saving, save
         onChanged={(value) => {
         setCurrency((value ?? "")); setDirty(true);
       }}
-        values={selectOptionValues([{value: "INR", label: "INR"}, {value: "USD", label: "USD"}])}
-        itemLabelBuilder={selectOptionLabeller([{value: "INR", label: "INR"}, {value: "USD", label: "USD"}])}
+        {...selectOptions([{value: "INR", label: "INR"}, {value: "USD", label: "USD"}])}
       />
       <CatchField
         recipe="input"
@@ -388,9 +378,7 @@ function QuoteEditor({organizerId, opportunityId, record, evidence, saving, save
         onChanged={(value) => {
         setCadence((value ?? "") as CommercialTerms["billingCadence"]); setDirty(true);
       }}
-        values={selectOptionValues(["one_time", "monthly", "annual", "usage_based"].map(
-        (value) => ({value, label: value.replaceAll("_", " ")})))}
-        itemLabelBuilder={selectOptionLabeller(["one_time", "monthly", "annual", "usage_based"].map(
+        {...selectOptions(["one_time", "monthly", "annual", "usage_based"].map(
         (value) => ({value, label: value.replaceAll("_", " ")})))}
       />
       <CatchField
@@ -414,8 +402,7 @@ function QuoteEditor({organizerId, opportunityId, record, evidence, saving, save
         title="Recorded source fact"
         value={factToAdd}
         onChanged={(value) => setFactToAdd(value ?? "")}
-        values={selectOptionValues(evidenceOptions(evidence))}
-        itemLabelBuilder={selectOptionLabeller(evidenceOptions(evidence))}
+        {...selectOptions(evidenceOptions(evidence))}
       />
       <AdminButton type="button" disabled={!factToAdd || facts.includes(factToAdd)}
         onClick={() => {setFacts((ids) => [...ids, factToAdd]); setFactToAdd("");
@@ -441,8 +428,7 @@ function QuoteEditor({organizerId, opportunityId, record, evidence, saving, save
         title="Distinct review evidence"
         value={decisionEvidence}
         onChanged={(value) => setDecisionEvidence(value ?? "")}
-        values={selectOptionValues(evidenceOptions(evidence))}
-        itemLabelBuilder={selectOptionLabeller(evidenceOptions(evidence))}
+        {...selectOptions(evidenceOptions(evidence))}
       />
       <AdminButton type="submit" disabled={saving || changed || dirty || !decisionEvidence ||
         quote.status === "accepted_reviewed"}>
@@ -564,12 +550,7 @@ function FinanceCloseEditor({organizerId, opportunityId, record, evidence,
           title="Settlement method"
           value={method}
           onChanged={(value) => setMethod((value ?? "") as typeof method)}
-          values={selectOptionValues([
-            {value: "bank_transfer", label: "Bank transfer"},
-            {value: "cash", label: "Cash"},
-            {value: "other_external", label: "Other external method"},
-          ])}
-          itemLabelBuilder={selectOptionLabeller([
+          {...selectOptions([
             {value: "bank_transfer", label: "Bank transfer"},
             {value: "cash", label: "Cash"},
             {value: "other_external", label: "Other external method"},
@@ -612,8 +593,7 @@ function FinanceCloseEditor({organizerId, opportunityId, record, evidence,
           title="Reviewed settlement evidence"
           value={proofId}
           onChanged={(value) => setProofId(value ?? "")}
-          values={selectOptionValues(evidenceOptions(eligibleEvidence))}
-          itemLabelBuilder={selectOptionLabeller(evidenceOptions(eligibleEvidence))}
+          {...selectOptions(evidenceOptions(eligibleEvidence))}
         />
         {localError ? <p role="alert">{localError}</p> : null}
         <AdminButton type="submit" disabled={saving || !proofId}>

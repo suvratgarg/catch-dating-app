@@ -8,8 +8,7 @@ import {
   EmptyState,
   Panel,
   SelectField,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
   TextareaField,
   TextField,
@@ -236,11 +235,7 @@ function PolicyPanel({c}: {c: Controller}) {
         value={form.status}
         onChanged={(status) => update({status: (status ?? "") as PolicyForm["status"]})}
         inputMode={c.busy || Boolean(c.pending) ? "inactive" : "editable"}
-        values={selectOptionValues([
-          {value: "paused", label: "Paused · no scoring or drafting"},
-          {value: "active", label: "Active after owner review"},
-        ])}
-        itemLabelBuilder={selectOptionLabeller([
+        {...selectOptions([
           {value: "paused", label: "Paused · no scoring or drafting"},
           {value: "active", label: "Active after owner review"},
         ])}
@@ -338,10 +333,7 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
           title="Factor"
           value={factorId}
           onChanged={(value) => selectFactor(value ?? "")}
-          values={selectOptionValues([{value: "", label: "Choose factor"},
-            ...policy.factors.map((item) => ({value: item.id,
-              label: label(item.id)}))])}
-          itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose factor"},
+          {...selectOptions([{value: "", label: "Choose factor"},
             ...policy.factors.map((item) => ({value: item.id,
               label: label(item.id)}))])}
         />
@@ -351,12 +343,7 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
             title="What is known?"
             value={state}
             onChanged={(value) => setState((value ?? "") as typeof state)}
-            values={selectOptionValues([
-              {value: "unknown", label: "Not known yet"},
-              {value: "known", label: "Supported by evidence"},
-              {value: "disputed", label: "Conflicting evidence"},
-            ])}
-            itemLabelBuilder={selectOptionLabeller([
+            {...selectOptions([
               {value: "unknown", label: "Not known yet"},
               {value: "known", label: "Supported by evidence"},
               {value: "disputed", label: "Conflicting evidence"},
@@ -368,9 +355,7 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
               title="Rating"
               value={rating}
               onChanged={(value) => setRating(value ?? "")}
-              values={selectOptionValues([0, 1, 2, 3, 4, 5].map((value) => ({
-                value: String(value), label: `${value} of 5`})))}
-              itemLabelBuilder={selectOptionLabeller([0, 1, 2, 3, 4, 5].map((value) => ({
+              {...selectOptions([0, 1, 2, 3, 4, 5].map((value) => ({
                 value: String(value), label: `${value} of 5`})))}
             />
             <CatchField
@@ -378,11 +363,7 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
               title="Reviewed host evidence on this page"
               value={evidenceId}
               onChanged={(value) => setEvidenceId(value ?? "")}
-              values={selectOptionValues([
-                {value: "", label: "Choose evidence"}, ...relevant.map((row) => ({
-                  value: row.evidenceId, label: `${label(row.claimKey)} · ${row.sourceRef}`})),
-              ])}
-              itemLabelBuilder={selectOptionLabeller([
+              {...selectOptions([
                 {value: "", label: "Choose evidence"}, ...relevant.map((row) => ({
                   value: row.evidenceId, label: `${label(row.claimKey)} · ${row.sourceRef}`})),
               ])}
@@ -460,13 +441,7 @@ function WordingPanel({c, isAdminOwner}: {c: Controller; isAdminOwner: boolean})
         title="Sentence purpose"
         value={kind}
         onChanged={(value) => setKind((value ?? "") as typeof kind)}
-        values={selectOptionValues([
-          {value: "observation", label: "Host observation"},
-          {value: "capability", label: "Catch capability"},
-          {value: "reference", label: "Private reference"},
-          {value: "cta", label: "Question or next step"},
-        ])}
-        itemLabelBuilder={selectOptionLabeller([
+        {...selectOptions([
           {value: "observation", label: "Host observation"},
           {value: "capability", label: "Catch capability"},
           {value: "reference", label: "Private reference"},
@@ -485,12 +460,7 @@ function WordingPanel({c, isAdminOwner}: {c: Controller; isAdminOwner: boolean})
         title="Reviewed evidence on this page"
         value={evidenceId}
         onChanged={(value) => setEvidenceId(value ?? "")}
-        values={selectOptionValues([
-          {value: "", label: kind === "cta" ? "No evidence needed" :
-            "Choose evidence"}, ...(c.evidence.data?.rows ?? []).map((row) => ({
-            value: row.evidenceId, label: `${label(row.claimKey)} · ${row.sourceRef}`})),
-        ])}
-        itemLabelBuilder={selectOptionLabeller([
+        {...selectOptions([
           {value: "", label: kind === "cta" ? "No evidence needed" :
             "Choose evidence"}, ...(c.evidence.data?.rows ?? []).map((row) => ({
             value: row.evidenceId, label: `${label(row.claimKey)} · ${row.sourceRef}`})),

@@ -106,12 +106,7 @@ export function renderOrganizerEventBlockerResolutionFields({
               ...choices,
               [blockerCode]: (value ?? "") as BlockerResolutionChoice,
             })}
-            values={selectOptionValues([
-              {label: "Unresolved", value: "unresolved"},
-              {label: "Resolved for this event", value: "resolved"},
-              {label: "Waive with accepted policy", value: "waived"},
-            ])}
-            itemLabelBuilder={selectOptionLabeller([
+            {...selectOptions([
               {label: "Unresolved", value: "unresolved"},
               {label: "Resolved for this event", value: "resolved"},
               {label: "Waive with accepted policy", value: "waived"},
@@ -127,6 +122,5 @@ import {
   AdminIntakeSection,
   AdminIntakeSectionTitle,
   AdminOrganizerCurationControlGrid,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
 } from "../../../../shared/ui/AdminPrimitives";

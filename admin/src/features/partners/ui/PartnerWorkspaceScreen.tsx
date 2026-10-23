@@ -9,8 +9,7 @@ import {
   PageHeader,
   Panel,
   SelectField,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
   StatusBanner,
   TextareaField,
@@ -149,8 +148,7 @@ function LeadReview({lead, pending, save, actorUid, isCurrentSession, membership
         value={channel}
         onChanged={(value) => setChannel(value ?? "")}
         inputMode={pending ? "inactive" : "editable"}
-        values={selectOptionValues([{value: "whatsapp", label: "WhatsApp"}, {value: "email", label: "Email"}, {value: "other", label: "Other"}])}
-        itemLabelBuilder={selectOptionLabeller([{value: "whatsapp", label: "WhatsApp"}, {value: "email", label: "Email"}, {value: "other", label: "Other"}])}
+        {...selectOptions([{value: "whatsapp", label: "WhatsApp"}, {value: "email", label: "Email"}, {value: "other", label: "Other"}])}
       />
       <AdminButton type="submit" disabled={pending}>Accept lead</AdminButton>
       <AdminButton disabled={pending} onClick={() => void save("decide", {
@@ -178,8 +176,7 @@ function LeadReview({lead, pending, save, actorUid, isCurrentSession, membership
         value={channel}
         onChanged={(value) => setChannel(value ?? "")}
         inputMode={pending ? "inactive" : "editable"}
-        values={selectOptionValues([{value: "whatsapp", label: "WhatsApp"}, {value: "email", label: "Email"}, {value: "other", label: "Other"}])}
-        itemLabelBuilder={selectOptionLabeller([{value: "whatsapp", label: "WhatsApp"}, {value: "email", label: "Email"}, {value: "other", label: "Other"}])}
+        {...selectOptions([{value: "whatsapp", label: "WhatsApp"}, {value: "email", label: "Email"}, {value: "other", label: "Other"}])}
       />
       <CatchField
         recipe="input"

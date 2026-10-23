@@ -7,8 +7,7 @@ import {
   EmptyState,
   FilePickerButton,
   Panel,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
 } from "../../../shared/ui/AdminPrimitives";
 import {dataMode} from "../../../shared/api/dataMode";
@@ -132,8 +131,7 @@ export function SalesImportWorkspace({controller, isAdminOwner = false}: {
             value={String(mapping[key])}
             inputMode={busy ? "inactive" : "editable"}
             onChanged={(value) => mapField(key, (value ?? ""))}
-            values={selectOptionValues(mappingOptions)}
-            itemLabelBuilder={selectOptionLabeller(mappingOptions)}
+            {...selectOptions(mappingOptions)}
           />)}
         <p>If the file has Catch host IDs, select that column. Other rows stay in
           identity review. New hosts begin as Needs research; previous statuses
@@ -144,12 +142,7 @@ export function SalesImportWorkspace({controller, isAdminOwner = false}: {
           value={String(batch)}
           inputMode={busy ? "inactive" : "editable"}
           onChanged={(value) => {setBatch(Number((value ?? ""))); clearPreview();}}
-          values={selectOptionValues(Array.from({length: batchCount}, (_, index) => ({
-            value: String(index), label: `Batch ${index + 1} · rows ${index * 25 + 1}–${
-              Math.min((index + 1) * 25, rows.length - 1)}${
-              applied.includes(index) ? " · applied" : ""}`,
-          })))}
-          itemLabelBuilder={selectOptionLabeller(Array.from({length: batchCount}, (_, index) => ({
+          {...selectOptions(Array.from({length: batchCount}, (_, index) => ({
             value: String(index), label: `Batch ${index + 1} · rows ${index * 25 + 1}–${
               Math.min((index + 1) * 25, rows.length - 1)}${
               applied.includes(index) ? " · applied" : ""}`,
@@ -183,11 +176,7 @@ export function SalesImportWorkspace({controller, isAdminOwner = false}: {
             value={reviewed ? "yes" : "no"}
             inputMode={busy ? "inactive" : "editable"}
             onChanged={(value) => setReviewed((value ?? "") === "yes")}
-            values={selectOptionValues([
-              {value: "no", label: "Not reviewed"},
-              {value: "yes", label: "I reviewed every row above"},
-            ])}
-            itemLabelBuilder={selectOptionLabeller([
+            {...selectOptions([
               {value: "no", label: "Not reviewed"},
               {value: "yes", label: "I reviewed every row above"},
             ])}

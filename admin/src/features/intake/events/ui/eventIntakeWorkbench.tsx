@@ -12,8 +12,7 @@ import {
   AdminIntakeTaskToolbar,
   AdminLinkButton,
   SearchField,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
 } from "../../../../shared/ui/AdminPrimitives";
 import type {
   EventIntakeCandidate,
@@ -334,14 +333,8 @@ function EventTaskWorkbench({
         <CatchField
           recipe="select"
           title="Category"
-          values={selectOptionValues([
-            {value: "all", label: "All categories"},
-            ...categories.map((value) => ({
-              value,
-              label: value.replaceAll("_", " "),
-            })),
-          ])}
-          itemLabelBuilder={selectOptionLabeller([
+          labelMode="hidden"
+          {...selectOptions([
             {value: "all", label: "All categories"},
             ...categories.map((value) => ({
               value,
@@ -357,13 +350,8 @@ function EventTaskWorkbench({
         <CatchField
           recipe="select"
           title="Source state"
-          values={selectOptionValues([
-            {value: "all", label: "All source states"},
-            {value: "sourced", label: "Source-backed"},
-            {value: "missing", label: "Missing source"},
-            {value: "manual", label: "Manual reference"},
-          ])}
-          itemLabelBuilder={selectOptionLabeller([
+          labelMode="hidden"
+          {...selectOptions([
             {value: "all", label: "All source states"},
             {value: "sourced", label: "Source-backed"},
             {value: "missing", label: "Missing source"},

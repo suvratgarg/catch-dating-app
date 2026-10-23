@@ -1,6 +1,6 @@
 // Slightly above the family target because the generic decision footer and field controls share form-state types.
 import type {InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes} from "react";
-import {CheckboxControl, SelectControl, TextareaControl, TextInputControl} from "@catch/web-ui";
+import {CatchField, CheckboxControl, SelectControl} from "@catch/web-ui";
 import {CheckCircle2, FileWarning} from "lucide-react";
 
 import {
@@ -17,7 +17,7 @@ import {AlertRow, Panel} from "./data";
 import {AdminDecisionFooterShell, AdminIntakeDecisionActions, AdminIntakeDecisionState} from "./intake";
 import {AdminButton} from "./overview";
 
-export {selectOptionLabeller, selectOptionValues} from "./shared";
+export {selectOptions} from "./shared";
 
 export {StateRow} from "./data";
 
@@ -53,6 +53,12 @@ export function AdminStateRow({
   );
 }
 
+/**
+ * Interim: the last callers are organizer panels in a file another task
+ * holds; they flag invalid fields without a message, which CatchField does
+ * not take. Delete TextField, TextareaField and SelectField with those call
+ * sites' move to CatchField.
+ */
 export function TextField({
   className = "field-control",
   descriptionId,
@@ -75,12 +81,12 @@ export function TextField({
   return (
     <label className={classNames(className, layoutSpanClass(span))}>
       <span>{label}</span>
-      <TextInputControl
-        descriptionId={descriptionId}
-        invalid={invalid}
+      <input
+        {...props}
+        aria-describedby={descriptionId}
+        aria-invalid={invalid || undefined}
         onChange={(event) => onChange(event.target.value)}
         value={value}
-        {...props}
       />
     </label>
   );
@@ -166,11 +172,12 @@ export function DecisionFooter<TTargetType extends string = string>({
         </AdminIntakeDecisionState>
       ) : (
         <>
-          <AdminTextareaField
-            label="Review note"
-            rows={compact ? 2 : 3}
+          <CatchField
+            recipe="input"
+            title="Review note"
+            maxLines={compact ? 2 : 3}
             value={note}
-            onChange={onNoteChange}
+            onChanged={onNoteChange}
           />
           <AdminIntakeDecisionActions>
             <AdminButton
@@ -276,13 +283,13 @@ export function TextareaField({
   return (
     <label className={classNames(className, layoutSpanClass(span))}>
       <span>{label}</span>
-      <TextareaControl
-        descriptionId={descriptionId}
-        invalid={invalid}
+      <textarea
+        {...props}
+        aria-describedby={descriptionId}
+        aria-invalid={invalid || undefined}
         onChange={(event) => onChange(event.target.value)}
         rows={rows}
         value={value}
-        {...props}
       />
     </label>
   );

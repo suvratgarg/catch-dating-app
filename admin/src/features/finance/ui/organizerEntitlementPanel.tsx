@@ -17,8 +17,7 @@ import {
   EmptyState,
   Panel,
   QualityList,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
   TableActionButton,
 } from "../../../shared/ui/AdminPrimitives";
@@ -147,8 +146,7 @@ export function renderOrganizerEntitlementPanel(
                   "sku",
                   (value ?? "") as OrganizerEntitlementSku
                 )}
-                values={selectOptionValues(skuOptions(catalog))}
-                itemLabelBuilder={selectOptionLabeller(skuOptions(catalog))}
+                {...selectOptions(skuOptions(catalog))}
                 value={controller.grantForm.sku}
               />
               <CatchField
@@ -158,8 +156,7 @@ export function renderOrganizerEntitlementPanel(
                   "unit",
                   (value ?? "") as OrganizerEntitlementUnit
                 )}
-                values={selectOptionValues(unitOptions)}
-                itemLabelBuilder={selectOptionLabeller(unitOptions)}
+                {...selectOptions(unitOptions)}
                 value={controller.grantForm.unit}
               />
               <CatchField
@@ -190,8 +187,7 @@ export function renderOrganizerEntitlementPanel(
                   "source",
                   (value ?? "") as OrganizerEntitlementSource
                 )}
-                values={selectOptionValues(sourceOptions)}
-                itemLabelBuilder={selectOptionLabeller(sourceOptions)}
+                {...selectOptions(sourceOptions)}
                 value={controller.grantForm.source}
               />
               <CatchField

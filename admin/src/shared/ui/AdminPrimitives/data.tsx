@@ -181,10 +181,10 @@ export function AdminFieldGrid({
 }: {
   children: ReactNode;
   className?: string;
-  columns?: 2 | 3;
+  columns?: 1 | 2 | 3;
 }) {
   return (
-    <div className={classNames("form-grid", columns === 2 ? "two" : "three", className)}>
+    <div className={classNames("form-grid", columns === 2 && "two", columns === 3 && "three", className)}>
       {children}
     </div>
   );

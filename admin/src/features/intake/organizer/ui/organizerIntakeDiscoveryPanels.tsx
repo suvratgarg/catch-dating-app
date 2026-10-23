@@ -21,8 +21,7 @@ import {
   AdminTagList,
   EmptyState,
   QualityRow,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
   StatusChip,
 } from "../../../../shared/ui/AdminPrimitives";
@@ -879,11 +878,7 @@ function OrganizerSearchCandidateCard({
             value={selectedMatch}
             onChanged={(value) => onSelectMatch(candidate.candidateId, (value ?? ""))}
             inputMode={Boolean(localCuration) ? "inactive" : "editable"}
-            values={selectOptionValues([{value: "", label: "Choose a matched organizer"},
-              ...matchedEntityIds.map((entityId) => ({
-                value: entityId, label: entityId,
-              }))])}
-            itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose a matched organizer"},
+            {...selectOptions([{value: "", label: "Choose a matched organizer"},
               ...matchedEntityIds.map((entityId) => ({
                 value: entityId, label: entityId,
               }))])}

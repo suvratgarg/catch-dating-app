@@ -14,8 +14,7 @@ import {
   AlertRow,
   Panel,
   QualityList,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
 } from "../../../shared/ui/AdminPrimitives";
 import type {
@@ -87,8 +86,7 @@ export function renderMessagingBudgetPanel(controller: MessagingBudgetController
               "routeId",
               (value ?? "") as MessagingBudgetRoute
             )}
-            values={selectOptionValues(routeOptions)}
-            itemLabelBuilder={selectOptionLabeller(routeOptions)}
+            {...selectOptions(routeOptions)}
             value={controller.scope.routeId}
           />
           <CatchField
@@ -104,8 +102,7 @@ export function renderMessagingBudgetPanel(controller: MessagingBudgetController
               "purpose",
               (value ?? "") as MessagingBudgetPurpose
             )}
-            values={selectOptionValues(purposeOptions)}
-            itemLabelBuilder={selectOptionLabeller(purposeOptions)}
+            {...selectOptions(purposeOptions)}
             value={controller.scope.purpose}
           />
           <AdminButton
@@ -154,8 +151,7 @@ export function renderMessagingBudgetPanel(controller: MessagingBudgetController
                 onChanged={(value) => controller.setDecisionKind(
                   (value ?? "") as MessagingBudgetController["decisionKind"]
                 )}
-                values={selectOptionValues(decisionOptions)}
-                itemLabelBuilder={selectOptionLabeller(decisionOptions)}
+                {...selectOptions(decisionOptions)}
                 value={controller.decisionKind}
               />
               {controller.decisionKind === "approve" ? (

@@ -233,11 +233,10 @@
   height: 30px;
 }
 
-.intake-batch-toolbar .intake-task-toolbar .field-control {
+.intake-batch-toolbar .intake-task-toolbar > :has(select) {
   flex: 0 0 140px;
 }
 
-.intake-batch-toolbar .intake-task-toolbar .field-control select,
 .intake-batch-toolbar .intake-task-toolbar > .ghost-button,
 .intake-batch-toolbar .intake-task-toolbar > .primary-button {
   min-height: 30px;
@@ -2424,38 +2423,7 @@ select {
 
 .location-resolution-form {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--catch-space-s2);
-}
-
-.location-resolution-form label {
-  display: grid;
-  gap: var(--catch-space-s1);
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.location-resolution-form .span-2 {
-  grid-column: 1 / -1;
-}
-
-.location-resolution-form input,
-.location-resolution-form textarea {
-  width: 100%;
-  border: 1px solid var(--line);
-  border-radius: var(--catch-radius-xs);
-  background: var(--surface);
-  color: var(--ink);
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  padding: var(--catch-space-s2) var(--catch-space-s2);
-}
-
-.location-resolution-form textarea {
-  resize: vertical;
 }
 
 .policy-gap-columns {
@@ -3066,9 +3034,8 @@ th {
   margin-top: var(--catch-space-s5);
 }
 
-.signin-panel .field-control {
+.signin-panel form > :has(input) {
   margin-top: var(--catch-space-micro18);
-  text-align: left;
 }
 
 .signin-actions {
@@ -3677,20 +3644,6 @@ th {
   height: 40px;
 }
 
-.intake-task-toolbar .field-control {
-  gap: var(--catch-space-micro3);
-}
-
-.intake-task-toolbar .field-control > span {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-.intake-task-toolbar .field-control select,
 .intake-task-toolbar > .ghost-button,
 .intake-task-toolbar > .primary-button {
   min-height: 40px;
@@ -3987,42 +3940,6 @@ th {
 
 .marketing-slide-list {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.marketing-field {
-  display: grid;
-  gap: var(--catch-space-s1);
-  min-width: 0;
-}
-
-.marketing-field span {
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 760;
-  text-transform: uppercase;
-}
-
-.marketing-field input,
-.marketing-field select,
-.marketing-field textarea {
-  width: 100%;
-  min-width: 0;
-  border: 1px solid var(--line);
-  border-radius: var(--catch-radius-sm);
-  background: var(--surface);
-  color: var(--ink);
-  font-size: 13px;
-}
-
-.marketing-field input,
-.marketing-field select {
-  height: 34px;
-  padding: 0 var(--catch-space-micro10);
-}
-
-.marketing-field textarea {
-  resize: vertical;
-  padding: var(--catch-space-s2) var(--catch-space-micro10);
 }
 
 .marketing-decision-footer {

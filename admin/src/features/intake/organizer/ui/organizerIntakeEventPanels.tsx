@@ -36,8 +36,7 @@ import {
   AdminTagList,
   EmptyState,
   QualityRow,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
   StatusChip,
 } from "../../../../shared/ui/AdminPrimitives";
@@ -1040,8 +1039,7 @@ function OrganizerCurationControl({
             "operationType",
             (value ?? "") as OrganizerCurationOperation
           )}
-          values={selectOptionValues(organizerCurationOperations)}
-          itemLabelBuilder={selectOptionLabeller(organizerCurationOperations)}
+          {...selectOptions(organizerCurationOperations)}
           value={form.operationType}
         />
 
@@ -1050,8 +1048,7 @@ function OrganizerCurationControl({
             recipe="select"
             title="Merge into"
             onChanged={(value) => update("targetEntityId", (value ?? ""))}
-            values={selectOptionValues(["", ...targetEntityOptions])}
-            itemLabelBuilder={selectOptionLabeller(["", ...targetEntityOptions])}
+            {...selectOptions(["", ...targetEntityOptions])}
             value={form.targetEntityId}
           />
         ) : null}
@@ -1061,8 +1058,7 @@ function OrganizerCurationControl({
               recipe="select"
               title="Surface"
               onChanged={(value) => update("surfaceId", (value ?? ""))}
-              values={selectOptionValues(surfaceOptions)}
-              itemLabelBuilder={selectOptionLabeller(surfaceOptions)}
+              {...selectOptions(surfaceOptions)}
               value={form.surfaceId}
             />
           ) : null}
@@ -1075,8 +1071,7 @@ function OrganizerCurationControl({
               "decision",
               (value ?? "") as OrganizerSurfaceDecision
             )}
-            values={selectOptionValues(organizerSurfaceDecisions)}
-            itemLabelBuilder={selectOptionLabeller(organizerSurfaceDecisions)}
+            {...selectOptions(organizerSurfaceDecisions)}
             value={form.decision}
           />
         ) : null}

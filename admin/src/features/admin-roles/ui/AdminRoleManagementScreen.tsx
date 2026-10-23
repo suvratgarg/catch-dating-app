@@ -31,8 +31,7 @@ import {
   Panel,
   QualityList,
   SearchField,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
   StatusChip,
   TableActionButton,
@@ -185,8 +184,7 @@ function AssignmentRegisterPanel({controller}: {controller: AdminRoleManagementC
           recipe="select"
           title="Status"
           onChanged={(value) => controller.setAssignmentFilter((value ?? "") as AdminRoleAssignmentStatusFilter)}
-          values={selectOptionValues(assignmentStatusOptions)}
-          itemLabelBuilder={selectOptionLabeller(assignmentStatusOptions)}
+          {...selectOptions(assignmentStatusOptions)}
           value={controller.assignmentFilter}
         />
         <AdminButton

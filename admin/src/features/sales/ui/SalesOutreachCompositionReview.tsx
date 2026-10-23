@@ -5,8 +5,7 @@ import {
   AdminButton,
   AdminForm,
   SelectField,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
 } from "../../../shared/ui/AdminPrimitives";
 import type {ApprovedClause, DraftSourceRequest} from
@@ -168,10 +167,7 @@ function SalesOutreachCompositionReviewBody({organizerId, evaluatedAt,
         value={contactId}
         onChanged={(value) => setContactId(value ?? "")}
         inputMode={interactionBlocked ? "inactive" : "editable"}
-        values={selectOptionValues([{value: "", label: "Choose contact"},
-          ...contacts.map((row) => ({value: row.contactId,
-            label: `${row.displayName} · ${row.relationship.role}`}))])}
-        itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose contact"},
+        {...selectOptions([{value: "", label: "Choose contact"},
           ...contacts.map((row) => ({value: row.contactId,
             label: `${row.displayName} · ${row.relationship.role}`}))])}
       />
@@ -185,10 +181,7 @@ function SalesOutreachCompositionReviewBody({organizerId, evaluatedAt,
         value={opportunityId}
         onChanged={(value) => setOpportunityId(value ?? "")}
         inputMode={interactionBlocked ? "inactive" : "editable"}
-        values={selectOptionValues([{value: "", label: "Choose opportunity"},
-          ...opportunities.map((row) => ({value: row.opportunityId,
-            label: `${label(row.motion)} · ${label(row.stage)}`}))])}
-        itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose opportunity"},
+        {...selectOptions([{value: "", label: "Choose opportunity"},
           ...opportunities.map((row) => ({value: row.opportunityId,
             label: `${label(row.motion)} · ${label(row.stage)}`}))])}
       />
@@ -198,8 +191,7 @@ function SalesOutreachCompositionReviewBody({organizerId, evaluatedAt,
         value={observationId}
         onChanged={(value) => setObservationId(value ?? "")}
         inputMode={interactionBlocked ? "inactive" : "editable"}
-        values={selectOptionValues(options("observation"))}
-        itemLabelBuilder={selectOptionLabeller(options("observation"))}
+        {...selectOptions(options("observation"))}
       />
       <CatchField
         recipe="select"
@@ -207,8 +199,7 @@ function SalesOutreachCompositionReviewBody({organizerId, evaluatedAt,
         value={capabilityId}
         onChanged={(value) => setCapabilityId(value ?? "")}
         inputMode={interactionBlocked ? "inactive" : "editable"}
-        values={selectOptionValues(options("capability"))}
-        itemLabelBuilder={selectOptionLabeller(options("capability"))}
+        {...selectOptions(options("capability"))}
       />
       <CatchField
         recipe="select"
@@ -216,8 +207,7 @@ function SalesOutreachCompositionReviewBody({organizerId, evaluatedAt,
         value={referenceId}
         onChanged={(value) => setReferenceId(value ?? "")}
         inputMode={interactionBlocked ? "inactive" : "editable"}
-        values={selectOptionValues(options("reference", true))}
-        itemLabelBuilder={selectOptionLabeller(options("reference", true))}
+        {...selectOptions(options("reference", true))}
       />
       <CatchField
         recipe="select"
@@ -225,8 +215,7 @@ function SalesOutreachCompositionReviewBody({organizerId, evaluatedAt,
         value={ctaId}
         onChanged={(value) => setCtaId(value ?? "")}
         inputMode={interactionBlocked ? "inactive" : "editable"}
-        values={selectOptionValues(options("cta"))}
-        itemLabelBuilder={selectOptionLabeller(options("cta"))}
+        {...selectOptions(options("cta"))}
       />
       <CatchField
         recipe="select"
@@ -234,11 +223,7 @@ function SalesOutreachCompositionReviewBody({organizerId, evaluatedAt,
         value={channel}
         onChanged={(value) => setChannel((value ?? "") as typeof channel)}
         inputMode={interactionBlocked ? "inactive" : "editable"}
-        values={selectOptionValues([
-          {value: "email", label: "Email draft"},
-          {value: "message", label: "Message draft"},
-        ])}
-        itemLabelBuilder={selectOptionLabeller([
+        {...selectOptions([
           {value: "email", label: "Email draft"},
           {value: "message", label: "Message draft"},
         ])}

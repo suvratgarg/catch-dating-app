@@ -11,8 +11,7 @@ import {
   CheckboxField,
   EmptyState,
   Panel,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
 } from "../../../shared/ui/AdminPrimitives";
 import type {DemoBlueprint, DemoCapabilityReview, DemoDisposition,
@@ -270,12 +269,7 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
             value={contactKind}
             onChanged={(value) => setContactKind((value ?? "") as typeof contactKind)}
             inputMode={locked ? "inactive" : "editable"}
-            values={selectOptionValues([
-              {value: "preview", label: "Preview only"},
-              {value: "email", label: "Verified email"},
-              {value: "phone", label: "Verified phone"},
-            ])}
-            itemLabelBuilder={selectOptionLabeller([
+            {...selectOptions([
               {value: "preview", label: "Preview only"},
               {value: "email", label: "Verified email"},
               {value: "phone", label: "Verified phone"},
@@ -301,11 +295,7 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
             value={sessionCap}
             onChanged={(value) => setSessionCap(value ?? "")}
             inputMode={locked ? "inactive" : "editable"}
-            values={selectOptionValues([
-              {value: "1", label: "One"}, {value: "2", label: "Two"},
-              {value: "3", label: "Three"},
-            ])}
-            itemLabelBuilder={selectOptionLabeller([
+            {...selectOptions([
               {value: "1", label: "One"}, {value: "2", label: "Two"},
               {value: "3", label: "Three"},
             ])}
@@ -361,9 +351,7 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
       title="Setup approach"
       value={form.setupPlan.mode}
       inputMode={disabled ? "inactive" : "editable"}
-      values={selectOptionValues([{value: "manual", label: "Manual handoff"},
-        {value: "template", label: "Prepare a reviewed form template"}])}
-      itemLabelBuilder={selectOptionLabeller([{value: "manual", label: "Manual handoff"},
+      {...selectOptions([{value: "manual", label: "Manual handoff"},
         {value: "template", label: "Prepare a reviewed form template"}])}
       onChanged={(value) => edit({...form, setupPlan: (value ?? "") === "template" ?
         {mode: "template", requirements: form.setupPlan.requirements,
@@ -376,10 +364,7 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
         title="Reviewed form template"
         inputMode={disabled ? "inactive" : "editable"}
         value={form.setupPlan.templateId}
-        values={selectOptionValues([{value: "", label: "Choose a template"},
-          ...templateOptions.map((item) => ({value: item.templateId,
-            label: item.title}))])}
-        itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose a template"},
+        {...selectOptions([{value: "", label: "Choose a template"},
           ...templateOptions.map((item) => ({value: item.templateId,
             label: item.title}))])}
         onChanged={(templateId) => {
@@ -469,8 +454,7 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
       title={label}
       value={form.review[area]}
       inputMode={disabled ? "inactive" : "editable"}
-      values={selectOptionValues(dispositions)}
-      itemLabelBuilder={selectOptionLabeller(dispositions)}
+      {...selectOptions(dispositions)}
       onChanged={(value) => edit({...form,
         review: {...form.review, [area]: (value ?? "") as DemoDisposition}})}
     />)}
@@ -499,8 +483,7 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
         title={`Mapping outcome ${index + 1}`}
         value={mapping.disposition}
         inputMode={disabled ? "inactive" : "editable"}
-        values={selectOptionValues(dispositions)}
-        itemLabelBuilder={selectOptionLabeller(dispositions)}
+        {...selectOptions(dispositions)}
         onChanged={(value) => edit({...form,
           mappings: form.mappings.map((part, at) => at === index ?
             {...part, disposition: (value ?? "") as DemoDisposition} : part)})}

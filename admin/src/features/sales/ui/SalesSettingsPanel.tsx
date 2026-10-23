@@ -6,8 +6,7 @@ import {
   AdminForm,
   EmptyState,
   Panel,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
 } from "../../../shared/ui/AdminPrimitives";
 import type {SalesWorkspaceController} from
@@ -84,14 +83,7 @@ function SettingsView({controller, isAdminOwner}: {
         title="Type"
         value={type}
         onChanged={(value) => setType((value ?? "") as SalesCustomFieldType)}
-        values={selectOptionValues([
-          {value: "string", label: "Text"},
-          {value: "number", label: "Number"},
-          {value: "boolean", label: "Yes or no"},
-          {value: "date", label: "Date"},
-          {value: "enum", label: "Choice"},
-        ])}
-        itemLabelBuilder={selectOptionLabeller([
+        {...selectOptions([
           {value: "string", label: "Text"},
           {value: "number", label: "Number"},
           {value: "boolean", label: "Yes or no"},

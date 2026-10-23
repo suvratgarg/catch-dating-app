@@ -28,8 +28,7 @@ import {
   AdminWorkbenchNote,
   Panel,
   SearchField,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
 } from "../../../../shared/ui/AdminPrimitives";
 import {
   type IntakeOperationsController,
@@ -145,14 +144,8 @@ export function IntakeOperationsPreviewWorkspace({
         <CatchField
           recipe="select"
           title="Entity"
-          values={selectOptionValues([
-            {value: "all", label: "All entities"},
-            {value: "event", label: "Events"},
-            {value: "organizer", label: "Organizers"},
-            {value: "source_result", label: "Source results"},
-            {value: "source_profile", label: "Source profiles"},
-          ])}
-          itemLabelBuilder={selectOptionLabeller([
+          labelMode="hidden"
+          {...selectOptions([
             {value: "all", label: "All entities"},
             {value: "event", label: "Events"},
             {value: "organizer", label: "Organizers"},

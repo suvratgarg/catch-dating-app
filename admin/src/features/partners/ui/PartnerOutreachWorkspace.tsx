@@ -7,8 +7,7 @@ import {
   CheckboxField,
   EmptyState,
   Panel,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
   StatusBanner,
 } from "../../../shared/ui/AdminPrimitives";
@@ -70,9 +69,7 @@ function OutreachBody(props: Parameters<typeof PartnerOutreachWorkspace>[0]) {
           value={contactId}
           onChanged={(value) => setContactId(value ?? "")}
           inputMode={blocked ? "inactive" : "editable"}
-          values={selectOptionValues([{value: "", label: "Choose a contact"}, ...prepared.contacts.map((row) =>
-            ({value: row.contactId, label: `${row.displayName} · ${row.role}`}))])}
-          itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose a contact"}, ...prepared.contacts.map((row) =>
+          {...selectOptions([{value: "", label: "Choose a contact"}, ...prepared.contacts.map((row) =>
             ({value: row.contactId, label: `${row.displayName} · ${row.role}`}))])}
         />
         <CatchField
@@ -81,9 +78,7 @@ function OutreachBody(props: Parameters<typeof PartnerOutreachWorkspace>[0]) {
           value={opportunityId}
           onChanged={(value) => setOpportunityId(value ?? "")}
           inputMode={blocked ? "inactive" : "editable"}
-          values={selectOptionValues([{value: "", label: "Choose an opportunity"}, ...prepared.opportunities.map((row) =>
-            ({value: row.opportunityId, label: `${row.motion} · ${row.stage.replaceAll("_", " ")}`}))])}
-          itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose an opportunity"}, ...prepared.opportunities.map((row) =>
+          {...selectOptions([{value: "", label: "Choose an opportunity"}, ...prepared.opportunities.map((row) =>
             ({value: row.opportunityId, label: `${row.motion} · ${row.stage.replaceAll("_", " ")}`}))])}
         />
         {prepared.clauses.map((row) => <div key={`${row.clauseId}:${row.revision}`}>

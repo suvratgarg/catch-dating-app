@@ -45,8 +45,7 @@ import {
   Panel,
   QualityList,
   SegmentedControl,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
   StatusBanner,
 } from "../../../shared/ui/AdminPrimitives";
@@ -120,12 +119,7 @@ export function UserAnalyticsWorkspace({
             recipe="select"
             title="Group by"
             onChanged={(value) => controller.setGranularity((value ?? "") as UserAnalyticsGranularity)}
-            values={selectOptionValues([
-              {value: "day", label: "Day"},
-              {value: "week", label: "Week"},
-              {value: "month", label: "Month"},
-            ])}
-            itemLabelBuilder={selectOptionLabeller([
+            {...selectOptions([
               {value: "day", label: "Day"},
               {value: "week", label: "Week"},
               {value: "month", label: "Month"},

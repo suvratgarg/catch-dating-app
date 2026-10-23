@@ -45,8 +45,7 @@ import {
   DecisionFooter,
   EmptyState,
   QualityRow,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StatusChip,
 } from "../../../shared/ui/AdminPrimitives";
 import {appScreenshotPreviewUrl, appScreenshotRawPreviewUrl} from "../assets/marketingAppScreenshotAssets";
@@ -219,11 +218,7 @@ function MarketingFeatureDropView({
             recipe="select"
             title="Audience"
             onChanged={(value) => updateAudience((value ?? "") as MarketingFeatureDropAudience)}
-            values={selectOptionValues([
-              {label: "Members", value: "members"},
-              {label: "Hosts", value: "hosts"},
-            ])}
-            itemLabelBuilder={selectOptionLabeller([
+            {...selectOptions([
               {label: "Members", value: "members"},
               {label: "Hosts", value: "hosts"},
             ])}
@@ -233,12 +228,7 @@ function MarketingFeatureDropView({
             recipe="select"
             title="Register"
             onChanged={(value) => updateConfig({register: (value ?? "") as MarketingFeatureDropRegister})}
-            values={selectOptionValues([
-              {label: "Dark", value: "dark"},
-              {label: "Light", value: "light"},
-              {label: "System", value: "system"},
-            ])}
-            itemLabelBuilder={selectOptionLabeller([
+            {...selectOptions([
               {label: "Dark", value: "dark"},
               {label: "Light", value: "light"},
               {label: "System", value: "system"},
@@ -249,14 +239,7 @@ function MarketingFeatureDropView({
             recipe="select"
             title="Accent"
             onChanged={(value) => updateConfig({accent: (value ?? "") as MarketingFeatureDropAccent})}
-            values={selectOptionValues([
-              {label: "Run", value: "run"},
-              {label: "Padel", value: "padel"},
-              {label: "Yoga", value: "yoga"},
-              {label: "Cycling", value: "cycling"},
-              {label: "Dinner", value: "dinner"},
-            ])}
-            itemLabelBuilder={selectOptionLabeller([
+            {...selectOptions([
               {label: "Run", value: "run"},
               {label: "Padel", value: "padel"},
               {label: "Yoga", value: "yoga"},
@@ -269,11 +252,7 @@ function MarketingFeatureDropView({
             recipe="select"
             title="Wordmark"
             onChanged={(value) => updateConfig({showWordmark: (value ?? "") === "shown"})}
-            values={selectOptionValues([
-              {label: "Shown", value: "shown"},
-              {label: "Hidden", value: "hidden"},
-            ])}
-            itemLabelBuilder={selectOptionLabeller([
+            {...selectOptions([
               {label: "Shown", value: "shown"},
               {label: "Hidden", value: "hidden"},
             ])}
@@ -367,11 +346,7 @@ function MarketingFeatureDropView({
                   recipe="select"
                   title="App capture"
                   onChanged={(value) => updateFeature(feature.id, {captureId: (value ?? "")})}
-                  values={selectOptionValues(appCaptures.map((capture) => ({
-                    label: `${capture.audience} / ${capture.surface}`,
-                    value: capture.id,
-                  })))}
-                  itemLabelBuilder={selectOptionLabeller(appCaptures.map((capture) => ({
+                  {...selectOptions(appCaptures.map((capture) => ({
                     label: `${capture.audience} / ${capture.surface}`,
                     value: capture.id,
                   })))}
@@ -644,14 +619,7 @@ function MarketingSlideImageEditor({
           recipe="select"
           title="App screenshot"
           onChanged={(value) => selectAppCapture(value ?? "")}
-          values={selectOptionValues([
-            {label: "No app screenshot", value: ""},
-            ...appCaptures.map((capture) => ({
-              label: `${capture.walkthroughStep} / ${capture.surface}`,
-              value: capture.id,
-            })),
-          ])}
-          itemLabelBuilder={selectOptionLabeller([
+          {...selectOptions([
             {label: "No app screenshot", value: ""},
             ...appCaptures.map((capture) => ({
               label: `${capture.walkthroughStep} / ${capture.surface}`,
@@ -689,11 +657,7 @@ function MarketingSlideImageEditor({
           recipe="select"
           title="Fit"
           onChanged={(value) => updateImage({fit: (value ?? "") as "cover" | "contain"})}
-          values={selectOptionValues([
-            {label: "Cover crop", value: "cover"},
-            {label: "Contain", value: "contain"},
-          ])}
-          itemLabelBuilder={selectOptionLabeller([
+          {...selectOptions([
             {label: "Cover crop", value: "cover"},
             {label: "Contain", value: "contain"},
           ])}

@@ -26,8 +26,7 @@ import {
   EmptyState,
   Panel,
   QualityList,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
   StatusBanner,
 } from "../../../shared/ui/AdminPrimitives";
@@ -387,14 +386,7 @@ function HostAnalyticsDigest({
             recipe="select"
             title="Range"
             onChanged={(value) => onAnalyticsRangePresetChange((value ?? "") as OverviewAnalyticsRangePreset)}
-            values={selectOptionValues([
-              {label: "Last 7 days", value: "7d"},
-              {label: "Last 30 days", value: "30d"},
-              {label: "Last 90 days", value: "90d"},
-              {label: "This month", value: "month"},
-              {label: "Custom", value: "custom"},
-            ])}
-            itemLabelBuilder={selectOptionLabeller([
+            {...selectOptions([
               {label: "Last 7 days", value: "7d"},
               {label: "Last 30 days", value: "30d"},
               {label: "Last 90 days", value: "90d"},
@@ -407,12 +399,7 @@ function HostAnalyticsDigest({
             recipe="select"
             title="Group by"
             onChanged={(value) => onAnalyticsGranularityChange((value ?? "") as OverviewAnalyticsGranularity)}
-            values={selectOptionValues([
-              {label: "Day", value: "day"},
-              {label: "Week", value: "week"},
-              {label: "Month", value: "month"},
-            ])}
-            itemLabelBuilder={selectOptionLabeller([
+            {...selectOptions([
               {label: "Day", value: "day"},
               {label: "Week", value: "week"},
               {label: "Month", value: "month"},

@@ -27,8 +27,7 @@ import {
   QualityList,
   RiskBadge,
   SearchField,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
   TableActionButton,
 } from "../../../shared/ui/AdminPrimitives";
@@ -181,16 +180,14 @@ export function GrowthKpiWorkspace({
             recipe="select"
             title="Stage"
             onChanged={(value) => controller.setStageFilter((value ?? "") as GrowthStage)}
-            values={selectOptionValues(stageOptions)}
-            itemLabelBuilder={selectOptionLabeller(stageOptions)}
+            {...selectOptions(stageOptions)}
             value={controller.stageFilter}
           />
           <CatchField
             recipe="select"
             title="Host range"
             onChanged={(value) => controller.setRangePreset((value ?? "") as GrowthRangePreset)}
-            values={selectOptionValues(rangeOptions)}
-            itemLabelBuilder={selectOptionLabeller(rangeOptions)}
+            {...selectOptions(rangeOptions)}
             value={controller.rangePreset}
           />
           <AdminButton

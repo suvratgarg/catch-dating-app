@@ -1,4 +1,3 @@
-import {CatchField} from "@catch/web-ui";
 import {act, cleanup, render, screen, waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
@@ -35,9 +34,8 @@ vi.mock("../shared/api/firebase", () => ({
 
 vi.mock("../features/marketing/ui/MarketingOpsScreen", async () => {
   const {useState} = await import("react");
-  const {AdminButton, AdminTextField} = await import(
-    "../shared/ui/AdminPrimitives"
-  );
+  const {AdminButton} = await import("../shared/ui/AdminPrimitives");
+  const {CatchField} = await import("@catch/web-ui");
   return {
     MarketingOpsScreen: ({
       onTabChange,

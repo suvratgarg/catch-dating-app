@@ -82,10 +82,13 @@ import {
   SearchField,
   SegmentedControl,
   SelectableCardButton,
+  SelectField,
   StatusBanner,
   StatusChip,
   TableActionButton,
   TagList,
+  TextareaField,
+  TextField,
 } from "../shared/ui/AdminPrimitives";
 
 const meta = {
@@ -924,6 +927,65 @@ export const AdminFieldGridStory: Story = {
         <CatchField recipe="input" title="Owner" onChanged={() => undefined} value="Ops" />
         <CatchField recipe="input" title="Source" onChanged={() => undefined} value="Bridge" />
       </AdminFieldGrid>
+    </AdminWorkspace>
+  ),
+};
+
+export const TextFieldStory: Story = {
+  name: "Generic text field",
+  parameters: {
+    catchComponent: {
+      id: "shared_text_field",
+      states: ["default", "wide"],
+    },
+  },
+  render: () => (
+    <AdminWorkspace>
+      <AdminFieldGrid>
+        <TextField label="Event title" onChange={() => undefined} value="Singles dinner" />
+        <TextField label="Long description" onChange={() => undefined} span={2} value="Invite-only mixer." />
+      </AdminFieldGrid>
+    </AdminWorkspace>
+  ),
+};
+
+export const TextareaFieldStory: Story = {
+  name: "Generic textarea field",
+  parameters: {
+    catchComponent: {
+      id: "shared_textarea_field",
+      states: ["default", "wide"],
+    },
+  },
+  render: () => (
+    <AdminWorkspace>
+      <AdminFieldGrid>
+        <TextareaField label="Evidence notes" onChange={() => undefined} rows={4} span={2} value="Screenshots and public event pages reviewed." />
+      </AdminFieldGrid>
+    </AdminWorkspace>
+  ),
+};
+
+export const SelectFieldStory: Story = {
+  name: "Select field",
+  parameters: {
+    catchComponent: {
+      id: "shared_select_field",
+      states: ["default"],
+    },
+  },
+  render: () => (
+    <AdminWorkspace>
+      <SelectField
+        label="Decision"
+        options={[
+          {label: "Approve", value: "approve"},
+          {label: "Hold", value: "hold"},
+          {label: "Reject", value: "reject"},
+        ]}
+        value="approve"
+        onChange={() => undefined}
+      />
     </AdminWorkspace>
   ),
 };

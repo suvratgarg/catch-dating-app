@@ -23,8 +23,7 @@ import {
   EmptyState,
   Panel,
   SearchField,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StatusChip,
 } from "../../../shared/ui/AdminPrimitives";
 import {
@@ -97,8 +96,7 @@ export function AdminActionExecutionsWorkspace({
             recipe="select"
             title="Action"
             onChanged={(value) => controller.setActionFilter(value ?? "")}
-            values={selectOptionValues(actionOptions)}
-            itemLabelBuilder={selectOptionLabeller(actionOptions)}
+            {...selectOptions(actionOptions)}
             value={controller.actionFilter}
           />
           <CatchField
@@ -107,8 +105,7 @@ export function AdminActionExecutionsWorkspace({
             onChanged={(value) => controller.setStatusFilter(
               (value ?? "") as AdminActionExecutionStatusFilter
             )}
-            values={selectOptionValues(statusOptions)}
-            itemLabelBuilder={selectOptionLabeller(statusOptions)}
+            {...selectOptions(statusOptions)}
             value={controller.statusFilter}
           />
           <AdminButton

@@ -25,8 +25,7 @@ import {
   QualityList,
   RiskBadge,
   SearchField,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
   TableActionButton,
 } from "../../../shared/ui/AdminPrimitives";
@@ -122,19 +121,14 @@ export function DataQualityWorkspace({
             recipe="select"
             title="Severity"
             onChanged={(value) => controller.setSeverityFilter((value ?? "") as DataQualitySeverity)}
-            values={selectOptionValues(severityOptions)}
-            itemLabelBuilder={selectOptionLabeller(severityOptions)}
+            {...selectOptions(severityOptions)}
             value={controller.severityFilter}
           />
           <CatchField
             recipe="select"
             title="Owner"
             onChanged={(value) => controller.setOwnerFilter(value ?? "")}
-            values={selectOptionValues([
-              {label: "All owners", value: "all"},
-              ...controller.ownerOptions.map((owner) => ({label: owner, value: owner})),
-            ])}
-            itemLabelBuilder={selectOptionLabeller([
+            {...selectOptions([
               {label: "All owners", value: "all"},
               ...controller.ownerOptions.map((owner) => ({label: owner, value: owner})),
             ])}

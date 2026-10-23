@@ -7,8 +7,7 @@ import {
   EmptyState,
   Panel,
   SelectField,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
   TextareaField,
   TextField,
@@ -105,11 +104,7 @@ function CompensationPanel({controller}: {controller: SalesWorkspaceController})
               value={reviewed ? "yes" : "no"}
               inputMode={busy ? "inactive" : "editable"}
               onChanged={(value) => setReviewed((value ?? "") === "yes")}
-              values={selectOptionValues([
-                {value: "no", label: "Not reviewed"},
-                {value: "yes", label: "I reviewed this exact server plan"},
-              ])}
-              itemLabelBuilder={selectOptionLabeller([
+              {...selectOptions([
                 {value: "no", label: "Not reviewed"},
                 {value: "yes", label: "I reviewed this exact server plan"},
               ])}

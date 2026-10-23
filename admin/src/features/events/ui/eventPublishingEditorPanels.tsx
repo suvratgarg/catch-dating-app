@@ -31,8 +31,7 @@ import {
   EmptyState,
   Panel,
   QualityList,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
   StateRow,
 } from "../../../shared/ui/AdminPrimitives";
 import {
@@ -158,19 +157,21 @@ function EventEditor({
           }}>
             <AdminEditorSection>
               <legend>App-Facing Copy</legend>
-              <CatchField
-                recipe="input"
-                title="Description"
-                onChanged={(value) => update("description", value)}
-                maxLines={5}
-                value={form.description}
-              />
-              <CatchField
-                recipe="input"
-                title="Photo URL"
-                onChanged={(value) => update("photoUrl", value)}
-                value={form.photoUrl}
-              />
+              <AdminFieldGrid columns={1}>
+                <CatchField
+                  recipe="input"
+                  title="Description"
+                  onChanged={(value) => update("description", value)}
+                  maxLines={5}
+                  value={form.description}
+                />
+                <CatchField
+                  recipe="input"
+                  title="Photo URL"
+                  onChanged={(value) => update("photoUrl", value)}
+                  value={form.photoUrl}
+                />
+              </AdminFieldGrid>
             </AdminEditorSection>
 
             <AdminEditorSection>
@@ -213,11 +214,7 @@ function EventEditor({
                   recipe="select"
                   title="Activity kind"
                   onChanged={(value) => update("activityKind", (value ?? "") as AdminEventActivityKind)}
-                  values={selectOptionValues(eventActivityKindOptions.map((value) => ({
-                    value,
-                    label: formatEventLabel(value),
-                  })))}
-                  itemLabelBuilder={selectOptionLabeller(eventActivityKindOptions.map((value) => ({
+                  {...selectOptions(eventActivityKindOptions.map((value) => ({
                     value,
                     label: formatEventLabel(value),
                   })))}
@@ -227,11 +224,7 @@ function EventEditor({
                   recipe="select"
                   title="Interaction model"
                   onChanged={(value) => update("interactionModel", (value ?? "") as AdminEventInteractionModel)}
-                  values={selectOptionValues(eventInteractionModelOptions.map((value) => ({
-                    value,
-                    label: formatEventLabel(value),
-                  })))}
-                  itemLabelBuilder={selectOptionLabeller(eventInteractionModelOptions.map((value) => ({
+                  {...selectOptions(eventInteractionModelOptions.map((value) => ({
                     value,
                     label: formatEventLabel(value),
                   })))}
@@ -254,11 +247,7 @@ function EventEditor({
                   recipe="select"
                   title="Pace"
                   onChanged={(value) => update("pace", (value ?? "") as AdminEventPace)}
-                  values={selectOptionValues(eventPaceOptions.map((value) => ({
-                    value,
-                    label: formatEventLabel(value),
-                  })))}
-                  itemLabelBuilder={selectOptionLabeller(eventPaceOptions.map((value) => ({
+                  {...selectOptions(eventPaceOptions.map((value) => ({
                     value,
                     label: formatEventLabel(value),
                   })))}

@@ -4,8 +4,7 @@ import type {Dispatch, SetStateAction} from "react";
 import {
   AdminFieldGrid,
   AdminOrganizerIntakeCheckboxField,
-  selectOptionLabeller,
-  selectOptionValues,
+  selectOptions,
 } from "../../../../shared/ui/AdminPrimitives";
 import type * as Intake from "../types/organizerIntakeTypes";
 
@@ -44,11 +43,7 @@ function OrganizerVisibilityControls({
         <CatchField
           recipe="select"
           title="Public web"
-          values={selectOptionValues([
-            {value: "draft", label: "Off — keep draft"},
-            {value: "published", label: "On — publish page"},
-          ])}
-          itemLabelBuilder={selectOptionLabeller([
+          {...selectOptions([
             {value: "draft", label: "Off — keep draft"},
             {value: "published", label: "On — publish page"},
           ])}
@@ -69,11 +64,7 @@ function OrganizerVisibilityControls({
         <CatchField
           recipe="select"
           title="Search indexing"
-          values={selectOptionValues([
-            {value: "noindex", label: "Off — noindex"},
-            {value: "indexed", label: "On — index"},
-          ])}
-          itemLabelBuilder={selectOptionLabeller([
+          {...selectOptions([
             {value: "noindex", label: "Off — noindex"},
             {value: "indexed", label: "On — index"},
           ])}
@@ -89,11 +80,7 @@ function OrganizerVisibilityControls({
         <CatchField
           recipe="select"
           title="App discovery"
-          values={selectOptionValues([
-            {value: "hidden", label: "Off — hidden"},
-            {value: "discoverable", label: "On — discoverable"},
-          ])}
-          itemLabelBuilder={selectOptionLabeller([
+          {...selectOptions([
             {value: "hidden", label: "Off — hidden"},
             {value: "discoverable", label: "On — discoverable"},
           ])}
