@@ -4,7 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
 import stylelint from "stylelint";
-import config, {rawColorDebt} from "../stylelint.config.mjs";
+import config, {rawColorDebt, rawColorRules} from "../stylelint.config.mjs";
 
 const websiteRoot = fileURLToPath(new URL("../", import.meta.url));
 
@@ -19,7 +19,9 @@ async function warningRules(code, file) {
 }
 
 test("raw-color debt only lists stylesheets that still need the exemption", async () => {
-  const strict = {...config, overrides: []};
+  // Colour rules only: every stylesheet still has suppressed length and type
+  // debt, which must not mask a debt entry whose colours are already clean.
+  const strict = {...config, rules: rawColorRules, overrides: []};
   for (const file of rawColorDebt) {
     const result = await stylelint.lint({
       code: fs.readFileSync(path.join(websiteRoot, file), "utf8"),
