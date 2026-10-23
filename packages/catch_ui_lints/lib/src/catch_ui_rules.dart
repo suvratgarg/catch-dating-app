@@ -727,14 +727,14 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       final drawing = site.node;
       if (drawing is InstanceCreationExpression) {
         // Keep one boundary diagnostic where an existing rule already fires.
-        // Use the written name: typedef aliases bypass those older rules.
-        final writtenName = _constructorTypeName(drawing);
+        // Share their resolved names so aliases receive the same delegation.
+        final typeName = _constructorTypeName(drawing);
         if (!allowRawControlConstructors &&
-            catchRawControlConstructors.contains(writtenName)) {
+            catchRawControlConstructors.contains(typeName)) {
           continue;
         }
-        if (writtenName == 'Image' &&
-            drawing.constructorName.name?.name == 'network' &&
+        if (typeName == 'Image' &&
+            _constructorMemberName(drawing) == 'network' &&
             !_isCoreWidgetPrimitivePath) {
           continue;
         }
