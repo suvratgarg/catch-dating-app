@@ -1,3 +1,14 @@
+export {CatchField} from "./components/CatchField";
+export type {
+  CatchFieldInputProps,
+  CatchFieldKeyboardType,
+  CatchFieldLabelTextMode,
+  CatchFieldProps,
+  CatchFieldSelectProps,
+  CatchFieldSupportRowTone,
+  CatchTextInputMode,
+  CatchTextInputVariant,
+} from "./components/CatchField";
 export {CatchGap} from "./components/CatchGap";
 export type {
   CatchGapCrossAxisAlignment,
