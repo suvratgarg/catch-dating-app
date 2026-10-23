@@ -11,10 +11,6 @@
  * (".claim-request-form input") cannot restyle the field.
  */
 .field {
-  --catch-radius-interactive-tile: 12px;
-  --catch-field-active-tint: 4%;
-  --catch-field-disabled-opacity: 0.4;
-  --catch-elevation-field-active: 0 6px 18px rgb(22 20 15 / 0.08);
   --catch-field-motion-fast: 150ms;
   --catch-field-motion-curve: cubic-bezier(0.2, 0.7, 0.2, 1);
   --catch-field-leading-extent: 18px;
@@ -38,18 +34,15 @@
   .field { transition: none; }
 }
 
-:where([data-catch-theme="dark"]) .field {
-  --catch-elevation-field-active: 0 8px 22px rgb(0 0 0 / 0.55);
-}
-
 .field[data-input-mode="editable"]:hover:not([data-focused]) {
-  background: color-mix(in srgb, var(--catch-theme-ink) var(--catch-field-active-tint), transparent);
+  background: color-mix(in srgb, var(--catch-theme-ink)
+    calc(var(--catch-opacity-control-overlay-hover) * 100%), transparent);
 }
 
 .field[data-focused] {
   border-color: var(--catch-theme-line2);
-  background: color-mix(in srgb, var(--catch-theme-ink) var(--catch-field-active-tint),
-    var(--catch-theme-surface));
+  background: color-mix(in srgb, var(--catch-theme-ink)
+    calc(var(--catch-field-active-tint-alpha) * 100%), var(--catch-theme-surface));
   box-shadow: var(--catch-elevation-field-active);
 }
 
