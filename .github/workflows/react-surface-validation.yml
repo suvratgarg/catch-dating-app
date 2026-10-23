@@ -199,8 +199,25 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      # The bundle budget must measure the bytes that ship. The production
+      # build (_web-hosting-build.yml) sets live data mode and an App Check key,
+      # which add the App Check and live-data code to the entry chunk; the real
+      # values are prod-environment variables this lane cannot read. These
+      # synthetic values have the production shape and lengths, so the entry
+      # measures within a few bytes of the shipped one.
       - name: Build admin website
         if: ${{ inputs.surface == 'admin' && !inputs.skip_deployable_build }}
+        env:
+          VITE_ADMIN_DATA_MODE: live
+          VITE_ADMIN_FIREBASE_ENV: prod
+          VITE_ADMIN_APPCHECK_SITE_KEY: 6LcSyntheticAppCheckSiteKeyForBudgetsXyz0
+          VITE_FIREBASE_API_KEY: synthetic-budget-build-api-key-00000000
+          VITE_FIREBASE_AUTH_DOMAIN: catch-dating-app-64e51.firebaseapp.com
+          VITE_FIREBASE_PROJECT_ID: catch-dating-app-64e51
+          VITE_FIREBASE_STORAGE_BUCKET: catch-dating-app-64e51.firebasestorage.app
+          VITE_FIREBASE_MESSAGING_SENDER_ID: "123456789012"
+          VITE_FIREBASE_APP_ID: "1:123456789012:web:0123456789abcdef012345"
+          VITE_FIREBASE_MEASUREMENT_ID: G-SYNTHETIC1
         run: npm run web:admin:build
 
       - name: Install Storybook accessibility browser
