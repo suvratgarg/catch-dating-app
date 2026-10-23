@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.26.0
+version: 1.27.0
 updated: 2026-10-23
 owner: app_architecture
 status: active
@@ -1883,6 +1883,33 @@ than building its own. Changes to the remaining phases:
   into that feature and dead exports are deleted (the `web:shared-ui-adoption`
   move and delete counts become ratchets). A feature turns on the
   no-bare-elements rule once it composes only library components.
+
+### Consolidation done-gates (owner decision, 2026-10-23)
+
+Consolidation finishes before the redesign starts. The owner's sequence is:
+tokens are the only source of values, a component library on both frameworks
+uses only tokens, the registry keeps the two implementations in step, and
+every screen on every surface is a composition of those components with its
+controllers and state. Design studies after that are drawn on Host app and
+website screens built from library components, not consumer screens, because
+those surfaces launch first and lean on the T1 set.
+
+Consolidation is done when every gate in
+`design/components/consolidation_gates.json` is at zero. Each gate records
+its owner, its starting value and what blocks its regressions today.
+`node tool/design/consolidation_gates.mjs` measures all of them;
+`--similarity` adds the two Flutter duplicate-widget gates, which need Dart.
+The report never blocks a change. A gate whose `enforcement` says "none yet"
+needs its owner to add a shrink-only ratchet, and that ratchet then follows
+Migration Protocol v2.
+
+| Layer | Gates |
+|---|---|
+| Tokens | Flutter raw values (enforced at zero); website raw-colour exemptions; recorded raw CSS values in the website and Admin |
+| Library | T1 contracts without a styled `@catch/web-ui` component; priority-1 T2 entities without one; contracts still on a headless `*Control`; T1 contracts without a cross-framework parity record (7f) |
+| Screens | React adapters; unused React exports; shared exports one feature renders; bare HTML outside the library; page-scoped CSS; Flutter text styled in place (CAT-211); hand-built Flutter decoration and tap targets; near-duplicate Flutter widget clusters; library absorb candidates |
+
+On 2026-10-23, 1 of 16 gates was at target.
 
 ### Work packet template (every Codex slice)
 

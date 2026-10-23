@@ -1,0 +1,225 @@
+{
+  "version": 1,
+  "updated": "2026-10-23",
+  "description": "Done-gates for UI consolidation: every value comes from generated tokens, every shared responsibility is one registry component on every surface, and every screen is a composition of those components. Consolidation is done, and the redesign starts, when every gate is at target. Measured by node tool/design/consolidation_gates.mjs. 'enforcement' names what blocks regressions today.",
+  "priorityT2": [
+    "catch.event_card",
+    "catch.ticket",
+    "catch.organizer_poster",
+    "catch.club_cover",
+    "catch.person_polaroid",
+    "catch.meta_row"
+  ],
+  "gates": [
+    {
+      "id": "tokens.flutter_raw_values",
+      "layer": "tokens",
+      "title": "Raw design values in Flutter code",
+      "measure": "flutterTokenLints",
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 0
+      },
+      "owner": "catch_ui_lints (UI enforcement)",
+      "enforcement": "Workspace analysis runs with --fatal-infos, so any catch_ui_lints finding fails CI."
+    },
+    {
+      "id": "tokens.web_raw_colour_files",
+      "layer": "tokens",
+      "title": "Website stylesheets exempt from the raw-colour rules",
+      "measure": "rawColorDebt",
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 4
+      },
+      "owner": "Website convergence (web_surface_architecture)",
+      "enforcement": "website/scripts/cssTokenDebt.test.mjs keeps rawColorDebt shrink-only."
+    },
+    {
+      "id": "tokens.web_raw_values",
+      "layer": "tokens",
+      "title": "Recorded raw CSS lengths, values and media queries",
+      "measure": "rawValueSuppressions",
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 3722
+      },
+      "owner": "UI blueprint Phase 7g, lowered by 7e and website Phase 4 migrations",
+      "enforcement": "stylelint suppressions are shrink-only with a freshness check (packages/web-config/lint/check-stylelint-suppressions.mjs)."
+    },
+    {
+      "id": "library.t1_web",
+      "layer": "library",
+      "title": "T1 registry contracts without a styled @catch/web-ui component",
+      "measure": "t1WithoutStyledReact",
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 23
+      },
+      "owner": "UI blueprint Phase 7e",
+      "enforcement": "None yet: no check requires a T1 contract to have a styled React implementation."
+    },
+    {
+      "id": "library.priority_t2_web",
+      "layer": "library",
+      "title": "Priority-1 T2 entities the website needs, without a styled component",
+      "measure": "priorityWithoutStyledReact",
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 6
+      },
+      "owner": "UI blueprint Phase 7e",
+      "enforcement": "None yet."
+    },
+    {
+      "id": "library.headless_controls",
+      "layer": "library",
+      "title": "Registry contracts still mapped to an unstyled *Control that each app skins",
+      "measure": "headlessControls",
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 9
+      },
+      "owner": "UI blueprint Phase 7e (D10: *Control exports become package internals)",
+      "enforcement": "None yet."
+    },
+    {
+      "id": "library.cross_framework_parity",
+      "layer": "library",
+      "title": "T1 contracts without a cross-framework parity record",
+      "measure": "t1WithoutParityRecord",
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 25
+      },
+      "owner": "UI blueprint Phase 7f",
+      "enforcement": "None yet: Phase 7f adds a per-contract parity record backed by both catalogs and screenshot comparison. Until then every T1 contract counts as unverified."
+    },
+    {
+      "id": "screens.web_adapters",
+      "layer": "screens",
+      "title": "Per-app React adapters waiting for a shared component",
+      "measure": "webAdapters",
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 54
+      },
+      "owner": "UI blueprint Phase 7e",
+      "enforcement": "web:shared-ui-adoption classifies every export but does not ratchet the count."
+    },
+    {
+      "id": "screens.web_dead_exports",
+      "layer": "screens",
+      "title": "Unused React exports",
+      "measure": "webDeadExports",
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 109
+      },
+      "owner": "Website Phase 4 and Admin (Phase 7 'screens become assemblies')",
+      "enforcement": "None yet: the knip unused-code ratchet (tool/audit/check_unused_code.mjs) is in progress."
+    },
+    {
+      "id": "screens.web_single_use_shared",
+      "layer": "screens",
+      "title": "Shared React exports that only one feature renders",
+      "measure": "webSingleUseShared",
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 420
+      },
+      "owner": "Website Phase 4 and Admin (Phase 7 'screens become assemblies')",
+      "enforcement": "web:shared-ui-adoption classifies every export but does not ratchet the count."
+    },
+    {
+      "id": "screens.web_bare_markup",
+      "layer": "screens",
+      "title": "Bare HTML elements outside @catch/web-ui",
+      "measure": "webBareMarkup",
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 2292
+      },
+      "owner": "UI blueprint Phase 7g (ESLint no-bare-elements) with website Phase 4 and Admin migrations",
+      "enforcement": "None yet: the 7g ESLint preset adds the rule with shrink-only suppressions."
+    },
+    {
+      "id": "screens.web_page_css_lines",
+      "layer": "screens",
+      "title": "Lines of page-scoped CSS outside base.css and catch-language.css",
+      "measure": "webPageCssLines",
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 13048
+      },
+      "owner": "Website Phase 4 and Admin",
+      "enforcement": "None: suppressions cover raw values inside these stylesheets, not their size."
+    },
+    {
+      "id": "screens.flutter_inline_text_styles",
+      "layer": "screens",
+      "title": "Flutter Text widgets styled in place instead of by a CatchText role",
+      "measure": "flutterInlineTextStyles",
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 875
+      },
+      "owner": "Linear CAT-211 (CatchText migration)",
+      "enforcement": "None yet: a source scan until CAT-211 adds its lint."
+    },
+    {
+      "id": "screens.flutter_raw_chrome",
+      "layer": "screens",
+      "title": "Hand-built decoration, clipping and tap targets in Flutter feature code",
+      "measure": "flutterRawChrome",
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 102
+      },
+      "owner": "Widget consolidation pipeline (docs/plans/widget_consolidation_pipeline_spec.md)",
+      "enforcement": "Partial: catch_ui_lints rejects raw Material controls; decoration and gesture wrappers are unchecked."
+    },
+    {
+      "id": "screens.flutter_duplicate_clusters",
+      "layer": "screens",
+      "title": "Near-duplicate Flutter widget clusters awaiting a merge or keep decision",
+      "measure": "flutterDuplicateClusters",
+      "requiresSimilarity": true,
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 54
+      },
+      "owner": "Widget consolidation pipeline (docs/plans/widget_consolidation_pipeline_spec.md)",
+      "enforcement": "None: the similarity build reports clusters but nothing ratchets them."
+    },
+    {
+      "id": "screens.flutter_absorb_candidates",
+      "layer": "screens",
+      "title": "Feature widgets the library should absorb",
+      "measure": "flutterAbsorbCandidates",
+      "requiresSimilarity": true,
+      "target": 0,
+      "baseline": {
+        "date": "2026-10-23",
+        "value": 6
+      },
+      "owner": "Widget consolidation pipeline (docs/plans/widget_consolidation_pipeline_spec.md)",
+      "enforcement": "None."
+    }
+  ]
+}
