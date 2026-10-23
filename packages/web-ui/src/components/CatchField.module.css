@@ -193,3 +193,7 @@
   line-height: var(--catch-typography-web-context-line-height);
   font-variant-numeric: tabular-nums;
 }
+
+.field .counter:not([data-visible]) {
+  visibility: hidden;
+}

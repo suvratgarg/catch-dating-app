@@ -48,11 +48,22 @@ describe("CatchField input recipe", () => {
     const notes = screen.getByLabelText("Notes") as HTMLTextAreaElement;
     expect(notes.tagName).toBe("TEXTAREA");
     expect(notes.rows).toBe(4);
-    expect(screen.queryByText("2 / 300")).toBeNull();
+    expect(screen.getByText("2 / 300").hasAttribute("data-visible")).toBe(false);
     fireEvent.focus(notes);
-    expect(screen.getByText("2 / 300")).toBeTruthy();
+    expect(screen.getByText("2 / 300").hasAttribute("data-visible")).toBe(true);
     fireEvent.change(notes, {target: {value: "Hello"}});
-    expect(screen.getByText("5 / 300")).toBeTruthy();
+    expect(screen.getByText("5 / 300").hasAttribute("data-visible")).toBe(true);
+  });
+
+  it("keeps the counter's row when focus leaves, so controls below do not move", () => {
+    render(<CatchField recipe="input" title="Name" maxLength={80} value="Ada" />);
+
+    const name = screen.getByLabelText("Name");
+    fireEvent.focus(name);
+    const counter = screen.getByText("3 / 80");
+    fireEvent.blur(name);
+    expect(screen.getByText("3 / 80")).toBe(counter);
+    expect(counter.hasAttribute("data-visible")).toBe(false);
   });
 
   it("describes the field with its error before its helper", () => {

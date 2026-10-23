@@ -139,11 +139,13 @@ export function CatchField<T = string>(props: CatchFieldProps<T>) {
 
   let control: ReactNode;
   let counter: string | null = null;
+  let counterVisible = false;
   if (props.recipe === "input") {
     const multiline = props.maxLines !== 1 && props.maxLines !== undefined;
     const length = props.value !== undefined ? props.value.length : uncontrolledLength;
-    if (props.maxLength !== undefined && (focused || error)) {
+    if (props.maxLength !== undefined) {
       counter = `${length} / ${props.maxLength}`;
+      counterVisible = focused || error !== null;
     }
     const common = {
       "aria-describedby": support ? supportId : undefined,
@@ -275,7 +277,13 @@ export function CatchField<T = string>(props: CatchFieldProps<T>) {
               {support}
             </p>
           ) : null}
-          {counter ? <span aria-hidden="true" className={styles.counter}>{counter}</span> : null}
+          {/* The counter keeps its row while hidden: a focus change must not
+              move the controls below, or a click whose press and release
+              land on different elements is lost. */}
+          {counter ? (
+            <span aria-hidden="true" className={styles.counter}
+              data-visible={counterVisible || undefined}>{counter}</span>
+          ) : null}
         </div>
       ) : null}
     </div>
