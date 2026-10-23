@@ -4,14 +4,19 @@ This is the record of the App Privacy declaration that is live for `Catch Host`
 (`com.catchdates.host`, app id `6778927317`). It is reconciled against what the
 submitted build collects.
 
-The declaration was published in App Store Connect on 2026-10-20 and covers
-iOS `1.0.1` build `202610200000357901`, produced from source `171c1cb07`.
+The declaration was published in App Store Connect on 2026-10-20 with 18 data
+types. On 2026-10-23 at about 09:35 UTC it was updated with Performance Data and
+Other Data Types, so it now lists 20 types. It covers iOS `1.0.1` build
+`202610200000357901`, produced from source `171c1cb07`.
+
 Evidence comes from:
 
 - the ignored local evidence in `build/store-upload/`:
   `apple-privacy-published.png`, `apple-privacy-publish-confirmation.png` and
   `host-store-progress-20261020.json`
 - a source read of `171c1cb07` and `origin/main` `3c930f24b` on 2026-10-22
+- the 2026-10-23 update, published in App Store Connect with the owner's
+  approval and reported by the launch-readiness session
 
 ## Published App Privacy declaration
 
@@ -20,8 +25,8 @@ URL is set.
 
 **Tracking:** No. The product page has no "Data Used to Track You" section.
 
-**Data linked to the user:** all 18 published types. The product page has no
-"Data Not Linked to You" section.
+**Linkage:** 19 of the 20 published types are linked to the user. Performance
+Data is the only type not linked.
 
 | Apple category | Published data types |
 | --- | --- |
@@ -33,12 +38,15 @@ URL is set.
 | Identifiers | User ID, Device ID |
 | Purchases | Purchase History |
 | Usage Data | Product Interaction |
-| Diagnostics | Crash Data, Other Diagnostic Data |
+| Diagnostics | Crash Data, Other Diagnostic Data, Performance Data (added 2026-10-23, not linked) |
+| Other Data | Other Data Types (added 2026-10-23, linked) |
 
-Purposes visible in the local evidence:
+Known purposes:
 
 - Crash Data, Other Diagnostic Data and Purchase History are each declared as
   "Used for App Functionality".
+- Performance Data and Other Data Types are each declared for Analytics, with
+  no tracking.
 - The purposes for the other 15 types are not captured in the local evidence.
   The live App Privacy page is their record.
 
@@ -91,8 +99,8 @@ Both builds share these features and the same Host native graph
 | Product Interaction | Yes | Yes | Firebase Analytics screens and events; Google Maps SDK | Matches |
 | Crash Data | Yes | Yes | Crashlytics; Google Maps SDK | Matches |
 | Other Diagnostic Data | Yes | Yes | Crashlytics keys and logs; Firebase SDK telemetry | Matches |
-| **Performance Data** | **No** | **Yes, per SDK manifest** | The Google Maps 9.4.0 manifest declares `NSPrivacyCollectedDataTypePerformanceData` (not linked, Analytics). Firebase Sessions also ships with Crashlytics. | **Under-declared** |
-| **Other Data Types** | **No** | **Yes, per SDK manifest** | The Google Maps manifest declares `OtherDataTypes` (linked, Analytics), and so does the Firebase Messaging manifest (not linked, Analytics). | **Under-declared** (low confidence: the manifests do not say what the data is) |
+| Performance Data | Yes, since 2026-10-23 (Analytics, not linked) | Yes, per SDK manifest | The Google Maps 9.4.0 manifest declares `NSPrivacyCollectedDataTypePerformanceData` (not linked, Analytics). Firebase Sessions also ships with Crashlytics. | Matches |
+| Other Data Types | Yes, since 2026-10-23 (Analytics, linked) | Yes, per SDK manifest | The Google Maps manifest declares `OtherDataTypes` (linked, Analytics), and so does the Firebase Messaging manifest (not linked, Analytics). | Matches |
 | Health, Fitness, Credit Info, Sensitive Info, Audio, Gameplay, Browsing History, Search History, Advertising Data, Other Usage Data, Surroundings, Body | No | No | — | Matches |
 
 Possible purpose gaps. These are not visible in the local evidence:

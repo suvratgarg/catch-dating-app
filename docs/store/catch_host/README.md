@@ -21,7 +21,7 @@ attempt 2). The iOS build was promoted by run `39458936493`.
 | Document | Contents |
 | --- | --- |
 | `metadata.md` | Live App Store and Play listing values, age rating, content rating, declarations, seller and copyright |
-| `privacy_inventory.md` | The published App Privacy declaration (18 types), reconciled against the submitted build, plus the Play data declarations |
+| `privacy_inventory.md` | The published App Privacy declaration (20 types since 2026-10-23), reconciled against the submitted build, plus the Play data declarations |
 | `review_notes.md` | Reviewer access on file, the payment and in-app purchase posture, and review-facing facts about the submitted build |
 | `asset_manifest.json` | Machine-readable summary of the live submission and the asset locations |
 | `icon/app-icon-1024.png` | App icon from the Host prod icon set |
