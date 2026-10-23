@@ -30,6 +30,7 @@
         "privacy",
         "terms",
         "help",
+        "account_deletion",
         "not_found",
         "event_booking",
         "sales_demo",
@@ -78,6 +79,9 @@
           "$ref": "#/$defs/staticMeta"
         },
         "help": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "account_deletion": {
           "$ref": "#/$defs/staticMeta"
         },
         "not_found": {

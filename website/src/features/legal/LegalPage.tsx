@@ -49,6 +49,13 @@ export function LegalPage({page, effectiveDate, contact = fallbackPublicContact}
                     {section.bullets.map((bullet) => <li key={bullet}>{renderContactText(bullet, contact)}</li>)}
                   </ul>
                 ) : null}
+                {section.links ? (
+                  <ul>
+                    {section.links.map((link) => (
+                      <li key={link.href}><PlainLink href={link.href}>{link.label}</PlainLink></li>
+                    ))}
+                  </ul>
+                ) : null}
               </section>
             ))}
           </LegalDocumentSections>

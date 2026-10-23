@@ -7,7 +7,7 @@ import {useEffect} from "react";
 import {retiredMarketingDestination} from "../retiredMarketingRoutes";
 import {useLocation, useNavigate} from "react-router";
 import {PageShell} from "../../shared/site";
-import {pageClassFor, type PageKey} from "../pageMeta";
+import {isLegalPageKey, pageClassFor, type PageKey} from "../pageMeta";
 import {useHashScroll, useMarketingAnalytics, useMarketingCaptures} from "../usePageLifecycle";
 import {usePublicHostListings} from "../../features/organizers/usePublicEventListingsController";
 import {getHostListingRouteForPath} from "../../features/organizers/routing";
@@ -67,7 +67,7 @@ export function PublicPage({page, readAt, contact}: {page: PageKey; readAt: numb
     state.listing = listings.find(item => item.id === state.lookup || item.slug === state.lookup || item.path === state.lookup || item.legacyPaths?.includes(state.lookup ?? "")) ?? null;
     state.urlState = claimUrlStateForListing(state.listing, state.lookup);
     content = <Claim key={location.pathname + location.search} routeState={state} />;
-  } else if (page === "privacy" || page === "terms" || page === "help") {
+  } else if (isLegalPageKey(page)) {
     content = <Legal page={publishedLegalContent.pages[page]} effectiveDate={publishedLegalContent.effectiveDate} contact={contact} />;
   } else content = <Missing />;
   return <PageShell pageClassName={pageClassFor(page)}>{structured !== null && <script type="application/ld+json" dangerouslySetInnerHTML={{__html: publicJsonLd(structured)}} />}{content}<MarketingConsentBanner serverRendered /></PageShell>;

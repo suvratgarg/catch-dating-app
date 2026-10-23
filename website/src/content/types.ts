@@ -98,7 +98,7 @@ export interface EventMetaCopy {
 export interface WebsiteMetaCopy {
   readonly routes: Readonly<
     Record<
-      "sales_demo" | "home" | "visitor_discovery" | "host" | "host_apply" |  "event_runtime" | "event_rehearsal" | "event_assistance" | "event_offer" | "event_booking" | "event_invite" | "household_rsvp" | "public_form" | "organizers" | "claim" | "privacy" | "terms" | "help" | "not_found",
+      "sales_demo" | "home" | "visitor_discovery" | "host" | "host_apply" |  "event_runtime" | "event_rehearsal" | "event_assistance" | "event_offer" | "event_booking" | "event_invite" | "household_rsvp" | "public_form" | "organizers" | "claim" | "privacy" | "terms" | "help" | "account_deletion" | "not_found",
       StaticPageMetaCopy
     >
   >;
@@ -106,12 +106,19 @@ export interface WebsiteMetaCopy {
   readonly event: EventMetaCopy;
 }
 
-export type PublishedLegalPath = "/help/" | "/privacy/" | "/terms/";
+export type PublishedLegalPath = "/help/" | "/privacy/" | "/terms/" | "/delete-account/";
+export type PublishedLegalPageKey = "help" | "privacy" | "terms" | "account_deletion";
 
 export interface PublishedLegalSection {
   readonly heading: string;
   readonly paragraphs: readonly string[];
   readonly bullets?: readonly string[];
+  readonly links?: readonly PublishedLegalLink[];
+}
+
+export interface PublishedLegalLink {
+  readonly href: `/${string}/`;
+  readonly label: string;
 }
 
 export interface PublishedLegalPage {
@@ -140,5 +147,5 @@ export interface PublishedLegalContent {
     readonly footerBody: string;
   };
   readonly effectiveDate: string;
-  readonly pages: Readonly<Record<"help" | "privacy" | "terms", PublishedLegalPage>>;
+  readonly pages: Readonly<Record<PublishedLegalPageKey, PublishedLegalPage>>;
 }

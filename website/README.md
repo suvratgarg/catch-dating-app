@@ -196,11 +196,15 @@ option order before TypeScript runs. Site-wide app-store labels live in
 `src/content/site.ts`; `useAppDownloadCtas.ts` remains the adapter that reads
 environment URLs and combines them with that plain content data.
 
-`src/content/legal.json` owns the published `/privacy/`, `/terms/`, and `/help/`
-documents and confirmed operator/contact facts. `src/content/legal.ts` exposes
-that data to the route, while `src/content/site.ts` owns the public mailto and
-site-wide footer links. `npm run check:published-legal-content` rejects missing
-routes, empty sections, or placeholder text before TypeScript runs.
+`src/content/legal.json` owns the published `/privacy/`, `/terms/`, `/help/`,
+and `/delete-account/` documents and confirmed operator/contact facts.
+`/delete-account/` is the canonical store-listing account deletion resource;
+Help, Privacy, and Terms link to it instead of repeating its steps.
+`src/content/legal.ts` exposes that data to the route, while
+`src/content/site.ts` owns the public mailto and site-wide footer links.
+`npm run check:published-legal-content` rejects missing routes, empty sections,
+placeholder text, section links to unpublished paths, or a deletion page that
+omits the in-app or no-app routes, before TypeScript runs.
 
 Website analytics events inherit `content_version: "website_copy_v2"` from
 the central adapter. `npm run check:analytics-contract` verifies the immutable
