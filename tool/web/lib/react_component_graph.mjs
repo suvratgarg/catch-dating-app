@@ -4,9 +4,11 @@ import ts from "typescript";
 
 // Symbol-level graph of the exported React components in the web surfaces,
 // resolved by the TypeScript checker through barrels, re-exports and dynamic
-// imports.
+// imports. A surface's consumer roots are production code that renders its
+// components without exporting any of its own: the Next App Router routes in
+// website/app serve catchdates.com from website/src components.
 export const reactComponentSurfaces = Object.freeze([
-  {id: "website", root: "website/src", tsconfig: "website/tsconfig.json"},
+  {id: "website", root: "website/src", tsconfig: "website/tsconfig.json", consumerRoots: ["website/app"]},
   {id: "admin", root: "admin/src", tsconfig: "admin/tsconfig.json"},
   {id: "web-ui", root: "packages/web-ui/src", tsconfig: "packages/web-ui/tsconfig.json"},
 ]);
@@ -38,13 +40,15 @@ export function buildReactComponentGraph({repoRoot, surfaces = reactComponentSur
   const references = new Map();
   const scannedFiles = new Set();
   for (const surface of surfaces) {
-    const program = createProgram(root, surface);
+    const consumerRoots = (surface.consumerRoots ?? []).map((entry) => path.join(root, entry));
+    const program = createProgram(root, surface, consumerRoots);
     const checker = program.getTypeChecker();
     const surfaceRoot = path.join(root, surface.root);
-    const files = program.getSourceFiles().filter((file) =>
-      isWithin(realPath(file.fileName), surfaceRoot) &&
-      sourceExtensions.has(path.extname(file.fileName)) &&
-      !file.isDeclarationFile);
+    const sourceFiles = program.getSourceFiles().filter((file) =>
+      sourceExtensions.has(path.extname(file.fileName)) && !file.isDeclarationFile);
+    const files = sourceFiles.filter((file) => isWithin(realPath(file.fileName), surfaceRoot));
+    const consumerFiles = sourceFiles.filter((file) =>
+      consumerRoots.some((consumerRoot) => isWithin(realPath(file.fileName), consumerRoot)));
     for (const file of files) {
       const relative = repoRelative(root, file.fileName);
       scannedFiles.add(relative);
@@ -53,7 +57,7 @@ export function buildReactComponentGraph({repoRoot, surfaces = reactComponentSur
         components.set(component.id, component);
       }
     }
-    for (const file of files) collectReferences(file, checker, root, references);
+    for (const file of [...files, ...consumerFiles]) collectReferences(file, checker, root, references);
   }
   const resolved = [...references.values()]
     .filter((reference) => scannedFiles.has(reference.to.split("::")[0]))
@@ -64,13 +68,18 @@ export function buildReactComponentGraph({repoRoot, surfaces = reactComponentSur
   };
 }
 
-function createProgram(root, surface) {
+function createProgram(root, surface, consumerRoots) {
   const configPath = path.join(root, surface.tsconfig);
   const config = ts.readConfigFile(configPath, ts.sys.readFile);
   if (config.error) throw new Error(diagnosticText(config.error));
   const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, path.dirname(configPath));
   if (parsed.errors.length > 0) throw new Error(parsed.errors.map(diagnosticText).join("\n"));
-  return ts.createProgram({rootNames: parsed.fileNames, options: {...parsed.options, noEmit: true}});
+  const consumerFiles = consumerRoots.flatMap((consumerRoot) =>
+    ts.sys.readDirectory(consumerRoot, [...sourceExtensions]));
+  return ts.createProgram({
+    rootNames: [...parsed.fileNames, ...consumerFiles],
+    options: {...parsed.options, noEmit: true},
+  });
 }
 
 function declaredComponents(file, checker, relative, surface) {
