@@ -39,24 +39,32 @@ const findings = [
   ...validateRequiredSourceContracts(),
 ];
 
-if (args.has("--json")) {
-  process.stdout.write(`${JSON.stringify(inventory, null, 2)}\n`);
-}
 if (args.has("--write")) {
   fs.mkdirSync(path.dirname(fromRepo(inventoryOutput)), {recursive: true});
   fs.writeFileSync(fromRepo(inventoryOutput), `${JSON.stringify(inventory, null, 2)}\n`);
 }
-if (findings.length > 0) {
-  console.error(`React component inventory check failed (${findings.length} finding(s)):`);
-  findings.forEach((finding) => console.error(`- ${finding}`));
-  process.exit(1);
-}
-if (!args.has("--json")) {
-  console.log(
-    `React component inventory check passed: ${inventory.rows.length} exported components, 0 unmapped ` +
-    `(${formatSummary(inventory.summary)}).` +
-    (args.has("--write") ? ` Wrote ${inventoryOutput}.` : ""),
-  );
+process.exitCode = report({inventory, findings, json: args.has("--json"), wrote: args.has("--write")});
+
+/**
+ * Writes the result and returns the exit code. Never exits: process.exit()
+ * discards stdout still queued for a pipe, so a failing --json run would hand
+ * its caller truncated JSON.
+ */
+function report({inventory, findings, json, wrote, out = process.stdout, err = console.error}) {
+  if (json) out.write(`${JSON.stringify(inventory, null, 2)}\n`);
+  if (findings.length > 0) {
+    err(`React component inventory check failed (${findings.length} finding(s)):`);
+    findings.forEach((finding) => err(`- ${finding}`));
+    return 1;
+  }
+  if (!json) {
+    out.write(
+      `React component inventory check passed: ${inventory.rows.length} exported components, 0 unmapped ` +
+      `(${formatSummary(inventory.summary)}).` +
+      (wrote ? ` Wrote ${inventoryOutput}.` : "") + "\n",
+    );
+  }
+  return 0;
 }
 
 /**
@@ -178,6 +186,18 @@ function runSelfTest() {
   const workflowFindings = validateWorkflowContracts((relativePath) => workflowSources.get(relativePath) ?? "");
   if (!workflowFindings.some((finding) => finding.includes("npm run web:ui:test && npm run web:ui:typecheck"))) {
     throw new Error("self-test failed to reject a reusable workflow missing shared UI validation");
+  }
+  // A failing --json run must return its code, not exit, so piped output
+  // past the 64 KiB pipe buffer still reaches the caller intact.
+  const written = [];
+  const bigInventory = {rows: Array.from({length: 2000}, (_, index) => ({id: `fixture-${index}`, padding: "x".repeat(40)})), summary: {}};
+  const code = report({
+    inventory: bigInventory, findings: ["fixture finding"], json: true, wrote: false,
+    out: {write: (chunk) => written.push(chunk)}, err: () => {},
+  });
+  const parsed = JSON.parse(written.join(""));
+  if (code !== 1 || parsed.rows.length !== 2000 || written.join("").length < 64 * 1024) {
+    throw new Error("self-test failed: a failing --json report must write the whole inventory and return 1");
   }
   console.log("React component inventory self-test passed.");
 }
