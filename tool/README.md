@@ -734,6 +734,36 @@ Do not enable a production callable-backed client flag in the same release step
 that first creates the backend. Deploy and prove the backend while the flag is
 dark, then enable the client in a later merge.
 
+### What's live where
+
+`tool/firebase/report_environment_parity.mjs` is the one on-demand answer to
+"which features exist in which environment". It compares this checkout with
+live dev and prod (`--env dev,staging,prod` opts staging in) across deployable
+Functions, deployed Functions params against the GitHub variable the next
+deploy would materialize, GitHub environment variables and the jobs that read
+them, composite indexes and field overrides, Firestore and Storage rules, the
+dormant deploy policy, client callable gates, Remote Config, workflow-default
+and Dart-define build modes, and hard-coded source release holds. It reuses the
+deploy-parity, rules-drift, index-readiness/sanitizer, dormant-policy and
+params modules, runs only allowlisted metadata reads, and prints identity
+values as fingerprints. Nothing is stored; `--json` emits the full matrix.
+
+`tool/firebase/environment_difference_policy.json` classifies every
+environment-conditional switch as `identity`, `feature-gate` or
+`release-state`. Environments may differ only in identity. A feature gate that
+must temporarily differ needs one `allowedDifferences` entry with an owner,
+reason, `CAT-` Linear ticket and unexpired date; the report marks every other
+gate difference `UNDECLARED-DIFFERENCE`. `--policy-only` is the offline CI
+guard: a new Functions param, workflow variable, Dart define or Remote Config
+template key fails until it is classified, and an expired allowance fails
+until the gate is flipped or renewed.
+
+```sh
+node tool/firebase/report_environment_parity.mjs
+node tool/firebase/report_environment_parity.mjs --surfaces remote-config,function-params --json
+node tool/firebase/report_environment_parity.mjs --policy-only
+```
+
 ## App Check Debug Tokens
 
 Local simulator App Check debug tokens are registered through a narrow helper

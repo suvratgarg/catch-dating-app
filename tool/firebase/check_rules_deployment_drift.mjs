@@ -300,23 +300,39 @@ function formatReport(report, json) {
   return `${lines.join("\n")}\n`;
 }
 
-async function defaultFetchJson(url, accessToken) {
-  const response = await fetch(url, {
-    headers: {Authorization: `Bearer ${accessToken}`},
+// Local user Application Default Credentials without a quota project are
+// rejected by the Rules API. Retry once, billing the read to the inspected
+// project; service-account and explicit tokens never take this path.
+export async function fetchRulesApiJson(url, accessToken, {fetchImpl = fetch} = {}) {
+  let response = await requestRulesApi({accessToken, fetchImpl, url});
+  const quotaProject = new URL(url).pathname.match(/\/v1\/projects\/([^/]+)\//u)?.[1];
+  if (!response.ok && quotaProject && /quota project/iu.test(response.payload?.error?.message ?? "")) {
+    response = await requestRulesApi({accessToken, fetchImpl, quotaProject, url});
+  }
+  if (!response.ok) {
+    const detail = response.payload?.error?.message ?? `HTTP ${response.status}`;
+    throw new Error(`Firebase Rules API request failed: ${detail}`);
+  }
+  return response.payload;
+}
+
+async function requestRulesApi({accessToken, fetchImpl, quotaProject = null, url}) {
+  const headers = {Authorization: `Bearer ${accessToken}`};
+  if (quotaProject) headers["x-goog-user-project"] = decodeURIComponent(quotaProject);
+  const response = await fetchImpl(url, {
+    headers,
     signal: AbortSignal.timeout(defaultCommandTimeoutMs),
   });
   const body = await response.text();
-  let payload;
   try {
-    payload = body === "" ? {} : JSON.parse(body);
+    return {ok: response.ok, payload: body === "" ? {} : JSON.parse(body), status: response.status};
   } catch {
     throw new Error(`Firebase Rules API returned non-JSON HTTP ${response.status}.`);
   }
-  if (!response.ok) {
-    const detail = payload?.error?.message ?? `HTTP ${response.status}`;
-    throw new Error(`Firebase Rules API request failed: ${detail}`);
-  }
-  return payload;
+}
+
+function defaultFetchJson(url, accessToken) {
+  return fetchRulesApiJson(url, accessToken);
 }
 
 function defaultRunCommand(spec) {
