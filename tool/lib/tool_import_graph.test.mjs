@@ -60,3 +60,7 @@ test("the installed graph sees the runner import its selector", async () => {
   const pinned = JSON.parse(fs.readFileSync("tool/impact/package.json", "utf8")).devDependencies["dependency-cruiser"];
   assert.equal(cruise.version, pinned);
 });
+
+test("the pinned package ignores its own install for sparse checkouts without the root .gitignore", () => {
+  assert.match(fs.readFileSync("tool/impact/.gitignore", "utf8"), /^node_modules\/$/mu);
+});
