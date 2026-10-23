@@ -1,0 +1,31 @@
+/* Gap roles read the semantic gap variables declared in foundations.css. */
+.gap {
+  display: flex;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  list-style: none;
+}
+
+.gap[data-direction="vertical"] { flex-direction: column; }
+.gap[data-direction="horizontal"] { flex-direction: row; }
+.gap[data-wrap] { flex-wrap: wrap; }
+
+.gap[data-size="headerTitleToSubtitle"] { gap: var(--catch-gap-header-title-to-subtitle); }
+.gap[data-size="inline"] { gap: var(--catch-gap-inline); }
+.gap[data-size="related"] { gap: var(--catch-gap-related); }
+.gap[data-size="formField"] { gap: var(--catch-gap-form-field); }
+.gap[data-size="section"] { gap: var(--catch-gap-section); }
+.gap[data-size="majorSection"] { gap: var(--catch-gap-major-section); }
+
+.gap[data-main-axis="start"] { justify-content: flex-start; }
+.gap[data-main-axis="center"] { justify-content: center; }
+.gap[data-main-axis="end"] { justify-content: flex-end; }
+.gap[data-main-axis="spaceBetween"] { justify-content: space-between; }
+
+.gap[data-cross-axis="start"] { align-items: flex-start; }
+.gap[data-cross-axis="center"] { align-items: center; }
+.gap[data-cross-axis="end"] { align-items: flex-end; }
+.gap[data-cross-axis="stretch"] { align-items: stretch; }
+.gap[data-cross-axis="baseline"] { align-items: baseline; }

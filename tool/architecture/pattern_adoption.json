@@ -1118,11 +1118,6 @@
           "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
         },
         {
-          "id": "ARCH-UI-STATE-001-SWIPES-PRESENTATION-CATCHES-HUB-SCREEN-STATE",
-          "path": "lib/swipes/presentation/catches_hub_screen_state.dart",
-          "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."
-        },
-        {
           "id": "ARCH-UI-STATE-001-SWIPES-PRESENTATION-EVENT-RECAP-SCREEN-STATE",
           "path": "lib/swipes/presentation/event_recap_screen_state.dart",
           "reason": "File name matches *_state.dart and must be reviewed under the provider-free display-state pattern; migrate provider coupling or mark aligned with tests in a focused pass."

@@ -43,6 +43,8 @@ import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
+import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
@@ -3644,6 +3646,12 @@ List<Object> _hostCreateEventProviderOverrides({
       HostFixtureEventDraftRepository(drafts: drafts),
     ),
     eventRepositoryProvider.overrideWith((ref) => FakeEventRepository()),
+    // Saved-event photo recovery restores before the wizard renders; captures
+    // start from an empty in-memory journal instead of device storage.
+    commandJournalStorageProvider.overrideWith((ref) {
+      final storage = MemoryCommandJournalStorage();
+      return () async => storage;
+    }),
   ];
 }
 

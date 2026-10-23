@@ -6,6 +6,8 @@ import {fileURLToPath} from "node:url";
 
 const TASK_ID = /^[a-z0-9][a-z0-9._-]{2,79}$/u;
 const SHA_40 = /^[0-9a-f]{40}$/u;
+// Disposable single-task branches; shared, main and backup branches are retained.
+const disposableTaskBranch = /^(?:codex|claude)\/(?!backup\/)[^/].*$/u;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const NEW_TASK_BASE_REF = "refs/remotes/origin/main";
 
@@ -367,6 +369,25 @@ export function finishTask({
 // Retirement retains the existing claim until ordinary Git confirms removal.
 // External acceptance/ownership cannot be inferred from Git: the task owner
 // supplies current evidence after the manual review in the completion runbook.
+/**
+ * The live remote ref that holds the task's exact head: its own branch, or the
+ * pull request head ref GitHub keeps after a merge queue deletes that branch.
+ * Both are compared by exact SHA; a stale tracking ref proves nothing.
+ */
+function remoteRecoveryRef({repository, runner, branch, headSha}) {
+  const own = runner({cwd: repository.primaryRoot,
+    args: ["ls-remote", "--exit-code", "origin", `refs/heads/${branch}`]});
+  if (own.status === 0 && own.stdout.trim() === `${headSha}\trefs/heads/${branch}`) return `refs/heads/${branch}`;
+  const pulls = runner({cwd: repository.primaryRoot,
+    args: ["ls-remote", "origin", "refs/pull/*/head"]});
+  if (pulls.status !== 0) return null;
+  for (const line of pulls.stdout.split("\n")) {
+    const [sha, ref] = line.trim().split("\t");
+    if (sha === headSha && /^refs\/pull\/[1-9][0-9]*\/head$/u.test(ref ?? "")) return ref;
+  }
+  return null;
+}
+
 export function retireTask({repository, options, runner = runGit}) {
   const allowed = ["paths", "taskId", "worktree", "headSha", "acceptedSha",
     "by", "clearance", "apply"];
@@ -424,7 +445,7 @@ export function retireTask({repository, options, runner = runGit}) {
       block("other_user_worktree", "Have the owning OS user handle this worktree; do not remove another user's checkout.");
     }
     if (claim.taskId !== taskId) block("task_identity_mismatch", `Use the owning task ${claim.taskId}; preserve its claim.`);
-    if (!claim.branch.startsWith("codex/") || claim.branch.startsWith("codex/backup/")) {
+    if (!disposableTaskBranch.test(claim.branch)) {
       block("protected_branch", "Retain shared/main/recovery branches; use the task's disposable branch only.");
     }
     if (samePath(repository.currentRoot, worktreePath)) {
@@ -455,6 +476,7 @@ export function retireTask({repository, options, runner = runGit}) {
     }
     let equivalence = null;
     let uniqueCommits = null;
+    let recoveryRef = null;
     if (!blockers.has("main_not_current") && inspection.headSha === headSha) {
       const accepted = runner({cwd: repository.primaryRoot,
         args: ["merge-base", "--is-ancestor", acceptedSha, mainSha]});
@@ -487,9 +509,8 @@ export function retireTask({repository, options, runner = runGit}) {
       } else {
         uniqueCommits = Number(unique.stdout.trim());
         if (uniqueCommits > 0) {
-          const recovery = runner({cwd: repository.primaryRoot,
-            args: ["ls-remote", "--exit-code", "origin", `refs/heads/${claim.branch}`]});
-          if (recovery.status !== 0 || recovery.stdout.trim() !== `${headSha}\trefs/heads/${claim.branch}`) {
+          recoveryRef = remoteRecoveryRef({repository, runner, branch: claim.branch, headSha});
+          if (recoveryRef == null) {
             block("unique_history_not_remotely_preserved", "Push and verify the exact task branch as recovery; a stale tracking ref or squash commit does not preserve its unique commits.");
           }
         }
@@ -522,7 +543,7 @@ export function retireTask({repository, options, runner = runGit}) {
       block("manual_clearance_required", "The task owner must provide --by and --clearance evidence for CI/release acceptance, current owners/cross-clone claims, other users/runtime consumers, recovery, and deletion authority. Preserve previously denied targets.");
     }
     const evidence = {branch: claim.branch, equivalence, uniqueCommits, ignoredPaths,
-      retainedLocalRef: `refs/heads/${claim.branch}`, retainedRemoteRef: uniqueCommits > 0 ? `refs/heads/${claim.branch}` : "refs/heads/main",
+      retainedLocalRef: `refs/heads/${claim.branch}`, retainedRemoteRef: uniqueCommits > 0 ? recoveryRef : "refs/heads/main",
       retainedStashes: parseNulPaths(stashes.stdout.replaceAll("\n", "\0"))};
     if (blockers.size > 0) return result({...evidence, disposition: "retained"});
     if (options.apply !== true) return result({...evidence, disposition: "eligible", note: "Report only. --apply requires normal owner/queue deletion admission."});

@@ -5,10 +5,10 @@ import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {preview, assertSuccessfulSource, unpackPreview} from "./previewRelease.mjs";
 import {waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_validation.mjs";
+import {CANONICAL_REPOSITORY_ID, canonicalRepository} from "../../../tool/lib/canonical_repository.mjs";
 
 export const production = Object.freeze({service: "catch-website-next", channel: "next-release",
   workflow: ".github/workflows/website-next-promote.yml"});
-const repository = "suvratgarg/catch-dating-app";
 const directory = "build/next-promote";
 const hash = bytes => createHash("sha256").update(bytes).digest("hex");
 function command(name, args, options = {}) {
@@ -18,7 +18,7 @@ function command(name, args, options = {}) {
 const github = endpoint => JSON.parse(command("gh", ["api", "-H", "Cache-Control: no-cache", endpoint]));
 export function assertPromotionInvocation(env) {
   assert.equal(env.GITHUB_EVENT_NAME, "workflow_dispatch"); assert.equal(env.GITHUB_REF, "refs/heads/main");
-  assert.equal(env.GITHUB_REPOSITORY, repository);
+  const repository = canonicalRepository(env);
   assert.equal(env.GITHUB_WORKFLOW_REF, `${repository}/${production.workflow}@refs/heads/main`);
   assert.equal(env.GITHUB_RUN_ATTEMPT, "1", "Use a new dispatch after inspecting a failed or partial promotion");
   assert.match(env.GITHUB_SHA ?? "", /^[a-f0-9]{40}$/u);
@@ -29,7 +29,7 @@ export function selectPreviewArtifact({run, workflow, artifacts, sourceSha}) {
   assert.equal(run.path?.split("@")[0], preview.workflow);
   assert.equal(run.head_sha, sourceSha); assert.equal(run.head_branch, "main");
   assert.equal(run.event, "workflow_dispatch"); assert.equal(run.status, "completed"); assert.equal(run.conclusion, "success");
-  assert.equal(run.repository?.full_name, repository); assert.ok(Number.isSafeInteger(run.repository?.id) && run.repository.id > 0); assert.equal(run.head_repository?.id, run.repository?.id);
+  assert.equal(run.repository?.id, CANONICAL_REPOSITORY_ID); assert.equal(run.head_repository?.id, run.repository?.id);
   assert.ok(Number.isSafeInteger(run.id) && run.id > 0 && Number.isSafeInteger(run.run_attempt) && run.run_attempt > 0);
   const name = `next-preview-${sourceSha}-${run.id}-${run.run_attempt}`;
   const matches = artifacts.filter(item => item.name === name); assert.equal(matches.length, 1, "Exact preview artifact is missing or ambiguous");
@@ -79,7 +79,7 @@ export function assertProductionTarget(services) {
 }
 async function authorize() {
   assertPromotionInvocation(process.env);
-  const sourceSha = process.env.GITHUB_SHA;
+  const repository = canonicalRepository(process.env), sourceSha = process.env.GITHUB_SHA;
   const validation = await waitMainMarketingValidation({repository, sourceSha, maxWaitMs: 0});
   assert.equal(validation.validated, true); assert.ok(validation.captureBinding);
   const ci = github(`repos/${repository}/actions/runs/${validation.sourceCiRunId}`);
@@ -91,7 +91,7 @@ async function authorize() {
   return selectPreviewArtifact({run, workflow, artifacts, sourceSha});
 }
 async function prepare() {
-  const binding = await authorize();
+  const binding = await authorize(), repository = canonicalRepository();
   assert.ok(!fs.existsSync(directory)); fs.mkdirSync(directory, {recursive: true});
   fs.writeFileSync(`${directory}/authorization.json`, JSON.stringify(binding));
   const descriptor = fs.openSync(`${directory}/artifact.zip`, "wx");

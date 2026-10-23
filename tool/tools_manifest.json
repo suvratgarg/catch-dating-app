@@ -5,7 +5,8 @@
     "mandatoryCheckIds": [
       "docs:metadata",
       "meta:enforcement-integrity",
-      "meta:repository-root-hygiene"
+      "meta:repository-root-hygiene",
+      "operations:boundaries"
     ],
     "additionalFullPaths": [
       "functions/package.json",
@@ -14,8 +15,18 @@
       "package-lock.json",
       "pubspec.yaml",
       "pubspec.lock",
-      "tool/lib/**",
+      "tool/impact/**",
+      "tool/lib/tool_import_graph.mjs",
       "tool/run.test.mjs"
+    ],
+    "importGraphPaths": [
+      "tool/lib/**"
+    ],
+    "importOwnerCheckIds": [
+      "tool:runner"
+    ],
+    "manifestCheckIds": [
+      "tool:runner"
     ]
   },
   "tools": [
@@ -47,8 +58,33 @@
           "the runner executes manifest checks without task authority metadata",
           "manifest validation rejects vacuous tools before dispatch",
           "manifest validation rejects malformed safety and platform metadata",
-          "manifest validation rejects unregistered scripts and duplicate ids"
+          "manifest validation rejects unregistered scripts and duplicate ids",
+          "import-derived owners select only the tools that reach a changed file"
         ]
+      }
+    },
+    {
+      "id": "tool:import-owners",
+      "category": "meta",
+      "path": "tool/impact/import_owners.mjs",
+      "command": "node tool/impact/import_owners.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Derives which active tools reach each repository file through static imports, using the pinned dependency-cruiser in tool/impact, so affected-tool selection owns code inputs without hand-written globs.",
+      "impactPaths": [
+        "tool/lib/tool_import_graph.mjs",
+        "tool/lib/tool_import_graph.test.mjs",
+        "tool/impact/package.json",
+        "tool/impact/package-lock.json"
+      ],
+      "checks": [
+        "node --check tool/impact/import_owners.mjs",
+        "node --test tool/lib/tool_import_graph.test.mjs"
+      ],
+      "role": "generator",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/lib/tool_import_graph.test.mjs"
       }
     },
     {
@@ -70,6 +106,9 @@
         "node --check tool/check_enforcement_integrity.mjs",
         "node --test tool/check_enforcement_integrity.test.mjs",
         "node tool/check_enforcement_integrity.mjs"
+      ],
+      "impactPaths": [
+        "tool/check_enforcement_integrity.test.mjs"
       ],
       "vacuityProof": {
         "type": "test",
@@ -164,7 +203,9 @@
         ".gitignore",
         "tool/check_repository_root_hygiene.test.mjs",
         "tool/lib/path_glob.mjs",
-        "tool/lib/path_glob.test.mjs"
+        "tool/lib/path_glob.test.mjs",
+        "design/features/admin_*.feature.json",
+        "tool/policy/rules.json"
       ],
       "description": "Plans fail-closed CI, release, and deploy impact from the source-owned component graph and runs only explicitly allowlisted compile-codegen checks.",
       "checks": [
@@ -882,35 +923,6 @@
       "alsoCheckIds": [
         "firebase:affected-function-targets"
       ]
-    },
-    {
-      "id": "ci:pr-admission",
-      "category": "ci",
-      "path": "tool/ci/pr_ci_admission.mjs",
-      "command": "node --test tool/ci/pr_ci_admission.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/pr_ci_admission.test.mjs",
-        ".github/workflows/ci.yml",
-        ".github/workflows/pr-feedback.yml"
-      ],
-      "description": "Checks exclusive PR admission and exact tested source identity; deferred, stale or ambiguous PRs cannot receive full-validation success.",
-      "checks": [
-        "node --check tool/ci/pr_ci_admission.mjs",
-        "node --test tool/ci/pr_ci_admission.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node --test tool/ci/pr_ci_admission.test.mjs"
-      }
     },
     {
       "id": "ci:main-ci-baseline",
@@ -1716,7 +1728,8 @@
         "tool/lib/path_glob.mjs",
         "tool/lib/path_glob.test.mjs",
         "tool/lib/repository_snapshot.mjs",
-        "tool/lib/repository_snapshot.test.mjs"
+        "tool/lib/repository_snapshot.test.mjs",
+        "tool/policy/rules.json"
       ],
       "description": "Prints optional read-only guidance from the current Git SHA and source-owned scope, skills, rules, owner docs, and locally safe checks. It grants no execution or write authority and stores no receipt.",
       "checks": [
@@ -1834,8 +1847,13 @@
       },
       "impactPaths": [
         "tool/architecture/check_adopted_architecture_boundaries.test.mjs",
-        "tool/architecture/check_adopted_architecture_boundaries.mjs"
-      ]
+        "tool/architecture/check_adopted_architecture_boundaries.mjs",
+        "tool/architecture/pattern_adoption.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
     },
     {
       "id": "audit:app-architecture-exhibits",
@@ -1854,6 +1872,10 @@
         "node --test tool/architecture/check_app_architecture_exhibits.test.mjs",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
+      "impactPaths": [
+        "tool/architecture/check_app_architecture_exhibits.test.mjs",
+        "tool/architecture/pattern_adoption.json"
+      ],
       "vacuityProof": {
         "type": "test",
         "path": "tool/architecture/check_app_architecture_exhibits.test.mjs",
@@ -1861,6 +1883,10 @@
           "flags stale event-detail snippets in screen exhibit",
           "flags tracker anchor drift"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
       }
     },
     {
@@ -1909,8 +1935,14 @@
       },
       "impactPaths": [
         "tool/architecture/check_dependency_direction.test.mjs",
-        "tool/architecture/check_dependency_direction.mjs"
-      ]
+        "tool/architecture/check_dependency_direction.mjs",
+        "tool/architecture/dependency_direction_baseline.json",
+        "tool/architecture/pattern_adoption.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
     },
     {
       "id": "audit:mutation-error-surfaces",
@@ -1954,6 +1986,9 @@
         "node --test tool/architecture/check_host_crm_boundaries.test.mjs",
         "node tool/architecture/check_host_crm_boundaries.mjs"
       ],
+      "impactPaths": [
+        "tool/architecture/check_host_crm_boundaries.test.mjs"
+      ],
       "role": "gate",
       "rules": [
         "HOST-CRM-AUTHORITY-001"
@@ -1970,6 +2005,10 @@
           "flags visible Host CRM counts without ICU plurals",
           "flags application queue ownership outside Audience"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
       }
     },
     {
@@ -2036,7 +2075,14 @@
         "node --check tool/check_remote_ops_manifest.mjs",
         "node tool/check_remote_ops_manifest.mjs --check"
       ],
-      "role": "finder"
+      "impactPaths": [
+        "tool/remote_ops_manifest.json"
+      ],
+      "role": "finder",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
     },
     {
       "id": "admin:import-boundaries",
@@ -2075,7 +2121,9 @@
         "tool/web/react_dependency_graph.test.mjs",
         "packages/web-ui/src/**",
         "packages/web-ui/tsconfig.json",
-        "packages/web-ui/package.json"
+        "packages/web-ui/package.json",
+        "packages/web-config/**",
+        "tool/contracts/generated/**"
       ],
       "checks": [
         "node --check tool/web/react_dependency_graph.mjs",
@@ -2122,6 +2170,9 @@
         "node tool/web/check_website_copy_ownership.mjs --self-test",
         "node tool/web/check_website_copy_ownership.mjs --check --summary"
       ],
+      "impactPaths": [
+        "tool/web/website_copy_allowlist.json"
+      ],
       "role": "ratchet",
       "rules": [
         "WEB-COPY-001"
@@ -2164,6 +2215,9 @@
       "checks": [
         "dart run tool/copy/check_mobile_copy_ownership.dart --self-test",
         "dart run tool/copy/check_mobile_copy_ownership.dart"
+      ],
+      "impactPaths": [
+        "tool/copy/mobile_copy_allowlist.json"
       ],
       "role": "gate",
       "rules": [
@@ -2458,7 +2512,8 @@
         "admin/src/features/organizers/controllers/useOrganizerClaimReviewController.ts",
         "admin/src/features/organizers/controllers/useOrganizerPublishingController.ts",
         "admin/src/features/safety/controllers/useSafetyTriageController.ts",
-        "admin/src/features/users/controllers/useUserAnalyticsController.ts"
+        "admin/src/features/users/controllers/useUserAnalyticsController.ts",
+        "design/features/admin_*.feature.json"
       ],
       "command": "node tool/web/check_admin_pending_operations.mjs --check",
       "safety": "local-readonly",
@@ -2476,6 +2531,10 @@
       "vacuityProof": {
         "type": "self-test",
         "command": "node tool/web/check_admin_pending_operations.mjs --self-test"
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
       }
     },
     {
@@ -2663,7 +2722,10 @@
       "description": "Verifies all Catch UI violation and clean-allowance fixtures with one analyzer invocation and independent per-file assertions.",
       "impactPaths": [
         "tool/lib/lint_probe_batch.mjs",
-        "tool/lib/lint_probe_batch.test.mjs"
+        "tool/lib/lint_probe_batch.test.mjs",
+        "tool/design/generated/enforcement_expectations.json",
+        "widgetbook/lib/primitives/catalog/feedback.dart",
+        "widgetbook/lib/primitives/contracts/feedback.dart"
       ],
       "alsoCheckIds": [
         "lint:probe-batch-protocol"
@@ -2751,10 +2813,17 @@
         "node --check tool/design/build_lint_enforcement_tables.mjs",
         "node tool/design/build_lint_enforcement_tables.mjs --check"
       ],
+      "impactPaths": [
+        "tool/design/generated/enforcement_expectations.json"
+      ],
       "role": "generator",
       "rules": [
         "UI-LINT-001"
-      ]
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
     },
     {
       "id": "design:component-enforcement-coverage",
@@ -2768,6 +2837,11 @@
         "node --test tool/design/check_component_enforcement_coverage.test.mjs",
         "node tool/design/check_component_enforcement_coverage.mjs"
       ],
+      "impactPaths": [
+        "tool/design/check_component_enforcement_coverage.test.mjs",
+        "tool/design/generated/enforcement_expectations.json",
+        "widgetbook/lib/main.directories.g.dart"
+      ],
       "role": "gate",
       "rules": [
         "UI-LINT-001"
@@ -2778,6 +2852,10 @@
         "contains": [
           "requires decisions, executable verification, live waivers, ownership, and probes"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
       }
     },
     {
@@ -2950,6 +3028,10 @@
         "node --test tool/test/check_flutter_test_size.test.mjs",
         "node tool/test/check_flutter_test_size.mjs --check"
       ],
+      "impactPaths": [
+        "tool/test/check_flutter_test_size.test.mjs",
+        "tool/test/flutter_test_size_baseline.json"
+      ],
       "role": "ratchet",
       "rules": [
         "FLUTTER-TEST-MAINTAINABILITY-001"
@@ -2962,6 +3044,10 @@
           "known-bad new oversized Flutter test spec fails closed",
           "ratchet rejects growth and asks reductions to refresh the baseline"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
       }
     },
     {
@@ -3031,6 +3117,11 @@
       "checks": [
         "node --check tool/contracts/generate_schema_contracts.mjs",
         "node --test tool/contracts/schema_modules.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/contracts/schema_modules.test.mjs",
+        "tool/contracts/profile_requirements.test.mjs",
+        "tool/contracts/generated/**"
       ]
     },
     {
@@ -3058,6 +3149,9 @@
         "node --test tool/contracts/check_schema_fixtures.test.mjs",
         "node tool/contracts/check_schema_fixtures.mjs"
       ],
+      "impactPaths": [
+        "tool/contracts/generated/**"
+      ],
       "role": "gate",
       "rules": [
         "SCHEMA-FIXTURE-001"
@@ -3069,6 +3163,10 @@
           "fixture manifest maps every fixture exactly once",
           "schema fixture check validates all current fixtures"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
       }
     },
     {
@@ -3294,7 +3392,14 @@
         "node --check tool/data/recompute_public_profiles.mjs",
         "node --test tool/data/recompute_public_profiles.test.mjs"
       ],
-      "role": "generator"
+      "impactPaths": [
+        "tool/contracts/generated/**"
+      ],
+      "role": "generator",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
+      }
     },
     {
       "id": "data:repair-club-hosts",
@@ -3308,7 +3413,15 @@
         "node --check tool/data/recompute_club_host_profiles.mjs",
         "node --test tool/data/recompute_club_host_profiles.test.mjs"
       ],
-      "role": "generator"
+      "impactPaths": [
+        "tool/data/recompute_club_host_profiles.test.mjs",
+        "tool/data/lib/recompute_cli_test_support.mjs"
+      ],
+      "role": "generator",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
     },
     {
       "id": "data:repair-review-authors",
@@ -3322,7 +3435,15 @@
         "node --check tool/data/recompute_review_author_profiles.mjs",
         "node --test tool/data/recompute_review_author_profiles.test.mjs"
       ],
-      "role": "generator"
+      "impactPaths": [
+        "tool/data/recompute_review_author_profiles.test.mjs",
+        "tool/data/lib/recompute_cli_test_support.mjs"
+      ],
+      "role": "generator",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
     },
     {
       "id": "data:repair-club-member-counts",
@@ -3335,6 +3456,10 @@
       "checks": [
         "node --check tool/data/recompute_club_member_counts.mjs",
         "node --test tool/data/recompute_club_member_counts.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/recompute_club_member_counts.test.mjs",
+        "tool/data/lib/recompute_cli_test_support.mjs"
       ],
       "role": "generator"
     },
@@ -3349,6 +3474,10 @@
       "checks": [
         "node --check tool/data/recompute_event_aggregate_counts.mjs",
         "node --test tool/data/recompute_event_aggregate_counts.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/recompute_event_aggregate_counts.test.mjs",
+        "tool/data/lib/recompute_cli_test_support.mjs"
       ],
       "role": "generator"
     },
@@ -3365,7 +3494,14 @@
         "node --check tool/data/backfill_event_publication.mjs",
         "node --test tool/data/backfill_event_publication.test.mjs"
       ],
-      "role": "generator"
+      "impactPaths": [
+        "tool/contracts/generated/**"
+      ],
+      "role": "generator",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
+      }
     },
     {
       "id": "data:backfill-event-discovery",
@@ -3575,7 +3711,14 @@
         "node --check tool/data/backfill_profile_photos.mjs",
         "node --test tool/data/backfill_profile_photos.test.mjs"
       ],
-      "role": "generator"
+      "impactPaths": [
+        "tool/contracts/generated/**"
+      ],
+      "role": "generator",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
+      }
     },
     {
       "id": "data:strip-profile-coordinates",
@@ -3600,6 +3743,9 @@
       "checks": [
         "npm --prefix functions run build && node --test tool/data/profile_projection_parity.test.mjs"
       ],
+      "impactPaths": [
+        "tool/contracts/generated/**"
+      ],
       "role": "generator"
     },
     {
@@ -3618,7 +3764,8 @@
         "tool/demo/cross_paths_demo_core.test.mjs",
         "tool/demo/demo_seed_scenario_catalog.test.mjs",
         "tool/demo/demo_seed_scenario_catalog.mjs",
-        "tool/demo/demo_seed/scenarios/**"
+        "tool/demo/demo_seed/scenarios/**",
+        "tool/contracts/generated/**"
       ],
       "checks": [
         "node --test tool/demo/demo_seed_scenario_catalog.test.mjs",
@@ -3705,7 +3852,8 @@
         "tool/demo/seed_demo_data.mjs",
         "tool/demo/seed_demo_data_append.test.mjs",
         "tool/demo/seed_demo_data_schema.test.mjs",
-        "tool/demo/demo_seed/scenarios/**"
+        "tool/demo/demo_seed/scenarios/**",
+        "tool/contracts/generated/**"
       ],
       "checks": [
         "node --check tool/demo/seed_demo_data.mjs",
@@ -3725,7 +3873,14 @@
         "node --check tool/demo/demo_persona_catalog.mjs",
         "node --test tool/demo/demo_persona_catalog.test.mjs"
       ],
-      "role": "generator"
+      "impactPaths": [
+        "tool/contracts/generated/**"
+      ],
+      "role": "generator",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
     },
     {
       "id": "demo:persona-image-generation",
@@ -3739,7 +3894,14 @@
         "node --check tool/demo/demo_persona_image_generation.mjs",
         "node --test tool/demo/demo_persona_image_generation.test.mjs"
       ],
-      "role": "generator"
+      "impactPaths": [
+        "tool/contracts/generated/**"
+      ],
+      "role": "generator",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
     },
     {
       "id": "firebase:project-resolver",
@@ -5391,7 +5553,14 @@
         "node website/scripts/generateOrganizerListings.mjs --check",
         "node website/scripts/generateOrganizerListings.mjs --include-demo --output website/src/generated/hostListings.demo.json --check"
       ],
-      "role": "generator"
+      "impactPaths": [
+        "tool/contracts/generated/**"
+      ],
+      "role": "generator",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
+      }
     },
     {
       "id": "marketing:website-analytics-contract",
@@ -5591,7 +5760,7 @@
         "tool/marketing/export_hosted_captures.test.mjs",
         ".github/workflows/marketing-captures.yml",
         ".github/workflows/ci.yml",
-        "tool/ci/pr_ci_admission.mjs"
+        "artifacts/marketing/app-screenshots/**"
       ],
       "command": "node tool/marketing/export_hosted_captures.mjs",
       "safety": "local-writes-artifacts",
@@ -5629,7 +5798,8 @@
       "impactPaths": [
         "tool/marketing/capture_pipeline.test.mjs",
         "tool/marketing/frame_device_capture.dart",
-        "tool/marketing/frame_device_capture_test.dart"
+        "tool/marketing/frame_device_capture_test.dart",
+        "artifacts/marketing/app-screenshots/**"
       ]
     },
     {
@@ -5724,7 +5894,8 @@
       ],
       "role": "finder",
       "impactPaths": [
-        "tool/marketing/capture_pipeline.test.mjs"
+        "tool/marketing/capture_pipeline.test.mjs",
+        "artifacts/marketing/app-screenshots/**"
       ]
     },
     {
@@ -6087,7 +6258,8 @@
       "impactPaths": [
         "design/features/feature_coverage.json",
         "design/features/feature_coverage.schema.json",
-        "tool/design/check_feature_coverage.test.mjs"
+        "tool/design/check_feature_coverage.test.mjs",
+        "design/features/*.feature.json"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -6109,6 +6281,13 @@
         "node --check tool/design/build_feature_contracts.mjs",
         "node --test tool/design/build_feature_contracts.test.mjs",
         "node tool/design/build_feature_contracts.mjs --check"
+      ],
+      "impactPaths": [
+        "tool/design/build_feature_contracts.test.mjs",
+        "design/features/*.feature.json",
+        "design/features/feature_contract.schema.json",
+        "design/features/generated/**",
+        "widgetbook/lib/**"
       ],
       "role": "gate",
       "rules": [
@@ -6134,6 +6313,10 @@
           "rejects unknown action owners, actions, and dimensions",
           "rejects runtime and authority mismatches"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
       }
     },
     {
@@ -6144,17 +6327,14 @@
         "tool/design/build_host_feature_responsibilities.test.mjs",
         "design/features/host_feature_responsibilities.json",
         "design/features/host_feature_responsibilities.schema.json",
-        "design/features/host_home.feature.json",
-        "design/features/host_customers.feature.json",
-        "design/features/host_inbox.feature.json",
-        "design/features/host_organizers.feature.json",
         "design/source_packs/host-v2/host-coverage-manifest.json",
         "lib/routing/route_contract.dart",
         "lib/hosts/today/README.md",
         "lib/hosts/events/README.md",
         "lib/hosts/audience/README.md",
         "lib/hosts/inbox/README.md",
-        "lib/hosts/organizer/README.md"
+        "lib/hosts/organizer/README.md",
+        "design/features/*.feature.json"
       ],
       "command": "node tool/design/build_host_feature_responsibilities.mjs --check",
       "safety": "local-writes-generated",
@@ -6238,7 +6418,8 @@
         "lib/**",
         "apps/consumer/lib/**",
         "apps/host/lib/**",
-        "packages/catch_ui/lib/**"
+        "packages/catch_ui/lib/**",
+        "design/components/widget_naming_baseline.json"
       ],
       "command": "node tool/design/generate_widget_catalog.mjs --write",
       "safety": "local-writes-generated",
@@ -6249,7 +6430,11 @@
         "node --check tool/design/generate_widget_catalog.mjs",
         "node --test tool/design/generate_widget_catalog.test.mjs",
         "node tool/design/generate_widget_catalog.mjs --check"
-      ]
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
     },
     {
       "id": "design:widget-classification-generate",
@@ -6259,7 +6444,8 @@
         "tool/design/check_widget_classification.mjs",
         "tool/design/check_widget_classification.test.mjs",
         "tool/design/lib/new_widget_inventory_declarations.mjs",
-        "tool/design/lib/production_widget_roots.mjs"
+        "tool/design/lib/production_widget_roots.mjs",
+        "widgetbook/lib/main.directories.g.dart"
       ],
       "command": "node tool/design/generate_widget_classification.mjs --check",
       "safety": "local-readonly",
@@ -6270,7 +6456,11 @@
         "node --check tool/design/generate_widget_classification.mjs",
         "node --test tool/design/check_widget_classification.test.mjs",
         "node tool/design/generate_widget_classification.mjs --check"
-      ]
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
     },
     {
       "id": "design:figma-library-snapshot",
@@ -6378,7 +6568,8 @@
         "tool/design/component_naming.test.mjs",
         "design/components/catch.components.json",
         "packages/catch_ui/lib/**",
-        "lib/core/riverpod_ui/**"
+        "lib/core/riverpod_ui/**",
+        "widgetbook/lib/main.directories.g.dart"
       ],
       "command": "node tool/design/check_widget_classification.mjs",
       "safety": "local-readonly",
@@ -6402,6 +6593,10 @@
           "registered concept members may intentionally share a normalized collision",
           "canonical and uncontracted public widgets cannot evade normalized collisions"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
       }
     },
     {
@@ -6418,6 +6613,9 @@
         "node --test tool/design/check_widget_pattern_families.test.mjs",
         "node tool/design/check_widget_pattern_families.mjs --check"
       ],
+      "impactPaths": [
+        "widgetbook/lib/main.directories.g.dart"
+      ],
       "rules": [
         "WIDGET-PATTERN-FAMILY-001"
       ],
@@ -6429,6 +6627,10 @@
           "requires a target for unify",
           "rejects a required preview missing from generated Widgetbook directories"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
       }
     },
     {
@@ -6445,7 +6647,8 @@
         "apps/consumer/lib/**",
         "apps/host/lib/**",
         "widgetbook/lib/main.directories.g.dart",
-        "design/components/catch.components.json"
+        "design/components/catch.components.json",
+        "tool/design/lib/owned_composition_renderers.mjs"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -6525,7 +6728,8 @@
         "tool/ui_capture/route_inventory.json",
         "test/ui_captures/catalog/screen_capture_catalog.dart",
         "design/components/catch.components.json",
-        "design/screens/catch.screens.json"
+        "design/screens/catch.screens.json",
+        "design/features/generated/**"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -6604,7 +6808,9 @@
         "design/screens/catch.screens.schema.json",
         "tool/ui_capture/route_inventory.json",
         "test/ui_captures/catalog/screen_capture_catalog.dart",
-        "design/components/catch.components.json"
+        "design/components/catch.components.json",
+        "design/features/*.feature.json",
+        "design/features/generated/**"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -6720,7 +6926,14 @@
         "node --test tool/design/check_widgetbook_contract_refs.test.mjs",
         "node tool/design/check_widgetbook_contract_refs.mjs --check"
       ],
-      "role": "finder"
+      "impactPaths": [
+        "widgetbook/lib/**"
+      ],
+      "role": "finder",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
     },
     {
       "id": "design:widgetbook-coverage",
@@ -6735,10 +6948,17 @@
         "node tool/design/check_widgetbook_coverage.mjs --self-test",
         "node tool/design/check_widgetbook_coverage.mjs --check"
       ],
+      "impactPaths": [
+        "widgetbook/lib/main.directories.g.dart"
+      ],
       "role": "gate",
       "vacuityProof": {
         "type": "self-test",
         "command": "node tool/design/check_widgetbook_coverage.mjs --self-test"
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
       }
     },
     {
@@ -6748,7 +6968,8 @@
       "impactPaths": [
         "tool/design/generate_widget_classification.mjs",
         "tool/design/generate_widget_variant_inventory.mjs",
-        "tool/design/widgetbook_compare_server.test.mjs"
+        "tool/design/widgetbook_compare_server.test.mjs",
+        "widgetbook/lib/**"
       ],
       "command": "node tool/design/widgetbook_compare_server.mjs",
       "safety": "local-server",
@@ -6793,6 +7014,11 @@
         "node --test tool/design/check_screen_top_bar_contracts.test.mjs",
         "node tool/design/check_screen_top_bar_contracts.mjs --check"
       ],
+      "impactPaths": [
+        "tool/design/check_screen_top_bar_contracts.test.mjs",
+        "tool/architecture/pattern_adoption.json",
+        "tool/design/root_screen_composition_contracts.json"
+      ],
       "role": "gate",
       "rules": [
         "SCREEN-CHROME-001"
@@ -6812,6 +7038,10 @@
           "flags a direct pill hidden behind a local top-bar action list",
           "fails closed when the canonical app-bar forwarder drifts"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
       }
     },
     {
@@ -6890,6 +7120,9 @@
         "node --test tool/design/check_section_dividers.test.mjs",
         "node tool/design/check_section_dividers.mjs --summary --max 25 --fail-on high"
       ],
+      "impactPaths": [
+        "widgetbook/lib/**"
+      ],
       "role": "finder",
       "rules": [
         "DESIGN-PRIMITIVES-001",
@@ -6906,6 +7139,10 @@
           "flags thin feature wrappers around CatchSection field rows",
           "flags feature row groups that manually assign sibling field dividers"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
       }
     },
     {
@@ -6920,6 +7157,10 @@
         "node --check tool/design/check_section_headers.mjs",
         "node --test tool/design/check_section_headers.test.mjs",
         "node tool/design/check_section_headers.mjs --summary --max 25 --fail-on high"
+      ],
+      "impactPaths": [
+        "tool/design/check_section_headers.test.mjs",
+        "widgetbook/lib/**"
       ],
       "role": "finder",
       "rules": [
@@ -6936,6 +7177,10 @@
           "flags titled feature-local surface sections for review",
           "flags feature-local card shells with a section header and actions"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
       }
     },
     {
@@ -7207,6 +7452,10 @@
         "node --test tool/audit/check_fn_readme_inventory.test.mjs",
         "node tool/audit/check_fn_readme_inventory.mjs"
       ],
+      "impactPaths": [
+        "tool/audit/check_fn_readme_inventory.test.mjs",
+        "tool/audit/fn_readme_inventory_baseline.json"
+      ],
       "role": "ratchet",
       "rules": [
         "FN-DOC-001"
@@ -7220,6 +7469,10 @@
           "scanFunctionReadmeInventory passes documented exports",
           "scanFunctionReadmeInventory ratchets baseline findings"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
       }
     },
     {
@@ -7228,7 +7481,8 @@
       "path": "tool/design/build_widget_similarity.mjs",
       "impactPaths": [
         "tool/design/generate_widget_classification.mjs",
-        "tool/design/build_widget_similarity.test.mjs"
+        "tool/design/build_widget_similarity.test.mjs",
+        "widgetbook/lib/**"
       ],
       "command": "node tool/design/build_widget_similarity.mjs --check",
       "safety": "local-writes-build-artifacts",
@@ -7305,6 +7559,13 @@
         "node tool/web/check_shared_web_ui_adoption.mjs --self-test",
         "node tool/web/check_shared_web_ui_adoption.mjs --check"
       ],
+      "impactPaths": [
+        "tool/web/lib/react_component_graph.mjs",
+        "tool/web/lib/react_component_inventory.mjs",
+        "tool/web/lib/react_component_inventory_probes.mjs",
+        "packages/web-config/**",
+        "tool/contracts/generated/**"
+      ],
       "role": "gate",
       "rules": [
         "WEB-UI-COMPONENT-001"
@@ -7312,6 +7573,10 @@
       "vacuityProof": {
         "type": "self-test",
         "command": "node tool/web/check_shared_web_ui_adoption.mjs --self-test"
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
       }
     },
     {
@@ -7327,6 +7592,10 @@
         "node tool/web/check_react_controller_test_targets.mjs --self-test",
         "node tool/web/check_react_controller_test_targets.mjs --check"
       ],
+      "impactPaths": [
+        "tool/web/react_controller_test_targets.json",
+        "packages/web-config/**"
+      ],
       "role": "gate",
       "rules": [
         "WEB-CONTROLLER-TEST-001"
@@ -7334,6 +7603,10 @@
       "vacuityProof": {
         "type": "self-test",
         "command": "node tool/web/check_react_controller_test_targets.mjs --self-test"
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
       }
     },
     {
@@ -7522,6 +7795,9 @@
         "npm --workspace catch-marketing run check:storybook-config",
         "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check"
       ],
+      "impactPaths": [
+        "design/visual_baselines/website/**"
+      ],
       "role": "gate",
       "rules": [
         "WEB-VISUAL-001"
@@ -7543,7 +7819,14 @@
       "checks": [
         "node --check operations/src/cli/main.mjs",
         "node operations/src/cli/main.mjs help"
-      ]
+      ],
+      "impactPaths": [
+        "operations/src/**"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
+      }
     },
     {
       "id": "operations:admin-cli",
@@ -7561,7 +7844,15 @@
         "node --check operations/src/admin-cli/main.mjs",
         "node operations/src/admin-cli/main.mjs loop --all",
         "node --test operations/test/admin-cli.test.mjs"
-      ]
+      ],
+      "impactPaths": [
+        "operations/test/admin-cli.test.mjs",
+        "operations/src/**"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
+      }
     },
     {
       "id": "operations:admin-action-catalog",
@@ -7580,6 +7871,10 @@
         "node --test operations/test/admin-action-catalog.test.mjs",
         "node operations/scripts/check-admin-action-catalog.mjs"
       ],
+      "impactPaths": [
+        "operations/test/admin-action-catalog.test.mjs",
+        "operations/src/**"
+      ],
       "vacuityProof": {
         "type": "test",
         "path": "operations/test/admin-action-catalog.test.mjs",
@@ -7587,6 +7882,10 @@
           "catalog checker rejects GUI callable and workflow membership drift",
           "catalog checker rejects mutations without explicit confirmation"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
       }
     },
     {
@@ -7688,6 +7987,10 @@
         "node --test operations/test/boundaries.test.mjs",
         "node operations/scripts/check-boundaries.mjs"
       ],
+      "impactPaths": [
+        "operations/test/boundaries.test.mjs",
+        "operations/test/helpers.mjs"
+      ],
       "vacuityProof": {
         "type": "test",
         "path": "operations/test/boundaries.test.mjs",
@@ -7700,6 +8003,10 @@
           "boundary checker rejects executable tool imports from operations",
           "computed dynamic imports"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
       }
     },
     {
@@ -7719,6 +8026,10 @@
         "node --test operations/test/workflow-manifest.test.mjs",
         "node operations/scripts/check-workflow-manifest.mjs"
       ],
+      "impactPaths": [
+        "operations/test/workflow-manifest.test.mjs",
+        "operations/src/**"
+      ],
       "vacuityProof": {
         "type": "test",
         "path": "operations/test/workflow-manifest.test.mjs",
@@ -7727,6 +8038,10 @@
           "workflow manifest fails on stage or lifecycle ordering drift",
           "workflow manifest fails when the loaded source inventory drifts"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
       }
     },
     {
@@ -7827,6 +8142,9 @@
         "node --check tool/data/migrate_clubs_to_organizers.mjs",
         "node --test tool/data/migrate_clubs_to_organizers.test.mjs"
       ],
+      "impactPaths": [
+        "tool/contracts/generated/**"
+      ],
       "role": "generator",
       "rules": [
         "MIGRATION-CONTRACT-001",
@@ -7904,6 +8222,10 @@
         "node --test tool/design/generate_flutter_field_surface_inventory.test.mjs",
         "node tool/design/generate_flutter_field_surface_inventory.mjs --check"
       ],
+      "impactPaths": [
+        "tool/design/generate_flutter_field_surface_inventory.test.mjs",
+        "design/components/flutter_field_surface_adoption.json"
+      ],
       "role": "gate",
       "rules": [
         "DESIGN-PRIMITIVES-001"
@@ -7916,6 +8238,10 @@
           "rejects stale expected anchor counts",
           "rejects duplicate callsite classifications"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
       }
     },
     {
@@ -7992,6 +8318,10 @@
         "node --test tool/design/check_root_screen_composition_contracts.test.mjs",
         "node tool/design/check_root_screen_composition_contracts.mjs --check"
       ],
+      "impactPaths": [
+        "tool/design/check_root_screen_composition_contracts.test.mjs",
+        "tool/design/root_screen_composition_contracts.json"
+      ],
       "role": "gate",
       "rules": [
         "ROOT-SCREEN-COMPOSITION-001"
@@ -8007,6 +8337,10 @@
           "flags a new StatefulShellBranch until it is registered",
           "flags a raw SliverFillRemaining empty state in presentation code"
         ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
       }
     },
     {

@@ -998,10 +998,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardEventFocusRailTextEventFocus => 'Event Focus';
 
   @override
-  String get dashboardEventFocusRailLabelEventFocusCarousel =>
-      'Event focus carousel';
-
-  @override
   String get eventSuccessEventSuccessCompanionScreenTitleEventCompanion =>
       'Event companion';
 
@@ -3543,6 +3539,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardEventFocusRailLabelReviewPending => 'Review pending';
 
   @override
+  String dashboardEventFocusListLabelTimeLeft({required String timeLeft}) {
+    return '$timeLeft left';
+  }
+
+  @override
+  String dashboardEventFocusListLabelStaticTimeLeft({required int hours}) {
+    return '${hours}h left';
+  }
+
+  @override
+  String dashboardEventFocusListLabelAttendeesCheckedIn({
+    required int attendedCount,
+  }) {
+    return '$attendedCount checked in';
+  }
+
+  @override
   String get eventSuccessEventSuccessSetupBodyLabelNoTimer => 'No timer';
 
   @override
@@ -3911,21 +3924,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object body,
   }) {
     return '$title. $body';
-  }
-
-  @override
-  String dashboardEventFocusRailSemanticlabelEventValue1OfLength({
-    required Object value1,
-    required Object length,
-  }) {
-    return 'Event $value1 of $length';
-  }
-
-  @override
-  String dashboardEventFocusRailLabelCatchSwipecountdown({
-    required Object swipeCountdown,
-  }) {
-    return 'Catch · $swipeCountdown';
   }
 
   @override
@@ -7697,22 +7695,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object length,
   }) {
     return '$length events';
-  }
-
-  @override
-  String dashboardEventFocusRailVisiblecopyEventValue1OfLength({
-    required Object value1,
-    required Object length,
-  }) {
-    return 'Event $value1 of $length';
-  }
-
-  @override
-  String dashboardEventFocusRailVisiblecopyEventSelectedindexOfLength({
-    required Object selectedIndex,
-    required Object length,
-  }) {
-    return 'Event $selectedIndex of $length';
   }
 
   @override
@@ -25258,6 +25240,78 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsEventGuestDetailsSave => 'Save guest information';
+
+  @override
+  String get hostsEventPhotoRecoveryTitle => 'Event saved · photos pending';
+
+  @override
+  String get hostsEventPhotoRecoveryUploading =>
+      'Your event is saved. Photos are still uploading. You can leave and return to this event’s photo recovery.';
+
+  @override
+  String get hostsEventPhotoRecoveryFailed =>
+      'Your event is saved. Some photos could not upload. Retry photos on this event.';
+
+  @override
+  String get hostsEventPhotoRecoveryUnknown =>
+      'Your event is saved. We are checking whether its photos were attached. Retry to confirm the same request safely.';
+
+  @override
+  String get hostsEventPhotoRecoveryConflict =>
+      'The event’s photos changed elsewhere. Your saved recovery is preserved. Open the event to review its photos.';
+
+  @override
+  String get hostsEventPhotoRecoveryCleanup =>
+      'Your event is saved. Photo cleanup is still pending. Retry cleanup; the saved recovery will remain until it is resolved.';
+
+  @override
+  String get hostsEventPhotoRecoveryUnsettled =>
+      'An earlier photo upload has an unresolved outcome. Its recovery is preserved for review, even after other photos are saved.';
+
+  @override
+  String get hostsEventPhotoRecoveryMissing =>
+      'Select photos again to retry. Selected photo files do not survive every restart.';
+
+  @override
+  String get hostsEventPhotoRecoveryStorage =>
+      'Your event is saved, but photo recovery could not be saved on this device. Keep this screen open and retry before leaving.';
+
+  @override
+  String get hostsEventPhotoRecoveryRetry => 'Retry photos';
+
+  @override
+  String get hostsEventPhotoRecoveryCheck => 'Check photo status';
+
+  @override
+  String get hostsEventPhotoRecoveryReselect => 'Select photos again';
+
+  @override
+  String get hostsEventPhotoRecoveryCleanupAction => 'Retry cleanup';
+
+  @override
+  String get hostsEventPhotoRecoveryLeaveTitle => 'Leave photo recovery?';
+
+  @override
+  String get hostsEventPhotoRecoveryLeaveMessage =>
+      'Your event is already saved. This device could not save its photo recovery. Leaving may lose the selected photos. You can manage the saved event later.';
+
+  @override
+  String get hostsEventPhotoRecoveryLeave => 'Leave saved event';
+
+  @override
+  String get hostsEventPhotoRecoverySession =>
+      'Your sign-in session changed. Reopen event creation to recover the saved event for your current account.';
+
+  @override
+  String get hostsEventPhotoRecoverySavedTitle => 'Your event is saved.';
+
+  @override
+  String get hostsEventPhotoRecoveryInactive =>
+      'This saved event is no longer active. Open the event to review its current status.';
+
+  @override
+  String get hostsEventPhotoRecoveryRefresh =>
+      'Your photos are attached. Check photo status to refresh the current event details.';
 
   @override
   String get hostAccountDeletionConfirmation =>

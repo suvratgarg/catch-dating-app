@@ -71,8 +71,10 @@ async function verifyCatalogState(origins, visible, name = fixture.name) {
     const data = await request(origin, "/api/public-catalog", 200,
       {headers: {Cookie: "viewer=private-user", Authorization: "Bearer private-viewer"}});
     assert.equal(JSON.parse(data.body).listings.some(listing => listing.id === "next-proof"), visible);
+    // The fixture is an imported (programmatic) listing, which is never indexed.
+    if (visible) assert(html.body.includes('content="noindex, follow"'));
     const sitemap = await request(origin, "/sitemap.xml", 200);
-    assert.equal(sitemap.body.includes("/organizers/next-proof/"), visible);
+    assert(!sitemap.body.includes("/organizers/next-proof/"));
   }
 }
 try {

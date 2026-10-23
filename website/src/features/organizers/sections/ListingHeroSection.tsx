@@ -2,10 +2,7 @@ import {organiserProfileCopy} from "../../../content/organiserProfile";
 import {ProfileContext, ProfileNavigation} from "../../../shared/ui/primitives/organiserProfile";
 import {accountCopy} from "../../../content/account";
 import {organizerPresenceCopy} from "@content/organizerPresence";
-import {
-  organizerHeroMediaForSlug,
-  organizerListingCopy,
-} from "@content/organizer";
+import {organizerListingCopy} from "@content/organizer";
 import {
   ActivityMark,
   StatusBadge,
@@ -35,7 +32,7 @@ export function ListingHeroSection({listing}: {listing: HostListing}) {
       <ListingPolaroid
         caption={location}
         fallback={<ActivityMark listing={listing} size="lg" />}
-        media={organizerHeroMediaForSlug(listing.slug)}
+        media={null}
         provenance={policy.badge.label}
         title={listing.name}
         titleId="listing-profile-title"
@@ -159,10 +156,6 @@ export function ListingProfileInformation({listing}: {listing: HostListing}) {
           {
             label: organizerListingCopy.detail.claimStateLabel,
             value: claimStateLabel(policy.claimState),
-          },
-          {
-            label: organizerListingCopy.detail.surfaceLabel,
-            value: listing.authority?.appVisibility === "hidden" ? "Web only" : "In Catch",
           },
           {
             label: organizerListingCopy.detail.freshnessLabel,

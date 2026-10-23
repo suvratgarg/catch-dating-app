@@ -60,6 +60,26 @@ if (!defines.FIREBASE_APP_CHECK_WEB_RECAPTCHA_ENTERPRISE_SITE_KEY) {
   );
   process.exit(1);
 }
+
+// Store review requires in-app Privacy, Terms and Help; empty values would
+// silently hide those entries in the built app.
+const legalUrlNames = ["CATCH_PRIVACY_POLICY_URL", "CATCH_TERMS_URL", "CATCH_HELP_URL"];
+const legalUrls = new Set();
+for (const name of legalUrlNames) {
+  let url = null;
+  try {
+    url = new URL(defines[name] ?? "");
+  } catch {}
+  if (url?.protocol !== "https:" || !url.hostname) {
+    console.error(`${name} in ${defineFile} must be an https URL.`);
+    process.exit(1);
+  }
+  legalUrls.add(url.href);
+}
+if (legalUrls.size !== legalUrlNames.length) {
+  console.error(`Privacy, Terms and Help URLs in ${defineFile} must be distinct routes.`);
+  process.exit(1);
+}
 NODE
 
 IFS=$'\t' read -r android_config ios_config macos_config web_config <<<"$(

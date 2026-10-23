@@ -1792,17 +1792,11 @@ abstract class AppLocalizations {
   /// **'Find an event near me'**
   String get dashboardEmptyHeroCardLabelFindAnEventNear;
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (Text).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Event Focus'**
   String get dashboardEventFocusRailTextEventFocus;
-
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Event focus carousel'**
-  String get dashboardEventFocusRailLabelEventFocusCarousel;
 
   /// Product copy used by lib/event_success/presentation/event_success_companion_screen.dart (title).
   ///
@@ -6131,11 +6125,31 @@ abstract class AppLocalizations {
   /// **'How Catch works'**
   String get dashboardDashboardEmptyTitleHowCatchWorks;
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Review pending'**
   String get dashboardEventFocusRailLabelReviewPending;
+
+  /// Live time remaining on an open Catch window card on Home.
+  ///
+  /// In en, this message translates to:
+  /// **'{timeLeft} left'**
+  String dashboardEventFocusListLabelTimeLeft({required String timeLeft});
+
+  /// Static, rounded-up countdown when animations are disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h left'**
+  String dashboardEventFocusListLabelStaticTimeLeft({required int hours});
+
+  /// Attendee count on an open Catch window card; this is not a remaining candidate count.
+  ///
+  /// In en, this message translates to:
+  /// **'{attendedCount} checked in'**
+  String dashboardEventFocusListLabelAttendeesCheckedIn({
+    required int attendedCount,
+  });
 
   /// Product copy used by lib/event_success/presentation/event_success_setup_body.dart (label).
   ///
@@ -6778,24 +6792,7 @@ abstract class AppLocalizations {
     required Object body,
   });
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (semanticLabel).
-  ///
-  /// In en, this message translates to:
-  /// **'Event {value1} of {length}'**
-  String dashboardEventFocusRailSemanticlabelEventValue1OfLength({
-    required Object value1,
-    required Object length,
-  });
-
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'Catch · {swipeCountdown}'**
-  String dashboardEventFocusRailLabelCatchSwipecountdown({
-    required Object swipeCountdown,
-  });
-
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{signedUpCount}/{capacityLimit}'**
@@ -10782,7 +10779,7 @@ abstract class AppLocalizations {
   /// **'This screen hit a temporary app error. Please go back or try again in a moment.'**
   String get coreCatchFrameworkErrorViewTextThisScreenHitA;
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{shortWeekday}, {day} {shortMonth} · {timeRangeLabel}'**
@@ -12270,13 +12267,13 @@ abstract class AppLocalizations {
   /// **'MEMBER · MANAGE ANYTIME'**
   String get clubsClubDetailDockVisiblecopyMemberManageAnytime;
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (visibleCopy).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'1 event'**
   String get dashboardEventFocusRailVisiblecopy1Event;
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (visibleCopy).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{length} events'**
@@ -12284,25 +12281,7 @@ abstract class AppLocalizations {
     required Object length,
   });
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Event {value1} of {length}'**
-  String dashboardEventFocusRailVisiblecopyEventValue1OfLength({
-    required Object value1,
-    required Object length,
-  });
-
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (visibleCopy).
-  ///
-  /// In en, this message translates to:
-  /// **'Event {selectedIndex} of {length}'**
-  String dashboardEventFocusRailVisiblecopyEventSelectedindexOfLength({
-    required Object selectedIndex,
-    required Object length,
-  });
-
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (visibleCopy).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{value1}/{cardCount}'**
@@ -13021,55 +13000,55 @@ abstract class AppLocalizations {
     required Object max,
   });
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).
   ///
   /// In en, this message translates to:
   /// **'View event'**
   String get dashboardEventFocusRailLabelViewEvent;
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Check in'**
   String get dashboardEventFocusRailLabelCheckIn;
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Directions'**
   String get dashboardEventFocusRailLabelDirections;
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Add to calendar'**
   String get dashboardEventFocusRailLabelAddToCalendar;
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Start catching'**
   String get dashboardEventFocusRailLabelStartCatching;
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (label).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Write review'**
   String get dashboardEventFocusRailLabelWriteReview;
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (badgeLabel).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (badgeLabel).
   ///
   /// In en, this message translates to:
   /// **'Check-in open'**
   String get dashboardEventFocusRailBadgelabelCheckInOpen;
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (badgeLabel).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (badgeLabel).
   ///
   /// In en, this message translates to:
   /// **'After the event'**
   String get dashboardEventFocusRailBadgelabelAfterTheEvent;
 
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_rail.dart (badgeLabel).
+  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (badgeLabel).
   ///
   /// In en, this message translates to:
   /// **'Next event'**
@@ -40757,6 +40736,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save guest information'**
   String get hostsEventGuestDetailsSave;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Event saved · photos pending'**
+  String get hostsEventPhotoRecoveryTitle;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event is saved. Photos are still uploading. You can leave and return to this event’s photo recovery.'**
+  String get hostsEventPhotoRecoveryUploading;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event is saved. Some photos could not upload. Retry photos on this event.'**
+  String get hostsEventPhotoRecoveryFailed;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event is saved. We are checking whether its photos were attached. Retry to confirm the same request safely.'**
+  String get hostsEventPhotoRecoveryUnknown;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'The event’s photos changed elsewhere. Your saved recovery is preserved. Open the event to review its photos.'**
+  String get hostsEventPhotoRecoveryConflict;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event is saved. Photo cleanup is still pending. Retry cleanup; the saved recovery will remain until it is resolved.'**
+  String get hostsEventPhotoRecoveryCleanup;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'An earlier photo upload has an unresolved outcome. Its recovery is preserved for review, even after other photos are saved.'**
+  String get hostsEventPhotoRecoveryUnsettled;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Select photos again to retry. Selected photo files do not survive every restart.'**
+  String get hostsEventPhotoRecoveryMissing;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event is saved, but photo recovery could not be saved on this device. Keep this screen open and retry before leaving.'**
+  String get hostsEventPhotoRecoveryStorage;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry photos'**
+  String get hostsEventPhotoRecoveryRetry;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Check photo status'**
+  String get hostsEventPhotoRecoveryCheck;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Select photos again'**
+  String get hostsEventPhotoRecoveryReselect;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry cleanup'**
+  String get hostsEventPhotoRecoveryCleanupAction;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave photo recovery?'**
+  String get hostsEventPhotoRecoveryLeaveTitle;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event is already saved. This device could not save its photo recovery. Leaving may lose the selected photos. You can manage the saved event later.'**
+  String get hostsEventPhotoRecoveryLeaveMessage;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave saved event'**
+  String get hostsEventPhotoRecoveryLeave;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your sign-in session changed. Reopen event creation to recover the saved event for your current account.'**
+  String get hostsEventPhotoRecoverySession;
+
+  /// Saved inactive event recovery title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event is saved.'**
+  String get hostsEventPhotoRecoverySavedTitle;
+
+  /// Saved inactive event recovery message.
+  ///
+  /// In en, this message translates to:
+  /// **'This saved event is no longer active. Open the event to review its current status.'**
+  String get hostsEventPhotoRecoveryInactive;
+
+  /// Completed photo recovery awaiting a fresh event read.
+  ///
+  /// In en, this message translates to:
+  /// **'Your photos are attached. Check photo status to refresh the current event details.'**
+  String get hostsEventPhotoRecoveryRefresh;
 
   /// Confirmation before a Host deletes their Catch account; explains shared business records and ownership.
   ///

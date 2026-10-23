@@ -71,9 +71,6 @@
       "appRoot": "apps/consumer/lib/consumer_platform_app.dart",
       "appWidget": "ConsumerPlatformApp",
       "routerProvider": "consumerGoRouterProvider",
-      "legacyEntrypoints": [
-        "lib/main.dart"
-      ],
       "shell": "AppShell",
       "initialRoute": "/",
       "iosEntitlements": "ios/Runner/RunnerConsumer.entitlements",
@@ -99,7 +96,6 @@
       "appRoot": "apps/host/lib/host_platform_app.dart",
       "appWidget": "HostPlatformApp",
       "routerProvider": "hostGoRouterProvider",
-      "legacyEntrypoints": [],
       "shell": "HostAppShell",
       "initialRoute": "/host",
       "iosEntitlements": "ios/Runner/RunnerHost.entitlements",

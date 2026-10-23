@@ -151,7 +151,6 @@ void main() {
     final icon = _buildVariantIcon(sourceIcon, variant, tokens);
     final generatedSourcePath = '$_generatedIconDir/${variant.generatedName}';
     _writePng(generatedSourcePath, icon);
-    _writeAndroidIcons(variant.androidSourceSet, icon);
     _writeIosIconSet(variant, icon);
     _writeMacosIconSet(variant, icon);
     if (variant.iconBase == _IconBase.consumer) {
@@ -250,7 +249,7 @@ List<image.Point> _topLeftRibbonVertices(int depth, int band) {
 void _writeAndroidIcons(
   String sourceSet,
   image.Image source, {
-  String projectRoot = '',
+  required String projectRoot,
 }) {
   for (final entry in _androidIconSizes.entries) {
     final resized = image.copyResize(
@@ -606,10 +605,6 @@ void _writeNativeBrandManifest(_NativeBrandTokens tokens) {
       _hostSplashDarkPath,
       for (final variant in _iconVariants.values)
         'assets/branding/generated/${variant.generatedName}',
-      for (final variant in _iconVariants.values)
-        'android/app/src/${variant.androidSourceSet}/res/**/ic_launcher.png',
-      for (final variant in _iconVariants.values)
-        'android/app/src/${variant.androidSourceSet}/res/**/ic_launcher_round.png',
       for (final variant in _iconVariants.values)
         'ios/Runner/Assets.xcassets/${variant.appleIconSet}.appiconset',
       for (final variant in _iconVariants.values)
