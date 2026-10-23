@@ -734,6 +734,29 @@ Do not enable a production callable-backed client flag in the same release step
 that first creates the backend. Deploy and prove the backend while the flag is
 dark, then enable the client in a later merge.
 
+`--from-source` derives the Functions client source references instead of
+reading the hand list: any string literal in authored `lib/`, `website/src` or
+`admin/src` source (generated and test files excluded) that names a Function
+export. It fails offline when a literal `httpsCallable` call names something
+`functions/src/index.ts` does not export, or when a client references a dormant
+export. `check_deploy_parity.mjs --client-callables` compares that derived set
+with one environment's deployed inventory, using the same metadata-only reads;
+`--client-root` checks a newer client checkout against older deployed source.
+
+`synthetic_backend_probe.mjs` signs in as a synthetic Host that manages a
+synthetic organizer (both documents must carry `synthetic: true`) and runs the
+Host app's rules-checked Firestore reads, plus two read callables outside
+production, validating callable responses against the generated contracts. It
+is a dry run unless `--apply`; production also needs `--allow-prod`, and runs
+callables only with `--allow-prod-callables` because each writes the caller's
+`rateLimits` counter.
+
+```sh
+node tool/firebase/check_client_callable_dependencies.mjs --from-source --surface website
+node tool/firebase/check_deploy_parity.mjs --env prod --client-callables all --client-root .
+node tool/firebase/synthetic_backend_probe.mjs --env dev --uid <uid> --organizer-id <id>
+```
+
 ### What's live where
 
 `tool/firebase/report_environment_parity.mjs` is the one on-demand answer to
