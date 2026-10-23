@@ -169,7 +169,7 @@
         "CAT-218",
         "CAT-219"
       ],
-      "enforcement": "None yet, and the measure is provisional. The React inventory counts any shared export with one owner as t4-move, @catch/web-ui included, and the registry rejects a React record on T3/T4 entries, so a component registered under D18 would still be counted. The D18 prerequisite in #792 lets a T4 entry carry its one framework record and owning surface, and maps those rows to concept; only then does this gate fall for the right reason. Until then, new React one-offs stay in their app shared/ui."
+      "enforcement": "None yet, and the measure is provisional. The React inventory counts any shared export with one owner as t4-move, @catch/web-ui included, and the registry rejects a React record on T3/T4 entries, so a component registered under D18 would still be counted. The D18 prerequisite (Linear CAT-225, PR #796) lets a T4 entry carry its one framework record and owning surface, with the component in packages/web-ui/src/components/, and maps those rows to concept; only then does this gate fall for the right reason. Until then, new React one-offs stay in their app shared/ui."
     },
     {
       "id": "screens.web_bare_markup",
