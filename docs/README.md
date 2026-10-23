@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 5.8.1
-updated: 2026-09-23
+version: 5.8.2
+updated: 2026-10-23
 owner: agent_operating_model
 status: active
 ---
@@ -79,8 +79,7 @@ impact graph; do not create a parallel dependency graph or tracked run history.
 
 | Area | Document | Purpose |
 |---|---|---|
-| Agent execution harness | `../AGENTS.md`, `agent_operating_model.md`, `plans/harness_v2_decision_and_cicd_delivery_plan.md`, `agent_skills/` | Canonical AI-agent routing, durable Harness decision, read-only change planning, Git/worktree isolation, exact-artifact delivery architecture, and focused verification. |
-| AI-first workflow implementation guide | `ai_first_workflow_guide.md` | Shareable map of the Catch planner, existing check runner, thin worktree guard, exact-artifact CI/CD, and no-ledger evidence policy. |
+| Agent execution harness | `../AGENTS.md`, `agent_operating_model.md`, `plans/harness_v2_decision_and_cicd_delivery_plan.md`, `agent_skills/` | `AGENTS.md` is the short router and starting loop; `agent_operating_model.md` is the single detailed owner of planner modes, execution venue, Git/worktree isolation, delegation and completion. The Harness decision records why; exact-artifact delivery is in `release_operations.md`. |
 | Engineering process standard and improvement plan | `plans/process_stack_review.md` | Source-backed comparison of *Continuous Delivery* and *Software Engineering at Google* with Catch's current process, trunk-based policy, AI-first amendments, KPI framework, and executable improvement backlog. |
 | Flutter app architecture | `app_architecture.md`, `../tool/architecture/pattern_adoption.json`, `../tool/architecture/provider_graph_reviews.json`, `plans/ui_system_blueprint_and_conformance_audit.md` | Canonical feature/layer/screen/controller/repository/async/error/UI layout/scroll/sizing/widget ownership spec for `lib/**`, plus the live Riverpod topology gate and authored relationship decisions; read before broad app architecture or code-organization work. Architecture rollouts must prototype one reference implementation, copy the exhibit into `app_architecture.md`, and track adopters/variants/exceptions in the JSON tracker. The blueprint plan owns the ratified UI-system delivery program: package extraction, golden-asserted catalog, one identity registry, binding naming grammar, and Migration Protocol v2. |
 | Widget inventory and reusable widget guidance | `widget_catalog.md` | Current catalog of Flutter widgets, primitive APIs, feature ownership notes, and its compact maintenance contract. Git owns catalog history. |
