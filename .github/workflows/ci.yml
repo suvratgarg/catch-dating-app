@@ -28,10 +28,14 @@ concurrency:
   # Every ready PR validates in parallel; a newer push or draft conversion
   # cancels that PR's older run. The merge queue validates the exact combined
   # source before anything reaches main, so a PR result never needs to stay
-  # current with main. Merge-queue groups key on their exact head, and every
-  # main push retains its own key and immutable delivery evidence.
-  group: ci-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.event_name == 'push' && github.run_id || github.event.merge_group.head_sha || github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  # current with main. Merge-queue groups key on their exact head. Main pushes
+  # share one group, so a newer merge cancels the older main run instead of
+  # competing with the queue for runners. Delivery still covers the cancelled
+  # commits: the next run's window starts at the last successful main run
+  # (tool/ci/main_ci_baseline.mjs). A Marketing Website run for a cancelled
+  # source stops; the next website change or its recovery path packages it.
+  group: ci-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.event_name == 'push' && github.ref || github.event.merge_group.head_sha || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
 
 jobs:
   plan:

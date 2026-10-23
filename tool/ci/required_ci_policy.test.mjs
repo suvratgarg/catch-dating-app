@@ -84,7 +84,8 @@ test("Every ready PR validates in parallel; drafts wait until marked ready", () 
   assert.match(required,
     /^    if: \$\{\{ !cancelled\(\) && !\(github\.event_name == 'pull_request' && github\.event\.pull_request\.draft\) \}\}$/mu);
   assert.match(ci, /^  group: ci-\$\{\{ github\.event_name \}\}-\$\{\{ github\.event_name == 'pull_request' && github\.event\.pull_request\.number \|\|/mu);
-  assert.match(ci, /^  cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}$/mu);
+  // A newer merge to main also cancels the older main run; merge-queue groups never cancel.
+  assert.match(ci, /^  cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \|\| github\.event_name == 'push' \}\}$/mu);
   assert.doesNotMatch(ci, /^  queue: max$/mu, "queue: max cannot combine with cancelling PR runs");
 });
 

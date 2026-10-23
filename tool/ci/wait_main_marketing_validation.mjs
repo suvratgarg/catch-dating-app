@@ -104,6 +104,9 @@ export async function waitMainMarketingValidation({repository, sourceSha, reques
     const listing = await request(endpoint);
     const run = selectSameSourceRun({runs: listing.workflow_runs, canonical, repository, sourceSha});
     if (run) {
+      assert.ok(run.conclusion !== "cancelled", "Canonical same-source CI was cancelled, normally because a newer merge " +
+        "to main superseded it; no validation reuse. The next Marketing Website run packages newer website changes, " +
+        "or recover this source.");
       assert.ok(!terminalFailures.has(run.conclusion), `Canonical same-source CI ended ${run.conclusion}; no validation reuse.`);
       const attempt = await request(`repos/${repository}/actions/runs/${run.id}/attempts/${run.run_attempt}`);
       assert.equal(attempt.id, run.id, "Wrong validation attempt run.");
