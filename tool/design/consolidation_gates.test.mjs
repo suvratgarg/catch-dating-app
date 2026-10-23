@@ -34,8 +34,10 @@ test("raw chrome counts hand-built wrappers, not library or app widgets", () => 
   assert.equal(countRawChrome("MaterialApp(home: CatchSurface(child: CatchButton()))"), 0);
 });
 
-test("suppressions sum every rule count", () => {
-  assert.equal(sumSuppressions({"a.css": {"rule-a": {count: 2}, "rule-b": {count: 3}}, "b.css": {"rule-a": {count: 1}}}), 6);
+test("suppressions sum every rule count, or one rule's", () => {
+  const suppressions = {"a.css": {"rule-a": {count: 2}, "rule-b": {count: 3}}, "b.css": {"rule-a": {count: 1}}};
+  assert.equal(sumSuppressions(suppressions), 6);
+  assert.equal(sumSuppressions(suppressions, "rule-a"), 3);
 });
 
 test("raw colour debt reads the exported list and fails closed without it", () => {

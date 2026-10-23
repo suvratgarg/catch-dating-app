@@ -37,10 +37,13 @@ export function countRawChrome(source) {
   return source.match(rawChromePattern)?.length ?? 0;
 }
 
-export function sumSuppressions(suppressions) {
+/** Stylelint and ESLint bulk suppressions share the {file: {rule: {count}}} shape. */
+export function sumSuppressions(suppressions, onlyRule = null) {
   let total = 0;
   for (const rules of Object.values(suppressions)) {
-    for (const entry of Object.values(rules)) total += entry.count ?? 0;
+    for (const [rule, entry] of Object.entries(rules)) {
+      if (onlyRule == null || rule === onlyRule) total += entry.count ?? 0;
+    }
   }
   return total;
 }
@@ -97,6 +100,17 @@ const flutterSkip = (file) => /\.(?:g|freezed|mocks)\.dart$/u.test(file) ||
   /^lib\/firebase_options/u.test(file);
 const sharedStylesheets = new Set(["website/src/styles/base.css", "website/src/styles/catch-language.css"]);
 
+const bareElementRule = "react/forbid-elements";
+
+/** The 7g ESLint rule's recorded suppressions once they exist; a source scan until then. */
+function bareMarkup(root, surface) {
+  const suppressions = path.join(root, surface, "eslint-suppressions.json");
+  if (fs.existsSync(suppressions)) {
+    return sumSuppressions(JSON.parse(fs.readFileSync(suppressions, "utf8")), bareElementRule);
+  }
+  return sumOver(root, listFiles(root, `${surface}/src`, ".tsx", reactSkip), countBareMarkup);
+}
+
 function bySurface(values) {
   return {value: Object.values(values).reduce((total, value) => total + value, 0), bySurface: values};
 }
@@ -135,10 +149,7 @@ export function measureAll({root = repoRoot, priorityIds = [], similarity = fals
     webAdapters: inventoryCount("adapter"),
     webDeadExports: inventoryCount("delete"),
     webSingleUseShared: inventoryCount("t4-move"),
-    webBareMarkup: bySurface({
-      website: sumOver(root, listFiles(root, "website/src", ".tsx", reactSkip), countBareMarkup),
-      admin: sumOver(root, listFiles(root, "admin/src", ".tsx", reactSkip), countBareMarkup),
-    }),
+    webBareMarkup: bySurface({website: bareMarkup(root, "website"), admin: bareMarkup(root, "admin")}),
     webPageCssLines: bySurface({
       website: cssLines(listFiles(root, "website/src", ".css", (file) => sharedStylesheets.has(file))),
       admin: cssLines(listFiles(root, "admin/src", ".css")),

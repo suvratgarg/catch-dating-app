@@ -184,7 +184,7 @@
       "linear": [
         "CAT-217"
       ],
-      "enforcement": "None yet: the 7g ESLint preset adds the rule with shrink-only suppressions."
+      "enforcement": "None yet: the 7g ESLint preset adds react/forbid-elements with bulk suppressions in website/ and admin/eslint-suppressions.json. Once a surface has that file, this gate counts the rule's suppressions instead of the source scan."
     },
     {
       "id": "screens.web_page_css_lines",
