@@ -5112,7 +5112,7 @@
           "id": "event_focus_upcoming",
           "kind": "populated",
           "status": "captured",
-          "source": "DashboardFullViewModel surfaces upcoming booked events into EventFocusRail cards with directions, calendar, and event-detail actions.",
+          "source": "DashboardFullViewModel surfaces upcoming booked events into EventFocusList cards with directions, calendar, and event-detail actions.",
           "captureIds": [
             "dashboard_home"
           ],
@@ -5128,7 +5128,7 @@
           "id": "self_check_in_mutation",
           "kind": "mutation",
           "status": "captured",
-          "source": "DashboardFullSliverBody maps EventBookingController.selfCheckInMutation into EventFocusCheckInState for EventFocusRail pending/error UI; dashboardNowProvider lets captures pin check-in timing deterministically, and failures render through the shared Catch inline error banner with AppErrorContext.dashboard.",
+          "source": "DashboardFullSliverBody maps EventBookingController.selfCheckInMutation into EventFocusCheckInState for EventFocusList pending/error UI; dashboardNowProvider lets captures pin check-in timing deterministically, and failures render through the shared Catch inline error banner with AppErrorContext.dashboard.",
           "tests": [
             "test/dashboard/dashboard_screen_test.dart"
           ],
@@ -5146,7 +5146,7 @@
           "id": "after_event_swipe_review",
           "kind": "populated",
           "status": "captured",
-          "source": "Attended events with an open swipe window and missing review render Start catching and Write review actions in EventFocusRail.",
+          "source": "Attended events with an open swipe window and missing review render Start catching and Write review actions in EventFocusList.",
           "tests": [
             "test/dashboard/dashboard_screen_test.dart"
           ],
@@ -5427,18 +5427,18 @@
           },
           {
             "id": "section.dashboard.event_focus",
-            "name": "Event focus rail",
+            "name": "Event focus list",
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "EventFocusRail",
+              "EventFocusList",
               "EventFocusCard"
             ],
             "flutter": {
-              "file": "lib/dashboard/presentation/widgets/event_focus_rail.dart",
-              "symbol": "EventFocusRail"
+              "file": "lib/dashboard/presentation/widgets/event_focus_list.dart",
+              "symbol": "EventFocusList"
             },
-            "currentOwner": "DashboardFullSliverBody supplies typed EventFocusActions and maps self-check-in mutation state into EventFocusCheckInState; EventFocusRail renders the provider-free visual section.",
+            "currentOwner": "DashboardFullSliverBody supplies typed EventFocusActions and maps self-check-in mutation state into EventFocusCheckInState; EventFocusList renders the provider-free visual section.",
             "targetOwner": "provider-free Dashboard Event Focus section with typed route/controller intents",
             "dependencies": [
               "catch.surface",
@@ -5453,8 +5453,9 @@
               "multiple_cards",
               "reduced_motion"
             ],
-            "migration": "Calendar, directions, check-in, swipe, review, and detail navigation intents now flow through typed EventFocusActions supplied by DashboardFullSliverBody. Remaining Event Focus work is design-reference export, advisory pixel comparison, and future removal of any wall-clock-only visual timing such as the catch-window countdown.",
+            "migration": "Calendar, directions, check-in, swipe, review, and detail navigation intents flow through typed EventFocusActions supplied by DashboardFullSliverBody. Home renders all open windows in expiry order with live countdowns, followed by the upcoming and review lifecycle cards.",
             "previewIds": [
+              "EventFocusList/List states",
               "DashboardScreen/Screen states"
             ]
           },

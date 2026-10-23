@@ -4,16 +4,18 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import {fileURLToPath} from 'node:url';
+import {CANONICAL_REPOSITORY_ID} from '../lib/canonical_repository.mjs';
 import {release, digest, assertInvocation, assertCi, prepare, verifyPackage, verifyPostDeployPackage,
   assertResponse} from './host_measurement_preview.mjs';
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const source = path.join(root, 'website');
 const sha = 'a'.repeat(40);
 const invocation = {GITHUB_EVENT_NAME: 'workflow_dispatch', GITHUB_REF: 'refs/heads/main',
-  GITHUB_REPOSITORY: release.repository, GITHUB_WORKFLOW_REF: `${release.repository}/${release.workflow}@refs/heads/main`,
+  GITHUB_REPOSITORY: 'torana-labs/catch-dating-app', GITHUB_REPOSITORY_ID: String(CANONICAL_REPOSITORY_ID),
+  GITHUB_WORKFLOW_REF: `torana-labs/catch-dating-app/${release.workflow}@refs/heads/main`,
   GITHUB_RUN_ATTEMPT: '1', GITHUB_SHA: sha};
 const ci = {head_sha: sha, head_branch: 'main', event: 'push', path: '.github/workflows/ci.yml',
-  repository: {full_name: release.repository}, head_repository: {full_name: release.repository},
+  repository: {id: CANONICAL_REPOSITORY_ID}, head_repository: {id: CANONICAL_REPOSITORY_ID},
   status: 'completed', conclusion: 'success'};
 function fixture(t) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'host-measurement-preview-'));
@@ -40,12 +42,12 @@ function addFirebaseCache(destination) {
 test('measurement preview rejects other callers, reruns and unaccepted CI', () => {
   assertInvocation(invocation); assertCi(ci, sha);
   for (const patch of [{GITHUB_EVENT_NAME: 'push'}, {GITHUB_REF: 'refs/heads/topic'},
-    {GITHUB_REPOSITORY: 'fork/repo'}, {GITHUB_WORKFLOW_REF: 'wrong'}, {GITHUB_RUN_ATTEMPT: '2'}, {GITHUB_SHA: ''}]) {
+    {GITHUB_REPOSITORY_ID: '1'}, {GITHUB_WORKFLOW_REF: 'wrong'}, {GITHUB_RUN_ATTEMPT: '2'}, {GITHUB_SHA: ''}]) {
     assert.throws(() => assertInvocation({...invocation, ...patch}));
   }
   for (const patch of [{head_sha: 'b'.repeat(40)}, {head_branch: 'topic'}, {event: 'pull_request'},
-    {path: '.github/workflows/other.yml'}, {repository: {full_name: 'fork/repo'}},
-    {head_repository: {full_name: 'fork/repo'}}, {status: 'in_progress'}, {conclusion: 'failure'}]) {
+    {path: '.github/workflows/other.yml'}, {repository: {id: 1}},
+    {head_repository: {id: 1}}, {status: 'in_progress'}, {conclusion: 'failure'}]) {
     assert.throws(() => assertCi({...ci, ...patch}, sha));
   }
 });

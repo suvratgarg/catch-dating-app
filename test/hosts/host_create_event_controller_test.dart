@@ -1,21 +1,34 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:math' as math;
+
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
+import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/hosts/data/event_photo_recovery_journal.dart';
+import 'package:catch_dating_app/hosts/data/event_photo_recovery_service.dart';
+import 'package:catch_dating_app/hosts/domain/event_photo_recovery.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
-import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../events/events_test_helpers.dart';
+
+part 'host_create_event_photo_recovery_tests.dart';
 
 class FakeRunImageUploadRepository extends Fake
     implements ImageUploadRepository {
@@ -26,29 +39,33 @@ class FakeRunImageUploadRepository extends Fake
   final uploadedPositions = <int>[];
   final uploadedImages = <XFile>[];
   final deletedPaths = <String>[];
+  final mediaIds = <String>[];
+  List<XFile> pickedImages = [];
+  Future<void> Function()? beforeUpload;
+  bool failCleanup = false;
 
   /// When set, the upload at this position throws to simulate a mid-upload
   /// failure so the controller's compensation can be exercised.
   int? failOnPosition;
 
   @override
-  Future<UploadedImage> uploadEventPhotoWithMetadata({
+  Future<UploadedImage> uploadEventPhotoForRecovery({
     required String eventId,
     required int position,
     required XFile image,
-    String? mediaId,
-    ValueChanged<ImageUploadProgress>? onProgress,
-    ImageUploadCancellationToken? cancellationToken,
+    required String mediaId,
   }) async {
+    await beforeUpload?.call();
     if (failOnPosition == position) {
       throw Exception('upload failed at $position');
     }
+    mediaIds.add(mediaId);
     uploadedEventId = eventId;
     uploadedPosition = position;
     uploadedImage = image;
     uploadedPositions.add(position);
     uploadedImages.add(image);
-    final resolvedMediaId = mediaId ?? 'event-media-${position}_0000';
+    final resolvedMediaId = mediaId;
     return UploadedImage(
       url: uploadResult,
       storagePath: _storagePathFor(eventId, resolvedMediaId),
@@ -56,16 +73,24 @@ class FakeRunImageUploadRepository extends Fake
   }
 
   @override
-  Future<void> deleteByPath(String storagePath) async {
+  Future<void> deleteByPathChecked(String storagePath) async {
     deletedPaths.add(storagePath);
+    if (failCleanup) throw StateError('cleanup unavailable');
   }
+
+  @override
+  Future<List<XFile>> pickImages({
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+    int? imageQuality,
+    int? limit,
+  }) async => pickedImages;
 
   String _storagePathFor(String eventId, String mediaId) =>
       'events/$eventId/media/$mediaId/original.jpg';
 
   String get uploadedStoragePath => _storagePathFor(
     uploadedEventId ?? 'generated-7',
-    'event-media-${uploadedPosition ?? 0}_0000',
+    mediaIds.isEmpty ? 'not-uploaded' : mediaIds.last,
   );
 }
 
@@ -75,16 +100,21 @@ void main() {
       'creates an event with a generated id and normalized fields',
       () async {
         final fakeEventRepository = FakeEventRepository()
+          ..mediaActorUid = 'host-1'
           ..generatedId = 'generated-7';
         final fakeImageUploadRepository = FakeRunImageUploadRepository();
         final photo = XFile('selected-event-photo.jpg');
         final container = ProviderContainer(
           overrides: [
+            commandJournalStorageProvider.overrideWith((ref) {
+              final storage = MemoryCommandJournalStorage();
+              return () async => storage;
+            }),
+            uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
             eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
             imageUploadRepositoryProvider.overrideWith(
               (ref) => fakeImageUploadRepository,
             ),
-            uidProvider.overrideWith((ref) => Stream.value('host-1')),
           ],
         );
         addTearDown(container.dispose);
@@ -164,7 +194,7 @@ void main() {
         expect(updatedEvent.eventPhotos, hasLength(1));
         expect(
           updatedEvent.eventPhotos.single.storagePath,
-          'events/generated-7/media/event-media-0_0000/original.jpg',
+          fakeImageUploadRepository.uploadedStoragePath,
         );
         expect(submittedEvent.photoUrl, fakeImageUploadRepository.uploadResult);
       },
@@ -172,16 +202,21 @@ void main() {
 
     test('uploads multiple event photos in the submitted order', () async {
       final fakeEventRepository = FakeEventRepository()
+        ..mediaActorUid = 'host-1'
         ..generatedId = 'generated-9';
       final fakeImageUploadRepository = FakeRunImageUploadRepository();
       final photos = [XFile('event-a.jpg'), XFile('event-b.jpg')];
       final container = ProviderContainer(
         overrides: [
+          commandJournalStorageProvider.overrideWith((ref) {
+            final storage = MemoryCommandJournalStorage();
+            return () async => storage;
+          }),
+          uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
           imageUploadRepositoryProvider.overrideWith(
             (ref) => fakeImageUploadRepository,
           ),
-          uidProvider.overrideWith((ref) => Stream.value('host-1')),
         ],
       );
       addTearDown(container.dispose);
@@ -216,25 +251,30 @@ void main() {
       expect(submittedEvent.eventPhotos, hasLength(2));
       expect(submittedEvent.eventPhotos.map((photo) => photo.position), [0, 1]);
       expect(submittedEvent.eventPhotos.map((photo) => photo.storagePath), [
-        'events/generated-9/media/event-media-0_0000/original.jpg',
-        'events/generated-9/media/event-media-1_0000/original.jpg',
+        for (final id in fakeImageUploadRepository.mediaIds)
+          'events/generated-9/media/$id/original.jpg',
       ]);
       expect(submittedEvent.photoUrl, submittedEvent.eventPhotos.first.url);
     });
 
-    test('deletes already-uploaded photos when a later upload fails', () async {
+    test('retains the committed event when a later upload fails', () async {
       final fakeEventRepository = FakeEventRepository()
+        ..mediaActorUid = 'host-1'
         ..generatedId = 'generated-9';
       final fakeImageUploadRepository = FakeRunImageUploadRepository()
         ..failOnPosition = 1;
       final photos = [XFile('event-a.jpg'), XFile('event-b.jpg')];
       final container = ProviderContainer(
         overrides: [
+          commandJournalStorageProvider.overrideWith((ref) {
+            final storage = MemoryCommandJournalStorage();
+            return () async => storage;
+          }),
+          uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
           imageUploadRepositoryProvider.overrideWith(
             (ref) => fakeImageUploadRepository,
           ),
-          uidProvider.overrideWith((ref) => Stream.value('host-1')),
         ],
       );
       addTearDown(container.dispose);
@@ -246,39 +286,49 @@ void main() {
       addTearDown(uidSubscription.close);
       await container.pump();
 
-      await expectLater(
-        container
-            .read(createEventControllerProvider.notifier)
-            .submit(
-              name: 'Test event',
-              clubId: 'club-7',
-              startTime: DateTime(2025, 3, 1, 6),
-              endTime: DateTime(2025, 3, 1, 7),
-              meetingLocation: _meetingLocation(),
-              eventFormat: const EventFormatSnapshot.socialRun(),
-              distanceKm: 5,
-              pace: PaceLevel.easy,
-              description: 'Morning run',
-              currency: defaultCurrencyCode,
-              constraints: const EventConstraints(),
-              eventPolicy: _eventPolicy(),
-              photoImages: photos,
-            ),
-        throwsA(isA<Exception>()),
-      );
+      final saved = await container
+          .read(createEventControllerProvider.notifier)
+          .submit(
+            name: 'Test event',
+            clubId: 'club-7',
+            startTime: DateTime(2025, 3, 1, 6),
+            endTime: DateTime(2025, 3, 1, 7),
+            meetingLocation: _meetingLocation(),
+            eventFormat: const EventFormatSnapshot.socialRun(),
+            distanceKm: 5,
+            pace: PaceLevel.easy,
+            description: 'Morning run',
+            currency: defaultCurrencyCode,
+            constraints: const EventConstraints(),
+            eventPolicy: _eventPolicy(),
+            photoImages: photos,
+          );
 
       // The first photo uploaded before the failure must be cleaned up so it
       // doesn't orphan in Storage; the event doc was never attached photos.
+      expect(saved.id, 'generated-9');
+      final recovery = container.read(
+        createEventPhotoRecoveryControllerProvider('club-7'),
+      );
+      expect(recovery.event!.id, saved.id);
+      expect(recovery.receipt!.phase, EventPhotoRecoveryPhase.uploadFailed);
       expect(fakeImageUploadRepository.deletedPaths, [
-        'events/generated-9/media/event-media-0_0000/original.jpg',
+        for (final id in recovery.receipt!.mediaIds)
+          'events/generated-9/media/$id/original.jpg',
       ]);
       expect(fakeEventRepository.updatedEvent, isNull);
     });
 
     test('sends enabled event-success defaults through createEvent', () async {
-      final fakeEventRepository = FakeEventRepository();
+      final fakeEventRepository = FakeEventRepository()
+        ..mediaActorUid = 'host-1';
       final container = ProviderContainer(
         overrides: [
+          commandJournalStorageProvider.overrideWith((ref) {
+            final storage = MemoryCommandJournalStorage();
+            return () async => storage;
+          }),
+          uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
         ],
       );
@@ -317,9 +367,15 @@ void main() {
     });
 
     test('creates an external companion with runtime provenance', () async {
-      final fakeEventRepository = FakeEventRepository();
+      final fakeEventRepository = FakeEventRepository()
+        ..mediaActorUid = 'host-1';
       final container = ProviderContainer(
         overrides: [
+          commandJournalStorageProvider.overrideWith((ref) {
+            final storage = MemoryCommandJournalStorage();
+            return () async => storage;
+          }),
+          uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
         ],
       );
@@ -370,9 +426,15 @@ void main() {
     test(
       'uses event capacity when normalizing pub quiz team defaults',
       () async {
-        final fakeEventRepository = FakeEventRepository();
+        final fakeEventRepository = FakeEventRepository()
+          ..mediaActorUid = 'host-1';
         final container = ProviderContainer(
           overrides: [
+            commandJournalStorageProvider.overrideWith((ref) {
+              final storage = MemoryCommandJournalStorage();
+              return () async => storage;
+            }),
+            uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
             eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
           ],
         );
@@ -414,9 +476,15 @@ void main() {
     );
 
     test('allows zero distance for non-distance event formats', () async {
-      final fakeEventRepository = FakeEventRepository();
+      final fakeEventRepository = FakeEventRepository()
+        ..mediaActorUid = 'host-1';
       final container = ProviderContainer(
         overrides: [
+          commandJournalStorageProvider.overrideWith((ref) {
+            final storage = MemoryCommandJournalStorage();
+            return () async => storage;
+          }),
+          uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
         ],
       );
@@ -449,9 +517,15 @@ void main() {
     });
 
     test('passes invite codes for invite-only events', () async {
-      final fakeEventRepository = FakeEventRepository();
+      final fakeEventRepository = FakeEventRepository()
+        ..mediaActorUid = 'host-1';
       final container = ProviderContainer(
         overrides: [
+          commandJournalStorageProvider.overrideWith((ref) {
+            final storage = MemoryCommandJournalStorage();
+            return () async => storage;
+          }),
+          uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
         ],
       );
@@ -490,9 +564,15 @@ void main() {
     test(
       'rejects invalid create-event inputs before touching the repository',
       () async {
-        final fakeEventRepository = FakeEventRepository();
+        final fakeEventRepository = FakeEventRepository()
+          ..mediaActorUid = 'host-1';
         final container = ProviderContainer(
           overrides: [
+            commandJournalStorageProvider.overrideWith((ref) {
+              final storage = MemoryCommandJournalStorage();
+              return () async => storage;
+            }),
+            uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
             eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
           ],
         );
@@ -672,6 +752,7 @@ void main() {
       },
     );
   });
+  runCreateEventPhotoRecoveryIntegrationTests();
 }
 
 EventPolicyBundle _eventPolicy({

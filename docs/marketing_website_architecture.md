@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.14.0
-updated: 2026-10-19
+version: 0.14.1
+updated: 2026-10-22
 owner: marketing_website
 status: active
 ---
@@ -952,10 +952,14 @@ website/src/
   exposes its typed runtime contract. `content/site.ts` owns the public contact
   destination and site-wide legal footer links. A pretypecheck contract rejects
   placeholders, incomplete sections, or missing route registration.
-  Native Settings remains fail-closed: Privacy, Terms, and Help rows render only
-  when `CATCH_PRIVACY_POLICY_URL`, `CATCH_TERMS_URL`, and `CATCH_HELP_URL`
-  contain valid owner-approved destinations. Privacy and Terms are separate
-  documents and must never alias the same route.
+  Native apps link to these routes from consumer Settings and the Catch Host
+  account menu. Both stay fail-closed: an entry renders only when
+  `CATCH_PRIVACY_POLICY_URL`, `CATCH_TERMS_URL`, or `CATCH_HELP_URL` holds a
+  valid https destination. Every `tool/env/dart_defines/*.json` file sets the
+  same canonical trailing-slash routes; `test/core/legal_links_test.dart` and
+  `tool/validate_firebase_environment.sh` reject missing, non-https, or aliased
+  values. Privacy and Terms are separate documents and must never alias the
+  same route.
 - `content/markets/index.ts` selects the active market pack. City lists,
   currency, geo-adaptive labels, India-specific comparison columns, and example
   event name/venue/city/currency belong in that pack rather than page or

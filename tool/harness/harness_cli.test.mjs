@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import {planAffected} from "./lib/component_graph.mjs";
+import {deferQueueOnlyTargets, planAffected, queueOnlyCiTargets} from "./lib/component_graph.mjs";
 import {
   collectKnownCheckIds,
   formatGithubOutputs,
@@ -284,4 +284,36 @@ test("coverage reads inventories larger than the default subprocess buffer", () 
   assert.equal(paths.length, 50000);
   assert.equal(paths[49999], "lib/long_feature_path/example.dart");
   assert.throws(() => trackedPaths({runner: () => ({status: null, error: new Error("ENOBUFS")})}), /ENOBUFS/u);
+});
+
+test("pull requests defer exactly the macOS and app-build lanes to the merge queue", (context) => {
+  assert.deepEqual(queueOnlyCiTargets, ["flutter_build_android", "flutter_build_ios",
+    "flutter_build_web", "flutter_web_smoke", "visual_integration"]);
+  assert.ok(queueOnlyCiTargets.every((target) => graph.targets.includes(target)));
+  const changedPaths = ["pubspec.yaml"];
+  const full = planAffected({changedPaths, graph, mode: "merge_group"});
+  const pullRequest = deferQueueOnlyTargets(planAffected({changedPaths, graph, mode: "pr"}));
+  assert.deepEqual(deferQueueOnlyTargets(full), full);
+  assert.deepEqual(pullRequest.queueDeferredCiTargets,
+    full.operations.ciTargets.filter((target) => queueOnlyCiTargets.includes(target)));
+  assert.ok(pullRequest.queueDeferredCiTargets.includes("visual_integration"));
+  assert.deepEqual([...pullRequest.operations.ciTargets, ...pullRequest.queueDeferredCiTargets].sort(),
+    full.operations.ciTargets);
+  assert.ok(pullRequest.operationSources.ciTargets.every((source) => !queueOnlyCiTargets.includes(source.value)));
+
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-harness-output-"));
+  context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const outputs = (mode) => {
+    const outputPath = path.join(directory, mode);
+    main({args: ["plan", "--paths", "pubspec.yaml", "--mode", mode, "--github-output", outputPath, "--json"],
+      setExitCode(status) { assert.fail(`plan exited ${status}`); }});
+    return Object.fromEntries(fs.readFileSync(outputPath, "utf8").trim().split("\n")
+      .map((line) => line.split(/=(.*)/s).slice(0, 2)));
+  };
+  const pr = outputs("pr"), queue = outputs("merge_group");
+  for (const target of pullRequest.queueDeferredCiTargets) {
+    assert.equal(pr[target], "false", target);
+    assert.equal(queue[target], "true", target);
+  }
+  assert.equal(pr.flutter, "true");
 });

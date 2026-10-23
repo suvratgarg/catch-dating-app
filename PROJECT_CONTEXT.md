@@ -1,7 +1,7 @@
 ---
 doc_id: project_context
-version: 3.1.0
-updated: 2026-08-07
+version: 3.1.1
+updated: 2026-10-22
 owner: agent_operating_model
 status: active
 ---
@@ -23,7 +23,7 @@ features.
 
 | Surface | Primary source | Owner document |
 |---|---|---|
-| Consumer and host Flutter apps | `lib/` | [docs/app_architecture.md](docs/app_architecture.md) |
+| Consumer and host Flutter apps | `apps/consumer/`, `apps/host/`, shared `lib/` | [docs/app_architecture.md](docs/app_architecture.md) |
 | Firestore/data contracts | `contracts/`, `firestore.rules`, `storage.rules` | [docs/data_contracts.md](docs/data_contracts.md) |
 | Cloud Functions | `functions/src/` | [docs/backend_operation_catalog.md](docs/backend_operation_catalog.md) |
 | Marketing website | `website/` | [docs/marketing_website_architecture.md](docs/marketing_website_architecture.md) |
@@ -77,7 +77,7 @@ Firebase aliases are `dev`, `staging`, and `prod`; the local default is `dev` as
 Public web surfaces deploy independently:
 
 - `catchdates.com` from `website/dist` (`marketing` target)
-- `app.catchdates.com` from `build/web` (`app` target)
+- `app.catchdates.com` from `apps/consumer/build/web` (`app` target)
 - `admin.catchdates.com` from `admin/dist` (`admin` target)
 
 Use [docs/release_operations.md](docs/release_operations.md) for exact CI, signing, deployment, TestFlight, Xcode Cloud, rollback, observability, and smoke-test procedures. Do not infer production verification from code wiring alone.

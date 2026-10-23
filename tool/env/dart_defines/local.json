@@ -4,5 +4,8 @@
   "FIREBASE_EMULATOR_PROJECT_ID": "demo-catch",
   "ENABLE_PUSH_MESSAGING": "false",
   "ENABLE_OBSERVABILITY_COLLECTION": "false",
-  "EMIT_OBSERVABILITY_SMOKE_EVENT": "false"
+  "EMIT_OBSERVABILITY_SMOKE_EVENT": "false",
+  "CATCH_PRIVACY_POLICY_URL": "https://catchdates.com/privacy/",
+  "CATCH_TERMS_URL": "https://catchdates.com/terms/",
+  "CATCH_HELP_URL": "https://catchdates.com/help/"
 }

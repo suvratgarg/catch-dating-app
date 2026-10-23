@@ -76,7 +76,7 @@ export const hostWorkflowExamples = [
   {
     id: "application-booking", audience: "Curated communities and returning guests",
     title: "From application review to a confirmed place.",
-    body: "An Afterfly-like run club: a campaign brings a new application, the team reviews it, and this Sunday’s invitation is checked separately before booking.",
+    body: "A curated run club: a campaign brings a new application, the team reviews it, and this Sunday’s invitation is checked separately before booking.",
     outcome: "The organiser can explain why this person received this event offer; the guest gets a clear booking result.",
     boundary: "Illustrative connections: application approval does not create membership or grant admission. Automatic membership updates, external confirmations and returning-guest recognition require separate verification.",
     steps: [

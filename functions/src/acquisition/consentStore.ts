@@ -72,6 +72,9 @@ export async function recordHostConsent(input: {
         // Outlive every grant and queue that might race this withdrawal.
         expiresAt: Timestamp.fromMillis(now + HOST_ATTRIBUTION_LIFETIME_MS +
           HOST_META_DELIVERY_LIFETIME_MS),
+        // The request path clears one bounded batch; the expiry worker drains
+        // the rest and clears this flag (see drainWithdrawnHostAttribution).
+        attributionCleanupPending: true,
       };
       if (!validateHostAcquisitionConsentDocument(row)) {
         throw new Error("Invalid Host withdrawal record.");

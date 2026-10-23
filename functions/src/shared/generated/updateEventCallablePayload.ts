@@ -7,8 +7,18 @@ import type {UploadedPhoto} from "./uploadedPhoto";
 /**
  * Callable payload accepted by updateEvent.
  */
-export interface UpdateEventCallablePayload {
+export type UpdateEventCallablePayload = {
+  [k: string]: unknown;
+} & {
   eventId: string;
+  /**
+   * Media-only attachment for an already committed create. Replays its eventSetupReceipts media receipt; never edits schedule or setup fields.
+   */
+  mediaRecovery?: {
+    organizerId: string;
+    requestId: string;
+    expectedMediaHash: string;
+  };
   /**
    * Required for published progressive events; rejects stale Host edits.
    */
@@ -288,4 +298,4 @@ export interface UpdateEventCallablePayload {
       inviteCode?: string | null;
     };
   };
-}
+};

@@ -28,6 +28,7 @@ const schemaEventSetupReceiptDocumentSchema = <String, Object?>{
         'details',
         'publish',
         'unpublish',
+        'media',
       ],
     },
     'actorUid': <String, Object?>{
@@ -77,6 +78,14 @@ const schemaEventSetupReceiptDocumentSchema = <String, Object?>{
       'type': 'string',
       'const': 'discarded',
     },
+    'requestId': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{7,119}\$',
+    },
+    'mediaPayloadHash': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[a-f0-9]{64}\$',
+    },
     'expectedSetupRevision': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
@@ -104,6 +113,18 @@ const schemaEventSetupReceiptDocumentSchema = <String, Object?>{
               'expectedSetupRevision',
             ],
           },
+          <String, Object?>{
+            'required': <Object?>[
+              'mediaPayloadHash',
+            ],
+          },
+          <String, Object?>{
+            'properties': <String, Object?>{
+              'operation': <String, Object?>{
+                'const': 'media',
+              },
+            },
+          },
         ],
       },
     },
@@ -120,6 +141,36 @@ const schemaEventSetupReceiptDocumentSchema = <String, Object?>{
       'not': <String, Object?>{
         'required': <Object?>[
           'appliedRevision',
+        ],
+      },
+    },
+    <String, Object?>{
+      'required': <Object?>[
+        'requestId',
+        'mediaPayloadHash',
+      ],
+      'properties': <String, Object?>{
+        'operation': <String, Object?>{
+          'const': 'media',
+        },
+      },
+      'not': <String, Object?>{
+        'anyOf': <Object?>[
+          <String, Object?>{
+            'required': <Object?>[
+              'appliedRevision',
+            ],
+          },
+          <String, Object?>{
+            'required': <Object?>[
+              'outcome',
+            ],
+          },
+          <String, Object?>{
+            'required': <Object?>[
+              'expectedSetupRevision',
+            ],
+          },
         ],
       },
     },

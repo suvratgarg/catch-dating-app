@@ -18,7 +18,7 @@ Widget formStepSpecificationStates(BuildContext context) {
   ];
   return WidgetbookCatalogFrame(
     title: 'Form step metadata',
-    catalogId: 'catch.screen_body.form_step_spec',
+    catalogId: 'catch.form_step_list.spec',
     children: [
       CatchFormStepList(
         fieldCopy: catchFieldCopy(context.l10n),
@@ -169,11 +169,3 @@ class _FormRowScopeFieldsState extends State<_FormRowScopeFields> {
     errorTextBuilder: (_, error) => error.toString(),
   );
 }
-
-@widgetbook.UseCase(
-  name: 'Required, optional and complete steps',
-  type: CatchFormStepList,
-  path: '[Core patterns]/Form review',
-)
-Widget formStepOverviewStates(BuildContext context) =>
-    formStepSpecificationStates(context);

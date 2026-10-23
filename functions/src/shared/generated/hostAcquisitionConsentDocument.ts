@@ -43,4 +43,8 @@ export type HostAcquisitionConsentDocument = {
     _seconds: number;
     _nanoseconds: number;
   };
+  /**
+   * Withdrawal tombstones only. True until the expiry worker drains every optional attribution snapshot bound to this consent; a revoked capability can never create another.
+   */
+  attributionCleanupPending?: boolean;
 };

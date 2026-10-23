@@ -66,7 +66,7 @@ abstract final class CatchMotion {
   static const Curve easeOutCubicCurve = Curves.easeOutCubic;
   static const Curve easeOutCurve = Curves.easeOut;
   static const Curve elasticOutCurve = Curves.elasticOut;
-  static const Curve springCurve = Cubic(0.34, 1.4, 0.64, 1.0);
+  static const Curve springCurve = GeneratedCatchMotionTokens.springCurve;
 
   static Duration afterglowBeatDelay(int index) =>
       Duration(milliseconds: index * 1400);

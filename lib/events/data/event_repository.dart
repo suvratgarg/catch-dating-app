@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/cursor_page.dart';
@@ -21,7 +22,8 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         RecordEventInviteLinkOpenCallableRequest,
         RecordEventShareIntentCallableRequest,
         SendEventBroadcastCallableRequest,
-        SelfCheckInAttendanceCallableRequest;
+        SelfCheckInAttendanceCallableRequest,
+        UpdateEventCallableRequest;
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_callable_adapters.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';

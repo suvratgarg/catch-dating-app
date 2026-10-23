@@ -244,4 +244,6 @@ export 'src/primitives/catch_scaled_preferred_size.dart';
 export 'src/primitives/catch_sheet_drag_indicator.dart';
 export 'src/primitives/catch_status_indicator.dart';
 export 'src/primitives/catch_surface.dart';
+export 'src/primitives/catch_text.dart';
 export 'src/primitives/catch_text_input.dart';
+export 'src/primitives/catch_text_variant.dart';

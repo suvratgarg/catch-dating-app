@@ -5,12 +5,12 @@ import {fileURLToPath} from "node:url";
 import {indexSignature, gcloudIndexList, inspectIndexReadiness, waitForIndexes} from "../../../tool/firebase/wait_firestore_indexes_ready.mjs";
 import {assertSuccessfulSource, preview} from "./previewRelease.mjs";
 import {waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_validation.mjs";
+import {canonicalRepository} from "../../../tool/lib/canonical_repository.mjs";
 export const reviewIndex = Object.freeze({collectionGroup: "reviews", queryScope: "COLLECTION", fields: [
   {fieldPath: "organizerId", mode: "ASCENDING"}, {fieldPath: "createdAt", mode: "DESCENDING"},
 ]});
 const desiredDocument = {indexes: [reviewIndex]};
 const directory = "build/website-review-index";
-const repository = "suvratgarg/catch-dating-app";
 function github(endpoint) {
   const result = spawnSync("gh", ["api", "-H", "Cache-Control: no-cache", endpoint], {encoding: "utf8", timeout: 30_000});
   assert.equal(result.status, 0, result.stderr); return JSON.parse(result.stdout);
@@ -40,7 +40,7 @@ export function assertUnselectedIndexesPreserved(before, after) {
 async function authorize() {
   assert.equal(process.env.GITHUB_EVENT_NAME, "workflow_dispatch");
   assert.equal(process.env.GITHUB_REF, "refs/heads/main"); assert.equal(process.env.GITHUB_RUN_ATTEMPT, "1");
-  assert.equal(process.env.GITHUB_REPOSITORY, repository);
+  const repository = canonicalRepository(process.env);
   assert.equal(process.env.GITHUB_WORKFLOW_REF, `${repository}/.github/workflows/website-review-index.yml@refs/heads/main`);
   assertIndexSource(JSON.parse(fs.readFileSync("firestore.indexes.json", "utf8")));
   const sourceSha = process.env.GITHUB_SHA;

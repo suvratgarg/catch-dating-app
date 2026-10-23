@@ -43678,9 +43678,27 @@ export const hostAcquisitionConsentDocumentSchema = {
           "maximum": 999999999
         }
       }
+    },
+    "attributionCleanupPending": {
+      "description": "Withdrawal tombstones only. True until the expiry worker drains every optional attribution snapshot bound to this consent; a revoked capability can never create another.",
+      "type": "boolean"
     }
   },
   "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "revoked"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "attributionCleanupPending"
+        ]
+      }
+    },
     {
       "if": {
         "properties": {
@@ -44555,6 +44573,194 @@ export const salesInboundIntentsDocumentSchema = {
           "type": "boolean"
         }
       }
+    },
+    "acquisitionAttribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Optional first-party campaign snapshot captured with the new Host receipt under current analytics permission. Erased on withdrawal or original-choice expiry; never used without a current consent/privacy check.",
+      "required": [
+        "version",
+        "consentId",
+        "acceptedAt",
+        "expiresAt",
+        "firstTouch",
+        "lastTouch"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "consentId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "acceptedAt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "firstTouch": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "capturedAt",
+                "landingPath",
+                "values"
+              ],
+              "properties": {
+                "capturedAt": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "landingPath": {
+                  "enum": [
+                    "/host/",
+                    "/host/overview/",
+                    "/host/platform/",
+                    "/host/planners/",
+                    "/host/clubs/",
+                    "/host/directory/",
+                    "/claim/",
+                    "/host/claim/",
+                    "/host/apply/",
+                    "/host/stack/",
+                    "/host/workflows/"
+                  ]
+                },
+                "values": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "minProperties": 1,
+                  "properties": {
+                    "utm_source": {
+                      "enum": [
+                        "google",
+                        "meta",
+                        "newsletter",
+                        "catch",
+                        "partner"
+                      ]
+                    },
+                    "utm_medium": {
+                      "enum": [
+                        "cpc",
+                        "paid_social",
+                        "email",
+                        "organic",
+                        "referral"
+                      ]
+                    },
+                    "utm_campaign": {
+                      "enum": [
+                        "launch",
+                        "launch_2026",
+                        "planner_launch",
+                        "host_acquisition_2026",
+                        "synthetic_launch"
+                      ]
+                    },
+                    "utm_content": {
+                      "enum": [
+                        "host_hero",
+                        "host_footer",
+                        "claim_cta",
+                        "application_cta"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lastTouch": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "capturedAt",
+                "landingPath",
+                "values"
+              ],
+              "properties": {
+                "capturedAt": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "landingPath": {
+                  "enum": [
+                    "/host/",
+                    "/host/overview/",
+                    "/host/platform/",
+                    "/host/planners/",
+                    "/host/clubs/",
+                    "/host/directory/",
+                    "/claim/",
+                    "/host/claim/",
+                    "/host/apply/",
+                    "/host/stack/",
+                    "/host/workflows/"
+                  ]
+                },
+                "values": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "minProperties": 1,
+                  "properties": {
+                    "utm_source": {
+                      "enum": [
+                        "google",
+                        "meta",
+                        "newsletter",
+                        "catch",
+                        "partner"
+                      ]
+                    },
+                    "utm_medium": {
+                      "enum": [
+                        "cpc",
+                        "paid_social",
+                        "email",
+                        "organic",
+                        "referral"
+                      ]
+                    },
+                    "utm_campaign": {
+                      "enum": [
+                        "launch",
+                        "launch_2026",
+                        "planner_launch",
+                        "host_acquisition_2026",
+                        "synthetic_launch"
+                      ]
+                    },
+                    "utm_content": {
+                      "enum": [
+                        "host_hero",
+                        "host_footer",
+                        "claim_cta",
+                        "application_cta"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
     }
   },
   "allOf": [
@@ -44619,7 +44825,81 @@ export const salesInboundIntentsDocumentSchema = {
         }
       }
     }
-  ]
+  ],
+  "definitions": {
+    "hostAttributionTouch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capturedAt",
+        "landingPath",
+        "values"
+      ],
+      "properties": {
+        "capturedAt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "landingPath": {
+          "enum": [
+            "/host/",
+            "/host/overview/",
+            "/host/platform/",
+            "/host/planners/",
+            "/host/clubs/",
+            "/host/directory/",
+            "/claim/",
+            "/host/claim/",
+            "/host/apply/",
+            "/host/stack/",
+            "/host/workflows/"
+          ]
+        },
+        "values": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "utm_source": {
+              "enum": [
+                "google",
+                "meta",
+                "newsletter",
+                "catch",
+                "partner"
+              ]
+            },
+            "utm_medium": {
+              "enum": [
+                "cpc",
+                "paid_social",
+                "email",
+                "organic",
+                "referral"
+              ]
+            },
+            "utm_campaign": {
+              "enum": [
+                "launch",
+                "launch_2026",
+                "planner_launch",
+                "host_acquisition_2026",
+                "synthetic_launch"
+              ]
+            },
+            "utm_content": {
+              "enum": [
+                "host_hero",
+                "host_footer",
+                "claim_cta",
+                "application_cta"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
 };
 
 export const salesIntelligenceAssessmentDocumentSchema = {
@@ -57012,7 +57292,8 @@ export const eventSetupReceiptDocumentSchema = {
         "preferences",
         "details",
         "publish",
-        "unpublish"
+        "unpublish",
+        "media"
       ]
     },
     "actorUid": {
@@ -57062,6 +57343,14 @@ export const eventSetupReceiptDocumentSchema = {
       "type": "string",
       "const": "discarded"
     },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,119}$"
+    },
+    "mediaPayloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
     "expectedSetupRevision": {
       "type": "integer",
       "minimum": 1,
@@ -57088,6 +57377,18 @@ export const eventSetupReceiptDocumentSchema = {
             "required": [
               "expectedSetupRevision"
             ]
+          },
+          {
+            "required": [
+              "mediaPayloadHash"
+            ]
+          },
+          {
+            "properties": {
+              "operation": {
+                "const": "media"
+              }
+            }
           }
         ]
       }
@@ -57105,6 +57406,36 @@ export const eventSetupReceiptDocumentSchema = {
       "not": {
         "required": [
           "appliedRevision"
+        ]
+      }
+    },
+    {
+      "required": [
+        "requestId",
+        "mediaPayloadHash"
+      ],
+      "properties": {
+        "operation": {
+          "const": "media"
+        }
+      },
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "appliedRevision"
+            ]
+          },
+          {
+            "required": [
+              "outcome"
+            ]
+          },
+          {
+            "required": [
+              "expectedSetupRevision"
+            ]
+          }
         ]
       }
     }
@@ -255947,6 +256278,31 @@ export const updateEventCallablePayloadSchema = {
       "minLength": 1,
       "maxLength": 180
     },
+    "mediaRecovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "requestId",
+        "expectedMediaHash"
+      ],
+      "description": "Media-only attachment for an already committed create. Replays its eventSetupReceipts media receipt; never edits schedule or setup fields.",
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,119}$"
+        },
+        "expectedMediaHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
     "expectedSetupRevision": {
       "type": "integer",
       "minimum": 1,
@@ -257141,7 +257497,42 @@ export const updateEventCallablePayloadSchema = {
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "mediaRecovery"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "expectedSetupRevision"
+          ]
+        },
+        "properties": {
+          "fields": {
+            "required": [
+              "photoUrl",
+              "eventPhotos"
+            ],
+            "propertyNames": {
+              "enum": [
+                "photoUrl",
+                "eventPhotos"
+              ]
+            },
+            "properties": {
+              "eventPhotos": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 };
 
 export const cancelEventCallablePayloadSchema = {

@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 3.5.0
-updated: 2026-10-16
+version: 3.6.0
+updated: 2026-10-23
 owner: agent_operating_model
 status: active
 ---
@@ -102,11 +102,12 @@ Commit the exact source tree, publish the branch through ordinary Git/PR
 tooling, and ask CI to verify that head. Cross-environment handoff uses that
 commit, not a downloaded/generated snapshot whose origin or completeness is
 unverified. If push is unavailable, retain the commit and report the exact
-publication barrier to the integration owner. This repository's PR admission
-requires a non-draft PR, the sole `ci:admitted` label, and the current head and
-main. A draft intentionally skips the selected CI lanes: report `draft_pr` as
-an admission blocker, give the integration owner the review/readiness and label
-action, and do not call the skipped lanes test failures. A disconnected
+publication barrier to the integration owner. Every ready PR runs CI without
+the queue-only macOS and app-build lanes, and the merge queue validates the
+combined source with every lane before `main` moves. A
+draft intentionally skips CI until it is marked ready: report the draft state as
+the blocker, give the integration owner the readiness action, and do not call
+the skipped lanes test failures. A disconnected
 agent or VM does not establish task termination: inspect the branch, running
 process/command or CI run, and latest output after reconnecting. Report a
 blocked task with its exact commit, last observed command or run evidence,
@@ -305,7 +306,12 @@ For a task awaiting acceptance, keep the claim until `retire` rather than
 calling `finish` without an explicit retention reason. `retire` reports
 eligibility and exact retention reasons; its explicit `--apply` performs only non-forced `git worktree remove`
 and releases the own claim after verifying path and registration absence.
-It preserves every branch, recovery ref and stash. Repeat after successful
+It preserves every branch, recovery ref and stash. Unique task commits count
+as remotely preserved when the task branch, or the `refs/pull/<number>/head`
+ref GitHub keeps after the merge queue deletes a merged branch, points at the
+exact head on `origin`; acceptance is still proven only by the task-path
+comparison, never by PR status. Disposable task branches are `codex/` and
+`claude/` branches outside `*/backup/`. Repeat after successful
 closure returns `already_absent` without another removal; absence alone never
 claims acceptance or a newly retired task. Missing claims on existing worktrees
 remain blocked and must not be recreated to bypass ownership review.

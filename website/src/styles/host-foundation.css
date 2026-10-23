@@ -16,12 +16,12 @@
   border-radius: var(--catch-radius-md);
   background: var(--website-surface);
   transition:
-    transform var(--catch-motion-micro) var(--catch-ease-spring),
-    box-shadow var(--catch-motion-micro) var(--catch-ease-standard);
+    transform var(--catch-motion-micro) var(--catch-motion-spring-curve),
+    box-shadow var(--catch-motion-micro) var(--catch-motion-standard-curve);
 }
 
 .module-stack article:hover {
-  box-shadow: var(--catch-shadow-card);
+  box-shadow: var(--catch-elevation-card);
   transform: translateY(-1px);
 }
 
@@ -72,12 +72,12 @@
   border-radius: var(--catch-radius-md);
   background: var(--website-surface);
   transition:
-    transform var(--catch-motion-micro) var(--catch-ease-spring),
-    box-shadow var(--catch-motion-micro) var(--catch-ease-standard);
+    transform var(--catch-motion-micro) var(--catch-motion-spring-curve),
+    box-shadow var(--catch-motion-micro) var(--catch-motion-standard-curve);
 }
 
 .product-module-card:hover {
-  box-shadow: var(--catch-shadow-raised);
+  box-shadow: var(--catch-elevation-raised);
   transform: translateY(-2px);
 }
 
