@@ -7547,6 +7547,44 @@
       }
     },
     {
+      "id": "audit:unused-code",
+      "category": "audit",
+      "path": "tool/audit/check_unused_code.mjs",
+      "command": "node tool/audit/check_unused_code.mjs --check --workspace . --workspace admin --workspace website --workspace packages/web-ui --workspace packages/web-config",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Shrink-only Knip ratchet over unused files, exports, types and dependencies, and imports of undeclared packages. The Tools lane checks every JavaScript workspace except Functions, so tooling and Knip config changes are fully checked; the Admin and Marketing lanes check their app plus packages/web-ui and packages/web-config. Functions joins once its lane runs the check.",
+      "checks": [
+        "node --check tool/audit/check_unused_code.mjs",
+        "node --test tool/audit/check_unused_code.test.mjs",
+        "node tool/audit/check_unused_code.mjs --check --workspace . --workspace admin --workspace website --workspace packages/web-ui --workspace packages/web-config"
+      ],
+      "impactPaths": [
+        "tool/audit/knip.jsonc",
+        "tool/audit/unused_code_baseline.json",
+        "tool/audit/check_unused_code.test.mjs",
+        "package.json",
+        "package-lock.json",
+        "tool/**",
+        "operations/**"
+      ],
+      "role": "ratchet",
+      "baseline": "tool/audit/unused_code_baseline.json",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/audit/check_unused_code.test.mjs",
+        "contains": [
+          "known-bad new unused export fails the check",
+          "a fixed finding still in the baseline fails until --update removes it",
+          "--update refuses to add findings to the baseline"
+        ]
+      },
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node", "root-npm"]
+      }
+    },
+    {
       "id": "design:widget-similarity-registry",
       "category": "design",
       "path": "tool/design/build_widget_similarity.mjs",
