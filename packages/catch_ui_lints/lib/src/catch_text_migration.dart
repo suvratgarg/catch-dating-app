@@ -13,6 +13,7 @@ const textMigrationBaseline =
 const _variantPath =
     'packages/catch_ui/lib/src/primitives/catch_text_variant.dart';
 typedef TextMigrationSite = ({InstanceCreationExpression node, String role});
+typedef TextMigrationCounts = Map<String, Map<String, int>>;
 
 bool textMigrationScope(String relative) =>
     (relative.startsWith('lib/') ||
@@ -27,7 +28,7 @@ bool textMigrationScope(String relative) =>
 /// Only direct, resolved role calls whose arguments CatchText can preserve.
 List<TextMigrationSite> textMigrationSites(
   CompilationUnit unit,
-  Set<String> variants,
+  Set<String>? variants,
 ) {
   final visitor = _TextCalls(variants);
   unit.accept(visitor);
@@ -36,7 +37,7 @@ List<TextMigrationSite> textMigrationSites(
 
 class _TextCalls extends RecursiveAstVisitor<void> {
   _TextCalls(this.variants);
-  final Set<String> variants;
+  final Set<String>? variants;
   final sites = <TextMigrationSite>[];
 
   @override
@@ -76,7 +77,7 @@ class _TextCalls extends RecursiveAstVisitor<void> {
     if (method?.enclosingElement?.name != 'CatchTextStyles' ||
         method?.library?.uri.toString() !=
             'package:catch_ui/src/foundations/catch_text_styles.dart' ||
-        !variants.contains(role)) {
+        (variants != null && !variants!.contains(role))) {
       return;
     }
     final contexts = style.argumentList.arguments
@@ -114,33 +115,71 @@ Set<String> textMigrationVariants(String root) =>
         .map((node) => node.name.lexeme)
         .toSet();
 
-Map<String, int> parseTextMigrationBaseline(String source) {
+TextMigrationCounts parseTextMigrationBaseline(String source) {
   final json = jsonDecode(source);
-  if (json is! Map || json['version'] != 1 || json['files'] is! Map) {
+  if (json is! Map || json['version'] != 2 || json['files'] is! Map) {
     throw const FormatException('Invalid CatchText migration baseline');
   }
-  final counts = <String, int>{};
+  final counts = <String, Map<String, int>>{};
   for (final entry in (json['files'] as Map).entries) {
     if (entry.key is! String ||
         !textMigrationScope(entry.key as String) ||
         (entry.key as String).split('/').contains('..') ||
-        entry.value is! int ||
-        (entry.value as int) <= 0) {
+        entry.value is! Map ||
+        (entry.value as Map).isEmpty) {
       throw const FormatException('Invalid CatchText migration baseline row');
     }
-    counts[entry.key as String] = entry.value as int;
+    final roles = <String, int>{};
+    for (final role in (entry.value as Map).entries) {
+      if (role.key is! String ||
+          !RegExp(r'^[A-Za-z][A-Za-z0-9]*$').hasMatch(role.key as String) ||
+          role.value is! int ||
+          (role.value as int) <= 0) {
+        throw const FormatException('Invalid CatchText migration role budget');
+      }
+      roles[role.key as String] = role.value as int;
+    }
+    counts[entry.key as String] = roles;
   }
   return counts;
 }
 
 List<String> textMigrationGrowth(
-  Map<String, int> actual,
-  Map<String, int> budget,
+  TextMigrationCounts actual,
+  TextMigrationCounts budget,
 ) => [
   for (final entry in actual.entries)
-    if (entry.value > (budget[entry.key] ?? 0))
-      '${entry.key}: ${entry.value} exceeds ${budget[entry.key] ?? 0}',
+    for (final role in entry.value.entries)
+      if (role.value > (budget[entry.key]?[role.key] ?? 0))
+        '${entry.key}:${role.key}: ${role.value} exceeds ${budget[entry.key]?[role.key] ?? 0}',
 ];
+
+/// Existing uncovered roles retain only their original allowance. They are not
+/// enforced until a variant exists, and cannot acquire a larger reservation.
+TextMigrationCounts textMigrationPrunedCounts(
+  TextMigrationCounts actual,
+  TextMigrationCounts? recorded,
+  Set<String> variants,
+) => {
+  for (final file in actual.entries)
+    if (file.value.entries.any(
+      (role) =>
+          variants.contains(role.key) ||
+          recorded == null ||
+          (recorded[file.key]?[role.key] ?? 0) > 0,
+    ))
+      file.key: {
+        for (final role in file.value.entries)
+          if (variants.contains(role.key) ||
+              recorded == null ||
+              (recorded[file.key]?[role.key] ?? 0) > 0)
+            role.key: variants.contains(role.key) || recorded == null
+                ? role.value
+                : role.value < recorded[file.key]![role.key]!
+                ? role.value
+                : recorded[file.key]![role.key]!,
+      },
+};
 
 String? _repositoryRoot(String path) {
   var directory = File(path).parent;
@@ -155,7 +194,10 @@ String? _repositoryRoot(String path) {
 }
 
 final _cache =
-    <String, ({String stamp, Set<String> variants, Map<String, int> counts})>{};
+    <
+      String,
+      ({String stamp, Set<String> variants, TextMigrationCounts counts})
+    >{};
 
 /// Existing counts are silent; newly added replaceable calls name their role.
 List<TextMigrationSite> newTextMigrationSites(
@@ -182,7 +224,13 @@ List<TextMigrationSite> newTextMigrationSites(
   final sites = textMigrationSites(unit, inputs.variants);
   // Baselines count in source order, not recursive visitor completion order.
   sites.sort((left, right) => left.node.offset.compareTo(right.node.offset));
-  return sites.skip(inputs.counts[relative] ?? 0).toList();
+  final seen = <String, int>{};
+  return [
+    for (final site in sites)
+      if ((seen.update(site.role, (value) => value + 1, ifAbsent: () => 1)) >
+          (inputs.counts[relative]?[site.role] ?? 0))
+        site,
+  ];
 }
 
 // Internal mode of the existing lint-drift wrapper, not another check registry.
@@ -215,9 +263,19 @@ Future<void> main(List<String> args) async {
           )
         : null;
     final baseline = File('$root/$textMigrationBaseline');
-    final recorded = baseline.existsSync()
-        ? parseTextMigrationBaseline(baseline.readAsStringSync())
+    final source = baseline.existsSync() ? baseline.readAsStringSync() : null;
+    final initial = source == null ? null : jsonDecode(source);
+    final legacy = initial is Map && initial['version'] == 1
+        ? Map<String, int>.from(initial['files'] as Map)
         : null;
+    if (legacy != null && (hasBase || args.single != '--update')) {
+      throw StateError(
+        'File-only budgets can only be converted during initial adoption with --update',
+      );
+    }
+    final recorded = source == null || legacy != null
+        ? null
+        : parseTextMigrationBaseline(source);
     final files =
         (git(['ls-files', '-z', '--', 'lib', 'apps']).stdout as String)
             .split('\u0000')
@@ -227,7 +285,7 @@ Future<void> main(List<String> args) async {
     if (files.isEmpty) throw StateError('CatchText scan has no source files');
     final variants = textMigrationVariants(root);
     if (variants.isEmpty) throw StateError('CatchText has no variants');
-    final counts = <String, int>{};
+    final counts = <String, Map<String, int>>{};
     final collection = AnalysisContextCollection(
       includedPaths: [root, '$root/apps/consumer', '$root/apps/host'],
     );
@@ -245,17 +303,60 @@ Future<void> main(List<String> args) async {
             )) {
           throw StateError('Incomplete resolved CatchText scan: $file');
         }
-        final count = textMigrationSites(unit.unit, variants).length;
-        if (count > 0) counts[file] = count;
+        final roles = <String, int>{};
+        for (final site in textMigrationSites(unit.unit, null)) {
+          roles.update(site.role, (count) => count + 1, ifAbsent: () => 1);
+        }
+        if (roles.isNotEmpty) {
+          counts[file] = Map.fromEntries(
+            roles.entries.toList()
+              ..sort((left, right) => left.key.compareTo(right.key)),
+          );
+        }
       }
     } finally {
       await collection.dispose();
     }
     final checking = args.single == '--check';
+    if (legacy != null) {
+      // The initial proposal has not landed. Its enabled allowances cannot
+      // grow; dormant reservations must come from unchanged pre-existing code.
+      final changed =
+          git([
+                'diff',
+                '--name-only',
+                base,
+                '--',
+                'lib',
+                'apps',
+                'packages/catch_ui/lib/src/foundations/catch_text_styles.dart',
+                'packages/catch_ui/lib/src/primitives/catch_text_variant.dart',
+              ]).stdout
+              as String;
+      if (changed.trim().isNotEmpty ||
+          legacy.entries.any(
+            (entry) => !textMigrationScope(entry.key) || entry.value <= 0,
+          )) {
+        throw StateError(
+          'Initial role reservations require unchanged app/style source at the merge base',
+        );
+      }
+      for (final file in counts.entries) {
+        final enabled = file.value.entries
+            .where((role) => variants.contains(role.key))
+            .fold(0, (sum, role) => sum + role.value);
+        if (enabled > (legacy[file.key] ?? 0)) {
+          throw StateError(
+            'Initial conversion cannot grow enabled allowance: ${file.key}',
+          );
+        }
+      }
+    }
     if (checking && recorded == null) {
       throw StateError('Missing CatchText migration baseline');
     }
-    final proposed = checking ? recorded! : counts;
+    final current = textMigrationPrunedCounts(counts, recorded, variants);
+    final proposed = checking ? recorded! : current;
     final growth = [
       if (previous != null) ...textMigrationGrowth(proposed, previous),
       if (!checking && recorded != null)
@@ -266,22 +367,31 @@ Future<void> main(List<String> args) async {
         'CatchText baseline may only shrink:\n${growth.join('\n')}',
       );
     }
-    final differences = {
-      ...counts.keys,
-      ...?recorded?.keys,
-    }.where((file) => counts[file] != recorded?[file]);
+    final differences = [
+      for (final file in {...current.keys, ...?recorded?.keys})
+        for (final role in {...?current[file]?.keys, ...?recorded?[file]?.keys})
+          if ((current[file]?[role] ?? 0) != (recorded?[file]?[role] ?? 0))
+            '$file:$role: recorded ${recorded?[file]?[role] ?? 0}, actual ${current[file]?[role] ?? 0}',
+    ];
     if (checking && differences.isNotEmpty) {
       throw StateError(
-        'CatchText baseline is stale:\n${differences.map((file) => '$file: recorded ${recorded?[file] ?? 0}, actual ${counts[file] ?? 0}').join('\n')}\nRun bash tool/check_catch_ui_lint_drift.sh --update-text-baseline',
+        'CatchText baseline is stale:\n${differences.join('\n')}\nRun bash tool/check_catch_ui_lint_drift.sh --update-text-baseline',
       );
     }
     if (!checking) {
       baseline.writeAsStringSync(
-        '${const JsonEncoder.withIndent('  ').convert({'version': 1, 'owner': 'app_architecture', 'targetPhase': 'docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-7--cross-framework-conformance-react', 'files': counts})}\n',
+        '${const JsonEncoder.withIndent('  ').convert({'version': 2, 'owner': 'app_architecture', 'targetPhase': 'docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-7--cross-framework-conformance-react', 'files': current})}\n',
       );
     }
+    final enabled = current.values
+        .expand((roles) => roles.entries)
+        .where((role) => variants.contains(role.key))
+        .fold(0, (sum, role) => sum + role.value);
+    final total = current.values
+        .expand((roles) => roles.values)
+        .fold(0, (sum, count) => sum + count);
     stdout.writeln(
-      'CatchText migration baseline ${checking ? 'passed' : 'updated'}: ${counts.values.fold(0, (sum, count) => sum + count)} calls in ${counts.length} files (${files.length} resolved files).',
+      'CatchText migration baseline ${checking ? 'passed' : 'updated'}: $enabled covered calls, ${total - enabled} reserved legacy calls in ${current.length} files (${files.length} resolved files).',
     );
   } catch (error) {
     stderr.writeln(error);

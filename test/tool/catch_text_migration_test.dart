@@ -13,20 +13,88 @@ void main() {
   test('baseline rejects malformed rows, growth, and new file allowances', () {
     for (final source in [
       '{}',
-      '{"version":2,"files":{}}',
-      '{"version":1,"files":{"lib/a.dart":0}}',
-      '{"version":1,"files":{"lib/a.dart":1.5}}',
-      '{"version":1,"files":{"lib/../a.dart":1}}',
-      '{"version":1,"files":{"packages/catch_ui/lib/a.dart":1}}',
+      '{"version":1,"files":{}}',
+      '{"version":3,"files":{}}',
+      '{"version":2,"files":{"lib/a.dart":{}}}',
+      '{"version":2,"files":{"lib/a.dart":{"supporting":0}}}',
+      '{"version":2,"files":{"lib/a.dart":{"supporting":1.5}}}',
+      '{"version":2,"files":{"lib/../a.dart":{"supporting":1}}}',
+      '{"version":2,"files":{"packages/catch_ui/lib/a.dart":{"supporting":1}}}',
     ]) {
       expect(() => parseTextMigrationBaseline(source), throwsFormatException);
     }
-    const budget = {'lib/a.dart': 2};
-    expect(textMigrationGrowth({'lib/a.dart': 2}, budget), isEmpty);
-    expect(textMigrationGrowth({'lib/a.dart': 1}, budget), isEmpty);
+    const budget = {
+      'lib/a.dart': {'supporting': 2},
+    };
+    expect(
+      textMigrationGrowth({
+        'lib/a.dart': {'supporting': 2},
+      }, budget),
+      isEmpty,
+    );
+    expect(
+      textMigrationGrowth({
+        'lib/a.dart': {'supporting': 1},
+      }, budget),
+      isEmpty,
+    );
     expect(textMigrationGrowth({}, budget), isEmpty);
-    expect(textMigrationGrowth({'lib/a.dart': 3}, budget), hasLength(1));
-    expect(textMigrationGrowth({'lib/new.dart': 1}, budget), hasLength(1));
+    expect(
+      textMigrationGrowth({
+        'lib/a.dart': {'supporting': 3},
+      }, budget),
+      hasLength(1),
+    );
+    expect(
+      textMigrationGrowth({
+        'lib/new.dart': {'supporting': 1},
+      }, budget),
+      hasLength(1),
+    );
+    expect(
+      textMigrationGrowth({
+        'lib/a.dart': {'bodyL': 2},
+      }, budget),
+      hasLength(1),
+    );
+  });
+
+  test('new variants activate only original legacy role allowances', () {
+    const initial = {
+      'lib/a.dart': {'supporting': 2, 'proseM': 1},
+    };
+    expect(
+      textMigrationPrunedCounts(initial, initial, {'supporting'}),
+      initial,
+    );
+    final activated = textMigrationPrunedCounts(initial, initial, {
+      'supporting',
+      'proseM',
+    });
+    expect(textMigrationGrowth(activated, initial), isEmpty);
+    const later = {
+      'lib/a.dart': {'supporting': 2, 'proseM': 2, 'labelM': 1},
+    };
+    expect(textMigrationPrunedCounts(later, initial, {'supporting'}), initial);
+    expect(
+      textMigrationGrowth(
+        textMigrationPrunedCounts(later, initial, {'supporting', 'proseM'}),
+        initial,
+      ),
+      hasLength(1),
+    );
+    expect(
+      textMigrationPrunedCounts(
+        {
+          'lib/a.dart': {'supporting': 1},
+        },
+        initial,
+        {'supporting'},
+      ),
+      {
+        'lib/a.dart': {'supporting': 1},
+      },
+    );
   });
 
   test(
@@ -116,8 +184,11 @@ Widget probe(BuildContext context, dynamic data, int? nullableLines) => Column(c
       baseline.createSync(recursive: true);
       baseline.writeAsStringSync(
         jsonEncode({
-          'version': 1,
-          'files': {'lib/host.dart': 100, 'lib/parts.dart': 1},
+          'version': 2,
+          'files': {
+            'lib/host.dart': {'supporting': 100, 'titleL': 100, 'proseM': 100},
+            'lib/parts.dart': {'supporting': 1, 'proseM': 1},
+          },
         }),
       );
       Directory('${fixture.path}/lib').createSync();
@@ -126,7 +197,7 @@ Widget probe(BuildContext context, dynamic data, int? nullableLines) => Column(c
       );
       final partPath = '${fixture.path}/lib/parts.dart';
       File(partPath).writeAsStringSync(
-        "part of 'host.dart';\nWidget partText(BuildContext context) => Column(children: [Text('existing', style: CatchTextStyles.supporting(context)), Text('new', style: CatchTextStyles.titleL(context))]);\n",
+        "part of 'host.dart';\nWidget partText(BuildContext context) => Column(children: [Text('existing', style: CatchTextStyles.supporting(context)), Text('new', style: CatchTextStyles.titleL(context)), Text('existing prose', style: CatchTextStyles.proseM(context)), Text('later prose', style: CatchTextStyles.proseM(context))]);\n",
       );
       final collection = AnalysisContextCollection(
         includedPaths: [fixture.path],
@@ -156,6 +227,20 @@ Widget probe(BuildContext context, dynamic data, int? nullableLines) => Column(c
               as ResolvedUnitResult;
       expect(part.diagnostics, isEmpty);
       expect(newTextMigrationSites(part.unit, partPath).single.role, 'titleL');
+      // Publishing a role activates its original allowance, not another role's
+      // quota. A later unsupported call acquires no extra reservation.
+      final enumSource = variants.readAsStringSync();
+      expect(enumSource, contains('metric;'));
+      variants.writeAsStringSync(
+        enumSource.replaceFirst('metric;', 'metric, proseM;'),
+      );
+      variants.setLastModifiedSync(
+        DateTime.now().add(const Duration(seconds: 1)),
+      );
+      expect(
+        newTextMigrationSites(part.unit, partPath).map((site) => site.role),
+        ['titleL', 'proseM'],
+      );
     },
   );
 }
