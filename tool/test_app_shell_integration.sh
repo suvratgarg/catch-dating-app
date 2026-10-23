@@ -89,6 +89,26 @@ if [[ "${mode}" == "--self-test" ]]; then
   [[ "${native_plan}" == *"-d macos"* ]]
   [[ "${native_plan}" != *"app_shell_event_flows_test.dart"* ]]
 
+  # The macOS runner lives in apps/consumer, and Flutter runs device tests only
+  # from that project's own integration_test/ directory, so every native suite
+  # needs a Consumer entrypoint that delegates to the shared suite.
+  native_all_plan="$(
+    APP_SHELL_INTEGRATION_DRY_RUN=true bash "${runner}" macos all
+  )"
+  runner_root="$(cd "$(dirname "${runner}")/.." && pwd)"
+  native_suite_count=0
+  while IFS= read -r suite; do
+    native_suite_count=$((native_suite_count + 1))
+    if [[ ! -f "${runner_root}/apps/consumer/${suite}" ]]; then
+      echo "Native suite ${suite} has no apps/consumer/${suite} entrypoint." >&2
+      exit 1
+    fi
+  done < <(grep -oE 'integration_test/[A-Za-z0-9_]+\.dart' <<<"${native_all_plan}" | sort -u)
+  if ((native_suite_count == 0)); then
+    echo "Expected the native plan to name at least one suite." >&2
+    exit 1
+  fi
+
   if APP_SHELL_INTEGRATION_DRY_RUN=true \
     bash "${runner}" headless unknown >/dev/null 2>&1; then
     echo "Expected an unknown scope to fail closed." >&2

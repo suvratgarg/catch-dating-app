@@ -34,10 +34,13 @@ change and publishes an LCOV plus feature-level Markdown coverage artifact.
 checked 0.30% macOS raster tolerance, deterministic headless app-shell wrappers,
 and a bounded native macOS app-shell smoke sequentially for relevant changes,
 on weekdays, and on manual dispatch; failed golden images are retained as CI
-artifacts. Pass a device id and scope to the runner—for example,
-`bash tool/test_app_shell_integration.sh macos smoke` or
-`bash tool/test_app_shell_integration.sh macos all`—for an explicit native
-pass. Live Firebase/device evidence remains a release-runbook lane rather than
+artifacts. The macOS runner lives in `apps/consumer`, so run native passes
+from there with a device id and scope—for example,
+`(cd apps/consumer && bash ../../tool/test_app_shell_integration.sh macos smoke)`
+or `... macos all`. Each native suite has a thin entrypoint in
+`apps/consumer/integration_test/` that delegates to the shared suite, because
+Flutter runs device tests only from the current project's `integration_test/`
+directory; add one when adding a native suite. Live Firebase/device evidence remains a release-runbook lane rather than
 being implied by repository integration tests.
 
 Catch Host journeys (`integration_test/host_app_shell_journeys_test.dart`) boot

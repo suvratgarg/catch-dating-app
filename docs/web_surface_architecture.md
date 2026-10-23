@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.35.0
+version: 0.35.1
 updated: 2026-10-23
 owner: web_platform
 status: active
@@ -16,7 +16,7 @@ Use one apex domain with separate subdomains for distinct web products:
 |---|---|---|---|
 | `catchdates.com` | Public marketing site, public host pages, SEO pages, legal/support pages, app-link files, and public lead capture | `website/` | `marketing` |
 | `www.catchdates.com` | Redirect to `catchdates.com` | Firebase custom domain redirect | `marketing` |
-| `app.catchdates.com` | Consumer app on Flutter web | `build/web` | `app` |
+| `app.catchdates.com` | Consumer app on Flutter web | `apps/consumer/build/web` | `app` |
 | `admin.catchdates.com` | Internal admin and analytics console | `admin/` | `admin` |
 
 Keep the Flutter web app separate from the public website. The Flutter web app is
@@ -567,7 +567,7 @@ only `firebase.ts` to import the generated callable types.
   Vite build for `/host/`, `/claim/`, `/organizers/`, canonical organizer
   listings, legacy organizer routes, `robots.txt`, and `sitemap.xml`.
 - `admin/` remains the separate Vite + React + TypeScript admin app.
-- `build/web` remains the Flutter web deploy artifact for `app.catchdates.com`.
+- `apps/consumer/build/web` is the Flutter web deploy artifact for `app.catchdates.com`; the `app` target's predeploy builds it with `./tool/flutter_with_env.sh prod --role consumer build web --release`.
 
 Design-token CSS and web font copies are generated into
 `packages/web-config/generated/` by `dart run tool/design_tokens.dart`, then
@@ -937,7 +937,7 @@ instead of creating a separate website inventory.
 `firebase.json` declares three Hosting targets:
 
 - `marketing`: builds `website/` and deploys `website/dist`.
-- `app`: deploys `build/web` for the Flutter web app.
+- `app`: deploys `apps/consumer/build/web` for the Flutter web app.
 - `admin`: builds `admin/` and deploys `admin/dist` with `X-Robots-Tag:
   noindex, nofollow`.
 

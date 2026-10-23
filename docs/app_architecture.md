@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.81.0
-updated: 2026-10-19
+version: 1.81.1
+updated: 2026-10-23
 owner: app_architecture
 status: active
 ---
@@ -2072,7 +2072,7 @@ Candidate patterns:
 | Error banner | `packages/catch_ui/lib/src/components/catch_banner.dart` |
 | Mutation helpers | `lib/core/riverpod_ui/mutation_error_util.dart` |
 | Mutation subscriptions and transient error notices | `lib/core/riverpod_ui/catch_notice_feedback.dart` |
-| Global error handlers | `lib/main.dart` |
+| Global error handlers | `lib/app_bootstrap.dart` |
 
 ### Event conversation session ownership
 
@@ -3428,8 +3428,8 @@ Current native policy:
   dedicated, fingerprint-checked CI Apple Development identity before invoking
   automatic signing; Xcode still owns profile updates and distribution
   re-signing at export. A runner must never create and then abandon a new
-  development certificate. Xcode Cloud is a
-  legacy cutover surface only; Play upload remains gated by
+  development certificate. Xcode Cloud has no checked build scripts; its
+  disabled workflows are App Store Connect history only. Play upload remains gated by
   `APP-TARGET-ANDROID-PLAY-001` until console enrollment and publisher access
   are proven.
 

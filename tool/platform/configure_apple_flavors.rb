@@ -38,13 +38,39 @@ def flavors_for(role: nil, package_entrypoints: false)
     end
 end
 
-FLAVORS = flavors_for.freeze
-
 BUILD_MODES = {
   'Debug' => :debug,
   'Profile' => :release,
   'Release' => :release
 }.freeze
+
+FLAVORED_CONFIGURATION = /\A(?:#{BUILD_MODES.keys.join('|')})-(?<flavor>.+)\z/
+
+# Each app project carries only its own role's flavors. Configurations, base
+# xcconfigs and schemes left behind by another role are removed rather than
+# kept as unbuildable aliases.
+def prune_foreign_flavors(project, flavors, scheme_dir:, xcconfig_path:)
+  foreign = project.build_configurations.map(&:name).select do |name|
+    match = FLAVORED_CONFIGURATION.match(name)
+    match && !flavors.key?(match[:flavor])
+  end
+  foreign.each do |config_name|
+    project.targets.each do |target|
+      target.build_configurations
+        .select { |config| config.name == config_name }
+        .each(&:remove_from_project)
+    end
+    project.build_configurations
+      .select { |config| config.name == config_name }
+      .each(&:remove_from_project)
+    xcconfig = xcconfig_path.call(config_name)
+    project.files.select { |file| file.real_path.to_s == xcconfig }.each(&:remove_from_project)
+    FileUtils.rm_f(xcconfig)
+  end
+  foreign.map { |name| FLAVORED_CONFIGURATION.match(name)[:flavor] }.uniq.each do |flavor|
+    FileUtils.rm_f(File.join(scheme_dir, "#{flavor}.xcscheme"))
+  end
+end
 
 def ensure_file_ref(project, group_path, file_path)
   group = project.main_group.find_subpath(group_path, true)
@@ -210,7 +236,6 @@ def configure_ios(project_root:, flavors:)
 
   remove_static_firebase_resource(runner)
   ensure_firebase_copy_phase(runner, 'ios')
-  project.save
 
   scheme_dir = File.join(
     project_root,
@@ -219,6 +244,14 @@ def configure_ios(project_root:, flavors:)
     'xcshareddata',
     'xcschemes'
   )
+  prune_foreign_flavors(
+    project,
+    flavors,
+    scheme_dir: scheme_dir,
+    xcconfig_path: ->(config_name) { File.join(project_root, 'ios', 'Flutter', "#{config_name}.xcconfig") }
+  )
+  project.save
+
   FileUtils.mkdir_p(scheme_dir)
   source_scheme = File.join(scheme_dir, 'Runner.xcscheme')
   flavors.each do |flavor, settings|
@@ -226,20 +259,21 @@ def configure_ios(project_root:, flavors:)
   end
 end
 
-def configure_macos
-  project_path = File.join(REPO_ROOT, 'macos', 'Runner.xcodeproj')
+def configure_macos(project_root:, flavors:)
+  project_path = File.join(project_root, 'macos', 'Runner.xcodeproj')
   project = Xcodeproj::Project.open(project_path)
   runner = project.targets.find { |target| target.name == 'Runner' }
   tests = project.targets.find { |target| target.name == 'RunnerTests' }
   assemble = project.targets.find { |target| target.name == 'Flutter Assemble' }
+  configs_dir = File.join(project_root, 'macos', 'Runner', 'Configs')
 
-  FLAVORS.each do |flavor, settings|
+  flavors.each do |flavor, settings|
     BUILD_MODES.each do |mode, type|
       config_name = "#{mode}-#{flavor}"
       xcconfig = "AppInfo-#{config_name}.xcconfig"
       pod_config = mode == 'Debug' ? 'debug' : 'release'
       File.write(
-        File.join(REPO_ROOT, 'macos', 'Runner', 'Configs', xcconfig),
+        File.join(configs_dir, xcconfig),
         <<~CONFIG
           #include? "../../Pods/Target Support Files/Pods-Runner/Pods-Runner.#{config_name.downcase}.xcconfig"
           #include? "../../Pods/Target Support Files/Pods-Runner/Pods-Runner.#{pod_config}.xcconfig"
@@ -287,22 +321,28 @@ def configure_macos
 
   remove_static_firebase_resource(runner)
   ensure_firebase_copy_phase(runner, 'macos')
+
+  scheme_dir = File.join(project_root, 'macos', 'Runner.xcodeproj', 'xcshareddata', 'xcschemes')
+  prune_foreign_flavors(
+    project,
+    flavors,
+    scheme_dir: scheme_dir,
+    xcconfig_path: ->(config_name) { File.join(configs_dir, "AppInfo-#{config_name}.xcconfig") }
+  )
   project.save
 
-  scheme_dir = File.join(REPO_ROOT, 'macos', 'Runner.xcodeproj', 'xcshareddata', 'xcschemes')
   FileUtils.mkdir_p(scheme_dir)
   source_scheme = File.join(scheme_dir, 'Runner.xcscheme')
-  FLAVORS.each do |flavor, settings|
+  flavors.each do |flavor, settings|
     write_scheme(source_scheme, File.join(scheme_dir, "#{flavor}.xcscheme"), flavor, settings)
   end
 end
 
-configure_ios(project_root: REPO_ROOT, flavors: FLAVORS)
 APP_TARGETS.fetch('roles').each do |role, role_config|
   project_root = File.join(REPO_ROOT, role_config.fetch('projectRoot'))
-  configure_ios(
-    project_root: project_root,
-    flavors: flavors_for(role: role, package_entrypoints: true)
-  )
+  flavors = flavors_for(role: role, package_entrypoints: true)
+  configure_ios(project_root: project_root, flavors: flavors)
+  # Only the Consumer project ships a macOS runner; it hosts the native
+  # app-shell smoke suite.
+  configure_macos(project_root: project_root, flavors: flavors) if Dir.exist?(File.join(project_root, 'macos'))
 end
-configure_macos

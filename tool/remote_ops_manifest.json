@@ -766,14 +766,6 @@
           "ref": ".github/workflows/mobile-internal-promote.yml"
         },
         {
-          "kind": "config",
-          "ref": "ios/ci_scripts/ci_post_clone.sh"
-        },
-        {
-          "kind": "config",
-          "ref": "ios/ci_scripts/ci_post_xcodebuild.sh"
-        },
-        {
           "kind": "doc",
           "ref": "docs/release_operations.md"
         },

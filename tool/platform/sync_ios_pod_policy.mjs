@@ -6,13 +6,13 @@ import {fileURLToPath} from "node:url";
 import {parseArgs} from "node:util";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const projects = ["ios", "apps/consumer/ios", "apps/host/ios"];
+const projects = ["apps/consumer/ios", "apps/host/ios"];
 
 // Keep each Podfile self-contained: Flutter's CocoaPods freshness check and
 // CocoaPods' checksum watch that file, not Ruby helpers it might require.
 export const iosPodPolicyOutputs = Object.freeze([
-  {template: "ios/Podfile.template", outputs: projects.map((project) => `${project}/Podfile`)},
-  {template: "ios/Flutter/CatchBuildSettings.xcconfig.template",
+  {template: "tool/platform/ios/Podfile.template", outputs: projects.map((project) => `${project}/Podfile`)},
+  {template: "tool/platform/ios/CatchBuildSettings.xcconfig.template",
     outputs: projects.map((project) => `${project}/Flutter/CatchBuildSettings.xcconfig`)},
 ]);
 

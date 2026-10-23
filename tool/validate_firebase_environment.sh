@@ -2,13 +2,13 @@
 set -euo pipefail
 
 if [[ $# -lt 1 || $# -gt 3 ]]; then
-  echo "Usage: ./tool/validate_firebase_environment.sh <dev|staging|prod> [consumer|host] [project-root]"
+  echo "Usage: ./tool/validate_firebase_environment.sh <dev|staging|prod> [consumer|host] [app-project-root]"
   exit 1
 fi
 
 environment="$1"
 app_role="${2:-consumer}"
-project_root="${3:-.}"
+project_root="${3:-}"
 
 case "$environment" in
   dev|staging|prod) ;;
@@ -28,7 +28,6 @@ esac
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
-destination_root="$repo_root/$project_root"
 define_file="$repo_root/tool/env/dart_defines/$environment.json"
 
 if [[ ! -f "$define_file" ]]; then
@@ -40,6 +39,16 @@ if ! command -v node >/dev/null 2>&1; then
   echo "Firebase target validation requires Node.js."
   exit 127
 fi
+if [[ -z "$project_root" ]]; then
+  # Default to the selected role's own app project from tool/app_targets.json.
+  project_root="$(
+    node "$repo_root/tool/platform/resolve_app_target.mjs" \
+      --role "$app_role" \
+      --environment "$environment" \
+      --fields projectRoot
+  )"
+fi
+destination_root="$repo_root/$project_root"
 
 node - "$define_file" "$environment" <<'NODE'
 const fs = require("fs");

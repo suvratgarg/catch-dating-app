@@ -24,7 +24,7 @@ function fixture(t) {
 
 test("checked-in iOS policies match their authored templates byte for byte", () => {
   assert.deepEqual(syncIosPodPolicy(), []);
-  assert.equal(outputPaths.length, 6);
+  assert.equal(outputPaths.length, 4);
 });
 
 test("no-op generation preserves every generated file and its warm-checkout timestamp", (t) => {
@@ -72,7 +72,7 @@ test("policy edits change all actual Podfiles while leaving locks and installati
     fs.copyFileSync(`${podfile}.lock`, manifest);
     fs.utimesSync(manifest, 2000, 2000);
   }
-  const template = path.join(repoRoot, "ios/Podfile.template");
+  const template = path.join(repoRoot, iosPodPolicyOutputs[0].template);
   fs.appendFileSync(template, "\n# changed native policy\n");
   assert.deepEqual(syncIosPodPolicy({repoRoot}), podfiles);
   assert.deepEqual(syncIosPodPolicy({repoRoot, write: true}), podfiles);
@@ -108,7 +108,7 @@ test("Runner settings changes preserve all Podfiles and propagate to every Runne
 
 test("invalid authored input fails before any generated output can change", (t) => {
   const repoRoot = fixture(t);
-  fs.appendFileSync(path.join(repoRoot, "ios/Podfile.template"), "# pending\n");
+  fs.appendFileSync(path.join(repoRoot, iosPodPolicyOutputs[0].template), "# pending\n");
   fs.writeFileSync(path.join(repoRoot, iosPodPolicyOutputs[1].template), "");
   assert.throws(() => syncIosPodPolicy({repoRoot, write: true}), /Empty iOS policy template/);
   for (const output of iosPodPolicyOutputs[0].outputs) {
@@ -121,7 +121,7 @@ test("CLI defaults to check and rejects stale files and conflicting modes", (t) 
   const script = path.join(repoRoot, "tool/platform/sync_ios_pod_policy.mjs");
   fs.mkdirSync(path.dirname(script), {recursive: true});
   fs.copyFileSync(new URL("./sync_ios_pod_policy.mjs", import.meta.url), script);
-  fs.appendFileSync(path.join(repoRoot, "ios/Podfile"), "# stale\n");
+  fs.appendFileSync(path.join(repoRoot, "apps/consumer/ios/Podfile"), "# stale\n");
   const run = (...args) => spawnSync(process.execPath, [script, ...args], {cwd: os.tmpdir(), encoding: "utf8"});
   const stale = run();
   assert.equal(stale.status, 1);

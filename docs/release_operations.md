@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.14.0
+version: 2.14.1
 updated: 2026-10-23
 owner: recursive_audit_loop
 status: active
@@ -28,7 +28,7 @@ work around that failure by falling back to production.
 
 Flutter, Node, Java, Firebase CLI, CocoaPods, the GitHub-hosted Apple runner,
 and the minimum Xcode version are owned together in `tool/ci/toolchain.env`.
-GitHub Actions and Xcode Cloud read that contract;
+GitHub Actions reads that contract;
 `bash tool/ci/check_toolchain_consistency.sh` fails when a required pin, the
 Functions Node engine, or an Apple-native workflow runner drifts. Keep the
 Apple runner major aligned with the minimum Xcode major. The repository enforces
@@ -592,10 +592,10 @@ cannot authorize an Admin, Marketing, or Host production promotion.
 
 ### Shared iOS dependency policy
 
-Edit `ios/Podfile.template` and
-`ios/Flutter/CatchBuildSettings.xcconfig.template`, then run
+Edit `tool/platform/ios/Podfile.template` and
+`tool/platform/ios/CatchBuildSettings.xcconfig.template`, then run
 `node tool/platform/sync_ios_pod_policy.mjs --write` before native builds. The
-root, Consumer and Host Podfiles and Runner settings are generated verbatim;
+Consumer and Host Podfiles and Runner settings are generated verbatim;
 their separate Pod lockfiles, plugin graphs and app targets remain independent.
 `platform:ios-pod-policy` checks freshness in every selected iOS-native lane,
 and the existing compile-codegen catalog selects the same check before commit.
@@ -3036,7 +3036,7 @@ archive as a distributable app (`aps-environment=development`,
 identity conflicts with automatic signing, while both Consumer and Host Android
 jobs built, verified, and uploaded their signed AAB artifacts successfully. The
 corrected contract leaves archive signing automatic, lets `xcodebuild
--exportArchive` re-sign with `ios/ExportOptions.prod.plist`, and reserves strict
+-exportArchive` re-sign with `apps/<role>/ios/ExportOptions.prod.plist`, and reserves strict
 distribution-entitlement enforcement for the exported IPA. The checked IPA is
 then uploaded directly instead of asking Xcode to export a different binary for
 upload.
@@ -3140,46 +3140,29 @@ role/platform target after the backend contract is ready. `Mobile Internal
 Release` has no manual dispatch; do not manufacture an unplanned package by
 rerunning or bypassing its CI authority.
 
-GitHub Actions iOS jobs write `ios/Flutter/GoogleMapsKeys.xcconfig` through
-`tool/write_ios_maps_key_xcconfig.sh <env>`. The simulator build matrix uses
-`dev`; TestFlight release builds use `prod`. If a legacy Xcode Cloud workflow is
-deliberately re-enabled for rollback, its scripts must use the same helper and
-prod key. Keep Maps-key validation there instead of duplicating secret preflight
-logic in each CI surface.
+GitHub Actions iOS jobs write each app's
+`apps/<role>/ios/Flutter/GoogleMapsKeys.xcconfig` through
+`tool/write_ios_maps_key_xcconfig.sh <env> <output>`. The simulator build matrix
+uses `dev`; TestFlight release builds use `prod`. Keep Maps-key validation in
+that helper instead of duplicating secret preflight logic in each CI surface.
 
 ## Legacy Xcode Cloud Build Scripts
 
-The checked Xcode Cloud scripts remain as rollback and audit support while
-`APP-TARGET-IOS-GITHUB-CUTOVER-001` is active. They are not the routine release
-owner.
+The checked Xcode Cloud `ci_scripts` were removed on 2026-10-23 with the root
+native shells. All three copies (root, Consumer and Host) were byte-identical,
+and each wrote the Maps key into root `ios/Flutter/` and pod-installed the root
+project, so none could build a shipped app project. Recovering through Xcode
+Cloud would need new scripts that prepare `apps/<role>/ios`, inject and verify
+the environment-specific Maps key, and stay above the GitHub candidate floor.
 
-Two CI scripts drive it:
+GitHub Actions read `tool/ci/toolchain.env` through local actions under
+`.github/actions`. Update that file instead of editing workflow YAML when
+changing public tool versions such as Flutter, Node, Java, or Firebase CLI.
 
-- `ios/ci_scripts/ci_post_clone.sh` reads the Flutter SDK version from
-  `tool/ci/toolchain.env`, installs Flutter and Node, applies the prod Firebase
-  environment for `consumer` or `host`, writes the prod iOS Google Maps key, and
-  runs `pod install`. It uses `CATCH_APP_ROLE=host` or a `host-*` Xcode scheme to
-  prepare the manifest-resolved `lib/main_host_prod.dart` composition.
-- `ios/ci_scripts/ci_post_xcodebuild.sh` runs the release-identity verifier
-  against the archive, writes `build/ios/release-evidence/<role>-xcode-cloud-archive.json`, and verifies the archived
-  `GoogleMapsApiKey` before the build can reach TestFlight.
-
-GitHub Actions read the same `tool/ci/toolchain.env` file through local actions
-under `.github/actions`. Update that file instead of editing workflow YAML or
-Xcode Cloud scripts when changing public tool versions such as Flutter, Node,
-Java, or Firebase CLI.
-
-`ios/Flutter/GoogleMapsKeys.xcconfig` is gitignored, so it is never present in a
-fresh clone. The Xcode Cloud workflow must define `GOOGLE_MAPS_IOS_API_KEY_PROD`
-as a secret environment variable; `ci_post_clone.sh` calls
-`tool/write_ios_maps_key_xcconfig.sh prod` to write the xcconfig and fail the
-build if the key is missing or malformed. Without the key the archived
-`GoogleMapsApiKey` is empty, `GMSServices.provideAPIKey` is skipped in
-`AppDelegate`, and every map screen crashes at runtime.
-
-If a legacy Xcode Cloud build is deliberately re-enabled for recovery, it must
-inject and verify the environment-specific Maps key. The GitHub candidate-floor
-check will reject any later build number that is not above the resulting build.
+`apps/<role>/ios/Flutter/GoogleMapsKeys.xcconfig` is gitignored, so it is never
+present in a fresh clone. Without the key the archived `GoogleMapsApiKey` is
+empty, `GMSServices.provideAPIKey` is skipped in `AppDelegate`, and every map
+screen crashes at runtime.
 
 ## GitHub-Only Migration Status
 
@@ -3214,7 +3197,7 @@ Cutover checklist:
    fingerprints.
 
 The repository can verify that the GitHub `prod-mobile` environment has the
-required App Store Connect secret names and that the local/Xcode Cloud scripts fail
+required App Store Connect secret names and that the local release scripts fail
 loudly when required release secrets are missing. The exact promoter can prove
 TestFlight group membership and build access through App Store Connect API
 readback. It cannot prove installed-device behavior, export-compliance prompts,

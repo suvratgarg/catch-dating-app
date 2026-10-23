@@ -325,7 +325,7 @@ CandidateDisposition _dispositionFor({
     );
   }
 
-  if (path == 'lib/main.dart' || path == 'lib/app_bootstrap.dart') {
+  if (path == 'lib/app_bootstrap.dart') {
     return const CandidateDisposition(
       status: CandidateStatus.intentional,
       reason: 'bootstrap framework/platform error handler + central logging',

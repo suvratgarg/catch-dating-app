@@ -155,7 +155,7 @@ test("iOS policy inputs and outputs retain native builds and generated freshness
   assert.deepEqual(changedConsumerOutput.operations.releaseRoles, ["consumer"]);
   // The native profiles also cover ordinary app metadata. Their freshness gate
   // must not turn an unrelated iOS edit into the full Tools setup/matrix.
-  for (const file of ["ios/Runner/Info.plist", "apps/host/ios/Runner/Info.plist",
+  for (const file of ["apps/host/ios/Runner/Info.plist",
     "apps/consumer/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json"]) {
     const tools = planAffectedToolChecks({changedPaths: [file],
       manifest: toolsManifest, componentGraph: graph, mode: "pr"});
@@ -821,15 +821,34 @@ test("host-only Flutter source keeps Host smoke while validating Marketing captu
   assert.deepEqual(deriveAppRoles(result), ["host"]);
 });
 
+test("retired native shell paths retain validation for deletions without release authority", () => {
+  const paths = ["android/gradle.properties", "ios/Runner/Info.plist",
+    "ios/Podfile.template", "macos/Runner/Info.plist", "web/index.html"];
+  // Git diffs retain deleted paths and both sides of a move. Root hygiene
+  // separately rejects restoring these shells; routing must still cover them.
+  for (const file of paths) {
+    for (const mode of ["pr", "merge_group", "main", "nightly", "release"]) {
+      const result = plan(file, mode);
+      assert.equal(result.complete, true, `${file} ${mode}`);
+      if (mode !== "release") {
+        assert.deepEqual(result.operations.ciTargets, [...graph.targets].sort(), `${file} ${mode}`);
+      }
+      assert.deepEqual(result.operations.deployGroups, [], `${file} ${mode}`);
+      assert.deepEqual(result.operations.releaseTargets, [], `${file} ${mode}`);
+      assert.deepEqual(result.operations.releaseRoles, [], `${file} ${mode}`);
+    }
+  }
+});
+
 test("platform builds without explicit role metadata conservatively compile both apps", () => {
-  const result = plan("android/gradle.properties");
-  assert.deepEqual(result.operations.ciTargets, ["flutter_build_android"]);
+  const result = plan("tool/platform/ios/Podfile.template");
+  assert.deepEqual(result.operations.ciTargets, ["flutter_build_ios", "tools"]);
   assert.deepEqual(deriveAppRoles(result), ["consumer", "host"]);
 });
 
 test("native and Firebase role fixtures retain platform-specific validation", () => {
-  const nativeHost = plan("android/app/src/hostProd/AndroidManifest.xml", "main");
-  assert.deepEqual(nativeHost.directComponents, ["app.native.android.host"]);
+  const nativeHost = plan("apps/host/android/app/src/hostProd/AndroidManifest.xml", "main");
+  assert.deepEqual(nativeHost.directComponents, ["app.host.native.android"]);
   assert.deepEqual(nativeHost.operations.ciTargets, ["flutter_build_android"]);
   assert.deepEqual(nativeHost.operations.releaseTargets, ["host-android"]);
   assert.deepEqual(nativeHost.operations.releaseRoles, ["host"]);
@@ -882,16 +901,6 @@ test("signed mobile authority preserves platform ownership instead of widening r
       targets: ["consumer-android"],
       roles: ["consumer"],
     },
-    {
-      path: "ios/Runner.xcodeproj/project.pbxproj",
-      targets: ["consumer-ios", "host-ios"],
-      roles: ["consumer", "host"],
-    },
-    {
-      path: "android/gradle.properties",
-      targets: ["consumer-android", "host-android"],
-      roles: ["consumer", "host"],
-    },
   ];
 
   for (const fixture of fixtures) {
@@ -916,8 +925,7 @@ test("web and desktop shells cannot authorize a signed mobile release", () => {
   for (const path of [
     "apps/host/web/index.html",
     "apps/consumer/web/index.html",
-    "web/index.html",
-    "macos/Runner/Info.plist",
+    "apps/consumer/macos/Runner/Info.plist",
   ]) {
     const main = plan(path, "main");
     assert.deepEqual(main.operations.releaseTargets, [], path);

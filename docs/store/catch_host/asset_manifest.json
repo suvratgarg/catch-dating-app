@@ -108,7 +108,7 @@
   },
   "icon": {
     "path": "docs/store/catch_host/icon/app-icon-1024.png",
-    "sourcePath": "ios/Runner/Assets.xcassets/AppIcon-host-prod.appiconset/Icon-App-host-prod-1024x1024@1x.png",
+    "sourcePath": "apps/host/ios/Runner/Assets.xcassets/AppIcon-host-prod.appiconset/Icon-App-host-prod-1024x1024@1x.png",
     "dimensions": {
       "width": 1024,
       "height": 1024

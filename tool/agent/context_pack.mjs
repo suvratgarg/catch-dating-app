@@ -148,8 +148,8 @@ function buildOwnerDocs({task, selectionPaths, matchedSkills}) {
     addDoc(docs, "docs/design_language.md", "Visual design source of truth.");
   }
   if (matchesScopePatterns(selectionPaths, [
-    ".github/workflows/**", "firebase.json", ".firebaserc", "ios/**",
-    "apps/*/android/**", "apps/*/ios/**",
+    ".github/workflows/**", "firebase.json", ".firebaserc",
+    "apps/*/android/**", "apps/*/ios/**", "apps/*/macos/**",
   ])) {
     addDoc(docs, "docs/release_operations.md", "Release, CI, and deployment gates.");
     addDoc(docs, "docs/web_surface_architecture.md", "Web and deployment surface ownership.");

@@ -241,7 +241,10 @@ jobs:
         uses: ./.github/actions/cache-cocoapods
         with:
           cocoapods-version: ${{ steps.toolchain.outputs.cocoapods-version }}
-          lockfiles: macos/Podfile.lock
+          lockfiles: apps/consumer/macos/Podfile.lock
 
+      # The macOS runner lives in the Consumer project, and Flutter only runs
+      # device tests from that project's own integration_test/ directory.
       - name: Hosted native app-shell smoke
-        run: bash tool/test_app_shell_integration.sh macos smoke
+        working-directory: apps/consumer
+        run: bash ../../tool/test_app_shell_integration.sh macos smoke

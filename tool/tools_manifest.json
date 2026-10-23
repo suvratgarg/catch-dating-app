@@ -4647,7 +4647,7 @@
       },
       "impactPaths": [
         "tool/platform/sync_ios_pod_policy.test.mjs",
-        "ios/**",
+        "tool/platform/ios/**",
         "apps/consumer/ios/**",
         "apps/host/ios/**"
       ],

@@ -53,9 +53,12 @@ Current state:
 - Android upload-key SHA-1/SHA-256 fingerprints are registered on the dev,
   staging, and production consumer and host Firebase Android apps. Add Play
   app-signing certificate fingerprints after Play App Signing enrollment.
-- iOS/macOS schemes and build configurations are wired for consumer
-  `dev`, `staging`, and `prod`, plus host `host-dev`, `host-staging`, and
-  `host-prod`, through `tool/platform/configure_apple_flavors.rb`.
+- iOS schemes and build configurations are wired for consumer `dev`,
+  `staging`, and `prod` in `apps/consumer/ios`, and host `host-dev`,
+  `host-staging`, and `host-prod` in `apps/host/ios`, through
+  `tool/platform/configure_apple_flavors.rb`. Only `apps/consumer` has a
+  macOS runner, with the consumer flavors; it hosts the native app-shell
+  smoke suite.
 - Apple builds copy the matching `firebase/<env>/<platform>/GoogleService-Info.plist`
   into the app bundle at build time.
 - App Check is registered for Android, iOS/macOS, and web in all three Firebase

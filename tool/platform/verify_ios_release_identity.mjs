@@ -606,8 +606,10 @@ function runCli() {
     throw new Error(`App is missing GoogleService-Info.plist: ${appPath}`);
   }
 
+  // Role entitlements are named relative to the role's app project.
   const roleEntitlementsPath = path.join(
     root,
+    target.projectRoot,
     manifest.roles[target.role].iosEntitlements,
   );
   const entitlementOverride = valueAfter(args, "--entitlements-plist");

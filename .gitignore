@@ -39,6 +39,8 @@ tool/demo/demo_seed/golden_accounts.json
 
 # Signing keys and provisioning artifacts
 key.properties
+# Android local.properties carries SDK paths and Maps API keys.
+local.properties
 *.jks
 *.keystore
 *.p12
@@ -101,14 +103,6 @@ docs/visual_references/**/*.jpg
 docs/visual_references/**/*.jpeg
 docs/visual_references/**/*.png
 docs/visual_references/**/*.webp
-
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
-
-# iOS build artifacts
-ios/build
 
 # Firebase cache
 .firebase

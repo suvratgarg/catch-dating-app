@@ -2,13 +2,13 @@
 set -euo pipefail
 
 if [[ $# -lt 1 || $# -gt 3 ]]; then
-  echo "Usage: ./tool/use_firebase_environment.sh <dev|staging|prod> [consumer|host] [project-root]"
+  echo "Usage: ./tool/use_firebase_environment.sh <dev|staging|prod> [consumer|host] [app-project-root]"
   exit 1
 fi
 
 environment="$1"
 app_role="${2:-consumer}"
-project_root="${3:-.}"
+project_root="${3:-}"
 
 case "$environment" in
   dev|staging|prod) ;;
@@ -28,6 +28,15 @@ esac
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
+if [[ -z "$project_root" ]]; then
+  # Default to the selected role's own app project from tool/app_targets.json.
+  project_root="$(
+    node "$repo_root/tool/platform/resolve_app_target.mjs" \
+      --role "$app_role" \
+      --environment "$environment" \
+      --fields projectRoot
+  )"
+fi
 destination_root="$repo_root/$project_root"
 if [[ ! -f "$destination_root/pubspec.yaml" ]]; then
   echo "Flutter project root has no pubspec.yaml: $project_root"
