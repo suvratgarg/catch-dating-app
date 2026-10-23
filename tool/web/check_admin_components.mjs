@@ -4,6 +4,11 @@ import fs from "node:fs";
 import path from "node:path";
 import {fromRepo} from "../lib/repo_paths.mjs";
 
+// Blueprint D18: the library draws; features arrange and bind. A component
+// that one feature (or only the app shell) renders is that owner's T4 entry,
+// drawn in @catch/web-ui. Entries still under shared/ui await that move.
+const libraryHome = "packages/web-ui/src/components/";
+
 const args = parseArgs(process.argv.slice(2));
 
 if (args.help) {
@@ -42,7 +47,7 @@ if (args.summary || warnings.length > 0) {
     [
       `Admin component registry ok: ${registry.components.length} component contract(s).`,
       `Preview-ready components: ${registry.components.filter((component) => component.preview?.status === "ready").length}.`,
-      `Feature components awaiting their Phase 7e move out of shared/ui: ${registry.components.filter((component) =>
+      `Feature components awaiting their D18 move into @catch/web-ui: ${registry.components.filter((component) =>
         component.kind === "feature-component" &&
         normalizeRepoPath(component.source ?? "").startsWith("admin/src/shared/ui/")).length}.`,
       `Contract: ${path.relative(fromRepo("."), componentsPath)}`,
@@ -234,8 +239,8 @@ function validateKindAgainstSource(component, label) {
   if (component.kind === "workspace" && !source.startsWith("admin/src/features/")) {
     errors.push(`${label}: workspace components must live under admin/src/features.`);
   }
-  if (component.kind === "shared-primitive" && !source.startsWith("admin/src/shared/ui/")) {
-    errors.push(`${label}: shared-primitive components must live under admin/src/shared/ui.`);
+  if (component.kind === "shared-primitive" && !isDrawingHome(source)) {
+    errors.push(`${label}: shared-primitive components must live under ${libraryHome} (or await their D18 move from admin/src/shared/ui).`);
   }
   if (component.kind === "feature-component") {
     errors.push(...featureComponentPlacementErrors(component, label));
@@ -245,17 +250,18 @@ function validateKindAgainstSource(component, label) {
   }
 }
 
-// A component that one feature (or only the app shell) renders belongs to that
-// owner. Entries still under shared/ui are the files Phase 7e moves.
+function isDrawingHome(source) {
+  return source.startsWith(libraryHome) || source.startsWith("admin/src/shared/ui/");
+}
+
 function featureComponentPlacementErrors(component, label) {
   const source = normalizeRepoPath(component.source ?? "");
   const owner = component.owner ?? "";
   if (!/^(?:features\/[a-z0-9-]+|app)$/u.test(owner)) {
     return [`${label}: feature-component owner must be features/<feature> or app, not ${owner}.`];
   }
-  const home = owner === "app" ? "admin/src/app/" : `admin/src/${owner}/`;
-  if (source.startsWith(home) || source.startsWith("admin/src/shared/ui/")) return [];
-  return [`${label}: feature-component owned by ${owner} must live under ${home} (or await its Phase 7e move from admin/src/shared/ui).`];
+  if (isDrawingHome(source)) return [];
+  return [`${label}: feature-component owned by ${owner} must live under ${libraryHome} (or await its D18 move from admin/src/shared/ui); its feature keeps only the binding.`];
 }
 
 function validateExportCoverage(components) {
@@ -572,9 +578,9 @@ export const StatusBannerStory = {
 
   const featureComponent = (owner, source) => ({kind: "feature-component", owner, source});
   for (const [owner, source] of [
-    ["features/marketing", "admin/src/features/marketing/ui/MarketingStudioGrid.tsx"],
+    ["features/marketing", "packages/web-ui/src/components/CatchMarketingStudioGrid.tsx"],
     ["features/marketing", "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx"],
-    ["app", "admin/src/app/AdminShell.tsx"],
+    ["app", "packages/web-ui/src/components/CatchAdminShell.tsx"],
   ]) {
     assert.deepEqual(featureComponentPlacementErrors(featureComponent(owner, source), "probe"), []);
   }
@@ -582,9 +588,10 @@ export const StatusBannerStory = {
     featureComponentPlacementErrors(featureComponent("shared/ui", "admin/src/shared/ui/AdminPrimitives/cards.tsx"), "probe"),
     ["probe: feature-component owner must be features/<feature> or app, not shared/ui."],
   );
+  // D18: a component that draws never lives in its feature, even the feature that owns it.
   assert.deepEqual(
-    featureComponentPlacementErrors(featureComponent("features/intake", "admin/src/features/marketing/ui/Grid.tsx"), "probe"),
-    ["probe: feature-component owned by features/intake must live under admin/src/features/intake/ (or await its Phase 7e move from admin/src/shared/ui)."],
+    featureComponentPlacementErrors(featureComponent("features/marketing", "admin/src/features/marketing/ui/Grid.tsx"), "probe"),
+    ["probe: feature-component owned by features/marketing must live under packages/web-ui/src/components/ (or await its D18 move from admin/src/shared/ui); its feature keeps only the binding."],
   );
 
   const validChrome = `

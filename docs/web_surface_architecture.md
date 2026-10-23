@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.36.0
+version: 0.37.0
 updated: 2026-10-24
 owner: web_platform
 status: active
@@ -625,9 +625,9 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
   decides how something looks belongs in `@catch/web-ui`, even when one
   feature uses it. Feature and app-shell code arranges library components
   with `CatchGap`, `CatchInset`, `CatchPageBody` and `CatchSectionList`, and
-  passes data and callbacks to their props. Until the registry accepts a React
-  record on a T4 entry, a new one-off goes in its app's `shared/ui` under the
-  rules below. It never stays private inside a feature.
+  passes data and callbacks to their props. A one-off is a T4 component under
+  `packages/web-ui/src/components/`, registered in the registry of the one
+  surface that renders it. It never stays private inside a feature.
 - Keep shared UI primitives centralized. Feature, app, and Storybook code must
   not render raw `<button>`, `<a>`, `<input>`, `<select>`, or `<textarea>`
   controls. Add missing neutral controls to the owning shared primitive module
@@ -650,8 +650,9 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
   route, section, flow, or supporting-component exports.
   Admin feature UI may export route/workspace entry components, but panels,
   cards, lists, badges, and sections that draw must live in
-  `admin/src/shared/ui` (D18), and a private feature component may only
-  arrange and bind. Run `node tool/run.mjs check web:admin-feature-exports`
+  `packages/web-ui/src/components/` (D18; entries still under
+  `admin/src/shared/ui` await that move), and a private feature component may
+  only arrange and bind. Run `node tool/run.mjs check web:admin-feature-exports`
   when touching admin feature UI exports. Admin route/workspace entries, shared
   admin primitives, and admin feedback providers must also be declared in
   `design/admin/components.json`; run

@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.28.0
+version: 1.29.0
 updated: 2026-10-24
 owner: app_architecture
 status: active
@@ -1999,11 +1999,13 @@ planned:
   - images wait for `catch.network_image`.
 
   Text is in from the start, because `CatchText` exists in both frameworks.
-- **The registry accepts React-only one-offs.** `component_concepts.mjs`
-  rejects a `react` record on T3 and T4 entries, so a React component that only
-  one surface uses cannot register in `@catch/web-ui` yet. A T4 entry gets the
-  record for its one framework and names its owning surface. Until then, a new
-  React one-off goes in its app's `shared/ui`, never into a feature.
+- **React one-offs register in their surface's registry** (CAT-225). A
+  component that one surface renders lives in
+  `packages/web-ui/src/components/` and is a T4 entry in
+  `design/admin/components.json` or `design/website/components.json`. The
+  inventory maps it to that surface's T4 and fails when another surface renders
+  it. `catch.components.json` keeps `react` records for T1 and T2, so its
+  Flutter-record tooling is unchanged.
 - **Re-scoped tickets.**
   - CAT-219 registers Admin's single-use shared exports as `@catch/web-ui`
     components with feature bindings, instead of moving them into features.
