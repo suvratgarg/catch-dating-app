@@ -1,6 +1,6 @@
 ---
 doc_id: agent_operating_model
-version: 3.6.0
+version: 3.7.0
 updated: 2026-10-23
 owner: agent_operating_model
 status: active
@@ -20,7 +20,13 @@ GitHub Actions already owns shared execution, artifacts, approvals, and
 deployment history. Catch adds only three repository-specific layers:
 
 1. `tool/harness.mjs` is a read-only impact planner. It maps explicit paths or
-   a Git diff to existing checks, build lanes, and delivery lanes.
+   a Git diff to existing checks, build lanes, and delivery lanes, using the
+   path-to-component graph in `tool/harness/component_graph.json` and an event
+   mode: `pr` (validation before merge), `merge_group` (the exact queued
+   result), `main` (affected builds and deploy groups after integration),
+   `nightly` (broad backstop) or `release` (promotion). Unknown or ambiguous
+   paths fail closed. Adding a component relationship is an architecture
+   change; ordinary feature work does not edit the graph.
 2. `tool/agent/context_pack.mjs` is optional read-only guidance. It prints
    relevant owner docs, project skills, source rules, and check suggestions to
    stdout for a supplied path set.
@@ -30,7 +36,10 @@ deployment history. Catch adds only three repository-specific layers:
    through ordinary non-forced Git after verified acceptance.
 
 None of these layers schedules agents, runs a hidden command pipeline, owns
-product state, or replaces Git and CI.
+product state, or replaces Git and CI. `tool/tools_manifest.json` gives existing
+commands stable ids and `node tool/run.mjs check <id...>` runs them; it is a
+command runner, not a second test framework. Exact-artifact delivery is owned by
+[`release_operations.md`](release_operations.md#exact-artifact-promotion-and-resume).
 
 ## Operating Principle
 
@@ -47,37 +56,31 @@ Do not create tracked execution histories. The former audit inventory, pass
 history, documentation catalog, regression snapshot, and readiness machinery
 have been removed. Put recurring protection in the owning test or scanner.
 
+Guardrails against another governance layer:
+
+- Ordinary product changes modify zero governance-evidence files, and no check
+  writes tracked source by default.
+- Derived reports are generated on demand or uploaded as expiring artifacts.
+- No new ledger, receipt file, readiness score or per-task registry replaces
+  the removed system.
+- New Harness functionality must prevent a demonstrated failure or materially
+  reduce wall-clock or runner cost.
+- Nightly broad validation is the backstop for omissions; PR validation stays
+  affected-only.
+
 ## Starting Loop
 
-1. Run `git status --short --branch` and preserve unrelated changes.
-2. For a new task, fetch `origin/main`, resolve its exact commit, and create the
-   task worktree from that commit through `worktree_guard.mjs start`. Ambient
-   checkout HEAD is never a new-task base. Continue a non-main branch only in
-   its existing worktree when the user explicitly asks to continue that work.
-3. Reread `AGENTS.md` and the changed surface owners in that new worktree.
-   Compare lifecycle files in the launcher with fetched `origin/main`; `start`
-   rejects stale instructions/tooling even with the correct base SHA. Refresh
-   the primary `main` with a safe fast-forward after preserving unrelated work.
-   If it cannot fast-forward, retain it and report the exact divergence; never
-   reset or stash another task's work to update the launcher. Maintenance and
-   retirement must likewise use current lifecycle tooling, not an old task's copy.
-4. For a broad change, inspect the impact plan:
+[`AGENTS.md`](../AGENTS.md) owns the starting loop; do not restate it here.
+Two details extend it:
 
-   ```sh
-   node tool/harness.mjs explain --paths <path[,path...]> --json
-   node tool/harness.mjs plan --base <base-ref> --head HEAD --json
-   ```
-
-5. When additional orientation is useful, print optional context guidance:
-
-   ```sh
-   node tool/agent/context_pack.mjs --task <label> --paths <path[,path...]>
-   ```
-
-   This command writes nothing. Its output is advice, not permission or a
-   completion condition.
-6. State the intended outcome, included and excluded paths, relevant owner
-   docs, focused checks, and acceptance criteria before a broad edit.
+- If the primary `main` cannot fast-forward to fetched `origin/main`, retain it
+  and report the exact divergence. Never reset or stash another task's work to
+  refresh the launcher. Maintenance and retirement use current lifecycle
+  tooling, not an old task's copy.
+- For one path set, `node tool/harness.mjs explain --paths <path[,path...]>
+  --json` shows why each check was selected. Before a broad edit, state the
+  outcome, included and excluded paths, owner docs, focused checks and
+  acceptance criteria (see the Broad Cleanup Contract below).
 
 ## Execution Venue And Source Handoff
 
