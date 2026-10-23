@@ -397,6 +397,32 @@ export function planAffected({changedPaths, graph, mode = "pr", full = false}) {
   };
 }
 
+// The merge queue validates each group's exact combined source in merge_group
+// mode before main moves. Pull requests defer the slow macOS and app-build
+// lanes to that run instead of executing them twice.
+export const queueOnlyCiTargets = Object.freeze([
+  "flutter_build_android",
+  "flutter_build_ios",
+  "flutter_build_web",
+  "flutter_web_smoke",
+  "visual_integration",
+]);
+
+/** Returns a pull request plan without queue-only lanes, recording each one it deferred. */
+export function deferQueueOnlyTargets(plan) {
+  if (plan.mode !== "pr") return plan;
+  const queueOnly = (target) => queueOnlyCiTargets.includes(target);
+  return {
+    ...plan,
+    operations: {...plan.operations, ciTargets: plan.operations.ciTargets.filter((target) => !queueOnly(target))},
+    operationSources: {
+      ...plan.operationSources,
+      ciTargets: (plan.operationSources?.ciTargets ?? []).filter((source) => !queueOnly(source.value)),
+    },
+    queueDeferredCiTargets: plan.operations.ciTargets.filter(queueOnly),
+  };
+}
+
 export function deriveAppRoles(plan) {
   const roles = new Set(plan.operations.releaseRoles ?? []);
   for (const target of [

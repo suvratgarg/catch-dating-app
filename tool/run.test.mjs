@@ -10,6 +10,7 @@ import {
   toolSupportsPlatform,
   validateToolPlatforms,
 } from "./lib/tool_platform.mjs";
+import {changedManifestToolIds, planAffectedToolChecks} from "./lib/tool_impact.mjs";
 
 const repositoryRoot = process.cwd();
 const require = createRequire(import.meta.url);
@@ -138,6 +139,56 @@ test("shared glob dependency selects every consuming tool", () => {
     "meta:repository-root-hygiene",
   ]);
   assert.equal(plan.full, true);
+});
+
+test("import-derived owners select only the tools that reach a changed file", () => {
+  const manifest = JSON.parse(fs.readFileSync("tool/tools_manifest.json", "utf8"));
+  const componentGraph = JSON.parse(fs.readFileSync("tool/harness/component_graph.json", "utf8"));
+  const changedPaths = ["tool/data/lib/new_import_only_helper.mjs", "tool/lib/cli_args.mjs"];
+  const plan = (importOwners) => planAffectedToolChecks({changedPaths, manifest, componentGraph, importOwners});
+  const declaredOnly = plan(null);
+  assert.equal(declaredOnly.mode, "full");
+  assert.ok(declaredOnly.fullReasons.some((reason) => reason.includes("tool/data/lib/new_import_only_helper.mjs")));
+  const importOwners = new Map([
+    ["tool/data/lib/new_import_only_helper.mjs", new Set(["docs:metadata"])],
+    ["tool/lib/cli_args.mjs", new Set(["tool:runner", "lint:probe-batch-protocol"])],
+  ]);
+  const derived = plan(importOwners);
+  assert.equal(derived.mode, "affected", derived.fullReasons.join("; "));
+  assert.deepEqual(derived.importOwnedPaths, changedPaths.slice().sort());
+  const expected = new Set([...manifest.ciImpact.mandatoryCheckIds, ...manifest.ciImpact.importOwnerCheckIds,
+    "docs:metadata", "tool:runner", "lint:probe-batch-protocol"]);
+  for (const id of expected) assert.ok(derived.toolIds.includes(id), id);
+  assert.ok(derived.toolIds.length < 20, `selected ${derived.toolIds.length} tools`);
+  assert.equal(derived.toolIds.includes("agent:context-pack"), false);
+  assert.equal(plan(new Map([["tool/lib/cli_args.mjs", new Set(["retired:none"])]])).mode, "full");
+});
+
+test("a manifest edit runs the edited tools and the validator unless selection policy changed", () => {
+  const manifest = JSON.parse(fs.readFileSync("tool/tools_manifest.json", "utf8"));
+  const componentGraph = JSON.parse(fs.readFileSync("tool/harness/component_graph.json", "utf8"));
+  const edited = structuredClone(manifest);
+  const target = edited.tools.find((tool) => tool.id === "docs:metadata");
+  target.description = `${target.description} Edited.`;
+  edited.tools.push({...structuredClone(manifest.tools.find((tool) => tool.id === "lint:probe-batch-protocol")),
+    id: "lint:probe-batch-protocol-copy"});
+  assert.deepEqual(changedManifestToolIds({baseManifest: manifest, manifest}), {policyChanged: false, toolIds: []});
+  assert.deepEqual(changedManifestToolIds({baseManifest: manifest, manifest: edited}),
+    {policyChanged: false, toolIds: ["docs:metadata", "lint:probe-batch-protocol-copy"]});
+  const changedPaths = ["tool/tools_manifest.json"];
+  const plan = (baseManifest, head = edited) =>
+    planAffectedToolChecks({changedPaths, manifest: head, componentGraph, baseManifest});
+  const narrowed = plan(manifest);
+  assert.equal(narrowed.mode, "affected", narrowed.fullReasons.join("; "));
+  for (const id of ["docs:metadata", "lint:probe-batch-protocol-copy", ...manifest.ciImpact.manifestCheckIds]) {
+    assert.ok(narrowed.toolIds.includes(id), id);
+  }
+  assert.equal(narrowed.toolIds.includes("agent:context-pack"), false);
+  assert.equal(plan(null).mode, "full");
+  const policy = structuredClone(edited);
+  policy.ciImpact.additionalFullPaths = [...policy.ciImpact.additionalFullPaths, "tool/new/**"];
+  assert.equal(changedManifestToolIds({baseManifest: manifest, manifest: policy}).policyChanged, true);
+  assert.equal(plan(manifest, policy).mode, "full");
 });
 
 test("mobile evidence and target contracts select producer-promoter compatibility gates", () => {

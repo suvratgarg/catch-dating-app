@@ -71,8 +71,10 @@ async function verifyCatalogState(origins, visible, name = fixture.name) {
     const data = await request(origin, "/api/public-catalog", 200,
       {headers: {Cookie: "viewer=private-user", Authorization: "Bearer private-viewer"}});
     assert.equal(JSON.parse(data.body).listings.some(listing => listing.id === "next-proof"), visible);
+    // The fixture is an imported (programmatic) listing, which is never indexed.
+    if (visible) assert(html.body.includes('content="noindex, follow"'));
     const sitemap = await request(origin, "/sitemap.xml", 200);
-    assert.equal(sitemap.body.includes("/organizers/next-proof/"), visible);
+    assert(!sitemap.body.includes("/organizers/next-proof/"));
   }
 }
 try {
@@ -113,14 +115,17 @@ try {
   await page.getByRole("heading", {level: 1, name: fixture.name, exact: true}).waitFor();
   await browser.close(); browser = null;
 
-  // 401 query rows must fail unavailable, not return a truncated successful catalog.
+  // 401 query rows must fail the whole-catalog routes unavailable, not return a
+  // truncated successful catalog. An organizer page reads only its own events,
+  // so rows for other organizers cannot take it down.
   const batch = db.batch();
   for (let index = 0; index < 401; index++) batch.set(db.doc(`events/next-bound-proof-${index}`), {publicationState: "published"});
   boundedFixtures = true; await batch.commit();
   for (const origin of origins) {
     await request(origin, "/api/public-catalog", 503);
-    await request(origin, "/organizers/next-proof/", 503);
+    await request(origin, "/", 503);
     await request(origin, "/sitemap.xml", 503);
+    await request(origin, "/organizers/next-proof/", 200);
     await request(origin, "/privacy/", 200);
   }
   const unavailable = await start(3120, false);

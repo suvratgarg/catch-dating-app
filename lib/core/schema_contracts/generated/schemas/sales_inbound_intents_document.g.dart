@@ -455,6 +455,194 @@ const schemaSalesInboundIntentsDocumentSchema = <String, Object?>{
         },
       },
     },
+    'acquisitionAttribution': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'description': 'Optional first-party campaign snapshot captured with the new Host receipt under current analytics permission. Erased on withdrawal or original-choice expiry; never used without a current consent/privacy check.',
+      'required': <Object?>[
+        'version',
+        'consentId',
+        'acceptedAt',
+        'expiresAt',
+        'firstTouch',
+        'lastTouch',
+      ],
+      'properties': <String, Object?>{
+        'version': <String, Object?>{
+          'const': 1,
+        },
+        'consentId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+        'acceptedAt': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+        },
+        'expiresAt': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+        },
+        'firstTouch': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'capturedAt',
+                'landingPath',
+                'values',
+              ],
+              'properties': <String, Object?>{
+                'capturedAt': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                },
+                'landingPath': <String, Object?>{
+                  'enum': <Object?>[
+                    '/host/',
+                    '/host/overview/',
+                    '/host/platform/',
+                    '/host/planners/',
+                    '/host/clubs/',
+                    '/host/directory/',
+                    '/claim/',
+                    '/host/claim/',
+                    '/host/apply/',
+                    '/host/stack/',
+                    '/host/workflows/',
+                  ],
+                },
+                'values': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'minProperties': 1,
+                  'properties': <String, Object?>{
+                    'utm_source': <String, Object?>{
+                      'enum': <Object?>[
+                        'google',
+                        'meta',
+                        'newsletter',
+                        'catch',
+                        'partner',
+                      ],
+                    },
+                    'utm_medium': <String, Object?>{
+                      'enum': <Object?>[
+                        'cpc',
+                        'paid_social',
+                        'email',
+                        'organic',
+                        'referral',
+                      ],
+                    },
+                    'utm_campaign': <String, Object?>{
+                      'enum': <Object?>[
+                        'launch',
+                        'launch_2026',
+                        'planner_launch',
+                        'host_acquisition_2026',
+                        'synthetic_launch',
+                      ],
+                    },
+                    'utm_content': <String, Object?>{
+                      'enum': <Object?>[
+                        'host_hero',
+                        'host_footer',
+                        'claim_cta',
+                        'application_cta',
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'lastTouch': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'capturedAt',
+                'landingPath',
+                'values',
+              ],
+              'properties': <String, Object?>{
+                'capturedAt': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                },
+                'landingPath': <String, Object?>{
+                  'enum': <Object?>[
+                    '/host/',
+                    '/host/overview/',
+                    '/host/platform/',
+                    '/host/planners/',
+                    '/host/clubs/',
+                    '/host/directory/',
+                    '/claim/',
+                    '/host/claim/',
+                    '/host/apply/',
+                    '/host/stack/',
+                    '/host/workflows/',
+                  ],
+                },
+                'values': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'minProperties': 1,
+                  'properties': <String, Object?>{
+                    'utm_source': <String, Object?>{
+                      'enum': <Object?>[
+                        'google',
+                        'meta',
+                        'newsletter',
+                        'catch',
+                        'partner',
+                      ],
+                    },
+                    'utm_medium': <String, Object?>{
+                      'enum': <Object?>[
+                        'cpc',
+                        'paid_social',
+                        'email',
+                        'organic',
+                        'referral',
+                      ],
+                    },
+                    'utm_campaign': <String, Object?>{
+                      'enum': <Object?>[
+                        'launch',
+                        'launch_2026',
+                        'planner_launch',
+                        'host_acquisition_2026',
+                        'synthetic_launch',
+                      ],
+                    },
+                    'utm_content': <String, Object?>{
+                      'enum': <Object?>[
+                        'host_hero',
+                        'host_footer',
+                        'claim_cta',
+                        'application_cta',
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+      },
+    },
   },
   'allOf': <Object?>[
     <String, Object?>{
@@ -519,4 +707,78 @@ const schemaSalesInboundIntentsDocumentSchema = <String, Object?>{
       },
     },
   ],
+  'definitions': <String, Object?>{
+    'hostAttributionTouch': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'capturedAt',
+        'landingPath',
+        'values',
+      ],
+      'properties': <String, Object?>{
+        'capturedAt': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+        },
+        'landingPath': <String, Object?>{
+          'enum': <Object?>[
+            '/host/',
+            '/host/overview/',
+            '/host/platform/',
+            '/host/planners/',
+            '/host/clubs/',
+            '/host/directory/',
+            '/claim/',
+            '/host/claim/',
+            '/host/apply/',
+            '/host/stack/',
+            '/host/workflows/',
+          ],
+        },
+        'values': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'minProperties': 1,
+          'properties': <String, Object?>{
+            'utm_source': <String, Object?>{
+              'enum': <Object?>[
+                'google',
+                'meta',
+                'newsletter',
+                'catch',
+                'partner',
+              ],
+            },
+            'utm_medium': <String, Object?>{
+              'enum': <Object?>[
+                'cpc',
+                'paid_social',
+                'email',
+                'organic',
+                'referral',
+              ],
+            },
+            'utm_campaign': <String, Object?>{
+              'enum': <Object?>[
+                'launch',
+                'launch_2026',
+                'planner_launch',
+                'host_acquisition_2026',
+                'synthetic_launch',
+              ],
+            },
+            'utm_content': <String, Object?>{
+              'enum': <Object?>[
+                'host_hero',
+                'host_footer',
+                'claim_cta',
+                'application_cta',
+              ],
+            },
+          },
+        },
+      },
+    },
+  },
 };

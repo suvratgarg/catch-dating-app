@@ -86,10 +86,13 @@ describe("organizer presence sections", () => {
     expect(screen.queryByRole("button", {name: /contact host|book now|reply/iu})).toBeNull();
     expect(container.querySelector("#fit")).toBeNull();
     expect(container.querySelector("#profile-information summary")).toBeTruthy();
-    expect(within(about as HTMLElement).getByText(listing.sourceSummary)).toBeTruthy();
+    expect(within(about as HTMLElement).getByText(listing.description)).toBeTruthy();
+    // Intake evidence (summaries, source notes, confidence) is never visitor copy.
+    expect(within(about as HTMLElement).queryByText(listing.sourceSummary)).toBeNull();
     for (const source of listing.sources) {
-      expect(within(about as HTMLElement).getByText(source.detail)).toBeTruthy();
+      expect(screen.queryByText(source.detail)).toBeNull();
     }
+    expect(screen.queryByText(/pressure mechanic|prototype/iu)).toBeNull();
     for (const source of listing.sources.filter((item) => item.href)) {
       expect(container.querySelector(`a[href="${source.href}"]`)).toBeTruthy();
     }

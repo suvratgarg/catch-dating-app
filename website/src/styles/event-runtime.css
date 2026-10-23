@@ -142,12 +142,6 @@
   min-height: 52px;
 }
 
-.event-runtime__profile-questions,
-.event-runtime__questionnaire {
-  display: grid;
-  gap: 24px;
-}
-
 .event-runtime__fieldset {
   border: 0;
   margin: 0;
@@ -429,18 +423,6 @@
 .event-runtime__module h2 {
   font-size: 1.4rem;
   letter-spacing: -.035em;
-}
-
-.event-runtime__action-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--catch-space-s3);
-  margin-top: var(--catch-space-s4);
-}
-
-.event-runtime__section-stack {
-  display: grid;
-  gap: var(--catch-space-s4);
 }
 
 .event-runtime__notice-stack {

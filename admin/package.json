@@ -26,8 +26,9 @@
     "test:storybook:a11y": "STORYBOOK_DISABLE_TELEMETRY=1 vitest run --project=storybook",
     "test:watch": "vitest --project=unit",
     "pretypecheck": "npm run check:callable-validators",
-    "typecheck": "npm run check:ui-primitives && npm run check:class-names && npm run check:ui-components && npm run check:feature-exports && npm run check:component-registry && npm run check:feature-ui-size && npm run check:query-state && tsc -p tsconfig.json --noEmit --pretty false && tsc -p tsconfig.node.json --noEmit --pretty false",
-    "check:feature-exports": "node ../tool/web/check_admin_feature_exports.mjs --check"
+    "typecheck": "npm run check:css-tokens && npm run check:ui-primitives && npm run check:class-names && npm run check:ui-components && npm run check:feature-exports && npm run check:component-registry && npm run check:feature-ui-size && npm run check:query-state && tsc -p tsconfig.json --noEmit --pretty false && tsc -p tsconfig.node.json --noEmit --pretty false",
+    "check:feature-exports": "node ../tool/web/check_admin_feature_exports.mjs --check",
+    "check:css-tokens": "stylelint \"src/**/*.css\" && node ../packages/web-config/lint/check-stylelint-suppressions.mjs \"src/**/*.css\" && node --test ../packages/web-config/lint/stylelint.test.mjs"
   },
   "dependencies": {
     "@catch/web-config": "0.1.0",
@@ -53,7 +54,8 @@
     "@vitest/browser-playwright": "^4.1.11",
     "jsdom": "^28.1.0",
     "playwright": "^1.64.0",
-    "storybook": "^10.4.6",
+    "storybook": "^10.6.2",
+    "stylelint": "17.16.0",
     "typescript": "^6.0.3",
     "vite": "^8.3.4",
     "vitest": "^4.1.11"

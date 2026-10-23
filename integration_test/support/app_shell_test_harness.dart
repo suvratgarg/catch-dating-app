@@ -65,6 +65,7 @@ import 'package:firebase_auth/firebase_auth.dart' show User;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show ProviderListenable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -84,10 +85,13 @@ const testShellCity = CityData(
 const _appShellTestFrame = Duration(milliseconds: 100);
 const _mutationPresentationInterval = Duration(milliseconds: 350);
 
+/// Pumps the installable app root. Host journeys pass the Host entrypoint's
+/// [hostGoRouterProvider]; consumer journeys keep the role-selected default.
 Future<void> pumpCatchAppShell(
   WidgetTester tester, {
   String initialRoute = '/',
   required List<Object> overrides,
+  ProviderListenable<GoRouter>? routerProvider,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = const Size(390, 844);
@@ -101,7 +105,7 @@ Future<void> pumpCatchAppShell(
         initialAppLocationProvider.overrideWithValue(initialRoute),
         ...overrides.cast(),
       ],
-      child: MyApp(routerProvider: goRouterProvider),
+      child: MyApp(routerProvider: routerProvider ?? goRouterProvider),
     ),
   );
   await pumpAppShellFrames(tester);

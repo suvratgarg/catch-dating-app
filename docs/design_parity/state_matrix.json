@@ -8834,7 +8834,7 @@
               "previewIds": [
                 "hostCustomerMessagingStates"
               ],
-              "notes": "WhatsApp settings explains when the configured provider is unavailable instead of presenting unusable sender controls."
+              "notes": "Messaging omits WhatsApp sender setup and its entry points while the provider is unavailable instead of presenting unusable sender controls."
             },
             {
               "id": "customer_messaging_disconnected",
@@ -8843,7 +8843,7 @@
               "previewIds": [
                 "hostCustomerMessagingStates"
               ],
-              "notes": "WhatsApp settings provides the sender-connection handoff when the organizer has no active messaging connection."
+              "notes": "WhatsApp settings connects a sender through Meta Embedded Signup where the client supports it; other clients omit sender setup until a sender is connected."
             },
             {
               "id": "customer_messaging_connecting",

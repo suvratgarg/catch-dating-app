@@ -1,0 +1,9 @@
+{
+  "name": "@catch/tool-impact",
+  "private": true,
+  "description": "Pinned import-graph tooling (dependency-cruiser, and the TypeScript it uses to read functions/src) that derives CI test inputs from real imports.",
+  "devDependencies": {
+    "dependency-cruiser": "18.7.0",
+    "typescript": "6.0.3"
+  }
+}

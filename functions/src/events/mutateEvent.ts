@@ -113,6 +113,8 @@ import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
 import {prepareEventMutationLedger} from "./eventPolicyMutation";
 import {EVENT_PLAN_CHANGES, eventPlanChangeFields,
   eventPlanChangeSourceId} from "./planChangeRecords";
+import {updateEventMediaRecovery, EventMediaRecoveryReceipt} from
+  "./eventMediaRecovery";
 
 interface EventMutationDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -436,7 +438,7 @@ export async function createEventHandler(
 export async function updateEventHandler(
   request: CallableRequest<unknown>,
   deps: EventMutationDeps = defaultDeps
-): Promise<{updated: boolean}> {
+): Promise<{updated: boolean; receipt?: EventMediaRecoveryReceipt}> {
   const hostUserId = requireAuth(request);
   const data = validateCallableWithAjv<UpdateEventCallablePayload>(
     request,
@@ -445,6 +447,15 @@ export async function updateEventHandler(
   );
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, hostUserId, "updateEvent");
+
+  if ("mediaRecovery" in data) {
+    return updateEventMediaRecovery({
+      db, actorUid: hostUserId, eventId: data.eventId,
+      identity: data.mediaRecovery, fields: data.fields,
+      serverTimestamp: deps.serverTimestamp ??
+        (() => admin.firestore.FieldValue.serverTimestamp()),
+    });
+  }
 
   const eventRef = db.collection("events").doc(data.eventId);
   const privateAccessRef = db

@@ -1,6 +1,10 @@
 import {execFileSync} from "node:child_process";
+import fs from "node:fs";
 import {createRequire} from "node:module";
 import path from "node:path";
+import {fileURLToPath} from "node:url";
+import {parseArgs} from "node:util";
+import {listFirebaseFunctionTargets} from "./list_firebase_function_targets.mjs";
 
 const require = createRequire(import.meta.url);
 const INDEX = "functions/src/index.ts";
@@ -91,11 +95,14 @@ function indexExports(ts, tree) {
   return {exports, bootstrap: bootstrap.join("\n"), source};
 }
 
+// A computed import or require cannot be traced, so its module is marked
+// dynamic: every Function that reaches it is treated as affected.
 function dependencies(ts, tree, source) {
   const result = new Set();
   const add = (literal) => {
     if (!literal || !ts.isStringLiteralLike(literal)) {
-      throw new Error(`Dynamic module loading in ${source.fileName}`);
+      result.dynamic = true;
+      return;
     }
     const resolved = resolveModule(tree, source.fileName, literal.text);
     if (resolved) result.add(resolved);
@@ -123,14 +130,35 @@ function dependencies(ts, tree, source) {
 }
 
 function isNonRuntimeFile(name) {
-  // These exact CLI helpers are outside compiled Functions source. The invoker
-  // helper is packaged for post-deploy IAM checks, not loaded by the runtime.
+  // These CLI helpers are outside compiled Functions source: test runners,
+  // operator scripts and backfills. The invoker helper is packaged for
+  // post-deploy IAM checks, not loaded by the runtime. The prebuild cleaner is
+  // deliberately absent because it runs inside the build.
   if (name === "functions/scripts/run-local-emulators.cjs" ||
       name === "functions/scripts/run-local-emulators.test.cjs" ||
-      name === "functions/scripts/set-callable-invokers-public.cjs") return true;
+      name === "functions/scripts/run-tests.cjs" ||
+      name === "functions/scripts/run-tests.test.cjs" ||
+      name === "functions/scripts/set-callable-invokers-public.cjs" ||
+      /^functions\/scripts\/(?:operations\/|backfill-[a-z0-9-]+\.cjs$)/.test(name)) return true;
   return /\.(?:md|test\.ts|spec\.ts)$/.test(name) ||
     /^functions\/(?:test|tests|__tests__)\//.test(name) ||
     /\/(?:__tests__|__mocks__)\//.test(name);
+}
+
+// firebase.json also configures Hosting, Flutter and emulators; only the
+// backend sections change what a backend deploy does.
+function backendConfigChanged(root, baseSha, headSha) {
+  const sections = (sha) => {
+    try {
+      const config = JSON.parse(git(root, ["show", `${sha}:firebase.json`], {stdio: ["ignore", "pipe", "ignore"]}));
+      return JSON.stringify(["functions", "firestore", "storage"].map((key) => config[key] ?? null));
+    } catch {
+      return undefined; // Missing or unreadable config is treated as changed.
+    }
+  };
+  const before = sections(baseSha);
+  const after = sections(headSha);
+  return before === undefined || after === undefined || before !== after;
 }
 
 /**
@@ -153,10 +181,11 @@ export function affectedFunctionTargets({
   const changed = new Set(git(sourceRoot, [
     "diff", "--name-only", "--no-renames", "-z", baseSha, sourceSha,
   ]).split("\0").filter(Boolean));
-  if ([...changed].some((name) =>
-    name === "firebase.json" || name === ".firebaserc" ||
-    name.startsWith("functions/") && !name.startsWith("functions/src/") &&
-    !isNonRuntimeFile(name))) {
+  if (changed.has(".firebaserc") ||
+    changed.has("firebase.json") && backendConfigChanged(sourceRoot, baseSha, sourceSha) ||
+    [...changed].some((name) =>
+      name.startsWith("functions/") && !name.startsWith("functions/src/") &&
+      !isNonRuntimeFile(name))) {
     return all("Functions runtime, dependency, build, or deployment configuration changed");
   }
   try {
@@ -182,20 +211,26 @@ export function affectedFunctionTargets({
     const cache = new Map();
     const closure = (root) => {
       const visited = new Set();
+      let dynamic = false;
       const walk = (name) => {
         if (visited.has(name)) return;
         visited.add(name);
         if (!cache.has(name)) cache.set(name, dependencies(ts, after, parse(ts, after, name)));
+        dynamic ||= cache.get(name).dynamic === true;
         for (const dependency of cache.get(name)) walk(dependency);
       };
       walk(root);
-      return visited;
+      return {modules: visited, dynamic};
     };
     // Imports used by entrypoint initialization affect every function.
     // Exports are evaluated separately below.
     const bootstrapSource = ts.createSourceFile(INDEX, newIndex.bootstrap, ts.ScriptTarget.Latest, true);
-    for (const module of dependencies(ts, after, bootstrapSource)) {
-      if ([...closure(module)].some((name) => changed.has(name))) {
+    const bootstrapDependencies = dependencies(ts, after, bootstrapSource);
+    if (bootstrapDependencies.dynamic) return all("Global initialization loads modules dynamically");
+    for (const module of bootstrapDependencies) {
+      const reachable = closure(module);
+      if (reachable.dynamic) return all("Global initialization loads modules dynamically");
+      if ([...reachable.modules].some((name) => changed.has(name))) {
         return all("A global initialization dependency changed");
       }
     }
@@ -203,12 +238,18 @@ export function affectedFunctionTargets({
       name.startsWith("functions/src/") && !name.endsWith(".ts") && !isNonRuntimeFile(name))) {
       return all("Runtime asset changed");
     }
+    // Untraceable loads resolve against Functions source and the Operations
+    // files the build copies into lib (functions/src/admin/salesIntelligence/
+    // copy-operations.cjs), so only those inputs can change what they load.
+    const dynamicInputsChanged = [...changed].some((name) =>
+      name.startsWith("functions/src/") && !isNonRuntimeFile(name) ||
+      name.startsWith("operations/") || name.startsWith("contracts/"));
     const targets = authorizedTargets.filter((target) => {
       const current = newIndex.exports.get(target);
       const previous = oldIndex.exports.get(target);
       const reachable = closure(current.module);
       return !previous || previous.module !== current.module || previous.symbol !== current.symbol ||
-        [...reachable].some((name) => changed.has(name));
+        reachable.dynamic && dynamicInputsChanged || [...reachable.modules].some((name) => changed.has(name));
     });
     return {
       mode: targets.length ? "affected" : "no-op",
@@ -239,3 +280,88 @@ export function productionPromotionEnvironment({
     reason: "Runtime changes require an explicit review of the exact source",
   };
 }
+
+const STAGE_FILES = [
+  ["firestore:indexes", "firestore.indexes.json"],
+  ["firestore:rules", "firestore.rules"],
+  ["storage", "storage.rules"],
+];
+
+/**
+ * Plans one environment's next backend deploy, from the commit it last
+ * received (its `deployed/<env>` tag) to `headSha`: affected Functions plus
+ * each index or rules stage whose file changed. With no recorded commit, or
+ * when Firebase deploy configuration changed, every stage deploys.
+ */
+export function backendDeployTargets({
+  sourceRoot, baseSha, headSha, eligibleFunctionTargets, fullDeploy = false,
+}) {
+  if (!SHA.test(headSha) || baseSha !== undefined && !SHA.test(baseSha)) {
+    throw new Error("Invalid Git base/head SHA.");
+  }
+  const full = (reason) => ({
+    mode: "full", reason,
+    targets: [STAGE_FILES[0][0], ...eligibleFunctionTargets, ...STAGE_FILES.slice(1).map(([target]) => target)],
+  });
+  if (fullDeploy) return full("Full deploy requested");
+  if (baseSha === undefined) return full("No recorded deployment for this environment");
+  if (baseSha === headSha) return {mode: "no-op", reason: "Already deployed", targets: []};
+  try {
+    git(sourceRoot, ["merge-base", "--is-ancestor", baseSha, headSha], {stdio: "ignore"});
+  } catch {
+    throw new Error("The recorded deployment is not an ancestor of this commit; review it, then deploy with full=true.");
+  }
+  const changed = new Set(git(sourceRoot, [
+    "diff", "--name-only", "--no-renames", "-z", baseSha, headSha,
+  ]).split("\0").filter(Boolean));
+  if (changed.has(".firebaserc") ||
+      changed.has("firebase.json") && backendConfigChanged(sourceRoot, baseSha, headSha)) {
+    return full("Firebase backend deploy configuration changed");
+  }
+  const functions = affectedFunctionTargets({
+    sourceRoot, sourceSha: headSha, baseSha, authorizedTargets: eligibleFunctionTargets,
+  });
+  const stages = STAGE_FILES.filter(([, file]) => changed.has(file)).map(([target]) => target);
+  const targets = [
+    ...stages.filter((target) => target === "firestore:indexes"),
+    ...functions.targets,
+    ...stages.filter((target) => target !== "firestore:indexes"),
+  ];
+  return {
+    mode: targets.length ? "changed" : "no-op",
+    reason: `Functions: ${functions.mode} (${functions.reason})`,
+    targets,
+  };
+}
+
+// --environment reads the base from that environment's deployed/<environment>
+// tag; in GitHub Actions the plan is also written to the step outputs.
+function main() {
+  const {values} = parseArgs({options: {
+    base: {type: "string"}, head: {type: "string"}, environment: {type: "string"},
+    full: {type: "boolean", default: false},
+  }});
+  const sourceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+  let baseSha = values.base || undefined;
+  if (values.environment !== undefined) {
+    if (!/^[a-z][a-z0-9-]*$/.test(values.environment)) throw new Error("Invalid environment name.");
+    try {
+      baseSha = git(sourceRoot, ["rev-parse", "-q", "--verify",
+        `refs/tags/deployed/${values.environment}^{commit}`], {stdio: ["ignore", "pipe", "ignore"]}).trim();
+    } catch {
+      baseSha = undefined;
+    }
+  }
+  const plan = backendDeployTargets({
+    sourceRoot, baseSha, headSha: values.head,
+    eligibleFunctionTargets: listFirebaseFunctionTargets(sourceRoot), fullDeploy: values.full,
+  });
+  process.stderr.write(`${plan.mode}: ${plan.targets.length} targets from ${baseSha ?? "no recorded deploy"} ` +
+    `to ${values.head} (${plan.reason})\n`);
+  process.stdout.write(`${JSON.stringify(plan)}\n`);
+  if (process.env.GITHUB_OUTPUT) {
+    fs.appendFileSync(process.env.GITHUB_OUTPUT, `mode=${plan.mode}\ntargets=${plan.targets.join(",")}\n`);
+  }
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) main();

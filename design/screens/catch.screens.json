@@ -18229,8 +18229,8 @@
           "id": "customer_messaging_provider_unavailable",
           "kind": "permission",
           "status": "implemented",
-          "source": "HostWhatsappSetupSection provider notice on the dedicated organizer messaging route.",
-          "nextAction": "Keep provider-gate copy aligned with backend capability state.",
+          "source": "HostWhatsappSetupSection is omitted, and Sends hides the saved-audience intent and WhatsApp Business settings entries, while the provider is unavailable.",
+          "nextAction": "Keep the sender-management gate aligned with backend provider capability.",
           "previewIds": [
             "HostCampaignEditor/Campaign and sender states"
           ]
@@ -18239,8 +18239,8 @@
           "id": "customer_messaging_disconnected",
           "kind": "empty",
           "status": "tested",
-          "source": "HostWhatsappSetupSection sender connection setup on the dedicated organizer messaging route.",
-          "nextAction": "Add a deterministic native-to-web handoff capture.",
+          "source": "HostWhatsappSetupSection offers sender connection only where Meta Embedded Signup runs; other clients omit the section until a sender is connected.",
+          "nextAction": "Add a deterministic Embedded Signup connection capture.",
           "previewIds": [
             "HostCampaignEditor/Campaign and sender states"
           ],

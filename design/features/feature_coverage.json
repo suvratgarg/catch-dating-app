@@ -460,6 +460,13 @@
     },
     {
       "authority": "marketing_routes",
+      "authorityId": "account_deletion",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Published static account-deletion instructions (the Google Play deletion page) are governed by the route and metadata contracts; there is no stateful product action orchestration to duplicate here."
+    },
+    {
+      "authority": "marketing_routes",
       "authorityId": "not_found",
       "status": "excluded",
       "priority": "P4",

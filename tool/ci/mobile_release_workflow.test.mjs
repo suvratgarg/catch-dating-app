@@ -14,7 +14,7 @@ const platformWorkflow = fs.readFileSync(
 const dispatchIndex = producer.indexOf("  dispatch-promotions:");
 const source = producer.slice(0, dispatchIndex) + platformWorkflow + producer.slice(dispatchIndex);
 const consumerGradleWrapper = fs.readFileSync(
-  new URL("../../android/gradle/wrapper/gradle-wrapper.properties", import.meta.url),
+  new URL("../../apps/consumer/android/gradle/wrapper/gradle-wrapper.properties", import.meta.url),
   "utf8",
 );
 const hostGradleWrapper = fs.readFileSync(

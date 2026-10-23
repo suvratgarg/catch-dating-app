@@ -54,8 +54,16 @@ abstract final class GeneratedCatchColorTokens {
 }
 
 abstract final class GeneratedCatchGradientTokens {
-  static const Gradient lightHeroGrad = LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: <Color>[Color(0xFF2A2620), Color(0xFF16140F)],);
-  static const Gradient darkHeroGrad = LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: <Color>[Color(0xFF211F23), Color(0xFF0F0E10)],);
+  static const Gradient lightHeroGrad = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: <Color>[Color(0xFF2A2620), Color(0xFF16140F)],
+  );
+  static const Gradient darkHeroGrad = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: <Color>[Color(0xFF211F23), Color(0xFF0F0E10)],
+  );
 }
 
 abstract final class GeneratedCatchSpacingTokens {
@@ -87,6 +95,7 @@ abstract final class GeneratedCatchRadiusTokens {
   static const double sm = 8.0;
   static const double md = 14.0;
   static const double lg = 20.0;
+  static const double interactiveTile = 12.0;
   static const double pill = 999.0;
 }
 
@@ -162,38 +171,188 @@ class GeneratedCatchTypographyProfile {
 
 abstract final class GeneratedCatchTypographyTokens {
   static const ios = GeneratedCatchTypographyProfile(
-    headline: TextStyle(fontSize: 24.0, height: 30.0 / 24.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
-    title: TextStyle(fontSize: 20.0, height: 25.0 / 20.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
-    name: TextStyle(fontSize: 16.0, height: 20.0 / 16.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
-    body: TextStyle(fontSize: 16.0, height: 24.0 / 16.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
-    secondary: TextStyle(fontSize: 14.0, height: 20.0 / 14.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
-    context: TextStyle(fontSize: 13.0, height: 18.0 / 13.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
-    control: TextStyle(fontSize: 15.0, height: 20.0 / 15.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
-    status: TextStyle(fontSize: 12.0, height: 16.0 / 12.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
-    metric: TextStyle(fontSize: 24.0, height: 30.0 / 24.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
-    fieldValue: TextStyle(fontSize: 16.0, height: 24.0 / 16.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
-    fieldLabel: TextStyle(fontSize: 13.0, height: 18.0 / 13.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
-    displayLarge: TextStyle(fontSize: 34.0, height: 41.0 / 34.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
-    displayMedium: TextStyle(fontSize: 28.0, height: 34.0 / 28.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
-    displaySmall: TextStyle(fontSize: 22.0, height: 28.0 / 22.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
-    navigationLabel: TextStyle(fontSize: 13.0, height: 13.0 / 13.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
+    headline: TextStyle(
+      fontSize: 24.0,
+      height: 30.0 / 24.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.0,
+    ),
+    title: TextStyle(
+      fontSize: 20.0,
+      height: 25.0 / 20.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.0,
+    ),
+    name: TextStyle(
+      fontSize: 16.0,
+      height: 20.0 / 16.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.0,
+    ),
+    body: TextStyle(
+      fontSize: 16.0,
+      height: 24.0 / 16.0,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.0,
+    ),
+    secondary: TextStyle(
+      fontSize: 14.0,
+      height: 20.0 / 14.0,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.0,
+    ),
+    context: TextStyle(
+      fontSize: 13.0,
+      height: 18.0 / 13.0,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.0,
+    ),
+    control: TextStyle(
+      fontSize: 15.0,
+      height: 20.0 / 15.0,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.0,
+    ),
+    status: TextStyle(
+      fontSize: 12.0,
+      height: 16.0 / 12.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.0,
+    ),
+    metric: TextStyle(
+      fontSize: 24.0,
+      height: 30.0 / 24.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.0,
+    ),
+    fieldValue: TextStyle(
+      fontSize: 16.0,
+      height: 24.0 / 16.0,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.0,
+    ),
+    fieldLabel: TextStyle(
+      fontSize: 13.0,
+      height: 18.0 / 13.0,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.0,
+    ),
+    displayLarge: TextStyle(
+      fontSize: 34.0,
+      height: 41.0 / 34.0,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.0,
+    ),
+    displayMedium: TextStyle(
+      fontSize: 28.0,
+      height: 34.0 / 28.0,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.0,
+    ),
+    displaySmall: TextStyle(
+      fontSize: 22.0,
+      height: 28.0 / 22.0,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.0,
+    ),
+    navigationLabel: TextStyle(
+      fontSize: 13.0,
+      height: 13.0 / 13.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.0,
+    ),
   );
   static const android = GeneratedCatchTypographyProfile(
-    headline: TextStyle(fontSize: 24.0, height: 32.0 / 24.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
-    title: TextStyle(fontSize: 20.0, height: 28.0 / 20.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
-    name: TextStyle(fontSize: 16.0, height: 24.0 / 16.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
-    body: TextStyle(fontSize: 16.0, height: 24.0 / 16.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
-    secondary: TextStyle(fontSize: 14.0, height: 20.0 / 14.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
-    context: TextStyle(fontSize: 12.0, height: 16.0 / 12.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
-    control: TextStyle(fontSize: 14.0, height: 20.0 / 14.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
-    status: TextStyle(fontSize: 12.0, height: 16.0 / 12.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
-    metric: TextStyle(fontSize: 24.0, height: 32.0 / 24.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
-    fieldValue: TextStyle(fontSize: 16.0, height: 24.0 / 16.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
-    fieldLabel: TextStyle(fontSize: 12.0, height: 16.0 / 12.0, fontWeight: FontWeight.w500, letterSpacing: 0.0),
-    displayLarge: TextStyle(fontSize: 57.0, height: 64.0 / 57.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
-    displayMedium: TextStyle(fontSize: 45.0, height: 52.0 / 45.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
-    displaySmall: TextStyle(fontSize: 36.0, height: 44.0 / 36.0, fontWeight: FontWeight.w400, letterSpacing: 0.0),
-    navigationLabel: TextStyle(fontSize: 13.0, height: 13.0 / 13.0, fontWeight: FontWeight.w600, letterSpacing: 0.0),
+    headline: TextStyle(
+      fontSize: 24.0,
+      height: 32.0 / 24.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.0,
+    ),
+    title: TextStyle(
+      fontSize: 20.0,
+      height: 28.0 / 20.0,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.0,
+    ),
+    name: TextStyle(
+      fontSize: 16.0,
+      height: 24.0 / 16.0,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.0,
+    ),
+    body: TextStyle(
+      fontSize: 16.0,
+      height: 24.0 / 16.0,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.0,
+    ),
+    secondary: TextStyle(
+      fontSize: 14.0,
+      height: 20.0 / 14.0,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.0,
+    ),
+    context: TextStyle(
+      fontSize: 12.0,
+      height: 16.0 / 12.0,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.0,
+    ),
+    control: TextStyle(
+      fontSize: 14.0,
+      height: 20.0 / 14.0,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.0,
+    ),
+    status: TextStyle(
+      fontSize: 12.0,
+      height: 16.0 / 12.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.0,
+    ),
+    metric: TextStyle(
+      fontSize: 24.0,
+      height: 32.0 / 24.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.0,
+    ),
+    fieldValue: TextStyle(
+      fontSize: 16.0,
+      height: 24.0 / 16.0,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.0,
+    ),
+    fieldLabel: TextStyle(
+      fontSize: 12.0,
+      height: 16.0 / 12.0,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.0,
+    ),
+    displayLarge: TextStyle(
+      fontSize: 57.0,
+      height: 64.0 / 57.0,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.0,
+    ),
+    displayMedium: TextStyle(
+      fontSize: 45.0,
+      height: 52.0 / 45.0,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.0,
+    ),
+    displaySmall: TextStyle(
+      fontSize: 36.0,
+      height: 44.0 / 36.0,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.0,
+    ),
+    navigationLabel: TextStyle(
+      fontSize: 13.0,
+      height: 13.0 / 13.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.0,
+    ),
   );
 }
 
@@ -215,6 +374,7 @@ abstract final class GeneratedCatchLayoutTokens {
   static const double statusVerticalPadding = 2.0;
   static const double pageGutter = 20.0;
   static const double pageBodyStart = 16.0;
+  static const double pageBodyEnd = 20.0;
 }
 
 abstract final class GeneratedCatchInteractionTokens {
@@ -231,10 +391,105 @@ abstract final class GeneratedCatchMotionTokens {
   static const Duration calendarScroll = Duration(milliseconds: 320);
   static const Duration slow = Duration(milliseconds: 420);
   static const Curve standardCurve = Cubic(0.2, 0.0, 0.0, 1.0);
+  static const Curve springCurve = Cubic(0.34, 1.4, 0.64, 1.0);
+}
+
+abstract final class GeneratedCatchElevationTokens {
+  static const List<BoxShadow> card = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(26, 20, 16, 0.06),
+      blurRadius: 14.0,
+      offset: Offset(0.0, 4.0),
+    ),
+    BoxShadow(
+      color: Color.fromRGBO(26, 20, 16, 0.04),
+      blurRadius: 2.0,
+      offset: Offset(0.0, 1.0),
+    ),
+  ];
+  static const List<BoxShadow> raised = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(26, 20, 16, 0.1),
+      blurRadius: 24.0,
+      offset: Offset(0.0, 8.0),
+    ),
+    BoxShadow(
+      color: Color.fromRGBO(26, 20, 16, 0.06),
+      blurRadius: 2.0,
+      offset: Offset(0.0, 1.0),
+    ),
+  ];
+  static const List<BoxShadow> overlay = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(26, 20, 16, 0.18),
+      blurRadius: 40.0,
+      offset: Offset(0.0, 16.0),
+    ),
+    BoxShadow(
+      color: Color.fromRGBO(26, 20, 16, 0.08),
+      blurRadius: 8.0,
+      offset: Offset(0.0, 4.0),
+    ),
+  ];
 }
 
 abstract final class GeneratedCatchAccessibilityTokens {
   static const double minimumTextContrast = 4.5;
   static const double largeTextContrast = 3.0;
   static const double minimumTextScaleTest = 2.0;
+}
+
+abstract final class GeneratedCatchGapTokens {
+  static const double inline = 8.0;
+  static const double headerTitleToSubtitle = 4.0;
+  static const double related = 12.0;
+  static const double formField = 16.0;
+  static const double section = 24.0;
+  static const double majorSection = 32.0;
+}
+
+abstract final class GeneratedCatchOpacityTokens {
+  static const double activityMapPinShadow = 0.3;
+  static const double controlOverlayHover = 0.04;
+}
+
+abstract final class GeneratedCatchFieldTokens {
+  static const double activeTintAlpha = 0.04;
+  static const double pressedTintAlpha = 0.06;
+  static const double disabledOpacity = 0.4;
+}
+
+abstract final class GeneratedCatchThemeElevationTokens {
+  static const List<BoxShadow> lightFieldActive = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(22, 20, 15, 0.08),
+      blurRadius: 18.0,
+      offset: Offset(0.0, 6.0),
+    ),
+  ];
+  static const List<BoxShadow> darkFieldActive = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(0, 0, 0, 0.55),
+      blurRadius: 22.0,
+      offset: Offset(0.0, 8.0),
+    ),
+  ];
+}
+
+abstract final class GeneratedCatchStrokeTokens {
+  static const double hairline = 1.0;
+  static const double emphasis = 1.5;
+  static const double underline = 1.5;
+  static const double focusRing = 2.0;
+  static const double progressIndicator = 2.0;
+  static const double avatarRing = 2.0;
+  static const double selection = 3.0;
+  static const double passProgress = 2.6;
+}
+
+abstract final class GeneratedCatchWindowSizeTokens {
+  static const double mediumMinWidth = 600.0;
+  static const double expandedMinWidth = 840.0;
+  static const double largeMinWidth = 1200.0;
+  static const double extraLargeMinWidth = 1600.0;
 }

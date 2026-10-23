@@ -1,3 +1,4 @@
+import 'package:catch_tokens/generated/catch_design_tokens.g.dart';
 import 'package:catch_tokens/src/primitives/catch_spacing.dart';
 import 'package:catch_tokens/src/semantic/catch_opacity.dart';
 import 'package:catch_tokens/src/semantic/catch_tokens.dart';
@@ -45,46 +46,13 @@ abstract final class CatchElevation {
   /// Subtle lift for content cards that should read as "above the page" while
   /// keeping the hairline border style. Use for hero event cards, editorial
   /// picks, and selected map peek tiles.
-  static const List<BoxShadow> card = <BoxShadow>[
-    BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.06),
-      blurRadius: 14,
-      offset: Offset(0, 4),
-    ),
-    BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.04),
-      blurRadius: 2,
-      offset: Offset(0, 1),
-    ),
-  ];
+  static const List<BoxShadow> card = GeneratedCatchElevationTokens.card;
 
   /// Bottom sheets, floating action buttons, popovers.
-  static const List<BoxShadow> raised = <BoxShadow>[
-    BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.10),
-      blurRadius: 24,
-      offset: Offset(0, 8),
-    ),
-    BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.06),
-      blurRadius: 2,
-      offset: Offset(0, 1),
-    ),
-  ];
+  static const List<BoxShadow> raised = GeneratedCatchElevationTokens.raised;
 
   /// Toasts, snackbars, dropdown overlays.
-  static const List<BoxShadow> overlay = <BoxShadow>[
-    BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.18),
-      blurRadius: 40,
-      offset: Offset(0, 16),
-    ),
-    BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.08),
-      blurRadius: 8,
-      offset: Offset(0, 4),
-    ),
-  ];
+  static const List<BoxShadow> overlay = GeneratedCatchElevationTokens.overlay;
 
   static List<BoxShadow> focusRing(CatchTokens t) => <BoxShadow>[
     BoxShadow(color: t.primarySoft, spreadRadius: CatchSpacing.micro3),
@@ -93,15 +61,10 @@ abstract final class CatchElevation {
   /// Exact active-field lift from the Field handoff. Field rows deliberately
   /// use one shadow layer so the pressed-to-focused handoff reads as one tile
   /// instead of two competing elevations.
-  static List<BoxShadow> fieldActive(Brightness brightness) => <BoxShadow>[
-    BoxShadow(
-      color: brightness == Brightness.dark
-          ? const Color.fromRGBO(0, 0, 0, 0.55)
-          : const Color.fromRGBO(22, 20, 15, 0.08),
-      blurRadius: brightness == Brightness.dark ? 22 : 18,
-      offset: Offset(0, brightness == Brightness.dark ? 8 : 6),
-    ),
-  ];
+  static List<BoxShadow> fieldActive(Brightness brightness) =>
+      brightness == Brightness.dark
+      ? GeneratedCatchThemeElevationTokens.darkFieldActive
+      : GeneratedCatchThemeElevationTokens.lightFieldActive;
 
   static List<BoxShadow> segmentedSelected(CatchTokens t) => <BoxShadow>[
     BoxShadow(

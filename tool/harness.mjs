@@ -5,6 +5,7 @@ import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {fromRepo, repoRoot} from "./lib/repo_paths.mjs";
 import {
+  deferQueueOnlyTargets,
   deriveAppRoles,
   planAffected,
   resolveTargetCheckout,
@@ -140,12 +141,12 @@ export function main({
     const plan = options.commitWindow ? planCommittedWindow({
       graph, windowPaths: changedPaths,
       endpointPaths: changedPathsSince({...options, commitWindow: false, committedOnly: true}),
-    }) : planAffected({
+    }) : deferQueueOnlyTargets(planAffected({
       changedPaths,
       graph,
       mode: options.mode,
       full: options.full,
-    });
+    }));
 
     if (options.command === "explain") {
       printResult(plan, options.json);

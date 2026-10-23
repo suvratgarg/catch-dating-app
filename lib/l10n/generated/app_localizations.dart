@@ -19693,18 +19693,6 @@ abstract class AppLocalizations {
   /// **'Connect your own Meta WhatsApp Business account. Catch never sends from a shared number, and only people with explicit organizer-specific opt-in are eligible.'**
   String get hostsHostAudienceWhatsappOwnedSender;
 
-  /// Missing platform-level Meta setup title.
-  ///
-  /// In en, this message translates to:
-  /// **'WhatsApp setup is not enabled in this environment'**
-  String get hostsHostAudienceProviderUnavailable;
-
-  /// Missing platform-level Meta setup body.
-  ///
-  /// In en, this message translates to:
-  /// **'An administrator must configure the Catch Meta app and Embedded Signup configuration before organizers can connect their own senders.'**
-  String get hostsHostAudienceProviderUnavailableBody;
-
   /// Open Meta Embedded Signup CTA.
   ///
   /// In en, this message translates to:
@@ -20068,18 +20056,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last seen {date}'**
   String hostsHostAudienceLastSeen({required String date});
-
-  /// Confirms the native-to-web WhatsApp Embedded Signup handoff.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue WhatsApp setup in the Host web app.'**
-  String get hostsHostAudienceWebSignupOpened;
-
-  /// Failure shown when native cannot open the Host web WhatsApp setup route.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not open WhatsApp setup in the Host web app.'**
-  String get hostsHostAudienceWebSignupOpenFailed;
 
   /// Campaign provider blocker.
   ///
@@ -40736,6 +40712,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save guest information'**
   String get hostsEventGuestDetailsSave;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Event saved · photos pending'**
+  String get hostsEventPhotoRecoveryTitle;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event is saved. Photos are still uploading. You can leave and return to this event’s photo recovery.'**
+  String get hostsEventPhotoRecoveryUploading;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event is saved. Some photos could not upload. Retry photos on this event.'**
+  String get hostsEventPhotoRecoveryFailed;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event is saved. We are checking whether its photos were attached. Retry to confirm the same request safely.'**
+  String get hostsEventPhotoRecoveryUnknown;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'The event’s photos changed elsewhere. Your saved recovery is preserved. Open the event to review its photos.'**
+  String get hostsEventPhotoRecoveryConflict;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event is saved. Photo cleanup is still pending. Retry cleanup; the saved recovery will remain until it is resolved.'**
+  String get hostsEventPhotoRecoveryCleanup;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'An earlier photo upload has an unresolved outcome. Its recovery is preserved for review, even after other photos are saved.'**
+  String get hostsEventPhotoRecoveryUnsettled;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Select photos again to retry. Selected photo files do not survive every restart.'**
+  String get hostsEventPhotoRecoveryMissing;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event is saved, but photo recovery could not be saved on this device. Keep this screen open and retry before leaving.'**
+  String get hostsEventPhotoRecoveryStorage;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry photos'**
+  String get hostsEventPhotoRecoveryRetry;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Check photo status'**
+  String get hostsEventPhotoRecoveryCheck;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Select photos again'**
+  String get hostsEventPhotoRecoveryReselect;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry cleanup'**
+  String get hostsEventPhotoRecoveryCleanupAction;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave photo recovery?'**
+  String get hostsEventPhotoRecoveryLeaveTitle;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event is already saved. This device could not save its photo recovery. Leaving may lose the selected photos. You can manage the saved event later.'**
+  String get hostsEventPhotoRecoveryLeaveMessage;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave saved event'**
+  String get hostsEventPhotoRecoveryLeave;
+
+  /// Saved event photo recovery status and actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your sign-in session changed. Reopen event creation to recover the saved event for your current account.'**
+  String get hostsEventPhotoRecoverySession;
+
+  /// Saved inactive event recovery title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your event is saved.'**
+  String get hostsEventPhotoRecoverySavedTitle;
+
+  /// Saved inactive event recovery message.
+  ///
+  /// In en, this message translates to:
+  /// **'This saved event is no longer active. Open the event to review its current status.'**
+  String get hostsEventPhotoRecoveryInactive;
+
+  /// Completed photo recovery awaiting a fresh event read.
+  ///
+  /// In en, this message translates to:
+  /// **'Your photos are attached. Check photo status to refresh the current event details.'**
+  String get hostsEventPhotoRecoveryRefresh;
 
   /// Confirmation before a Host deletes their Catch account; explains shared business records and ownership.
   ///

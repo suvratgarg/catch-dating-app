@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import {affectedFunctionTargets, productionPromotionEnvironment} from "./affected_function_targets.mjs";
+import {affectedFunctionTargets, backendDeployTargets, productionPromotionEnvironment} from "./affected_function_targets.mjs";
 
 const targets = ["functions:alpha", "functions:alphaAlias", "functions:beta", "functions:gamma"];
 
@@ -128,7 +128,7 @@ for (const [label, file, content] of [
   ["global initialization", "functions/src/index.ts", 'console.log("global");'],
   ["global dependency", "functions/src/config.ts", "export const config = 2;"],
   ["unresolved import", "functions/src/alpha.ts", 'import "./missing"; export const alpha = 2;'],
-  ["dynamic require", "functions/src/alpha.ts", 'const x = require(process.env.MODULE); export const alpha = x;'],
+  ["dynamic global initialization", "functions/src/bootstrap.ts", "require(process.env.MODULE);"],
 ]) {
   test(`${label} retains the full authorized target set`, (t) => {
     const f = fixture(t);
@@ -138,6 +138,24 @@ for (const [label, file, content] of [
     assert.deepEqual(result.targets, targets);
   });
 }
+
+test("dynamic loading always redeploys only the Functions that reach it", (t) => {
+  const f = fixture(t);
+  f.write("functions/src/alpha.ts", "const loaded = require(process.env.MODULE); export const alpha = loaded;");
+  const deployed = f.commit();
+  f.write("functions/src/gamma.ts", "export const gamma = 2;");
+  const result = f.select({baseSha: deployed});
+  assert.equal(result.mode, "affected");
+  assert.deepEqual(result.targets, ["functions:alpha", "functions:alphaAlias", "functions:gamma"],
+    "Untraceable loads keep their own Functions current without redeploying unrelated ones.");
+  const next = f.git("rev-parse", "HEAD");
+  f.write("docs.md", "# not a runtime input");
+  assert.deepEqual(f.select({baseSha: next}).targets, [], "Non-runtime changes deploy nothing.");
+  const docs = f.git("rev-parse", "HEAD");
+  f.write("operations/workflows/step.mjs", "export const step = 2;");
+  assert.deepEqual(f.select({baseSha: docs}).targets, ["functions:alpha", "functions:alphaAlias"],
+    "Operations files copied into lib reach only the dynamically loading Functions.");
+});
 
 test("cumulative snapshots remain full and disabled targets cannot be added", (t) => {
   const f = fixture(t);
@@ -376,4 +394,66 @@ test("packaged post-deploy IAM tooling does not rebuild unrelated Functions", (t
   assert.deepEqual(f.select().targets, targets.slice(0, 2));
   f.write("functions/src/alpha.ts", 'require("../scripts/set-callable-invokers-public.cjs"); export const alpha = 2;');
   assert.equal(f.select().mode, "full", "An unexpected runtime import of a CLI script must not be ignored.");
+});
+
+function deployFixture(t) {
+  const f = fixture(t);
+  f.write("firebase.json", '{"firestore":{"rules":"firestore.rules","indexes":"firestore.indexes.json"}}');
+  f.write("firestore.rules", "rules_version = '2';");
+  f.write("firestore.indexes.json", '{"indexes":[]}');
+  f.write("storage.rules", "rules_version = '2';");
+  const base = f.commit();
+  const head = () => {
+    f.git("add", ".");
+    f.git("commit", "-qm", "head", "--no-verify", "--allow-empty");
+    return f.git("rev-parse", "HEAD");
+  };
+  const plan = (options = {}) => backendDeployTargets({
+    sourceRoot: f.root, baseSha: base, headSha: head(), eligibleFunctionTargets: targets, ...options,
+  });
+  return {...f, base, head, plan};
+}
+
+test("a first or explicitly full deploy plans every stage in deploy order", (t) => {
+  const f = deployFixture(t);
+  const everything = ["firestore:indexes", ...targets, "firestore:rules", "storage"];
+  assert.deepEqual(f.plan({baseSha: undefined}), {
+    mode: "full", reason: "No recorded deployment for this environment", targets: everything,
+  });
+  assert.deepEqual(f.plan({fullDeploy: true}).targets, everything);
+});
+
+test("only affected Functions and changed rule or index files are deployed", (t) => {
+  const f = deployFixture(t);
+  f.write("firestore.rules", "rules_version = '2'; // tightened");
+  assert.deepEqual(f.plan().targets, ["firestore:rules"]);
+  const base = f.head();
+  f.write("firestore.indexes.json", '{"indexes":[{"collectionGroup":"events"}]}');
+  f.write("functions/src/gamma.ts", "export const gamma = 2;");
+  assert.deepEqual(f.plan({baseSha: base}).targets, ["firestore:indexes", "functions:gamma"]);
+});
+
+test("unchanged deployables, reruns and Firebase config changes plan as expected", (t) => {
+  const f = deployFixture(t);
+  f.write("docs.md", "# not deployed");
+  assert.deepEqual(f.plan(), {mode: "no-op", reason: "Functions: no-op (Entrypoint exports and transitive module dependencies)", targets: []});
+  const head = f.head();
+  assert.deepEqual(backendDeployTargets({
+    sourceRoot: f.root, baseSha: head, headSha: head, eligibleFunctionTargets: targets,
+  }), {mode: "no-op", reason: "Already deployed", targets: []});
+  f.write("firebase.json", '{"firestore":{"rules":"firestore.rules","indexes":"firestore.indexes.json"},"hosting":{"public":"web"}}');
+  assert.equal(f.plan().mode, "no-op", "Hosting-only config must not redeploy the backend.");
+  f.write("firebase.json", '{"firestore":{"rules":"firestore.rules"}}');
+  assert.equal(f.plan().mode, "full");
+});
+
+test("a recorded deployment that is not an ancestor fails instead of guessing", (t) => {
+  const f = deployFixture(t);
+  const head = f.head();
+  f.git("checkout", "-q", "--orphan", "unrelated");
+  f.write("functions/src/gamma.ts", "export const gamma = 3;");
+  const unrelated = f.commit();
+  assert.throws(() => backendDeployTargets({
+    sourceRoot: f.root, baseSha: unrelated, headSha: head, eligibleFunctionTargets: targets,
+  }), /not an ancestor/);
 });

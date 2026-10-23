@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.12.0
-updated: 2026-10-20
+version: 2.14.0
+updated: 2026-10-23
 owner: recursive_audit_loop
 status: active
 ---
@@ -274,8 +274,15 @@ Configure GitHub branch protection for `main` to require the single stable
 pushes, and merge queues. It fails when planning fails or any selected lane
 fails; unaffected lanes are explicit skips, so path scoping never leaves a
 required check permanently pending. Required CI has no mandatory human backend
-source-review job; it retains the latest live PR admission and exact tested-source
-recheck before the automated aggregate can succeed.
+source-review job. The merge queue reruns it on the exact combined source of
+each group before `main` moves, so a pull request result never needs to stay
+current with `main`. A `main` push whose exact commit already passed a
+successful merge-queue run reuses that proof for pure-validation lanes (Flutter,
+visual integration, Tools, docs and policy, Admin and Operations). Jobs that
+produce or prove delivery evidence (Functions, Rules, contracts, app builds,
+Marketing and captures, the finalizer and Firebase packaging) still run, and
+the finalizer records the reused run ID. Without a successful queue run of the
+same commit, `main` runs every selected lane.
 
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
 `tool/harness/component_graph.json`, fails closed for an unmapped or ambiguous
@@ -286,7 +293,13 @@ Changes to the shared Harness control plane intentionally run every declared
 target. The graph explicitly owns backend-only Delivery, staging, rebaseline,
 package-verifier and source-review files: those changes run Functions,
 contracts, rules, policy and the affected Tools check closure without compiling
-unrelated clients. The tool planner honors the graph's terminal classifications
+unrelated clients. Files PR validation never executes run only their own Tools
+checks and policy: harness and CI tests, release, deploy and operations
+workflows, and `tool/ci` release scripts no PR workflow invokes
+(`harness-scoped-control`). Selector controls, including the planner, graph and
+`tool/tools_manifest.json`, still run every target. A harness test proves that
+no workflow PR CI runs, and no `tool/ci` module it invokes or imports, is ever
+narrowed. The tool planner honors the graph's terminal classifications
 and includes every declared check plus its transitive dependencies; it does not
 reapply a broader workflow glob or drop graph-required checks. Shared CI
 orchestration, toolchains, the cross-product delivery core,
@@ -336,14 +349,21 @@ existing validation flow.
 Root Flutter unit/widget tests are selected by
 `tool/harness/lib/flutter_test_selection.dart` from the exact base and head Git
 objects. Dart's parser follows imports, exports, conditional imports and parts
-in both snapshots, so deleted or moved dependencies remain covered. Tests that
-inspect files through `dart:io` remain selected. Mixed ordinary Markdown changes
-retain source selection only when both committed component graphs classify the
-prose as documentation-only and neither snapshot's package manifests could bundle
-it as an asset. Markdown in test or asset directories is never exempt. Assets,
-dependency manifests, test configuration, other non-Dart changes, unsupported
-inputs, and any changed source with no provable dependent test retain the full
-suite, including when another changed source has proven coverage.
+in both snapshots, so deleted or moved dependencies remain covered. Every
+ancestor `flutter_test_config.dart` counts as an import of the tests beneath it.
+Tests that inspect files through `dart:io` are filesystem probes and are always
+selected. Dart files anywhere in the repository are covered by the import graph.
+Paths outside the root package (backend, web, design, docs, tooling, CI,
+golden and integration suites, other packages' apps, firebase configuration and
+Markdown outside test or asset directories) are probe-only. A root test can only
+read them from disk, so the probes cover them without broadening the selection.
+These inputs keep the full suite: package manifests and the lockfile, analyzer,
+runner, build and localization configuration, `.arb` sources, the Flutter SDK
+pin and the Flutter CI job, and any path that either snapshot's `flutter:`
+manifest section could bundle as an asset. The same goes for test fixtures,
+assets, native folders, unknown roots, and any changed `lib/`, `test/` or package
+source with no provable dependent test, even when another changed source has
+proven coverage.
 Scheduled and manual CI resolve their base revision to an exact commit before
 binding any lane inputs or artifacts. Nightly and explicit full runs
 also execute every test. Native, package, golden, integration, analyzer and
@@ -360,11 +380,11 @@ hashes; they are not executed-test evidence or a cross-SHA reuse permission.
 Missing snapshot dependencies and incomplete selection fail closed.
 
 Orchestration job guards use `!cancelled()` so cancellation can terminate the
-planner and aggregate instead of leaving an `always()` job holding the serial
-slot. Failed or unadmitted runs still execute the rejecting aggregate; every
-selected target requires a successful owning job. A cancelled workflow has no
-successful validation authority. Reusable Flutter and Tools aggregates use the same cancellation guard. The
-single admitted integration slot and its live source checks remain unchanged. See [GitHub cancellation semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation).
+planner and aggregate instead of leaving an `always()` job running. Failed runs
+still execute the rejecting aggregate; every selected target requires a
+successful owning job. Drafts skip planning and publish no Required CI context
+until they are marked ready. A cancelled workflow has no
+successful validation authority. Reusable Flutter and Tools aggregates use the same cancellation guard. See [GitHub cancellation semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation).
 
 The required source preflight runs before validation fanout from a full checkout
 with pinned Node/Flutter and selected generator dependencies. It checks the
@@ -707,17 +727,22 @@ the exact promoter, whose four role/platform targets each have their own bounded
 non-cancelling queue. Every authorized iOS target is dispatched automatically;
 manual dispatch remains a recovery surface. `prod-backend` is main-only and
 accepts only the reusable Firebase promoter called by the automatic Delivery
-workflow. Its OIDC provider binds repository, ref, environment, caller workflow,
-reusable workflow, and automatic event type. It reuses the existing deployment
-identity; it does not add project permissions. That identity's federation grant
-is restricted to the exact `prod`, `prod-hosting`, and `prod-backend` subjects,
-replacing its former repository-wide grant. The older production provider
-accepts only main jobs in `prod`, `prod-hosting`, or `prod-mobile`.
+workflow. Its OIDC provider binds the immutable repository and owner IDs, ref,
+environment, caller workflow, reusable workflow, and automatic event type; both
+workflow paths are compared with the token's own repository name, never a
+hardcoded one. It reuses the existing deployment identity; it does not add
+project permissions. That identity's federation grant is restricted to the
+`attribute.repository_environment` values `1170579691:prod`,
+`1170579691:prod-hosting`, and `1170579691:prod-backend`. The older production
+provider accepts only main jobs in `prod`, `prod-hosting`, or `prod-mobile` from
+repository `1170579691`. Every provider and grant uses immutable IDs, so renaming
+or transferring the repository or its owner cannot break deployment sign-in
+(CAT-210).
 
 Keep required reviewers on shared `prod` for production data operations,
 non-Functions stages, snapshots, recovery, and older source without review proof.
 Functions pull requests complete Required CI after the selected automated
-validation and live admission recheck; CI no longer creates or requires the
+validation; CI no longer creates or requires the
 credential-free `backend-review` job. That environment no longer has required
 reviewers; its identity, `refs/pull/*/merge` branch policy and prohibition on
 administrator bypass remain. Successful automated CI alone is never human
@@ -849,12 +874,13 @@ and the dedicated service account
 The service account's only project role must be `roles/datastore.viewer`; do not
 grant it Hosting, Functions, Rules, Storage, Secret Manager, or Firestore write
 authority. Its impersonation policy must be narrower than the shared provider:
-only the current GitHub OIDC subject
-`repo:suvratgarg/catch-dating-app:environment:prod-hosting` may use it.
+only `principalSet://iam.googleapis.com/projects/574779808785/locations/global/workloadIdentityPools/github-actions/attribute.repository_environment/1170579691:prod-hosting`
+(the immutable repository ID plus the `prod-hosting` environment) may use it.
 
 Live state verified on 2026-08-08: the dedicated service account has only
-`roles/datastore.viewer`, has no user-managed keys, and its sole impersonation
-binding is the exact `prod-hosting` environment subject above. Both GitHub
+`roles/datastore.viewer` and no user-managed keys. CAT-210 (2026-10-22) added
+the ID-based `prod-hosting` binding above and retires the earlier name-based
+subject after the organization transfer. Both GitHub
 Environment variables are present with the expected provider and service
 account values. The first main proof completed successfully in Marketing run
 `31254427583`: the environment-scoped job authenticated, materialized the two
@@ -878,23 +904,21 @@ gcloud iam service-accounts add-iam-policy-binding \
   github-actions-web-reader@catch-dating-app-64e51.iam.gserviceaccount.com \
   --project=catch-dating-app-64e51 \
   --role='roles/iam.workloadIdentityUser' \
-  --member='principal://iam.googleapis.com/projects/574779808785/locations/global/workloadIdentityPools/github-actions/subject/repo:suvratgarg/catch-dating-app:environment:prod-hosting'
+  --member='principalSet://iam.googleapis.com/projects/574779808785/locations/global/workloadIdentityPools/github-actions/attribute.repository_environment/1170579691:prod-hosting'
 
 gh variable set GCP_WEB_HOSTING_READONLY_WORKLOAD_IDENTITY_PROVIDER \
-  --repo suvratgarg/catch-dating-app \
   --env prod-hosting \
   --body 'projects/574779808785/locations/global/workloadIdentityPools/github-actions/providers/catch-dating-app'
 
 gh variable set GCP_WEB_HOSTING_READONLY_SERVICE_ACCOUNT_EMAIL \
-  --repo suvratgarg/catch-dating-app \
   --env prod-hosting \
   --body 'github-actions-web-reader@catch-dating-app-64e51.iam.gserviceaccount.com'
 ```
 
 Before merging a workflow that requires this identity, verify the service
 account's project roles, its exact impersonation principal, and both GitHub
-environment variables. A repository-wide `attribute.repository` principal is
-not an acceptable substitute for the environment-scoped subject.
+environment variables. A repository-wide principal is not an acceptable
+substitute for the environment-scoped attribute.
 
 ## Custom form domain onboarding
 
@@ -1250,8 +1274,9 @@ JSON key.
 As of 2026-07-11, `androidpublisher.googleapis.com` is enabled and
 `github-actions-play-publisher@catch-dating-app-64e51.iam.gserviceaccount.com`
 exists with zero project roles. Its only IAM binding is
-`roles/iam.workloadIdentityUser` for the exact GitHub OIDC subject
-`repo:suvratgarg/catch-dating-app:environment:prod-mobile`. Play Console must
+`roles/iam.workloadIdentityUser` for
+`principalSet://iam.googleapis.com/projects/574779808785/locations/global/workloadIdentityPools/github-actions/attribute.repository_environment/1170579691:prod-mobile`
+(CAT-210 replaced the earlier name-based subject). Play Console must
 still invite that identity separately, scoped to the two app records and only
 read-app plus testing-track release permissions.
 
@@ -1263,6 +1288,74 @@ track and its Google Group testers, and deletes the edit without uploading or
 committing. It is not part of package production and must not be replaced by a
 trial upload. The promoter still refuses every track except `qa`.
 
+## Deploy Backend
+
+`Deploy backend` (`.github/workflows/backend-deploy.yml`) is the one path from
+`main` to each environment's Firebase backend: Firestore indexes, Functions,
+Firestore rules and Storage rules. Hosting and app releases stay separate.
+
+How a run works:
+
+- Each environment records the commit it last received in the Git tag
+  `deployed/<environment>`. To see the tags, run
+  `git ls-remote origin 'refs/tags/deployed/*'`.
+- A run deploys its own exact commit.
+  `tool/firebase/affected_function_targets.mjs --environment <env>` plans the run
+  from the tagged commit:
+  - Functions whose transitive imports changed, plus the index, Firestore-rules
+    or Storage-rules stage when its file changed.
+  - A Function that loads modules dynamically redeploys whenever Functions
+    source or the Operations files copied into its build change.
+  - Dependency, build or backend `firebase.json` changes, or a missing tag,
+    deploy everything.
+  - Dormant targets stay excluded.
+- The job builds Functions and materializes non-secret parameters from the
+  environment's GitHub variables. It deploys new indexes and waits until they
+  are `READY`. It then deploys the rest through `tool/deploy_firebase_targets.sh`,
+  which handles batches, retries, callable-invoker sync and the parity check.
+  Firebase predeploy test hooks are skipped because required CI already ran them
+  on that commit.
+- After a successful deploy the tag moves forward to that commit. It never moves
+  backwards, and a failed run leaves it unchanged.
+- Automatic runs never start a first deploy. An environment without a tag is
+  skipped until someone runs the workflow manually, which deploys everything.
+  An environment can also be seeded by pushing its tag at a commit it verifiably
+  matches. Functions changed after that commit then deploy on the next run.
+
+When it runs:
+
+- **Dev:** every merge to `main` that touches backend inputs deploys to dev
+  automatically.
+- **Prod:** deploys the same commit after a `prod` environment reviewer
+  approves, but only when prod has something to receive. A merge with nothing
+  to deploy never asks for approval.
+- **One deploy per environment at a time.** Newer runs wait, and GitHub keeps
+  only the newest waiting run. Each run deploys everything since the tag, so
+  skipping intermediate commits loses nothing.
+- **Manual runs:** use Actions → Deploy backend → Run workflow for `prod`, `dev`
+  or `staging`. Tick `full` to redeploy every stage and Function, for example
+  after a manual or partial deploy you are unsure about.
+
+A manual `./tool/deploy_firebase_targets.sh` deploy leaves the tag unchanged.
+The next run redeploys whatever changed since the tag, which is safe. Recovery
+is fix-forward: merge the fix or re-run the workflow. Rollback follows the
+target-specific steps in this document; the job never reverses remote state.
+
+`Delivery`, `Backend Rebaseline`, `Backend Staging Refresh` and the one-off
+backend release workflows are superseded by this job:
+
+- `selective-backend-release`
+- `host-acquisition-release`
+- `host-deletion-release`
+- `host-deletion-indexes`
+- `host-store-rules-release`
+- `wedding-phone-import-release`
+- `website-review-index`
+- the CAT151 receipt release
+
+Do not dispatch them. They and their sections below are deleted after the first
+successful prod run of `Deploy backend`.
+
 ## CD Policy
 
 Staging is refreshed independently on the first day of each month at 02:17 UTC
@@ -1272,6 +1365,9 @@ and rules lanes, then promotes their exact tested package only to staging.
 It does not write the production cursor or block routine releases. Its separate
 workflow lock and the shared per-environment promotion lock prevent overlapping
 staging mutations. Start a fresh refresh instead of partially rerunning it.
+
+> Superseded by [Deploy Backend](#deploy-backend); kept until the old
+> workflows are deleted.
 
 Firebase backend delivery is one ordered promotion chain. After a successful
 same-repository `main` push, CI packages only the backend groups authorized by
@@ -1839,6 +1935,10 @@ a dormant scheduled Function.
 
 ## Exact-Artifact Promotion And Resume
 
+> For the Firebase backend this is superseded by
+> [Deploy Backend](#deploy-backend), which deploys from an exact commit instead
+> of a CI artifact.
+
 Validation and deployment are separate trust decisions. A green CI run proves
 the source and checks that ran in that job; it does not prove that bytes rebuilt
 later by a deployment job are identical. Delivery paths should therefore build
@@ -2284,7 +2384,7 @@ its durable retry scheduler is new and must be proved explicitly:
    legacy-client fallback or duplicate compatibility path.
 
 `./tool/deploy_firebase_targets.sh` is the bounded stage executor beneath
-Delivery and an operator-only recovery helper. It plans selected targets in the
+`Deploy backend` and an operator-only recovery helper. It plans selected targets in the
 same index → Functions → Firestore-rules → Storage-rules order regardless of
 the caller's CSV order. The logical `functions` target expands
 deployment-eligible exports from `functions/src/index.ts` into explicit
@@ -2304,11 +2404,20 @@ continuing to rules. Historical packages without that protocol retain their
 original full callable reconciliation; invoking the callable-invoker helper
 directly without `--targets` also retains full reconciliation. The deploy
 identity therefore needs permission to list Cloud Functions and get/set Cloud
-Run IAM policies. Delivery additionally owns artifact verification,
-checkpointing, and the index-`READY` wait; invoking this helper directly is not
-normal promotion.
+Run IAM policies. `Deploy backend` additionally owns the deployed-commit
+tag and the index-`READY` wait; invoking this helper directly is not normal
+promotion.
 Do not use a broad `firebase deploy --only functions --force` unless deleting
 legacy Functions is the intended release action.
+The helper passes extra Firebase arguments to every phase except `--force`
+(or `-f`), which reaches only the exact `functions:<name>` batches. Firebase
+needs it there when a target newly enables retry on failure; on
+`firestore:indexes` the same flag would delete every live index missing from
+`firestore.indexes.json`, so index, rules and Storage phases always deploy
+without it. With `--force`, a non-exact Function batch is refused before any
+mutation. When a batch fails because it lacks that acknowledgement, the helper
+stops after the first attempt and asks for a re-run with `--force` instead of
+spending its retries.
 
 Typical commands:
 
@@ -3342,7 +3451,7 @@ The `cat165` choice in the existing selective backend caller prepares an exact
 62-Function projection and one additive index. Source preparation is not deploy
 authority or full CAT165 privacy acceptance. The source owner remains accountable
 for the implementation, the existing runtime owner for rollout, and the serial
-integration coordinator for merge admission. Do not use this profile as a manual
+integration coordinator for merging. Do not use this profile as a manual
 fallback, full backend baseline, token rotation or migration.
 
 The fixed candidate is `25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a`, historical

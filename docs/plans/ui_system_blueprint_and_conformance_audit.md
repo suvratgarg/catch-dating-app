@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.24.0
-updated: 2026-10-18
+version: 1.26.0
+updated: 2026-10-23
 owner: app_architecture
 status: active
 ---
@@ -20,6 +20,9 @@ incomplete.
 The 2026-10-17 cross-framework extension (D9–D14, Phase 7) applies the same
 program to the React surfaces (`website/`, `admin/`, `packages/web-ui`), so
 Flutter and React implement one component contract under one name.
+The 2026-10-22 web unification (D16–D17) keeps the website and Admin as
+separate deployables over one shared web system, enforced with stylelint and
+ESLint rather than hand-written scanners.
 
 It is a point-in-time plan, not a parallel architecture document. Durable rules
 ratified here are folded into `docs/app_architecture.md` (and the widget
@@ -655,6 +658,49 @@ for motion-only wrappers (`WelcomeRevealTransition`), the name Flutter itself
 uses. The other tails are synonyms
 and became redirects: Selector, Scrim, Block, Controls, Loading, Wrap, Group,
 Stat, Value and Artwork.
+
+### Web code unification (D16–D17, ratified 2026-10-22)
+
+Measured on 2026-10-22 against `origin/main` e53c26ec4 and the live
+`catchdates.com`. The website and Admin already shared one npm workspace,
+React, TanStack Query, Firebase, tokens and the query-client factory. Above
+that layer they duplicated each other: `catch.field` had 12 implementations
+across `@catch/web-ui`, the website and Admin, `catch.button` 8 and
+`catch.badge` 7. The website's shared UI layer held 279 exports that one
+feature rendered against 56 that several did; Admin's held 147 against 38. The
+registry had no layout concepts, and web CSS used no typography token, so
+layout and type were written as raw CSS in each app: about 3,400 raw values in
+website CSS and 1,270 in Admin's. Admin also read 16 `--admin-*` variables
+that were never defined. The two apps call disjoint callables (about 62 and
+50) and share no business logic beyond the generated contracts.
+
+### D16. One web system, two deployables
+
+The website (`catchdates.com`, server-rendered Next.js) and Admin
+(`admin.catchdates.com`, signed-in single-page app) stay separate deployables
+on separate origins, so a script injected into a public page cannot reach an
+operator's Firebase Auth session, and each app keeps the rendering model and
+release cadence it needs. Everything above the deployable is shared: styled
+components and layout primitives in `@catch/web-ui`, tokens and one lint
+preset in `@catch/web-config`, and `@catch/web-data` for the Firebase
+bootstrap, the contract-validated callable client and query helpers. Each app
+owns only its routes, screens and feature controllers. Rejected alternative:
+one Next.js app serving both hosts, which would move Admin's 83k lines onto
+App Router, couple both release gates and remove the origin boundary, for no
+sharing the packages do not already give.
+
+### D17. Web enforcement adopts stylelint and ESLint
+
+Raw values, component placement and screen assembly on the web are enforced
+by stylelint and ESLint rules from the shared preset. Each app records the
+violations it already has with the tool's own bulk suppressions, and a
+freshness check fails when a recorded count is above what remains, so the debt
+only shrinks. A hand-written web scanner retires in the same change that lands
+the rule replacing it, so D8's net-negative check count applies to the web
+too. Rules that need a token family wait for that family: no rule may fail a
+build with nothing valid to switch to. Rejected alternative: extending the
+hand-written Node scanners, which numbered about eighteen and covered none of
+spacing, typography or sizing.
 
 ## Part 4 — Delivery Program
 
@@ -1727,17 +1773,27 @@ TypeScript fixture for the graph and a known-bad inventory for every rule.
   against `catch.section_stack` and the row contracts, and `StoreButton`.
   Store badges follow Apple's and Google's artwork rules, so `StoreButton`
   cannot be a `CatchButton` recipe.
-- **Owner decision (2026-10-19): one shared step list.** Website `StepRail`
-  and admin `AdminIntakeStageRail` are two web ports of Flutter's
-  `CatchFormStepList` (`catch.screen_body.form_step_overview`, T3). The owner
-  decided to promote it to its own T2 contract, `catch.form_step_list`, which
-  the app, website and admin all share, and to replace both ports with it in
-  7e. A top-level concept needs its own Widgetbook contract preview, which is
-  Flutter code, so registration is a small follow-up rather than part of this
-  PR. Until it lands, both entries record the decision in their
-  `comparisonReason`. When the contract is registered, the inventory flags the
-  eight shared `*List` and `*Group` exports that match its role noun, and each
-  needs its comparison extended.
+- **Owner decision (2026-10-19): one shared step list. Registered
+  2026-10-22.** Website `StepRail` and admin `AdminIntakeStageRail` were two
+  web ports of Flutter's `CatchFormStepList`, then the T3 member
+  `catch.screen_body.form_step_overview`. The owner promoted it to its own T2
+  contract, `catch.form_step_list` (L4 pattern, role noun `List`), which the
+  app, website and admin share; 7e replaces both ports with it. The contract
+  owns the spec, status and review-item data members and declares
+  cross-framework props (`items`, `statusLabelBuilder`, `onStepSelected`,
+  `fieldCopy`). Its formal preview in
+  `widgetbook/lib/primitives/contracts/form_step_list.dart` replaces the old
+  delegating Widgetbook case. Both rails are now `componentId` adapters of the
+  contract, so a fifth T2 contract has a web adapter. The inventory then
+  matched seven shared `*List` and `*Group` exports by role noun:
+  `AdminDiffList`, `AdminRoadmapList`, `AdminTagList`, `QualityList`,
+  `AdminIntakeSourceList`, `ActionGroup` and `HostPreviewFaqList`. Each
+  rejection is recorded: none selects a form section or reports completion
+  status. Both web rails mark a current step (`aria-current="step"`), and
+  `StepRail` also has done and disabled steps and optional body copy. The
+  Flutter list has none of these; it reports per-step completion with status
+  badges instead. 7e reconciles the contract before building the React
+  implementation.
 
 Retired: `design/web-ui/shared_primitive_adoption.json`. The inventory now
 covers each of its gates: package exports, exact-name overlaps, and family
@@ -1776,6 +1832,57 @@ baselines; a generated side-by-side review sheet; contract metrics asserted in
 both test suites; a check that new React shared exports follow Cross-Framework
 Names; and the D14 event-page screen contract. T2 components are then built as
 web surfaces first need them. DoD: each check ships with a seeded failing probe.
+
+**Phase 7 amendment (2026-10-22, D16–D17).** The Phase 7 program is the
+single owner of 7e; the website convergence work consumes the library rather
+than building its own. Changes to the remaining phases:
+
+- **7e lands its foundations first.** Web `CatchGap`, `CatchInset`,
+  `CatchPageBody` and `catch.section_stack`, plus a `CatchText` with role
+  variants, ship before any concept migration, because a screen cannot be
+  assembled only from library components until layout and text exist in the
+  library. They landed in #767, with #773 repairing the gap parity test and
+  golden pin after #768. Their cross-framework (D9) decisions:
+  - `CatchText` is a new T1 concept, `catch.text`, with a thin Flutter twin in
+    `catch_ui`, `CatchText(data, variant:)`, whose variants are exactly the
+    `CatchTextStyles` role names. Migrating Flutter's roughly 1,013
+    `Text(style: CatchTextStyles.x)` call sites is Linear CAT-211.
+  - `CatchGap` and `CatchInset` are React-only `additionalSymbols` on
+    `catch.screen_body`, with no Flutter widget twins; their prop values reuse
+    the `CatchGaps` and `CatchInsets` role names. The registry rule that a
+    styled React record reuses its Dart symbol rules out anchoring them to a
+    token class.
+  - `catch.screen_body` (`CatchPageBody`) moves from T3 to T1.
+
+  The T1 concepts then follow measured duplication: field, button, badge,
+  table, chip.field, section, banner, typography. After them come the
+  website's priority-1 T2 entities, which gate website Phase 4:
+  `catch.event_card`, `catch.ticket`, `catch.organizer_poster` /
+  `catch.club_cover`, `catch.person_polaroid` and `catch.meta_row`. Priority 2
+  follows: `catch.graded_image`, `catch.detail_media`,
+  `catch.event_detail_sections`, `catch.metric_strip`, `catch.journey_steps`,
+  `catch.network_image` and `catch.map_preview`. 7e owns `packages/web-ui`,
+  `catch.components.json` and the adapters, and lowers the 7g suppressions as
+  it migrates screens.
+- **7g — Web tokens and lint preset.** Landed so far: Admin colours, spacing,
+  radius and transition timing on tokens (#756); gap, stroke, window-size,
+  layer, web type, brand type and theme-role token families (#768), plus the
+  field radius, opacity, tint and themed elevation tokens 7e's field slice
+  needs (#776); and one
+  stylelint preset for both apps with per-app suppressions and a freshness
+  check (#769). Next: the ESLint preset (no raw controls, no `className` or
+  `style` outside the library, no bare text or layout elements in features),
+  retiring the scanners it replaces in the same change.
+- **7h — `@catch/web-data`.** One Firebase bootstrap and one callable client
+  validated from `contracts/`, replacing Admin's
+  `generateCallableValidators.mjs` and the website's
+  `shared/contracts/generated` pipeline, plus the query-key and
+  pending-mutation helpers. Starts after the website read layer (#753) is
+  wired in.
+- **Screens become assemblies.** Shared exports that one feature renders move
+  into that feature and dead exports are deleted (the `web:shared-ui-adoption`
+  move and delete counts become ratchets). A feature turns on the
+  no-bare-elements rule once it composes only library components.
 
 ### Work packet template (every Codex slice)
 

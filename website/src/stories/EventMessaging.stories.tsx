@@ -76,13 +76,6 @@ function WithdrawalPreview({preference = "enabled", uncertain = false, kind = "r
     refreshing={false} refresh={() => undefined} submit={() => undefined} textPreferences={card} />;
 }
 
-export const EventSectionStack: Story = {
-  parameters: {catchComponent: {id: "event_runtime_section_stack",
-    routeIds: ["event_assistance"], states: ["sections", "closed-instructions"]}},
-  render: () => <WithdrawalPreview />,
-};
-
-
 export const WhatsappMessageWithdrawal: Story = {
   parameters: {catchComponent: {id: "event_message_withdrawal_card",
     routeIds: ["event_assistance"], states: ["whatsapp", "closed-instructions"]}},

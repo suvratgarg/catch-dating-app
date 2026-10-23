@@ -489,6 +489,7 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     Map<String, String>? customMetadata,
     ValueChanged<ImageUploadProgress>? onProgress,
     ImageUploadCancellationToken? cancellationToken,
+    bool requireJpeg = false,
   }) async {
     if (uploadError != null) {
       throw uploadError!;
@@ -612,6 +613,19 @@ class FakeImageUploadRepository implements ImageUploadRepository {
   }
 
   @override
+  Future<UploadedImage> uploadEventPhotoForRecovery({
+    required String eventId,
+    required int position,
+    required XFile image,
+    required String mediaId,
+  }) => uploadEventPhotoWithMetadata(
+    eventId: eventId,
+    position: position,
+    image: image,
+    mediaId: mediaId,
+  );
+
+  @override
   Future<UploadedImage> uploadEventPhotoWithMetadata({
     required String eventId,
     required int position,
@@ -695,6 +709,10 @@ class FakeImageUploadRepository implements ImageUploadRepository {
   }
 
   final deletedStoragePaths = <String>[];
+
+  @override
+  Future<void> deleteByPathChecked(String storagePath) =>
+      deleteByPath(storagePath);
 
   @override
   Future<void> deleteByPath(String storagePath) async {

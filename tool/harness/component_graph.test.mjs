@@ -72,7 +72,10 @@ test("Admin pending inputs add exact validation while preserving every source op
   const classification = graph.classifications.find((entry) => entry.id === "admin-pending-input");
   assert.deepEqual([...classification.paths.include].sort(), inputs);
   const scanner = toolsManifest.tools.find((entry) => entry.id === "web:admin-pending-operations");
-  assert.deepEqual([...scanner.impactPaths].sort(), inputs);
+  // The scanner also reads the frozen feature cases, which app.design already
+  // routes to Tools; only the controller closure needs this classification.
+  assert.deepEqual([...scanner.impactPaths].sort(),
+    [...inputs, "design/features/admin_*.feature.json"].sort());
   const before = clone(graph);
   before.classifications = before.classifications.filter((entry) => entry.id !== classification.id);
   before.components = before.components.filter((entry) => entry.id !== "web.admin-pending-input");
@@ -398,9 +401,11 @@ test("Hosting promotion controls select only their React callers and affected To
         manifest: toolsManifest, componentGraph: graph, mode});
       assert.equal(tools.mode, "affected", `${file} ${mode}`);
       assert.deepEqual(tools.fullReasons, []);
+      // Workflow edits can add environment-conditional `vars.*` reads, so
+      // the environment difference policy guard owns them too.
       assert.deepEqual(tools.toolIds, ["agent:harness-v2", "ci:web-hosting-delivery-workflow",
-        "ci:web-hosting-freshness", "docs:metadata", "meta:enforcement-integrity",
-        "meta:repository-root-hygiene"]);
+        "ci:web-hosting-freshness", ...toolsManifest.ciImpact.mandatoryCheckIds,
+        ...(file.startsWith(".github/workflows/") ? ["firebase:environment-parity"] : [])].sort());
       assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
       assert.equal(tools.repositoryView, "full");
     }
@@ -451,13 +456,12 @@ test("Hosting promotion control routing preserves mixed Host and Functions owner
   }
 });
 
-test("Hosting promotion exceptions leave shared, admission, and unknown controls full", () => {
+test("Hosting promotion exceptions leave shared and unknown controls full", () => {
   const controls = [".github/workflows/_web-hosting-promote.yml",
     "tool/ci/web_hosting_freshness.mjs", "tool/ci/web_hosting_workflow.test.mjs"];
   const broad = [".github/workflows/ci.yml", ".github/workflows/tools-ci.yml",
-    ".github/workflows/unknown-hosting.yml", ".github/workflows/_web-hosting-build.yml",
-    ".github/workflows/host-website.yml", "tool/ci/unknown_hosting.mjs",
-    "tool/ci/pr_ci_admission.mjs", "tool/ci/pr_ci_admission.test.mjs",
+    ".github/workflows/unknown-hosting.yml", "tool/ci/package_web_hosting.mjs",
+    "tool/ci/unknown_hosting.mjs", "tool/ci/finalize_ci_plan.mjs",
     "tool/ci/main_ci_baseline.mjs", "tool/ci/delivery_core.mjs",
     ".github/workflows/_web-hosting-promote-other.yml",
     "tool/ci/web_hosting_freshness_other.mjs",
@@ -554,8 +558,8 @@ test("shared CI controls and unknown workflow or verifier files retain full vali
   for (const file of [
     ".github/workflows/ci.yml", ".github/workflows/tools-ci.yml",
     ".github/actions/setup-flutter/action.yml", ".github/workflows/new-ci.yml",
-    ".github/workflows/mobile-internal-release.yml", "tool/ci/delivery_core.mjs",
-    "tool/ci/delivery_core.test.mjs", "tool/ci/new_backend_verifier.mjs",
+    "tool/ci/generated_inventories.mjs", "tool/ci/delivery_core.mjs",
+    "tool/ci/package_web_hosting.mjs", "tool/ci/new_backend_verifier.mjs",
     "tool/harness/component_graph.json", "tool/ci/toolchain.env",
   ]) {
     assert.deepEqual(plan(file).operations.ciTargets, [...graph.targets].sort(), file);
@@ -1487,4 +1491,56 @@ test("every selector control input routes to full validation before comparison",
       assert.deepEqual(result.operations.ciTargets, [...graph.targets].sort(), `${file} ${mode}`);
     }
   }
+});
+
+// PR validation never executes these files, so re-running every product lane
+// adds no coverage; their own Tools checks and policy validate them. The tool
+// manifest stays a selector control because it places checks across lanes.
+test("harness tests and release workflows validate without full fan-out", () => {
+  for (const file of ["tool/harness/workflow_wiring.test.mjs",
+    "tool/ci/delivery_core.test.mjs", ".github/workflows/mobile-internal-release.yml",
+    ".github/workflows/host-store-rules-release.yml", "tool/ci/host_store_rules_release.mjs",
+    ".github/workflows/marketing-website.yml"]) {
+    for (const mode of ["pr", "merge_group", "main", "nightly"]) {
+      const result = plan(file, mode);
+      assert.equal(result.complete, true, `${file} ${mode}`);
+      assert.deepEqual(result.operations.ciTargets, ["policy_docs", "tools"], `${file} ${mode}`);
+    }
+  }
+});
+
+// Narrowing is safe only because PR validation never executes those files.
+// Prove it against the real workflows: nothing PR CI runs, and no tool/ci
+// module those workflows invoke or import, may be harness-scoped.
+test("nothing PR validation executes can be harness-scoped", () => {
+  const read = (file) => fs.readFileSync(new URL(`../../${file}`, import.meta.url), "utf8");
+  const workflows = new Set([".github/workflows/ci.yml"]);
+  for (const workflow of workflows) {
+    for (const [, called] of read(workflow).matchAll(/uses: \.\/(\.github\/workflows\/[\w.-]+\.ya?ml)/gu)) {
+      workflows.add(called);
+    }
+  }
+  const scripts = new Set();
+  for (const workflow of workflows) {
+    for (const [script] of read(workflow).matchAll(/tool\/ci\/[\w.-]+\.(?:mjs|cjs|sh|env|json)/gu)) {
+      scripts.add(script);
+    }
+  }
+  for (const script of [...scripts]) {
+    if (!fs.existsSync(new URL(`../../${script}`, import.meta.url))) continue;
+    for (const [, imported] of read(script).matchAll(/from "\.\/([\w.-]+\.mjs)"/gu)) {
+      scripts.add(`tool/ci/${imported}`);
+    }
+  }
+  assert.ok(workflows.size > 5 && scripts.size > 3, "PR validation inventory looks incomplete");
+  for (const file of [...workflows, ...scripts]) {
+    assert.notEqual(plan(file).pathMatches[file]?.owner, "harness-scoped-control",
+      `${file} runs in PR validation and must keep its validation`);
+  }
+  // Negative control: narrowing a script PR CI runs is caught.
+  const probe = "tool/ci/generated_inventories.mjs";
+  assert.ok(scripts.has(probe), "negative control must be a PR-validation script");
+  const widened = clone(graph);
+  widened.classifications.find((entry) => entry.id === "harness-scoped-control").paths.include.push(probe);
+  assert.equal(plan(probe, "pr", widened).pathMatches[probe].owner, "harness-scoped-control");
 });

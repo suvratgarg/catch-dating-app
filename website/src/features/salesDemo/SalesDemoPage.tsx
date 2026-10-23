@@ -1,10 +1,11 @@
+import {CatchGap} from "@catch/web-ui";
 import {claimAccountLinkingErrorMessage} from "../../shared/auth/claimAccountLinking";
 import {salesDemoCopy} from "../../content/salesDemo";
 import {useEffect, useLayoutEffect, useState} from "react";
 import {useParams} from "react-router";
-import {Button, ButtonLink, EventRuntimeActionGrid, EventRuntimeFrame,
+import {Button, ButtonLink, EventRuntimeFrame,
   EventRuntimeLoading, EventRuntimeModule, EventRuntimePanel,
-  EventRuntimePracticeBanner, EventRuntimeSectionStack, FormStatus,
+  EventRuntimePracticeBanner, FormStatus,
   TextField} from "../../shared/ui/primitives";
 import {websiteSalesDemoAuth, type SalesDemoAuth,
   type SalesDemoPhoneChallenge} from "./salesDemoAuth";
@@ -57,7 +58,7 @@ function SalesDemoInvitation({invitationId, api, auth}: {
       <EventRuntimeLoading label={salesDemoCopy.loadingPrivatePreview} /> :
       <EventRuntimePanel kicker={salesDemoCopy.privateWorkflowPreview}
         title={preview.preview.headline} body={preview.preview.scenario}>
-        <EventRuntimeSectionStack>
+        <CatchGap size="section">
           <EventRuntimePracticeBanner>{preview.notice}</EventRuntimePracticeBanner>
           <EventRuntimeModule title={salesDemoCopy.whatYouCanExplore}>
             <ol>{preview.preview.steps.map((step, index) =>
@@ -81,7 +82,7 @@ function SalesDemoInvitation({invitationId, api, auth}: {
             <DemoAccessView controller={controller} auth={auth}
               hasGrant={Boolean(grantToken)} cta={preview.preview.cta}
               interactiveAvailable={preview.interactiveAvailable} />}
-        </EventRuntimeSectionStack>
+        </CatchGap>
       </EventRuntimePanel>}
   </EventRuntimeFrame>;
 }
@@ -140,7 +141,7 @@ function DemoAccessView({controller, auth, hasGrant, cta, interactiveAvailable}:
           onClick={() => void controller.restartSample()}>{salesDemoCopy.restartSample}</Button> : null}
       </> : null}
         <p>{salesDemoCopy.useTheInvitedEmailOrVerify}</p>
-        <EventRuntimeActionGrid><Button type="button" onClick={() => void google()}
+        <CatchGap direction="horizontal" size="related" wrap><Button type="button" onClick={() => void google()}
           disabled={authPending || controller.pending} loading={authPending}>
           {controller.viewer ? salesDemoCopy.verifyGoogle : salesDemoCopy.continueGoogle}
         </Button>
@@ -148,7 +149,7 @@ function DemoAccessView({controller, auth, hasGrant, cta, interactiveAvailable}:
           disabled={authPending || controller.pending} onClick={async () => {
             setChallenge(null); setCode(""); setAuthError(""); await auth.signOut?.();
           }}>{salesDemoCopy.signOut}</Button> : null}
-        </EventRuntimeActionGrid>
+        </CatchGap>
         <TextField id="sales-demo-phone" label={salesDemoCopy.orVerifyPhoneInternationalFormat}
           type="tel" autoComplete="tel" value={phone}
           disabled={authPending || controller.pending || Boolean(challenge)}
@@ -189,7 +190,7 @@ function DemoSessionView({controller}: {controller: Controller}) {
     </EventRuntimeModule>
     <EventRuntimeModule title={salesDemoCopy.nextSampleStep}>
       {!controller.fresh ? <p>{salesDemoCopy.checkTheLatestSessionBeforeContinuing}</p> : null}
-      <EventRuntimeActionGrid>
+      <CatchGap direction="horizontal" size="related" wrap>
         {retry ? <Button type="button" disabled={controller.pending || !controller.fresh}
           onClick={() => act(retry.action, retry.choice)}>{salesDemoCopy.retry}{" "}{salesDemoActionTitle(retry.action, retry.choice)}
         </Button> : <DemoStepActions session={session} disabled={controller.pending ||
@@ -199,7 +200,7 @@ function DemoSessionView({controller}: {controller: Controller}) {
             !controller.fresh} onClick={() => act("requestAssistance")}>{salesDemoCopy.requestHelpWithThisDemo}</Button> : null}
         <Button type="button" variant="ghost" disabled={controller.pending}
           onClick={() => void controller.refresh()}>{salesDemoCopy.refreshSampleStatus}</Button>
-      </EventRuntimeActionGrid>
+      </CatchGap>
       {session.assistanceRequested ? <p role="status">{salesDemoCopy.assistanceRequestedThisRecordsAnInproduct}</p> : null}
       {session.status === "completed" ? <p role="status">{salesDemoCopy.youCompletedThisSyntheticWorkflowA}</p> : null}
     </EventRuntimeModule>
@@ -239,14 +240,14 @@ function DemoSetupView({controller}: {controller: Controller}) {
         <p>{salesDemoCopy.templateDraftNotPublished}</p>
         {!confirm ? <Button type="button" disabled={controller.pending}
           onClick={() => setConfirm(true)}>{salesDemoCopy.prepareTemplateDraft}</Button> :
-          <EventRuntimeActionGrid>
+          <CatchGap direction="horizontal" size="related" wrap>
             <Button type="button" disabled={controller.pending ||
               !controller.fresh || !controller.setupFresh}
               onClick={() => {setConfirm(false); void controller.prepareSetup();}}>
               {salesDemoCopy.confirmPrepareTemplateDraft}</Button>
             <Button type="button" variant="ghost" disabled={controller.pending}
               onClick={() => setConfirm(false)}>{salesDemoCopy.cancel}</Button>
-          </EventRuntimeActionGrid>}
+          </CatchGap>}
       </> : null}
       {setup.status === "prepared" ? <>
         <p role="status">{salesDemoCopy.draftPrepared}</p>

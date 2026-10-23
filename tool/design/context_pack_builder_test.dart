@@ -144,13 +144,25 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
         'GeneratedCatchRadiusTokens': generatedRadius,
       },
     );
+    final generatedOpacity = _doubleConstants(
+      'GeneratedCatchOpacityTokens',
+      sourcePath:
+          'packages/catch_tokens/lib/generated/catch_design_tokens.g.dart',
+    );
     final opacity = _doubleConstants(
       'CatchOpacity',
       sourcePath: 'packages/catch_tokens/lib/src/semantic/catch_opacity.dart',
+      refs: {'GeneratedCatchOpacityTokens': generatedOpacity},
+    );
+    final generatedStroke = _doubleConstants(
+      'GeneratedCatchStrokeTokens',
+      sourcePath:
+          'packages/catch_tokens/lib/generated/catch_design_tokens.g.dart',
     );
     final stroke = _doubleConstants(
       'CatchStroke',
       sourcePath: 'packages/catch_tokens/lib/src/primitives/catch_stroke.dart',
+      refs: {'GeneratedCatchStrokeTokens': generatedStroke},
     );
 
     return {

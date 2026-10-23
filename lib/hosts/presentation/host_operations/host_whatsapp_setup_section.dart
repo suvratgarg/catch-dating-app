@@ -29,6 +29,13 @@ class _HostWhatsappSetupSectionState
   @override
   Widget build(BuildContext context) {
     final messaging = ref.watch(hostMessagingSetupProvider(widget.club.id));
+    final loadedSetup = catchAsyncStateFromAsyncValue(messaging).value;
+    if (loadedSetup != null &&
+        !loadedSetup.canManageWhatsappSender(
+          embeddedSignupSupported: hostWhatsappEmbeddedSignupSupported,
+        )) {
+      return const SizedBox.shrink();
+    }
     return CatchSection.divided(
       title: context.l10n.hostsHostAudienceWhatsappSender,
       child: CatchAsyncBoundary<HostMessagingSetup>(
@@ -58,18 +65,7 @@ class _HostWhatsappSetupSectionState
                   ),
                 ),
                 gapH12,
-                if (!setup.providerConfigured)
-                  CatchNotice(
-                    dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
-                    notice: CatchNoticeData(
-                      id: 'host.audience.whatsapp.provider-unavailable',
-                      title: context.l10n.hostsHostAudienceProviderUnavailable,
-                      message:
-                          context.l10n.hostsHostAudienceProviderUnavailableBody,
-                      tone: CatchNoticeTone.warning,
-                    ),
-                  )
-                else if (connection == null)
+                if (connection == null)
                   CatchButton(
                     label: context.l10n.hostsHostAudienceConnectWhatsapp,
                     onPressed: _busy ? null : () => _connectWhatsapp(setup),
@@ -154,37 +150,16 @@ class _HostWhatsappSetupSectionState
     );
   }
 
-  Future<void> _connectWhatsapp(HostMessagingSetup setup) async {
-    await _run(() async {
-      if (!hostWhatsappEmbeddedSignupSupported) {
-        final openFailedMessage =
-            context.l10n.hostsHostAudienceWebSignupOpenFailed;
-        final opened = await ref
-            .read(externalLinkControllerProvider)
-            .openHostMessagingSetup(widget.club.id);
-        if (!opened) {
-          throw ExternalActionException(openFailedMessage);
-        }
-        if (mounted) {
-          showCatchNotice(
-            context,
-            context.l10n.hostsHostAudienceWebSignupOpened,
-          );
-        }
-        return;
-      }
-      final result = await startHostWhatsappEmbeddedSignup(
-        setup.embeddedSignup,
-      );
-      await ref
-          .read(hostAudienceControllerProvider)
-          .completeWhatsappConnection(
-            organizerId: widget.club.id,
-            result: result,
-          );
-      ref.invalidate(hostMessagingSetupProvider(widget.club.id));
-    });
-  }
+  Future<void> _connectWhatsapp(HostMessagingSetup setup) => _run(() async {
+    final result = await startHostWhatsappEmbeddedSignup(setup.embeddedSignup);
+    await ref
+        .read(hostAudienceControllerProvider)
+        .completeWhatsappConnection(
+          organizerId: widget.club.id,
+          result: result,
+        );
+    ref.invalidate(hostMessagingSetupProvider(widget.club.id));
+  });
 
   Future<void> _syncTemplates(String connectionId) => _run(() async {
     await ref

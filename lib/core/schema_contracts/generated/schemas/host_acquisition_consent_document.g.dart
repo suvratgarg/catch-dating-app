@@ -156,8 +156,26 @@ const schemaHostAcquisitionConsentDocumentSchema = <String, Object?>{
         },
       },
     },
+    'attributionCleanupPending': <String, Object?>{
+      'description': 'Withdrawal tombstones only. True until the expiry worker drains every optional attribution snapshot bound to this consent; a revoked capability can never create another.',
+      'type': 'boolean',
+    },
   },
   'allOf': <Object?>[
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'status': <String, Object?>{
+            'const': 'revoked',
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'required': <Object?>[
+          'attributionCleanupPending',
+        ],
+      },
+    },
     <String, Object?>{
       'if': <String, Object?>{
         'properties': <String, Object?>{

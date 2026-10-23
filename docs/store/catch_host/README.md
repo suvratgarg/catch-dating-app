@@ -1,73 +1,82 @@
-# Catch Host App Store Asset Pack
+# Catch Host Store Pack
 
-Prepared for the iOS Host app listing. This pack is scoped to `Catch Host`, not
-the consumer Catch app.
+This is the store record for the `Catch Host` app on the App Store and Google
+Play. It is not the record for the consumer Catch app. Open work for the next
+submission is tracked in Linear (`CAT-39` "Prepare Catch Host release", and
+`CAT-207` for purpose strings), not in this folder.
 
-## Known App Store Connect record
+## Live submissions
 
-| Field | Value | Source |
-| --- | --- | --- |
-| App name | Catch Host | `docs/release_operations.md` |
-| Apple app ID | 6778927317 | `docs/release_operations.md` |
-| Bundle ID | `com.catchdates.host` | `docs/release_operations.md` |
-| SKU | `catch-host-ios` | `docs/release_operations.md` |
-| Primary language | English (U.S.) | `docs/release_operations.md` |
-| Access | Full Access | `docs/release_operations.md` |
+| Store | Release | Source | Status |
+| --- | --- | --- | --- |
+| App Store | `1.0.1` build `202610200000357901` | `171c1cb07` (PR #713 merge) | Submitted 2026-10-21; still Waiting for Review on 2026-10-23. The description correction and App Review notes additions were saved on 2026-10-22. The EU DSA trader declaration is In Review. |
+| Google Play, closed test | `1.0.1 (457901)`, Alpha track, India | `171c1cb07` | Submitted 2026-10-21 with 14 publishing changes. Production access needs at least 12 opted-in testers for 14 continuous days. |
+| Google Play, internal | `1.0.1 (452901)` | earlier 2026-10-20 upload | Available to internal testers since 2026-10-20; not reviewed |
 
-## Prepared assets
+Both store builds come from the same mobile producer run (`39453202046`,
+attempt 2). The iOS build was promoted by run `39458936493`.
 
-| Asset | Path | Status |
-| --- | --- | --- |
-| App icon, 1024x1024 PNG | `docs/store/catch_host/icon/app-icon-1024.png` | Ready from existing host prod icon |
-| 6.9-inch iPhone screenshots | `docs/store/catch_host/screenshots/iphone_6_9/` | Draft sources; revision required by the eight-shot production brief |
-| Metadata draft | `docs/store/catch_host/metadata.md` | Ready for owner review |
-| Privacy inventory draft | `docs/store/catch_host/privacy_inventory.md` | Ready for legal/product review |
-| App Review notes draft | `docs/store/catch_host/review_notes.md` | Needs demo credentials and backend confirmation |
-| Asset manifest | `docs/store/catch_host/asset_manifest.json` | Updated; screenshot revision required |
+## Records in this folder
 
-The approved cross-app screenshot order, replacement decisions, platform export
-matrix, and QA contract now live in
+| Document | Contents |
+| --- | --- |
+| `metadata.md` | Live App Store and Play listing values, age rating, content rating, declarations, seller and copyright |
+| `privacy_inventory.md` | The published App Privacy declaration (20 types since 2026-10-23), reconciled against the submitted build, plus the Play data declarations |
+| `review_notes.md` | Reviewer access on file, the payment and in-app purchase posture, and review-facing facts about the submitted build |
+| `asset_manifest.json` | Machine-readable summary of the live submission and the asset locations |
+| `icon/app-icon-1024.png` | App icon from the Host prod icon set |
+| `screenshots/iphone_6_9/` | Earlier 6.9-inch source drafts, **not** the uploaded screenshots |
+
+The uploaded screenshots and the Play feature graphic are in the ignored local
+folder `build/store-upload/listing-assets/`:
+
+- iPhone, 6.3-inch, 1206×2622: Today, Rehearsal, Room
+- iPad, 13-inch landscape, 2752×2064: Rehearsal, Room
+- Play: 512 icon and 1024×500 feature graphic
+
+The console evidence for these records is the rest of `build/store-upload/`.
+The reviewer and deletion credential files there are private; this repository
+is public.
+
+The cross-app screenshot direction remains in
 [`../app_listing_screenshot_production_brief.md`](../app_listing_screenshot_production_brief.md).
-The five images in this pack are source drafts, not final upload assets.
+
+## Release build source
+
+`node tool/platform/resolve_app_target.mjs --role host --environment prod`
+resolves the Host target to this build:
+
+| Field | Value |
+| --- | --- |
+| Project root | `apps/host` |
+| Entrypoint | `apps/host/lib/main_prod.dart` |
+| Xcode scheme / configuration | `host-prod` / `Release-host-prod` |
+| Marketing version | `1.0.1` (`apps/host/pubspec.yaml`) |
+| Producer | `.github/workflows/mobile-internal-release.yml` |
+
+The legacy root `ios/` project is not the Host release source.
+
+## How `main` differs from the submitted source
+
+These changes on `main` after `171c1cb07` affect store declarations:
+
+| Change | Effect on the next submission |
+| --- | --- |
+| PR #726: Host analytics hold (native deactivation plus Dart gate) | The next build collects less. The published Coarse Location row becomes an acceptable over-declaration. |
+| PR #738 (merged 2026-10-22): Privacy policy, Terms and Help & support in the Host Account menu, with the URLs in every dart-define file | Adds the in-app privacy link that the submitted build lacks |
 
 ## Apple requirements referenced
 
-As of June 22, 2026, Apple's App Store Connect docs say:
-
-- App records need platform, app name, primary language, bundle ID, SKU, and
-  access settings before upload:
-  https://developer.apple.com/help/app-store-connect/create-an-app-record/add-a-new-app/
-- App name is 2-30 characters, subtitle is up to 30 characters, privacy policy
-  URL is required for iOS, and the bundle ID must match Xcode:
+- App record fields:
   https://developer.apple.com/help/app-store-connect/reference/app-information/app-information
-- Promotional text is up to 170 characters, description is up to 4000
-  characters, keywords are up to 100 bytes, and support URL is required:
+- Platform version fields:
   https://developer.apple.com/help/app-store-connect/reference/app-information/platform-version-information
-- Screenshots support 1-10 images, including 6.9-inch portrait PNG/JPEG sizes
-  such as 1320x2868:
+- Screenshot specifications:
   https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications
-- App privacy answers and privacy policy URL are required:
+- App privacy:
   https://developer.apple.com/help/app-store-connect/reference/app-information/app-privacy
+- Firebase data collection guidance for App Store labels:
+  https://firebase.google.com/docs/ios/app-store-data-collection
 
-## Remaining release blockers
-
-- Accept any updated Apple Developer Program License Agreement if App Store
-  Connect blocks release work.
-- Host exact promotion run `31436882152` processed the final analyzer-clean
-  version `1.0.1`, build `202608100000030201`, as `VALID` and persisted exact
-  claim artifact `9081563645`; the legacy `Runner | Default` Xcode Cloud
-  workflow is disabled.
-  Assign that build to the intended TestFlight group and record install/launch
-  proof in GitHub issue `#218`.
-- Smoke test the Host TestFlight build with App Check/App Attest, Maps, phone
-  auth, push, host club/event entrypoints, check-in, and Event Success tools.
-- Create the Host Play record, enroll Play App Signing, grant the existing
-  `github-actions-play-publisher` OIDC identity app-scoped testing-track access,
-  configure internal testers, and record AAB processing/install proof before
-  rerunning the guarded manual Play `qa` promoter. Owner verification and both
-  app records are tracked in GitHub issue `#199`.
-- Replace review-note placeholders with reviewer credentials and seeded data.
-- Have legal/product confirm privacy labels, age rating, copyright owner, and
-  category choices before submission.
-- Refresh screenshots from the release/TestFlight build if the UI changes before
-  submission.
+The App Review Guidelines applied in this pack are 1.2, 2.1, 3.1.1, 3.1.3,
+4.8 and 5.1.1.

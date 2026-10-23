@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.33.1
-updated: 2026-10-20
+version: 0.35.0
+updated: 2026-10-23
 owner: web_platform
 status: active
 ---
@@ -23,6 +23,20 @@ Keep the Flutter web app separate from the public website. The Flutter web app i
 the consumer app surface and should continue sharing mobile app code. The
 marketing and admin surfaces are web-native products and should use the same
 React + TypeScript stack where practical.
+
+**Web code unification (owner decision, 2026-10-22).** The website and Admin
+stay separate deployables on separate origins. `catchdates.com` keeps
+server-rendered public pages; `admin.catchdates.com` keeps its signed-in
+single-page app with its own security headers, App Check settings and Firebase
+Auth origin, so a script injected into a public page cannot reach an operator
+session. Everything above the deployable is shared rather than duplicated:
+styled components and layout primitives in `@catch/web-ui` (UI blueprint Phase
+7e), tokens and one stylelint and ESLint preset in `@catch/web-config`, and a
+planned `@catch/web-data` for the Firebase bootstrap, the contract-validated
+callable client and query helpers. Each app owns only its routes, screens and
+feature controllers. Raw values and component placement are enforced by
+stylelint and ESLint rules with shrink-only debt lists; each hand-written web
+scanner retires in the same change that lands the rule replacing it.
 
 The no-download `/f/:publicFormId/` respondent route is also owned by the
 public React website. It loads a callable-projected immutable form version,
@@ -391,6 +405,67 @@ presentation adapters consumed by the rendered sections. The current contract
 contains 123 configurations across 16 surfaces, including source-aware
 read-only website event detail. Adding a configuration without both
 implementation and proof fails strict mode.
+
+## Public Data Layer
+
+The public website reads Firestore only on the server, through these layers:
+
+| Layer | Owns | Location |
+|---|---|---|
+| Reader | The read-only Firestore surface, `PublicReader`. `firebase-admin`'s Firestore satisfies it; tests pass an in-memory reader. | `website/src/server/repositories/publicReader.ts` |
+| Repositories | One module per entity: bounded queries, fail-closed bounds, projection to the public DTO | `website/src/server/repositories/*Repository.ts` |
+| Assemblers | One function per route shape, composing repositories into a `PublicCatalog` | `website/src/server/publicCatalog.ts` |
+| Route layer | Choosing the assembler for a path, metadata, status codes and redirects | `website/src/server/publicRoute.ts`, `website/proxy.ts` |
+| Browser | Rendering the server's catalog; client controllers own interaction only | `website/src/app/next`, `website/src/features` |
+
+- Repositories are the only code that names a collection or a field. Every
+  query is bounded, and crossing a bound throws
+  `PUBLIC_CATALOG_READ_BOUND_EXCEEDED` instead of truncating.
+- Repositories return projected public DTOs (`projectPublicOrganizer`,
+  `projectLivePublicCatchEvent`, `publicExternalEvent`, `projectPublicReview`).
+  Raw documents never leave a repository.
+- A new public query uses equality filters only, or an index already deployed
+  to production. Equality-only filters need no composite index.
+- A per-route assembler returns the same listing and event record the full
+  catalog would. `website/src/server/publicCatalog.test.ts` enforces that, and
+  that detail routes never read a whole events collection.
+
+| Route | Assembler | Reads |
+|---|---|---|
+| `/`, `/explore/`, `/organizers/`, `/claim/`, sitemap | `assemblePublicCatalog` | Published organizers, Catch events and external events, at most 400 each |
+| `/organizers/<slug>/` and legacy aliases | `assembleOrganizerDetailCatalog` | One to three path reads, that organizer's events (at most 200 per kind, Catch events also by legacy `clubId`), three trust reads for recommendations, bounded reviews |
+| `/events/<id>/` | `assembleEventDetailCatalog` | Two document gets, the organizer plus a path-uniqueness read, bounded reviews |
+
+`assembleRouteCatalog` chooses the assembler from the path, and
+`resolvePublicRoute` is its only caller, so the proxy's status and redirect
+decision, the rendered page and the `/api/public-catalog` refresh all use the
+same reads. A detail path that names nothing published, or an event id that
+is not a valid document id, reads nothing further and returns 404.
+
+`proxy.ts` and the page each resolve the route once; React `cache` does not
+deduplicate between them. An organizer page view therefore makes two sets of
+bounded queries scoped to that organizer (eight each for the acceptance
+fixture), and a discovery page view still makes two full catalog reads. Because detail routes no longer read whole
+collections, a crossed catalog bound returns 503 only on `/`, `/explore/`,
+`/organizers/`, `/claim/` and the sitemap; organizer and event pages keep
+serving. `website/scripts/next/lifecycleAcceptance.mjs` and
+`failureAcceptance.mjs` exercise both behaviors against the isolated emulator.
+
+Freshness is unchanged by this layer: there is no cross-request or process
+cache. Unpublishing takes effect on the next server request, and open tabs
+refresh `/api/public-catalog` every 25 seconds and withhold content once a
+read is 30 seconds old (`website/scripts/next/lifecycleAcceptance.mjs`).
+Caching is a separate decision with two forms: accept a bounded staleness
+window for withdrawals, or invalidate from the backend when a listing or event
+is published or withdrawn. The second needs backend Functions delivery.
+Neither is adopted.
+
+Browser code reaches callables through `website/src/firebase.ts`, one module
+of about 84 exports spanning forms, the event runtime, claims, reviews,
+messaging preferences and checkout. Splitting it into one service module per
+backend domain, with `firebase.ts` reduced to runtime bootstrap, needs a
+change to `tool/web/check_website_import_boundaries.mjs`, which today allows
+only `firebase.ts` to import the generated callable types.
 
 ## Current Stack
 

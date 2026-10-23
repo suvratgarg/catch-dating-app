@@ -1,3 +1,5 @@
+import 'package:catch_tokens/generated/catch_design_tokens.g.dart';
+
 /// Material 3 window size class breakpoints, in logical pixels.
 ///
 /// These match the Material Design 3 [Window size classes]
@@ -28,8 +30,8 @@ enum CatchWindowSize {
 
   // ── Thresholds ──────────────────────────────────────────────────────────
 
-  static const _compactMax = 600;
-  static const _mediumMax = 840;
+  static const _compactMax = GeneratedCatchWindowSizeTokens.mediumMinWidth;
+  static const _mediumMax = GeneratedCatchWindowSizeTokens.expandedMinWidth;
 
   // ── Convenience ─────────────────────────────────────────────────────────
 

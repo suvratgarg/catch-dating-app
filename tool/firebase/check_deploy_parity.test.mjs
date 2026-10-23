@@ -7,14 +7,21 @@ import test from "node:test";
 import {
   buildFunctionsListCommand,
   buildSecretsListCommand,
+  compareClientCallableParity,
   compareDeployParity,
+  formatReport,
   loadRepositoryInventory,
   parseArgs,
   parseDeployedFunctionNames,
+  loadClientCallableTools,
+  parseClientSurfaceRequest,
   parseLiveSecretNames,
   parseSelectedFunctionTargets,
+  resolveClientSurfaces,
   runDeployParity,
 } from "./check_deploy_parity.mjs";
+import {formatClientCallableReport} from
+  "./check_client_callable_dependencies.mjs";
 
 test("fails when a repo export is absent while ignoring deployed extension extras", () => {
   const report = compareDeployParity({
@@ -318,4 +325,160 @@ test("repository parity excludes source-exported dormant scheduled Functions", (
 
   const inventory = loadRepositoryInventory(repoRoot);
   assert.deepEqual([...inventory.functionNames], ["callable"]);
+});
+
+test("client parity reports referenced Functions the environment lacks", () => {
+  const report = compareClientCallableParity({
+    clientReferences: new Map([
+      ["listOrganizerContacts", ["app"]],
+      ["manageHostRosterIntake", ["app"]],
+      ["manageWebsiteAccount", ["website"]],
+    ]),
+    deployedFunctionNames: new Set(["listOrganizerContacts", "onUserCreated"]),
+    declaredSecretNames: new Set(["REQUIRED_SECRET"]),
+    liveSecretNames: new Set(["REQUIRED_SECRET"]),
+  });
+
+  assert.equal(report.ok, false);
+  assert.equal(report.parityScope, "client");
+  assert.equal(report.checkedFunctionCount, 3);
+  assert.deepEqual(report.missingFunctions, [
+    "manageHostRosterIntake",
+    "manageWebsiteAccount",
+  ]);
+  assert.match(
+    formatReport({
+      ...report,
+      environment: "prod",
+      projectId: "catchdates-prod",
+      clientSurfaces: ["app", "website"],
+    }),
+    /3 client-referenced Function\(s\) from app, website, 2 deployed\n[\s\S]*Missing Functions: manageHostRosterIntake \(app\), manageWebsiteAccount \(website\)/u,
+  );
+});
+
+test("client surfaces parse exactly and exclude deploy-target selection", async () => {
+  const tools = await loadClientCallableTools();
+  assert.deepEqual(tools.surfaces, ["app", "website", "admin"]);
+  assert.deepEqual(
+    resolveClientSurfaces(parseClientSurfaceRequest("all"), tools.surfaces),
+    ["app", "website", "admin"],
+  );
+  assert.deepEqual(
+    resolveClientSurfaces(parseClientSurfaceRequest("website,app"), tools.surfaces),
+    ["website", "app"],
+  );
+  for (const value of ["app,app", "", "App"]) {
+    assert.throws(
+      () => parseClientSurfaceRequest(value),
+      (error) => error.exitCode === 64,
+    );
+  }
+  assert.throws(
+    () => resolveClientSurfaces(parseClientSurfaceRequest("mobile"), tools.surfaces),
+    (error) => error.exitCode === 64,
+  );
+  const parsed = parseArgs([
+    "--env", "prod", "--client-callables", "website", "--client-root", ".",
+  ]);
+  assert.deepEqual(parsed.clientSurfaces, ["website"]);
+  assert.equal(parsed.clientRoot, path.resolve("."));
+  assert.throws(
+    () => parseArgs([
+      "--env", "prod", "--client-callables", "app",
+      "--targets", "functions:first",
+    ]),
+    (error) => error.exitCode === 64,
+  );
+  assert.throws(
+    () => parseArgs(["--env", "prod", "--client-root", "."]),
+    (error) => error.exitCode === 64,
+  );
+});
+
+test("runDeployParity checks a newer client checkout against the deployed inventory", () => {
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "deploy-parity-"));
+  fs.mkdirSync(path.join(repoRoot, "functions/src"), {recursive: true});
+  fs.writeFileSync(
+    path.join(repoRoot, ".firebaserc"),
+    JSON.stringify({projects: {prod: "catchdates-prod"}}),
+  );
+  fs.writeFileSync(
+    path.join(repoRoot, "functions/src/index.ts"),
+    'export {deployedCallable} from "./callable";\n',
+  );
+  fs.writeFileSync(path.join(repoRoot, "functions/src/callable.ts"), "");
+  const runCommand = ({command}) => command === "firebase" ? {
+    status: 0,
+    stdout: JSON.stringify({
+      status: "success",
+      result: [{id: "deployedCallable"}],
+    }),
+    stderr: "",
+  } : {status: 0, stdout: "[]", stderr: ""};
+  const derivations = [];
+  const deriveClientReferences = ({root, surfaces}) => {
+    derivations.push({root, surfaces});
+    return {
+      ok: true,
+      callables: ["deployedCallable", "newerClientCallable"],
+      references: new Map([
+        ["deployedCallable", {surfaces: new Set(["app"])}],
+        ["newerClientCallable", {surfaces: new Set(["website"])}],
+      ]),
+      dormantReferences: [],
+      undeclaredInvocations: [],
+    };
+  };
+
+  const report = runDeployParity({
+    environment: "prod",
+    repoRoot,
+    runCommand,
+    clientSurfaces: ["app", "website"],
+    clientRoot: "/control-plane",
+    clientCallableTools: {
+      derive: deriveClientReferences,
+      format: formatClientCallableReport,
+    },
+  });
+  assert.deepEqual(derivations, [{
+    root: "/control-plane",
+    surfaces: ["app", "website"],
+  }]);
+  assert.equal(report.ok, false);
+  assert.deepEqual(report.missingFunctions, ["newerClientCallable"]);
+  assert.deepEqual(report.missingFunctionSurfaces, {
+    newerClientCallable: ["website"],
+  });
+
+  assert.throws(
+    () => runDeployParity({
+      environment: "prod",
+      repoRoot,
+      runCommand,
+      clientSurfaces: ["admin"],
+      clientCallableTools: {
+        derive: () => ({
+          ok: false,
+          callables: [],
+          references: new Map(),
+          dormantReferences: ["expireEventWaitlistOffers"],
+          undeclaredInvocations: [],
+        }),
+        format: formatClientCallableReport,
+      },
+    }),
+    (error) => error.exitCode === 64 &&
+      /expireEventWaitlistOffers/u.test(error.message),
+  );
+  assert.throws(
+    () => runDeployParity({
+      environment: "prod",
+      repoRoot,
+      runCommand,
+      clientSurfaces: ["app"],
+    }),
+    (error) => error.exitCode === 64,
+  );
 });

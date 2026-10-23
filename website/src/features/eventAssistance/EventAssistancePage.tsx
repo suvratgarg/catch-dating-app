@@ -1,9 +1,10 @@
+import {CatchGap} from "@catch/web-ui";
 import type {ReactNode} from "react";
 import {EventMessageWithdrawalPanel} from "../eventMessaging/EventMessageWithdrawalPanel";
 import {eventAssistanceCopy as copy} from "../../content/eventAssistance";
 import {
-  Button, EventRuntimeActionGrid, EventRuntimeFrame, EventRuntimeLoading,
-  EventRuntimeModule, EventRuntimeNoticeStack, EventRuntimeSectionStack, EventRuntimePanel, FormStatus,
+  Button, EventRuntimeFrame, EventRuntimeLoading,
+  EventRuntimeModule, EventRuntimeNoticeStack, EventRuntimePanel, FormStatus,
 } from "../../shared/ui/primitives";
 import type {AssistanceScreen, Credential} from "./eventAssistanceModel";
 import {useEventAssistanceController} from "./useEventAssistanceController";
@@ -30,33 +31,33 @@ export function EventAssistanceView({screen, submit, refresh, refreshing, textPr
       eventTitle={screen.kind === "ready" ? screen.view.eventTitle : null}>
       {screen.kind === "loading" ? (
         <EventRuntimePanel kicker={copy.kicker} title={copy.loadingTitle} body="">
-          <EventRuntimeSectionStack>
+          <CatchGap size="section">
             <EventRuntimeLoading label={copy.loading} />
             {textPreferences}
-          </EventRuntimeSectionStack>
+          </CatchGap>
         </EventRuntimePanel>
       ) : screen.kind === "unavailable" ? (
         <EventRuntimePanel kicker={copy.kicker}
           title={screen.reason === "network" ? copy.networkTitle : copy.unavailableTitle}
           body={screen.reason === "network" ? copy.networkBody :
             screen.reason === "invalid" ? copy.unavailableBody : copy.closed[screen.reason]}>
-          <EventRuntimeSectionStack>
+          <CatchGap size="section">
             {textPreferences}
             <Button type="button" onClick={refresh} loading={refreshing}
               loadingLabel={copy.refreshing}>{copy.refresh}</Button>
-          </EventRuntimeSectionStack>
+          </CatchGap>
         </EventRuntimePanel>
       ) : (
         <EventRuntimePanel kicker={copy.kicker} title={screen.view.title}
           body={screen.view.text}>
-          <EventRuntimeSectionStack>
+          <CatchGap size="section">
             {screen.view.response ? (
               <EventRuntimeModule title={copy.saved}>
                 <p role="status">{screen.view.response.label}</p>
               </EventRuntimeModule>
             ) : (
               <EventRuntimeModule title={copy.replyHeading}>
-                <EventRuntimeActionGrid>
+                <CatchGap direction="horizontal" size="related" wrap>
                   {screen.view.choices.map((choice) => (
                     <Button key={choice.choiceId} type="button" variant="ghost"
                       disabled={!screen.fresh || screen.pending ||
@@ -66,11 +67,11 @@ export function EventAssistanceView({screen, submit, refresh, refreshing, textPr
                       {choice.label}
                     </Button>
                   ))}
-                </EventRuntimeActionGrid>
+                </CatchGap>
               </EventRuntimeModule>
             )}
             {textPreferences}
-            <EventRuntimeActionGrid>
+            <CatchGap direction="horizontal" size="related" wrap>
               {!screen.fresh || screen.notice ? (
                 <EventRuntimeNoticeStack>
                   {!screen.fresh ? <p role="status">{screen.view.response ? copy.refreshRecorded : copy.stale}</p> : null}
@@ -80,8 +81,8 @@ export function EventAssistanceView({screen, submit, refresh, refreshing, textPr
               <Button type="button" variant="ghost" onClick={refresh}
                 disabled={screen.pending} loading={refreshing}
                 loadingLabel={copy.refreshing}>{copy.refresh}</Button>
-            </EventRuntimeActionGrid>
-          </EventRuntimeSectionStack>
+            </CatchGap>
+          </CatchGap>
         </EventRuntimePanel>
       )}
     </EventRuntimeFrame>

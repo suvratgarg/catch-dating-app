@@ -44,16 +44,48 @@ if (require.main === module) {
   });
 }
 
+// CI may split the strict list across parallel emulator jobs with
+// CATCH_TEST_SHARD="<index>/<total>". Round-robin positions make the shards
+// disjoint and together cover every listed file exactly once.
+function shardFiles(files, shard, {allowEmpty = false} = {}) {
+  if (!shard) return {files, shard: null};
+  const match = /^([1-9][0-9]*)\/([1-9][0-9]*)$/u.exec(shard);
+  if (!match || Number(match[1]) > Number(match[2])) {
+    throw new Error(`Invalid CATCH_TEST_SHARD: ${shard}`);
+  }
+  const [index, total] = [Number(match[1]), Number(match[2])];
+  const subset = files.filter((_, position) => position % total === index - 1);
+  if (!subset.length && !allowEmpty) throw new Error(`Shard ${shard} selects no backend integration tests.`);
+  return {files: subset, shard: {index, total, listed: files.length}};
+}
+
+// Pull request CI may narrow the strict list to the tests a change can reach
+// (tool/impact/emulator_test_selection.mjs); every other run keeps the full list.
+function narrowToSelection(files, selectionPath) {
+  if (!selectionPath) return {files, selection: null};
+  const selection = JSON.parse(fs.readFileSync(selectionPath, "utf8"));
+  if (!["full", "selected"].includes(selection.mode) || !Array.isArray(selection.tests)) {
+    throw new Error(`Invalid CATCH_TEST_SELECTION: ${selectionPath}`);
+  }
+  const unknown = selection.tests.filter((test) => !files.includes(test));
+  if (unknown.length) throw new Error(`Selection names tests outside the strict list: ${unknown.join(", ")}`);
+  const summary = {mode: selection.mode, listed: files.length, reasons: selection.reasons ?? []};
+  if (selection.mode === "full") return {files, selection: summary};
+  return {files: files.filter((file) => selection.tests.includes(file)), selection: summary};
+}
+
 // The ordinary Functions lane intentionally allows emulator-only tests to skip.
 // Its integration owner must use this mode inside emulators:exec instead.
-async function runStrictFiles(files, {root = functionsRoot} = {}) {
+async function runStrictFiles(files, {root = functionsRoot, shard = process.env.CATCH_TEST_SHARD,
+  selectionPath = process.env.CATCH_TEST_SELECTION} = {}) {
   for (const key of ["FIRESTORE_EMULATOR_HOST", "FIREBASE_STORAGE_EMULATOR_HOST"]) {
     if (!process.env[key]) throw new Error(`${key} is required for backend integration tests.`);
   }
   if (!files.length || new Set(files).size !== files.length) {
     throw new Error("Backend integration requires nonempty, unique test files.");
   }
-  const selected = files.map((file) => {
+  const narrowed = narrowToSelection(files, selectionPath);
+  const listed = narrowed.files.map((file) => {
     const absolute = path.resolve(root, file);
     if (!absolute.startsWith(`${path.resolve(root)}${path.sep}`) ||
         !/\.test\.(?:js|cjs)$/u.test(file)) {
@@ -61,6 +93,13 @@ async function runStrictFiles(files, {root = functionsRoot} = {}) {
     }
     return fs.realpathSync(absolute);
   });
+  const {files: selected, shard: shardIdentity} = shardFiles(listed, shard,
+    {allowEmpty: narrowed.selection?.mode === "selected"});
+  if (selected.length === 0) {
+    console.log("No strict emulator test can be affected by this change; the merge queue runs them all.");
+    return writeEvidence({kind: "backend-integration-execution", shard: shardIdentity,
+      selection: narrowed.selection, selected, executed: [], summaries: {}, success: true}, 0);
+  }
   const {run: runTests} = require("node:test");
   const summaries = new Map();
   const executed = [];
@@ -99,14 +138,19 @@ async function runStrictFiles(files, {root = functionsRoot} = {}) {
     platform: process.platform, architecture: process.arch,
     inputHashes: Object.fromEntries(inputFiles.map(file => [path.relative(root, file),
       createHash("sha256").update(fs.readFileSync(file)).digest("hex")])),
-    selected, executed, summaries: Object.fromEntries(summaries), success: !failed};
+    shard: shardIdentity, selection: narrowed.selection, selected, executed,
+    summaries: Object.fromEntries(summaries), success: !failed};
+  return writeEvidence(evidence, failed ? 1 : 0);
+}
+
+function writeEvidence(evidence, status) {
   if (process.env.CATCH_TEST_EVIDENCE_PATH) {
     const output = path.resolve(process.env.CATCH_TEST_EVIDENCE_PATH);
     fs.mkdirSync(path.dirname(output), {recursive: true});
     fs.writeFileSync(output, `${JSON.stringify(evidence, null, 2)}\n`);
   }
   console.log(JSON.stringify(evidence));
-  return failed ? 1 : 0;
+  return status;
 }
 
-module.exports = {discoverTestFiles, runStrictFiles};
+module.exports = {discoverTestFiles, narrowToSelection, runStrictFiles, shardFiles};

@@ -1820,6 +1820,41 @@
             }
           }
         }
+      },
+      "elevation": {
+        "fieldActive": {
+          "$type": "shadow",
+          "$description": "Lift under the active field row: CatchElevation.fieldActive.",
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.08627450980392157,
+                  0.0784313725490196,
+                  0.058823529411764705
+                ],
+                "alpha": 0.08
+              },
+              "offsetX": {
+                "value": 0,
+                "unit": "px"
+              },
+              "offsetY": {
+                "value": 6,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 18,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 0,
+                "unit": "px"
+              }
+            }
+          ]
+        }
       }
     },
     "dark": {
@@ -2104,6 +2139,41 @@
               "note": "Hero/wow gradients should derive from ActivityPalette or ink."
             }
           }
+        }
+      },
+      "elevation": {
+        "fieldActive": {
+          "$type": "shadow",
+          "$description": "Lift under the active field row: CatchElevation.fieldActive.",
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "alpha": 0.55
+              },
+              "offsetX": {
+                "value": 0,
+                "unit": "px"
+              },
+              "offsetY": {
+                "value": 8,
+                "unit": "px"
+              },
+              "blur": {
+                "value": 22,
+                "unit": "px"
+              },
+              "spread": {
+                "value": 0,
+                "unit": "px"
+              }
+            }
+          ]
         }
       }
     }
@@ -2443,6 +2513,34 @@
     },
     "$description": "Catch shared spacing scale in logical units. Native component insets remain component-specific; do not substitute them for a universal screen gutter."
   },
+  "gap": {
+    "$type": "dimension",
+    "$description": "Semantic gaps named for the relationship they express: CatchGaps in Flutter, --catch-gap-* on the web. Each references the space scale.",
+    "inline": {
+      "$value": "{space.s2}",
+      "$description": "Tight icon/label or metadata pair spacing."
+    },
+    "headerTitleToSubtitle": {
+      "$value": "{space.s1}",
+      "$description": "Screen-header title to its kicker or subtitle."
+    },
+    "related": {
+      "$value": "{space.s3}",
+      "$description": "Closely related rows inside one content cluster."
+    },
+    "formField": {
+      "$value": "{space.s4}",
+      "$description": "Controls in one form or settings group."
+    },
+    "section": {
+      "$value": "{space.s6}",
+      "$description": "Peer sections in a page body."
+    },
+    "majorSection": {
+      "$value": "{space.s8}",
+      "$description": "Major page regions."
+    }
+  },
   "radius": {
     "$type": "dimension",
     "none": {
@@ -2475,6 +2573,13 @@
         "unit": "px"
       }
     },
+    "interactiveTile": {
+      "$description": "Active field and interactive tile corners: CatchRadius.interactiveTile.",
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      }
+    },
     "pill": {
       "$value": {
         "value": 999,
@@ -2482,6 +2587,59 @@
       }
     },
     "$description": "Catch selected shape scale. Android native shape defaults remain separate references; native rounded-rectangle radii are not mandates to reskin existing Catch materials. Pill999 is a full-round sentinel, never a device radius."
+  },
+  "stroke": {
+    "$type": "dimension",
+    "$description": "Stroke widths that are part of reusable component geometry: CatchStroke in Flutter, --catch-stroke-* on the web. Hairline is the default border width.",
+    "hairline": {
+      "$value": {
+        "value": 1,
+        "unit": "px"
+      }
+    },
+    "emphasis": {
+      "$value": {
+        "value": 1.5,
+        "unit": "px"
+      }
+    },
+    "underline": {
+      "$value": {
+        "value": 1.5,
+        "unit": "px"
+      },
+      "$description": "Typographic underline. Border emphasis uses the selected, danger or warning border roles instead."
+    },
+    "focusRing": {
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      }
+    },
+    "progressIndicator": {
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      }
+    },
+    "avatarRing": {
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      }
+    },
+    "selection": {
+      "$value": {
+        "value": 3,
+        "unit": "px"
+      }
+    },
+    "passProgress": {
+      "$value": {
+        "value": 2.6,
+        "unit": "px"
+      }
+    }
   },
   "layout": {
     "$type": "dimension",
@@ -2592,12 +2750,49 @@
       "$type": "dimension",
       "$value": "{space.s4}"
     },
+    "pageBodyEnd": {
+      "$type": "dimension",
+      "$value": "{space.s5}"
+    },
     "$description": "Shared Catch geometry, not a claim that either OS prescribes one universal margin. Page20/16 and record40/12/8/4 values preserve reviewed shell/record composition; text containers are content-driven and hit targets are independent."
+  },
+  "windowSize": {
+    "$type": "dimension",
+    "$description": "Material 3 window size class lower bounds: CatchWindowSize in Flutter. Compact is everything below medium. CSS custom properties cannot appear in @media, so web stylesheets get these values through the lint preset's media-query allowed list.",
+    "mediumMinWidth": {
+      "$value": "{platformReference.android.window.widthDpMediumLowerBound}"
+    },
+    "expandedMinWidth": {
+      "$value": "{platformReference.android.window.widthDpExpandedLowerBound}"
+    },
+    "largeMinWidth": {
+      "$value": "{platformReference.android.window.widthDpLargeLowerBound}"
+    },
+    "extraLargeMinWidth": {
+      "$value": "{platformReference.android.window.widthDpExtraLargeLowerBound}"
+    }
   },
   "opacity": {
     "$type": "number",
     "activityMapPinShadow": {
       "$value": 0.3
+    },
+    "controlOverlayHover": {
+      "$description": "Ink tint over a row or control on hover: CatchOpacity.controlOverlayHover.",
+      "$value": 0.04
+    }
+  },
+  "field": {
+    "$type": "number",
+    "$description": "Field row state values: CatchFieldTokens in Flutter, --catch-field-* on the web. Tint alphas apply to ink over the row surface.",
+    "activeTintAlpha": {
+      "$value": 0.04
+    },
+    "pressedTintAlpha": {
+      "$value": 0.06
+    },
+    "disabledOpacity": {
+      "$value": 0.4
     }
   },
   "font": {
@@ -3501,6 +3696,654 @@
             "reference": "platformReference.android.typography.labelMedium",
             "exception": "floatingNavigation",
             "decision": "User retained the floating bottom navigation appearance. Its original 13/13, weight 600 and zero tracking are deliberately preserved on both platforms; this is not a native reference metric or a generic control role."
+          }
+        }
+      }
+    },
+    "web": {
+      "$description": "Web function profile. Each role aliases the iOS semantic profile, because web body text renders in the platform system font as it does on iOS.",
+      "headline": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.ios.headline.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": "{typography.ios.headline.lineHeight}"
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.ios.headline.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": "{typography.ios.headline.tracking}"
+        }
+      },
+      "title": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.ios.title.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": "{typography.ios.title.lineHeight}"
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.ios.title.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": "{typography.ios.title.tracking}"
+        }
+      },
+      "name": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.ios.name.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": "{typography.ios.name.lineHeight}"
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.ios.name.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": "{typography.ios.name.tracking}"
+        }
+      },
+      "body": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.ios.body.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": "{typography.ios.body.lineHeight}"
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.ios.body.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": "{typography.ios.body.tracking}"
+        }
+      },
+      "secondary": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.ios.secondary.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": "{typography.ios.secondary.lineHeight}"
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.ios.secondary.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": "{typography.ios.secondary.tracking}"
+        }
+      },
+      "context": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.ios.context.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": "{typography.ios.context.lineHeight}"
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.ios.context.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": "{typography.ios.context.tracking}"
+        }
+      },
+      "control": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.ios.control.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": "{typography.ios.control.lineHeight}"
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.ios.control.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": "{typography.ios.control.tracking}"
+        }
+      },
+      "status": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.ios.status.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": "{typography.ios.status.lineHeight}"
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.ios.status.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": "{typography.ios.status.tracking}"
+        }
+      },
+      "metric": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.ios.metric.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": "{typography.ios.metric.lineHeight}"
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.ios.metric.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": "{typography.ios.metric.tracking}"
+        }
+      },
+      "fieldValue": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.ios.fieldValue.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": "{typography.ios.fieldValue.lineHeight}"
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.ios.fieldValue.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": "{typography.ios.fieldValue.tracking}"
+        }
+      },
+      "fieldLabel": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.ios.fieldLabel.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": "{typography.ios.fieldLabel.lineHeight}"
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.ios.fieldLabel.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": "{typography.ios.fieldLabel.tracking}"
+        }
+      },
+      "displayLarge": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.ios.displayLarge.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": "{typography.ios.displayLarge.lineHeight}"
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.ios.displayLarge.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": "{typography.ios.displayLarge.tracking}"
+        }
+      },
+      "displayMedium": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.ios.displayMedium.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": "{typography.ios.displayMedium.lineHeight}"
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.ios.displayMedium.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": "{typography.ios.displayMedium.tracking}"
+        }
+      },
+      "displaySmall": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.ios.displaySmall.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": "{typography.ios.displaySmall.lineHeight}"
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.ios.displaySmall.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": "{typography.ios.displaySmall.tracking}"
+        }
+      },
+      "navigationLabel": {
+        "size": {
+          "$type": "dimension",
+          "$value": "{typography.ios.navigationLabel.size}"
+        },
+        "lineHeight": {
+          "$type": "dimension",
+          "$value": "{typography.ios.navigationLabel.lineHeight}"
+        },
+        "weight": {
+          "$type": "number",
+          "$value": "{typography.ios.navigationLabel.weight}"
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": "{typography.ios.navigationLabel.tracking}"
+        }
+      }
+    },
+    "brand": {
+      "$description": "Platform-free brand text roles: Archivo voice and IBM Plex Mono data. Names match CatchTextStyles in Flutter and CatchText variants on the web. lineHeight is a unitless multiplier.",
+      "display": {
+        "$description": "Biggest brand moment: onboarding, celebration, live countdowns.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.voice}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 44,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 0.98
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "headlineS": {
+        "$description": "Smaller brand headline, a step under the profile headline.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.voice}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 26,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.1
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "kicker": {
+        "$description": "Uppercase data kicker; tracking is 0.16em at 11px.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.mono}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 11,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.15
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 700
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1.76,
+            "unit": "px"
+          }
+        }
+      },
+      "kickerLg": {
+        "$description": "Large kicker; tracking is 0.18em at 12px.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.mono}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 12,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.1
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 700
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2.16,
+            "unit": "px"
+          }
+        }
+      },
+      "fieldSectionKicker": {
+        "$description": "Field section kicker.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.mono}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 11,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.15
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1.43,
+            "unit": "px"
+          }
+        }
+      },
+      "sectionCount": {
+        "$description": "Count beside a field section kicker.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.mono}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 9.5,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.15
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0.76,
+            "unit": "px"
+          }
+        }
+      },
+      "monoLabel": {
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.mono}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 11,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.15
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "monoCapsLabel": {
+        "$description": "Uppercase mono label; tracking is 0.13em at 11px.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.mono}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 11,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.15
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1.43,
+            "unit": "px"
+          }
+        }
+      },
+      "monoLabelS": {
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.mono}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 10,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.15
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 700
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "meta": {
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.mono}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 10.5,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.2
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 600
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "badge": {
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.mono}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 9,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.1
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 700
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "badgeCaps": {
+        "$description": "Uppercase badge; tracking is 0.08em at 9px.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.mono}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 9,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.1
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 700
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0.72,
+            "unit": "px"
+          }
+        }
+      },
+      "numericLarge": {
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.mono}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.2
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 700
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
           }
         }
       }
@@ -7719,6 +8562,68 @@
           "decision": "Material standard curve selected on both platforms for Catch transitions; iOS native spring parameters are not equivalent cubic curves."
         }
       }
+    },
+    "springCurve": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.34,
+        1.4,
+        0.64,
+        1
+      ],
+      "$description": "Explicit Catch overshoot curve for press and success feedback; not claimed to be a platform spring."
+    }
+  },
+  "elevation": {
+    "$description": "Hairline-first lift shared by Flutter BoxShadow lists and website box-shadow values. Shadow ink is warm (26, 20, 16), not the text ink.",
+    "card": {
+      "$type": "shadow",
+      "$description": "Content cards that read as above the page while keeping the hairline border style.",
+      "$value": [
+        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.06}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 4, "unit": "px"}, "blur": {"value": 14, "unit": "px"}, "spread": {"value": 0, "unit": "px"}},
+        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.04}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 1, "unit": "px"}, "blur": {"value": 2, "unit": "px"}, "spread": {"value": 0, "unit": "px"}}
+      ]
+    },
+    "raised": {
+      "$type": "shadow",
+      "$description": "Bottom sheets, floating actions and popovers.",
+      "$value": [
+        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.1}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 8, "unit": "px"}, "blur": {"value": 24, "unit": "px"}, "spread": {"value": 0, "unit": "px"}},
+        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.06}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 1, "unit": "px"}, "blur": {"value": 2, "unit": "px"}, "spread": {"value": 0, "unit": "px"}}
+      ]
+    },
+    "overlay": {
+      "$type": "shadow",
+      "$description": "Toasts, snackbars and dropdown overlays.",
+      "$value": [
+        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.18}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 16, "unit": "px"}, "blur": {"value": 40, "unit": "px"}, "spread": {"value": 0, "unit": "px"}},
+        {"color": {"colorSpace": "srgb", "components": [0.1019607843, 0.0784313725, 0.0627450980], "alpha": 0.08}, "offsetX": {"value": 0, "unit": "px"}, "offsetY": {"value": 4, "unit": "px"}, "blur": {"value": 8, "unit": "px"}, "spread": {"value": 0, "unit": "px"}}
+      ]
+    }
+  },
+  "layer": {
+    "$type": "number",
+    "$description": "Web stacking order (z-index). Flutter orders overlays through the widget tree and has no counterpart. Steps leave room between layers.",
+    "base": {
+      "$value": 0
+    },
+    "raised": {
+      "$value": 1
+    },
+    "sticky": {
+      "$value": 10
+    },
+    "dropdown": {
+      "$value": 20
+    },
+    "overlay": {
+      "$value": 30
+    },
+    "modal": {
+      "$value": 40
+    },
+    "toast": {
+      "$value": 50
     }
   },
   "accessibility": {

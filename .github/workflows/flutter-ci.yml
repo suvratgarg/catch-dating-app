@@ -505,6 +505,18 @@ jobs:
         working-directory: widgetbook
         run: flutter pub get
 
+      # The golden inventory check renders nothing, so pull requests run it
+      # here on Linux instead of waiting for the merge queue's macOS goldens.
+      # The shared font loader reads the repository package config.
+      - name: Resolve repository Flutter dependencies
+        run: flutter pub get
+
+      - name: Check the Widgetbook golden inventory
+        working-directory: widgetbook
+        run: >-
+          flutter test test/primitive_goldens_test.dart
+          --plain-name "generator visits every registered case and every designation once"
+
       - name: Build Widgetbook web app
         working-directory: widgetbook
         run: flutter build web --release
