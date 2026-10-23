@@ -4,7 +4,6 @@ import type {
   InputHTMLAttributes,
   ReactNode,
   SelectHTMLAttributes,
-  TextareaHTMLAttributes,
 } from "react";
 
 export function classNames(...values: Array<string | false | null | undefined>) {
@@ -67,27 +66,6 @@ interface FieldControlValidationProps {
   invalid?: boolean;
 }
 
-export interface TextInputControlProps
-  extends Omit<
-      InputHTMLAttributes<HTMLInputElement>,
-      "aria-describedby" | "aria-invalid"
-    >,
-    FieldControlValidationProps {}
-
-export function TextInputControl({
-  descriptionId,
-  invalid = false,
-  ...props
-}: TextInputControlProps) {
-  return (
-    <input
-      {...props}
-      aria-describedby={descriptionId}
-      aria-invalid={invalid || undefined}
-    />
-  );
-}
-
 export interface SelectControlProps
   extends Omit<
       SelectHTMLAttributes<HTMLSelectElement>,
@@ -102,27 +80,6 @@ export function SelectControl({
 }: SelectControlProps) {
   return (
     <select
-      {...props}
-      aria-describedby={descriptionId}
-      aria-invalid={invalid || undefined}
-    />
-  );
-}
-
-export interface TextareaControlProps
-  extends Omit<
-      TextareaHTMLAttributes<HTMLTextAreaElement>,
-      "aria-describedby" | "aria-invalid"
-    >,
-    FieldControlValidationProps {}
-
-export function TextareaControl({
-  descriptionId,
-  invalid = false,
-  ...props
-}: TextareaControlProps) {
-  return (
-    <textarea
       {...props}
       aria-describedby={descriptionId}
       aria-invalid={invalid || undefined}

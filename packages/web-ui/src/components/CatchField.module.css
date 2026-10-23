@@ -26,6 +26,8 @@
   border: var(--catch-stroke-hairline) solid transparent;
   border-radius: var(--catch-radius-interactive-tile);
   background: transparent;
+  /* A field reads from the start edge, whatever its container aligns. */
+  text-align: start;
   transition:
     background-color var(--catch-field-motion-fast) var(--catch-field-motion-curve),
     border-color var(--catch-field-motion-fast) var(--catch-field-motion-curve),

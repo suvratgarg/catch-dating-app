@@ -6,8 +6,6 @@ import {
   DataTableControl,
   EmptyStateControl,
   SelectControl,
-  TextareaControl,
-  TextInputControl,
   ToggleButtonControl,
   ToggleGroupControl,
 } from "./primitives";
@@ -86,23 +84,23 @@ describe("shared data table control", () => {
   });
 });
 
-describe("shared field controls", () => {
+describe("shared select control", () => {
   it("maps validation state to native accessibility attributes", () => {
     render(
       <>
-        <TextInputControl aria-label="Name" descriptionId="name-error" invalid />
-        <SelectControl aria-label="City" descriptionId="city-help">
+        <SelectControl aria-label="City" descriptionId="city-help" invalid>
           <option>Delhi</option>
         </SelectControl>
-        <TextareaControl aria-label="Notes" />
+        <SelectControl aria-label="Area">
+          <option>Bandra</option>
+        </SelectControl>
       </>
     );
 
-    const input = screen.getByRole("textbox", {name: "Name"});
-    expect(input.getAttribute("aria-invalid")).toBe("true");
-    expect(input.getAttribute("aria-describedby")).toBe("name-error");
-    expect(screen.getByRole("combobox", {name: "City"}).getAttribute("aria-describedby")).toBe("city-help");
-    expect(screen.getByRole("textbox", {name: "Notes"}).hasAttribute("aria-invalid")).toBe(false);
+    const city = screen.getByRole("combobox", {name: "City"});
+    expect(city.getAttribute("aria-invalid")).toBe("true");
+    expect(city.getAttribute("aria-describedby")).toBe("city-help");
+    expect(screen.getByRole("combobox", {name: "Area"}).hasAttribute("aria-invalid")).toBe(false);
   });
 });
 

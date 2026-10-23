@@ -15,6 +15,15 @@ type Story = StoryObj<typeof meta>;
 
 const cities = ["Delhi", "Mumbai", "Bengaluru"];
 
+function PinGlyph() {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+      <path d="M12 21s7-6.2 7-11.5a7 7 0 1 0-14 0C5 14.8 12 21 12 21Z" />
+      <circle cx="12" cy="9.5" r="2.5" />
+    </svg>
+  );
+}
+
 function Fields() {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("Sunday runs along the Yamuna.");
@@ -37,6 +46,8 @@ function Fields() {
         value={city} onChanged={setCity} />
       <CatchField recipe="select" title="Neighbourhood" hintText="Choose a neighbourhood"
         values={cities} itemLabelBuilder={(item) => item} value={null} />
+      <CatchField recipe="select" title="Home city" leading={<PinGlyph />} values={cities}
+        itemLabelBuilder={(item) => item} value="Delhi" />
       <CatchField recipe="input" title="Search" labelMode="hidden" inputHint="Search hosts"
         value="" />
     </CatchGap>

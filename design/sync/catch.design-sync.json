@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-10-22",
+  "updated": "2026-10-23",
   "sourceOfTruth": {
     "behavior": "Contracts in design/components/catch.components.json; Flutter is the reference implementation",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "8ce5f99c1c29e3db4527b58889d5a0c5967ecc1696702835d7379422d13a2ca8",
+  "sourceDigest": "76575de1d8403386a2164b917e1f4ccbf7179970b7b6c9c291e3454f15de6181",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "8ce5f99c1c29e3db4527b58889d5a0c5967ecc1696702835d7379422d13a2ca8",
-    "contractDigest": "8ce5f99c1c29e3db4527b58889d5a0c5967ecc1696702835d7379422d13a2ca8"
+    "digest": "76575de1d8403386a2164b917e1f4ccbf7179970b7b6c9c291e3454f15de6181",
+    "contractDigest": "76575de1d8403386a2164b917e1f4ccbf7179970b7b6c9c291e3454f15de6181"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "9cc68f33fe9284fef398dc12d58eaf0b7e5fa0a78de69b65e69b7417bce06b41",
+    "handoffRequestDigest": "86c90721e906dc783c0ef63d3afbcfaba7d2ef0617f37e0e64fad8d0587e5b82",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -460,8 +460,8 @@
     },
     "claudeAllowed": 68,
     "reactImplementationStates": {
-      "headless-control": 9,
-      "styled": 3
+      "headless-control": 8,
+      "styled": 4
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -762,9 +762,9 @@
       "conceptId": "catch.field",
       "dartSymbol": "CatchField",
       "dartFile": "packages/catch_ui/lib/src/components/catch_field.dart",
-      "reactSymbol": "TextInputControl",
-      "reactFile": "packages/web-ui/src/primitives.tsx",
-      "reactApi": "headless-control",
+      "reactSymbol": "CatchField",
+      "reactFile": "packages/web-ui/src/components/CatchField.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Field",
       "figmaPropertyProjectionMode": "explicit",
       "figmaReviewStatePolicy": "evidence",
@@ -839,7 +839,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "afd80a5a7e0821bd8bc234010740a3211a5b61f420582babc030d62b654f41b3"
+      "contractDigest": "6ab144c45090d4b304a5a2ea2fadc23d6134933f54a339be4ba2e24cfd5e2cb2"
     },
     {
       "contractId": "catch.section",
