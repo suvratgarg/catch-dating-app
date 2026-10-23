@@ -7,6 +7,7 @@ import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/error/error.dart';
 
+import 'catch_text_migration.dart';
 import 'catch_ui_rules_tables.g.dart';
 
 part 'catch_ui_test_rules.dart';
@@ -421,7 +422,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const textRequiresStyle = LintCode(
     'catch_text_requires_style',
-    'App-facing Text must declare a CatchTextStyles role unless a sanctioned framework ancestor owns its typography.',
+    '{0}',
     severity: DiagnosticSeverity.WARNING,
   );
 
@@ -586,6 +587,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
     final visitor = _CatchUiLayoutVisitor(
       this,
+      ruleContext: context,
       source: context.definingUnit.content,
       path: path,
       isEventDetailPath: _isEventDetailPath(path),
@@ -675,6 +677,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   _CatchUiLayoutVisitor(
     this.rule, {
+    required this.ruleContext,
     required this.source,
     required this.path,
     required this.isEventDetailPath,
@@ -687,6 +690,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   }) : _lineStarts = _computeLineStarts(source);
 
   final CatchUiLayoutRules rule;
+  final RuleContext ruleContext;
   final String source;
   final String path;
   final bool isEventDetailPath;
@@ -704,6 +708,18 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   @override
   void visitCompilationUnit(CompilationUnit node) {
     _locallyShadowedTokenNames = _declaredTokenShadows(node);
+
+    final currentPath =
+        ruleContext.currentUnit?.file.path.replaceAll(r'\', '/') ?? path;
+    for (final site in newTextMigrationSites(node, currentPath)) {
+      rule.reportAtNode(
+        site.node,
+        diagnosticCode: CatchUiLayoutRules.textRequiresStyle,
+        arguments: [
+          'Use CatchText with CatchTextVariant.${site.role} instead of styling Text in place.',
+        ],
+      );
+    }
 
     for (final match in _allowDebtPattern.allMatches(source)) {
       if (_isThemeIndependentArtAllow(match.start)) continue;
@@ -872,7 +888,13 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         typeName == 'Text' &&
         !_textOwnsStyle(node) &&
         !_hasSanctionedAmbientTextAncestor(node)) {
-      _reportAtNode(node, CatchUiLayoutRules.textRequiresStyle);
+      _reportAtNode(
+        node,
+        CatchUiLayoutRules.textRequiresStyle,
+        arguments: [
+          'App-facing Text must declare a CatchTextStyles role unless a sanctioned framework ancestor owns its typography.',
+        ],
+      );
     }
 
     if (isFeaturePresentationPath &&
