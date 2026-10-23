@@ -263,19 +263,31 @@ Future<void> main(List<String> args) async {
           )
         : null;
     final baseline = File('$root/$textMigrationBaseline');
-    final source = baseline.existsSync() ? baseline.readAsStringSync() : null;
-    final initial = source == null ? null : jsonDecode(source);
-    final legacy = initial is Map && initial['version'] == 1
-        ? Map<String, int>.from(initial['files'] as Map)
+    final recorded = baseline.existsSync()
+        ? parseTextMigrationBaseline(baseline.readAsStringSync())
         : null;
-    if (legacy != null && (hasBase || args.single != '--update')) {
-      throw StateError(
-        'File-only budgets can only be converted during initial adoption with --update',
-      );
+    if (args.single == '--check' && recorded == null) {
+      throw StateError('Missing CatchText migration baseline');
     }
-    final recorded = source == null || legacy != null
-        ? null
-        : parseTextMigrationBaseline(source);
+    if (recorded == null && previous == null) {
+      final changed =
+          git([
+                'diff',
+                '--name-only',
+                base,
+                '--',
+                'lib',
+                'apps',
+                'packages/catch_ui/lib/src/foundations/catch_text_styles.dart',
+                'packages/catch_ui/lib/src/primitives/catch_text_variant.dart',
+              ]).stdout
+              as String;
+      if (changed.trim().isNotEmpty) {
+        throw StateError(
+          'Initial role reservations require unchanged app/style source at the merge base',
+        );
+      }
+    }
     final files =
         (git(['ls-files', '-z', '--', 'lib', 'apps']).stdout as String)
             .split('\u0000')
@@ -318,43 +330,6 @@ Future<void> main(List<String> args) async {
       await collection.dispose();
     }
     final checking = args.single == '--check';
-    if (legacy != null) {
-      // The initial proposal has not landed. Its enabled allowances cannot
-      // grow; dormant reservations must come from unchanged pre-existing code.
-      final changed =
-          git([
-                'diff',
-                '--name-only',
-                base,
-                '--',
-                'lib',
-                'apps',
-                'packages/catch_ui/lib/src/foundations/catch_text_styles.dart',
-                'packages/catch_ui/lib/src/primitives/catch_text_variant.dart',
-              ]).stdout
-              as String;
-      if (changed.trim().isNotEmpty ||
-          legacy.entries.any(
-            (entry) => !textMigrationScope(entry.key) || entry.value <= 0,
-          )) {
-        throw StateError(
-          'Initial role reservations require unchanged app/style source at the merge base',
-        );
-      }
-      for (final file in counts.entries) {
-        final enabled = file.value.entries
-            .where((role) => variants.contains(role.key))
-            .fold(0, (sum, role) => sum + role.value);
-        if (enabled > (legacy[file.key] ?? 0)) {
-          throw StateError(
-            'Initial conversion cannot grow enabled allowance: ${file.key}',
-          );
-        }
-      }
-    }
-    if (checking && recorded == null) {
-      throw StateError('Missing CatchText migration baseline');
-    }
     final current = textMigrationPrunedCounts(counts, recorded, variants);
     final proposed = checking ? recorded! : current;
     final growth = [
