@@ -14,7 +14,7 @@
   },
   "src/styles/consumer-event.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 109
+      "count": 107
     },
     "declaration-property-value-allowed-list": {
       "count": 7
@@ -25,10 +25,10 @@
   },
   "src/styles/consumer-home.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 325
+      "count": 313
     },
     "declaration-property-value-allowed-list": {
-      "count": 21
+      "count": 20
     },
     "media-feature-name-value-allowed-list": {
       "count": 3
@@ -36,10 +36,10 @@
   },
   "src/styles/event-detail.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 56
+      "count": 54
     },
     "declaration-property-value-allowed-list": {
-      "count": 14
+      "count": 13
     },
     "media-feature-name-value-allowed-list": {
       "count": 1
@@ -47,7 +47,7 @@
   },
   "src/styles/event-runtime.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 172
+      "count": 167
     },
     "declaration-property-value-allowed-list": {
       "count": 15
@@ -58,7 +58,7 @@
   },
   "src/styles/explore.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 87
+      "count": 81
     },
     "declaration-property-value-allowed-list": {
       "count": 3
@@ -69,10 +69,10 @@
   },
   "src/styles/flows.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 124
+      "count": 115
     },
     "declaration-property-value-allowed-list": {
-      "count": 21
+      "count": 20
     },
     "media-feature-name-value-allowed-list": {
       "count": 3
@@ -135,7 +135,7 @@
   },
   "src/styles/organiser-directory.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 93
+      "count": 87
     },
     "declaration-property-value-allowed-list": {
       "count": 4
@@ -146,7 +146,7 @@
   },
   "src/styles/organiser-profile.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 83
+      "count": 82
     },
     "declaration-property-value-allowed-list": {
       "count": 6
@@ -157,10 +157,10 @@
   },
   "src/styles/organizers.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 409
+      "count": 382
     },
     "declaration-property-value-allowed-list": {
-      "count": 82
+      "count": 75
     },
     "media-feature-name-value-allowed-list": {
       "count": 2
@@ -168,7 +168,7 @@
   },
   "src/styles/public-forms.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 123
+      "count": 116
     },
     "declaration-property-value-allowed-list": {
       "count": 16

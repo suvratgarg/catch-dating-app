@@ -1,13 +1,10 @@
-// Slightly above the family target because the generic decision footer and field controls share form-state types.
-import type {InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes} from "react";
-import {CheckboxControl, SelectControl, TextareaControl, TextInputControl} from "@catch/web-ui";
+// Slightly above the family target because the generic decision footer shares the review form-state types.
+import type {InputHTMLAttributes, ReactNode} from "react";
+import {CatchField, CheckboxControl} from "@catch/web-ui";
 import {CheckCircle2, FileWarning} from "lucide-react";
 
 import {
   classNames,
-  layoutSpanClass,
-  type SelectOption,
-  type AdminLayoutSpan,
   type ReviewDecisionHandler,
   type ReviewDecisionResponse,
   type PanelProps,
@@ -17,12 +14,9 @@ import {AlertRow, Panel} from "./data";
 import {AdminDecisionFooterShell, AdminIntakeDecisionActions, AdminIntakeDecisionState} from "./intake";
 import {AdminButton} from "./overview";
 
-export {StateRow} from "./data";
+export {selectOptions} from "./shared";
 
-type FieldValidationProps = {
-  descriptionId?: string;
-  invalid?: boolean;
-};
+export {StateRow} from "./data";
 
 export function AdminEditorPanel({
   className = "",
@@ -48,70 +42,6 @@ export function AdminStateRow({
       <span>{label}</span>
       <strong>{value}</strong>
     </div>
-  );
-}
-
-export function AdminTextField({
-  className = "marketing-field",
-  descriptionId,
-  invalid,
-  label,
-  value,
-  onChange,
-  ...props
-}: {
-  className?: string;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-} & Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "aria-describedby" | "aria-invalid" | "className" | "onChange" | "value"
-> & FieldValidationProps) {
-  return (
-    <label className={className}>
-      <span>{label}</span>
-      <TextInputControl
-        descriptionId={descriptionId}
-        invalid={invalid}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        {...props}
-      />
-    </label>
-  );
-}
-
-export function TextField({
-  className = "field-control",
-  descriptionId,
-  invalid,
-  label,
-  onChange,
-  span,
-  value,
-  ...props
-}: {
-  className?: string;
-  label: string;
-  onChange: (value: string) => void;
-  span?: AdminLayoutSpan;
-  value: string;
-} & Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "aria-describedby" | "aria-invalid" | "className" | "onChange" | "value"
-> & FieldValidationProps) {
-  return (
-    <label className={classNames(className, layoutSpanClass(span))}>
-      <span>{label}</span>
-      <TextInputControl
-        descriptionId={descriptionId}
-        invalid={invalid}
-        onChange={(event) => onChange(event.target.value)}
-        value={value}
-        {...props}
-      />
-    </label>
   );
 }
 
@@ -148,40 +78,6 @@ export function AdminOrganizerIntakeCheckboxField({
       {...props}
       className={classNames("intake-checkbox-row", className)}
     />
-  );
-}
-
-export function AdminTextareaField({
-  className = "marketing-field",
-  descriptionId,
-  invalid,
-  label,
-  rows,
-  value,
-  onChange,
-  ...props
-}: {
-  className?: string;
-  label: string;
-  rows: number;
-  value: string;
-  onChange: (value: string) => void;
-} & Omit<
-  TextareaHTMLAttributes<HTMLTextAreaElement>,
-  "aria-describedby" | "aria-invalid" | "className" | "onChange" | "rows" | "value"
-> & FieldValidationProps) {
-  return (
-    <label className={className}>
-      <span>{label}</span>
-      <TextareaControl
-        descriptionId={descriptionId}
-        invalid={invalid}
-        rows={rows}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        {...props}
-      />
-    </label>
   );
 }
 
@@ -229,11 +125,12 @@ export function DecisionFooter<TTargetType extends string = string>({
         </AdminIntakeDecisionState>
       ) : (
         <>
-          <AdminTextareaField
-            label="Review note"
-            rows={compact ? 2 : 3}
+          <CatchField
+            recipe="input"
+            title="Review note"
+            maxLines={compact ? 2 : 3}
             value={note}
-            onChange={onNoteChange}
+            onChanged={onNoteChange}
           />
           <AdminIntakeDecisionActions>
             <AdminButton
@@ -312,91 +209,5 @@ export function DecisionFooter<TTargetType extends string = string>({
         </>
       )}
     </AdminDecisionFooterShell>
-  );
-}
-
-export function TextareaField({
-  className = "field-control",
-  descriptionId,
-  invalid,
-  label,
-  onChange,
-  rows,
-  span,
-  value,
-  ...props
-}: {
-  className?: string;
-  label: string;
-  onChange: (value: string) => void;
-  rows: number;
-  span?: AdminLayoutSpan;
-  value: string;
-} & Omit<
-  TextareaHTMLAttributes<HTMLTextAreaElement>,
-  "aria-describedby" | "aria-invalid" | "className" | "onChange" | "rows" | "value"
-> & FieldValidationProps) {
-  return (
-    <label className={classNames(className, layoutSpanClass(span))}>
-      <span>{label}</span>
-      <TextareaControl
-        descriptionId={descriptionId}
-        invalid={invalid}
-        onChange={(event) => onChange(event.target.value)}
-        rows={rows}
-        value={value}
-        {...props}
-      />
-    </label>
-  );
-}
-
-type SelectFieldProps = {
-  className?: string;
-  descriptionId?: string;
-  invalid?: boolean;
-  label: string;
-  onChange: (value: string) => void;
-  options: SelectOption[];
-  value: string;
-} & Omit<
-  SelectHTMLAttributes<HTMLSelectElement>,
-  "aria-describedby" | "aria-invalid" | "className" | "onChange" | "value"
->;
-
-export function AdminMarketingSelectField({
-  className = "marketing-field",
-  ...props
-}: SelectFieldProps) {
-  return <SelectField {...props} className={className} />;
-}
-
-export function SelectField({
-  className = "field-control",
-  descriptionId,
-  invalid,
-  label,
-  onChange,
-  options,
-  value,
-  ...props
-}: SelectFieldProps) {
-  return (
-    <label className={className}>
-      <span>{label}</span>
-      <SelectControl
-        descriptionId={descriptionId}
-        invalid={invalid}
-        onChange={(event) => onChange(event.target.value)}
-        value={value}
-        {...props}
-      >
-        {options.map((option) => {
-          const value = typeof option === "string" ? option : option.value;
-          const label = typeof option === "string" ? option : option.label;
-          return <option key={value} value={value}>{label}</option>;
-        })}
-      </SelectControl>
-    </label>
   );
 }

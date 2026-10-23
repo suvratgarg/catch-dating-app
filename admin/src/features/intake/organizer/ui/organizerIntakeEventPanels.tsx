@@ -1,27 +1,20 @@
+import {CatchField} from "@catch/web-ui";
 import {useState} from "react";
 import {CheckCircle2, Clock3, FileWarning, Lock} from "lucide-react";
 import {
   AdminButton,
-  AdminTag,
-  EmptyState,
-  QualityRow,
-  SelectField,
-  StateRow,
-  StatusChip,
-  TextareaField,
-  TextField,
   AdminCommandRow,
   AdminCommandStack,
   AdminEyebrow,
   AdminGuardrailList,
-  AdminIntakeGate,
-  AdminIntakeGateList,
   AdminIntakeDecisionActions,
   AdminIntakeDecisionBox,
   AdminIntakeDecisionState,
-  AdminTagList,
+  AdminIntakeGate,
+  AdminIntakeGateList,
   AdminIntakeSection,
   AdminIntakeSectionTitle,
+  AdminIntakeStateGrid,
   AdminOrganizerCurationControlGrid,
   AdminOrganizerCurationControlSection,
   AdminOrganizerIntakeBadges,
@@ -39,7 +32,13 @@ import {
   AdminSearchCandidateList,
   AdminSearchCandidatePanel,
   AdminSurfacePreview,
-  AdminIntakeStateGrid,
+  AdminTag,
+  AdminTagList,
+  EmptyState,
+  QualityRow,
+  selectOptions,
+  StateRow,
+  StatusChip,
 } from "../../../../shared/ui/AdminPrimitives";
 import {
   decisionLabel,
@@ -380,51 +379,56 @@ function OrganizerExternalEventLocationResolutionView({
                   ))}
                 </AdminTagList>
                 <AdminOrganizerLocationResolutionForm>
-                  <TextField
-                    label="Name"
-                    onChange={(name) =>
+                  <CatchField
+                    recipe="input"
+                    title="Name"
+                    onChanged={(name) =>
                       onFormChange(task.taskId, {...form, name})}
                     value={form.name}
                   />
-                  <TextField
-                    label="Address"
-                    onChange={(address) =>
+                  <CatchField
+                    recipe="input"
+                    title="Address"
+                    onChanged={(address) =>
                       onFormChange(task.taskId, {...form, address})}
                     value={form.address}
                   />
-                  <TextField
-                    label="Place ID"
-                    onChange={(placeId) =>
+                  <CatchField
+                    recipe="input"
+                    title="Place ID"
+                    onChanged={(placeId) =>
                       onFormChange(task.taskId, {...form, placeId})}
                     value={form.placeId}
                   />
-                  <TextField
-                    inputMode="decimal"
-                    label="Latitude"
-                    onChange={(latitude) =>
+                  <CatchField
+                    recipe="input"
+                    title="Latitude"
+                    onChanged={(latitude) =>
                       onFormChange(task.taskId, {...form, latitude})}
                     value={form.latitude}
+                    keyboardType="decimal"
                   />
-                  <TextField
-                    inputMode="decimal"
-                    label="Longitude"
-                    onChange={(longitude) =>
+                  <CatchField
+                    recipe="input"
+                    title="Longitude"
+                    onChanged={(longitude) =>
                       onFormChange(task.taskId, {...form, longitude})}
                     value={form.longitude}
+                    keyboardType="decimal"
                   />
-                  <TextField
-                    span={2}
-                    label="Resolution notes"
-                    onChange={(notes) =>
+                  <CatchField
+                    recipe="input"
+                    title="Resolution notes"
+                    onChanged={(notes) =>
                       onFormChange(task.taskId, {...form, notes})}
                     value={form.notes}
                   />
-                  <TextareaField
-                    span={2}
-                    label="Review note"
-                    onChange={(note) =>
+                  <CatchField
+                    recipe="input"
+                    title="Review note"
+                    onChanged={(note) =>
                       onFormChange(task.taskId, {...form, note})}
-                    rows={2}
+                    maxLines={2}
                     value={form.note}
                   />
                 </AdminOrganizerLocationResolutionForm>
@@ -666,10 +670,11 @@ function OrganizerExternalEventCandidateCard({
         </AdminIntakeDecisionState>
       ) : (
         <AdminIntakeDecisionBox>
-          <TextareaField
-            label="Event review note"
-            onChange={onNoteChange}
-            rows={3}
+          <CatchField
+            recipe="input"
+            title="Event review note"
+            onChanged={onNoteChange}
+            maxLines={3}
             value={note}
           />
           {renderOrganizerEventBlockerResolutionFields({
@@ -928,10 +933,11 @@ function OrganizerIntakeCard({
           </AdminIntakeDecisionState>
         ) : (
           <AdminIntakeDecisionBox>
-            <TextareaField
-              label="Review note"
-              onChange={onNoteChange}
-              rows={3}
+            <CatchField
+              recipe="input"
+              title="Review note"
+              onChanged={onNoteChange}
+              maxLines={3}
               value={note}
             />
             {manualReportCount > 0 ? (
@@ -1026,52 +1032,57 @@ function OrganizerCurationControl({
     <AdminOrganizerCurationControlSection>
       <AdminIntakeSectionTitle>Curation Operation</AdminIntakeSectionTitle>
       <AdminOrganizerCurationControlGrid>
-        <SelectField
-          label="Operation"
-          onChange={(value) => update(
+        <CatchField
+          recipe="select"
+          title="Operation"
+          onChanged={(value) => update(
             "operationType",
-            value as OrganizerCurationOperation
+            (value ?? "") as OrganizerCurationOperation
           )}
-          options={organizerCurationOperations}
+          {...selectOptions(organizerCurationOperations)}
           value={form.operationType}
         />
 
         {form.operationType === "merge_entity" ? (
-          <SelectField
-            label="Merge into"
-            onChange={(value) => update("targetEntityId", value)}
-            options={["", ...targetEntityOptions]}
+          <CatchField
+            recipe="select"
+            title="Merge into"
+            onChanged={(value) => update("targetEntityId", (value ?? ""))}
+            {...selectOptions(["", ...targetEntityOptions])}
             value={form.targetEntityId}
           />
         ) : null}
 
         {usesSurface ? (
-            <SelectField
-              label="Surface"
-              onChange={(value) => update("surfaceId", value)}
-              options={surfaceOptions}
+            <CatchField
+              recipe="select"
+              title="Surface"
+              onChanged={(value) => update("surfaceId", (value ?? ""))}
+              {...selectOptions(surfaceOptions)}
               value={form.surfaceId}
             />
           ) : null}
 
         {form.operationType === "surface_decision" ? (
-          <SelectField
-            label="Decision"
-            onChange={(value) => update(
+          <CatchField
+            recipe="select"
+            title="Decision"
+            onChanged={(value) => update(
               "decision",
-              value as OrganizerSurfaceDecision
+              (value ?? "") as OrganizerSurfaceDecision
             )}
-            options={organizerSurfaceDecisions}
+            {...selectOptions(organizerSurfaceDecisions)}
             value={form.decision}
           />
         ) : null}
 
         {form.operationType === "split_surface" ? (
-          <TextField
-            label="New entity id"
-            onChange={(value) => update("newEntityId", value)}
+          <CatchField
+            recipe="input"
+            title="New entity id"
+            onChanged={(value) => update("newEntityId", value)}
             value={form.newEntityId}
-            />
+          />
           ) : null}
       </AdminOrganizerCurationControlGrid>
       {usesSurface && selectedSurface ? (
@@ -1081,10 +1092,11 @@ function OrganizerCurationControl({
           <span>{selectedSurface.notes}</span>
         </AdminSurfacePreview>
       ) : null}
-      <TextareaField
-        label="Curation reason"
-        onChange={(value) => update("reason", value)}
-        rows={2}
+      <CatchField
+        recipe="input"
+        title="Curation reason"
+        onChanged={(value) => update("reason", value)}
+        maxLines={2}
         value={form.reason}
       />
       {localCuration ? (

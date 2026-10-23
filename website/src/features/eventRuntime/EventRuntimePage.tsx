@@ -1,4 +1,4 @@
-import {CatchGap} from "@catch/web-ui";
+import {CatchField, CatchGap} from "@catch/web-ui";
 import {EventWhatsappPreferencesPanel} from "../eventMessaging/EventWhatsappPreferencesPanel";
 import {EventRcsPreferencesPanel} from "../eventMessaging/EventRcsPreferencesPanel";
 import {EventSmsPreferencePanel} from "../eventMessaging/EventSmsPreferencePanel";
@@ -33,9 +33,6 @@ import {
   EventRuntimeRouteMap,
   EventRuntimeStageMarquee,
   FormStatus,
-  SelectField,
-  TextAreaField,
-  TextField,
 } from "../../shared/ui/primitives";
 import {useEventRuntimeController} from "./useEventRuntimeController";
 import {
@@ -121,14 +118,15 @@ export function EventRuntimePage() {
           body={eventRuntimeCopy.phoneBody}
         >
           <EventRuntimeForm onSubmit={controller.handlePhoneSubmit} pending={controller.pending}>
-            <TextField
+            <CatchField
+              recipe="input"
               autoComplete="tel"
               id="event-runtime-phone"
-              inputMode="tel"
-              label={eventRuntimeCopy.phoneLabel}
-              onChange={(event) => controller.setPhoneNumber(event.target.value)}
-              placeholder={eventRuntimeCopy.phonePlaceholder}
+              title={eventRuntimeCopy.phoneLabel}
+              onChanged={(value) => controller.setPhoneNumber(value)}
+              inputHint={eventRuntimeCopy.phonePlaceholder}
               value={controller.phoneNumber}
+              keyboardType="phone"
             />
             <div id={controller.recaptchaContainerId} />
             <Button loading={controller.pending} loadingLabel={eventRuntimeCopy.sendingCode} type="submit">
@@ -146,14 +144,15 @@ export function EventRuntimePage() {
           body={eventRuntimeCopy.otpBody}
         >
           <EventRuntimeForm onSubmit={controller.handleCodeSubmit} pending={controller.pending}>
-            <TextField
+            <CatchField
+              recipe="input"
               autoComplete="one-time-code"
               id="event-runtime-code"
-              inputMode="numeric"
-              label={eventRuntimeCopy.otpLabel}
+              title={eventRuntimeCopy.otpLabel}
               maxLength={6}
-              onChange={(event) => controller.setCode(event.target.value.replace(/\D/gu, ""))}
+              onChanged={(value) => controller.setCode(value.replace(/\D/gu, ""))}
               value={controller.code}
+              keyboardType="number"
             />
             <Button loading={controller.pending} loadingLabel={eventRuntimeCopy.confirmingCode} type="submit">
               {eventRuntimeCopy.confirmCode}
@@ -170,12 +169,13 @@ export function EventRuntimePage() {
           body={eventRuntimeCopy.profileBody}
         >
           <EventRuntimeForm onSubmit={controller.handleProfileSubmit} pending={controller.pending}>
-            <TextField
+            <CatchField
+              recipe="input"
               autoComplete="name"
               id="event-runtime-name"
-              label={eventRuntimeCopy.displayNameLabel}
+              title={eventRuntimeCopy.displayNameLabel}
               maxLength={120}
-              onChange={(event) => controller.setDisplayName(event.target.value)}
+              onChanged={(value) => controller.setDisplayName(value)}
               value={controller.displayName}
             />
             {controller.preEventFieldId ? (
@@ -306,15 +306,16 @@ function PreEventProfileField({
       );
     case "dietaryAndSeatingNotes":
       return (
-        <TextAreaField
+        <CatchField
+          recipe="input"
           id="event-runtime-dietary-seating"
-          label={eventRuntimeCopy.dietaryAndSeatingLabel}
+          title={eventRuntimeCopy.dietaryAndSeatingLabel}
           maxLength={300}
-          onChange={(event) => controller.setDietaryAndSeatingNotes(
-            event.target.value
+          onChanged={(value) => controller.setDietaryAndSeatingNotes(
+            value
           )}
-          placeholder={eventRuntimeCopy.dietaryAndSeatingPlaceholder}
-          rows={3}
+          inputHint={eventRuntimeCopy.dietaryAndSeatingPlaceholder}
+          maxLines={3}
           value={controller.dietaryAndSeatingNotes}
         />
       );
@@ -349,12 +350,13 @@ function PreEventProfileField({
       );
     case "teamName":
       return (
-        <TextField
+        <CatchField
+          recipe="input"
           id="event-runtime-team-name"
-          label={eventRuntimeCopy.teamNameLabel}
+          title={eventRuntimeCopy.teamNameLabel}
           maxLength={80}
-          onChange={(event) => controller.setTeamName(event.target.value)}
-          placeholder={eventRuntimeCopy.teamNamePlaceholder}
+          onChanged={(value) => controller.setTeamName(value)}
+          inputHint={eventRuntimeCopy.teamNamePlaceholder}
           value={controller.teamName}
         />
       );
@@ -611,17 +613,18 @@ function LiveEventRuntime({
         <EventRuntimeModule title={eventRuntimeCopy.wingmanTitle}>
           <p>{eventRuntimeCopy.wingmanBody}</p>
           {controller.wingmanCandidates.length ? (
-            <SelectField
+            <CatchField
+              recipe="select"
               id="event-runtime-wingman"
-              label={eventRuntimeCopy.wingmanSelect}
-              onChange={(event) => controller.setWingmanTargetUid(event.target.value)}
-              value={controller.wingmanTargetUid}
-            >
-              <option value="">{eventRuntimeCopy.wingmanSelect}</option>
-              {controller.wingmanCandidates.map((candidate) => (
-                <option key={candidate.uid} value={candidate.uid}>{candidate.displayName}</option>
-              ))}
-            </SelectField>
+              title={eventRuntimeCopy.wingmanSelect}
+              hintText={eventRuntimeCopy.wingmanSelect}
+              values={controller.wingmanCandidates}
+              itemLabelBuilder={(candidate) => candidate.displayName}
+              itemValueBuilder={(candidate) => candidate.uid}
+              value={controller.wingmanCandidates.find(
+                (candidate) => candidate.uid === controller.wingmanTargetUid) ?? null}
+              onChanged={(candidate) => controller.setWingmanTargetUid(candidate?.uid ?? "")}
+            />
           ) : <p>{eventRuntimeCopy.wingmanEmpty}</p>}
           {controller.liveState.wingmanTargetUid ? (
             <Button onClick={() => void controller.withdrawWingmanRequest()} type="button" variant="ghost">
@@ -703,16 +706,17 @@ function LiveEventRuntime({
               onChange={controller.setStructureRating}
               value={controller.structureRating}
             />
-            <TextField
+            <CatchField
+              recipe="input"
               id="event-runtime-people-met"
-              label={eventRuntimeCopy.peopleMet}
+              title={eventRuntimeCopy.peopleMet}
               max={100}
               min={0}
-              onChange={(changeEvent) => controller.setMetNewPeopleCount(
-                Math.max(0, Math.min(100, Number(changeEvent.target.value) || 0))
+              onChanged={(value) => controller.setMetNewPeopleCount(
+                Math.max(0, Math.min(100, Number(value) || 0))
               )}
-              type="number"
-              value={controller.metNewPeopleCount}
+              value={String(controller.metNewPeopleCount)}
+              keyboardType="number"
             />
             <EventRuntimeConsent
               checked={controller.safetyConcern}
@@ -721,12 +725,13 @@ function LiveEventRuntime({
             >
               {eventRuntimeCopy.safetyConcern}
             </EventRuntimeConsent>
-            <TextAreaField
+            <CatchField
+              recipe="input"
               id="event-runtime-private-note"
-              label={eventRuntimeCopy.privateNote}
+              title={eventRuntimeCopy.privateNote}
               maxLength={500}
-              onChange={(changeEvent) => controller.setPrivateNote(changeEvent.target.value)}
-              rows={3}
+              onChanged={(value) => controller.setPrivateNote(value)}
+              maxLines={3}
               value={controller.privateNote}
             />
             <Button type="submit">{eventRuntimeCopy.feedbackSave}</Button>

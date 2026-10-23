@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -33,11 +34,8 @@ import {
   RiskBadge,
   SearchField,
   SegmentedControl,
-  SelectField,
   StateRow,
   TableActionButton,
-  TextareaField,
-  TextField,
   AdminRowTitle,
   AdminTagRow,
 } from "../../../shared/ui/AdminPrimitives";
@@ -274,21 +272,23 @@ function SafetyActionRail({
       span={2}
     >
       <QualityList>
-        <TextField
-          label="Assignee UID"
-          onChange={(assigneeUid) =>
+        <CatchField
+          recipe="input"
+          title="Assignee UID"
+          onChanged={(assigneeUid) =>
             onAssignmentFormChange({...assignmentForm, assigneeUid})
           }
-          placeholder="reviewer_uid"
+          inputHint="reviewer_uid"
           value={assignmentForm.assigneeUid}
         />
-        <TextareaField
-          label="Assignment note"
-          onChange={(note) =>
+        <CatchField
+          recipe="input"
+          title="Assignment note"
+          onChanged={(note) =>
             onAssignmentFormChange({...assignmentForm, note})
           }
-          placeholder="Why this owner should take the next action"
-          rows={3}
+          inputHint="Why this owner should take the next action"
+          maxLines={3}
           value={assignmentForm.note}
         />
         <StateRow label="Assignment check" value={assignmentValidationIssue ?? "Ready"} />
@@ -298,11 +298,12 @@ function SafetyActionRail({
         >
           {assignmentInFlight ? "Saving assignment" : "Save assignment"}
         </AdminButton>
-        <TextareaField
-          label="Review note"
-          onChange={(note) => onDecisionFormChange({note})}
-          placeholder="Record the evidence checked and why this status is correct."
-          rows={4}
+        <CatchField
+          recipe="input"
+          title="Review note"
+          onChanged={(note) => onDecisionFormChange({note})}
+          inputHint="Record the evidence checked and why this status is correct."
+          maxLines={4}
           value={decisionForm.note}
         />
         <StateRow label="Decision check" value={decisionValidationIssue ?? "Ready"} />

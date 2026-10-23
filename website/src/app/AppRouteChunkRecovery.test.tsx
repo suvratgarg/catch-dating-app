@@ -1,8 +1,9 @@
+import {CatchField} from "@catch/web-ui";
 import {act, cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
 import {useState, type ReactNode} from "react";
 import {useParams} from "react-router";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
-import {Button, TextField} from "../shared/ui/primitives";
+import {Button} from "../shared/ui/primitives";
 
 const faults = vi.hoisted(() => ({
   legal: false, form: false, persistent: false, hostname: "localhost",
@@ -14,8 +15,13 @@ function Form() {
   const {publicFormId} = useParams();
   const [answer, setAnswer] = useState("");
   return <><h1>Form {publicFormId}</h1>
-    <TextField id="form-answer" label="Your answer" value={answer}
-      onChange={event => setAnswer(event.target.value)} />
+    <CatchField
+      recipe="input"
+      id="form-answer"
+      title="Your answer"
+      value={answer}
+      onChanged={(value) => setAnswer(value)}
+    />
     <Button onClick={() => faults.submit(answer)}>Submit answer</Button></>;
 }
 

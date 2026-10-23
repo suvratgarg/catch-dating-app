@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
   Activity,
@@ -31,6 +32,7 @@ import {
   AdminEditorGrid,
   AdminEditorPanel,
   AdminEditorSection,
+  AdminFieldGrid,
   AdminEventSupplyDetail,
   AdminEventSupplyDetailStack,
   AdminEventSupplyEmptyState,
@@ -70,8 +72,6 @@ import {
   AdminSurfacePreview,
   AdminTag,
   AdminTagList,
-  AdminTextField,
-  AdminTextareaField,
   AdminWorkspace,
   AlertRow,
   DataTable,
@@ -656,15 +656,16 @@ export const AdminEditorGridStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminEditorGrid aria-label="Publishing editor">
-        <AdminTextField label="Title" value="Friday Social" onChange={noop} />
-        <AdminTextField label="Slug" value="friday-social" onChange={noop} />
+        <CatchField recipe="input" title="Title" value="Friday Social" onChanged={noop} />
+        <CatchField recipe="input" title="Slug" value="friday-social" onChanged={noop} />
       </AdminEditorGrid>
       <AdminEditorGrid as="div">
-        <AdminTextareaField
-          label="Review note"
-          rows={3}
+        <CatchField
+          recipe="input"
+          title="Review note"
+          maxLines={3}
           value="Approved with source evidence."
-          onChange={noop}
+          onChanged={noop}
         />
       </AdminEditorGrid>
     </AdminWorkspace>
@@ -851,12 +852,18 @@ export const AdminFeatureDropFeatureEditorStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminFeatureDropFeatureEditor>
-        <AdminTextField label="Feature title" value="Claim-ready profiles" onChange={noop} />
-        <AdminTextareaField
-          label="Feature copy"
-          rows={3}
+        <CatchField
+          recipe="input"
+          title="Feature title"
+          value="Claim-ready profiles"
+          onChanged={noop}
+        />
+        <CatchField
+          recipe="input"
+          title="Feature copy"
+          maxLines={3}
           value="Public listing copy backed by source evidence and owner handoff."
-          onChange={noop}
+          onChanged={noop}
         />
       </AdminFeatureDropFeatureEditor>
     </AdminWorkspace>
@@ -874,14 +881,15 @@ export const AdminFeatureDropControlGridStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminFeatureDropControlGrid>
-        <AdminTextField label="Campaign" value="Organizer launch" onChange={noop} />
-        <AdminTextField label="Audience" value="Hosts" onChange={noop} />
+        <CatchField recipe="input" title="Campaign" value="Organizer launch" onChanged={noop} />
+        <CatchField recipe="input" title="Audience" value="Hosts" onChanged={noop} />
         <AdminFeatureDropWideField>
-          <AdminTextareaField
-            label="Announcement copy"
-            rows={3}
+          <CatchField
+            recipe="input"
+            title="Announcement copy"
+            maxLines={3}
             value="Invite verified organizers to claim and maintain their public listing."
-            onChange={noop}
+            onChanged={noop}
           />
         </AdminFeatureDropWideField>
       </AdminFeatureDropControlGrid>
@@ -901,11 +909,12 @@ export const AdminFeatureDropWideFieldStory: Story = {
     <AdminWorkspace>
       <AdminFeatureDropControlGrid>
         <AdminFeatureDropWideField>
-          <AdminTextareaField
-            label="Long-form copy"
-            rows={4}
+          <CatchField
+            recipe="input"
+            title="Long-form copy"
+            maxLines={4}
             value="Use this area for the complete launch narrative."
-            onChange={noop}
+            onChanged={noop}
           />
         </AdminFeatureDropWideField>
       </AdminFeatureDropControlGrid>
@@ -982,8 +991,21 @@ export const AdminPublishingFormShellStory: Story = {
       <AdminPublishingFormShell>
         <AdminEditorSection>
           <legend>Publishing details</legend>
-          <AdminTextField label="Public title" value="Rooftop Social" onChange={noop} />
-          <AdminTextareaField label="Summary" rows={3} value="Verified organizer profile." onChange={noop} />
+          <AdminFieldGrid columns={1}>
+            <CatchField
+              recipe="input"
+              title="Public title"
+              value="Rooftop Social"
+              onChanged={noop}
+            />
+            <CatchField
+              recipe="input"
+              title="Summary"
+              maxLines={3}
+              value="Verified organizer profile."
+              onChanged={noop}
+            />
+          </AdminFieldGrid>
         </AdminEditorSection>
       </AdminPublishingFormShell>
     </AdminWorkspace>
@@ -1002,7 +1024,14 @@ export const AdminEditorSectionStory: Story = {
     <AdminWorkspace>
       <AdminEditorSection>
         <legend>Review fields</legend>
-        <AdminTextField label="Canonical owner" value="Organizer team" onChange={noop} />
+        <AdminFieldGrid columns={1}>
+          <CatchField
+            recipe="input"
+            title="Canonical owner"
+            value="Organizer team"
+            onChanged={noop}
+          />
+        </AdminFieldGrid>
       </AdminEditorSection>
     </AdminWorkspace>
   ),
@@ -1048,8 +1077,18 @@ export const AdminEditorPanelStory: Story = {
         title="Listing editor"
       >
         <AdminEditorGrid as="div">
-          <AdminTextField label="Listing title" value="Rooftop Social" onChange={noop} />
-          <AdminTextField label="Path" value="/organizers/rooftop-social" onChange={noop} />
+          <CatchField
+            recipe="input"
+            title="Listing title"
+            value="Rooftop Social"
+            onChanged={noop}
+          />
+          <CatchField
+            recipe="input"
+            title="Path"
+            value="/organizers/rooftop-social"
+            onChanged={noop}
+          />
         </AdminEditorGrid>
       </AdminEditorPanel>
     </AdminWorkspace>

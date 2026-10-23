@@ -1,9 +1,10 @@
+import {CatchField} from "@catch/web-ui";
 import {act, cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
 import {Component, Suspense, useEffect, useState, type ReactNode} from "react";
 import {MemoryRouter, useNavigate} from "react-router";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {PendingRequestProvider, usePendingRequestRegistration} from "../shared/pendingRequest";
-import {Button, TextField} from "../shared/ui/primitives";
+import {Button} from "../shared/ui/primitives";
 import {recoverableLazy, RouteChunkRecovery} from "./RouteChunkRecovery";
 
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
@@ -76,8 +77,13 @@ describe("route chunk recovery", () => {
     const load = vi.fn().mockResolvedValue({default: function Form() {
       const [answer, setAnswer] = useState(() => { mounts(); return ""; });
       const navigate = useNavigate();
-      return <><TextField id="answer" label="Answer" value={answer}
-        onChange={event => setAnswer(event.target.value)} />
+      return <><CatchField
+        recipe="input"
+        id="answer"
+        title="Answer"
+        value={answer}
+        onChanged={(value) => setAnswer(value)}
+      />
         <Button onClick={() => void navigate("/?step=2")}>Next step</Button></>;
     }});
     const recover = vi.fn();

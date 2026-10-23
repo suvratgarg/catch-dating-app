@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   Activity,
   ArrowLeft,
@@ -26,7 +27,7 @@ import {
   QualityList,
   RiskBadge,
   SearchField,
-  SelectField,
+  selectOptions,
   StateRow,
   TableActionButton,
 } from "../../../shared/ui/AdminPrimitives";
@@ -175,16 +176,18 @@ export function GrowthKpiWorkspace({
             placeholder="Search metric, stage, basis, or source"
             value={controller.query}
           />
-          <SelectField
-            label="Stage"
-            onChange={(value) => controller.setStageFilter(value as GrowthStage)}
-            options={stageOptions}
+          <CatchField
+            recipe="select"
+            title="Stage"
+            onChanged={(value) => controller.setStageFilter((value ?? "") as GrowthStage)}
+            {...selectOptions(stageOptions)}
             value={controller.stageFilter}
           />
-          <SelectField
-            label="Host range"
-            onChange={(value) => controller.setRangePreset(value as GrowthRangePreset)}
-            options={rangeOptions}
+          <CatchField
+            recipe="select"
+            title="Host range"
+            onChanged={(value) => controller.setRangePreset((value ?? "") as GrowthRangePreset)}
+            {...selectOptions(rangeOptions)}
             value={controller.rangePreset}
           />
           <AdminButton

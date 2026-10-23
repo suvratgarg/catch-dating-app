@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   Bot,
   Clock3,
@@ -22,7 +23,7 @@ import {
   EmptyState,
   Panel,
   SearchField,
-  SelectField,
+  selectOptions,
   StatusChip,
 } from "../../../shared/ui/AdminPrimitives";
 import {
@@ -91,18 +92,20 @@ export function AdminActionExecutionsWorkspace({
             placeholder="Search action, actor, target, error..."
             value={controller.query}
           />
-          <SelectField
-            label="Action"
-            onChange={controller.setActionFilter}
-            options={actionOptions}
+          <CatchField
+            recipe="select"
+            title="Action"
+            onChanged={(value) => controller.setActionFilter(value ?? "")}
+            {...selectOptions(actionOptions)}
             value={controller.actionFilter}
           />
-          <SelectField
-            label="Status"
-            onChange={(value) => controller.setStatusFilter(
-              value as AdminActionExecutionStatusFilter
+          <CatchField
+            recipe="select"
+            title="Status"
+            onChanged={(value) => controller.setStatusFilter(
+              (value ?? "") as AdminActionExecutionStatusFilter
             )}
-            options={statusOptions}
+            {...selectOptions(statusOptions)}
             value={controller.statusFilter}
           />
           <AdminButton

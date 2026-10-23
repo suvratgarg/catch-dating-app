@@ -3,12 +3,9 @@
 .explore-intro h1 { font-size: clamp(44px,4.5vw,66px); line-height: 1.02; }
 .explore-intro>p { color: var(--website-text-muted); font-size: 18px; margin: 18px 0 30px; }
 .explore-toolbar { display: flex; align-items: end; gap: 18px; flex-wrap: wrap; }
-.explore-toolbar>.field-block { min-width: 200px; flex: 0 1 230px; }
-.explore-page .field-block { margin: 0; gap: 8px; }
-.explore-page .field-block>label { font-family: inherit; font-size: 12px; text-transform: none; letter-spacing: 0; color: var(--website-text-muted); }
-.explore-page :is(input, select) { background: var(--website-surface); color: var(--website-text); border: 1px solid var(--website-input-border); border-radius: 4px; min-height: 48px; font-family: inherit; font-size: 15px; }
+.explore-toolbar>:has(select) { min-width: 200px; flex: 0 1 230px; }
 .explore-search { display: flex; align-items: end; gap: 12px; flex: 1; min-width: 0; }
-.explore-search>.field-block { flex: 1; min-width: 0; }
+.explore-search>:has(input) { flex: 1; min-width: 0; }
 .explore-page .consumer-filters { margin: 22px 0; flex-wrap: wrap; overflow: visible; }
 .explore-page .consumer-filters button { background: var(--website-bg); padding: 10px 16px; border: 1px solid var(--website-input-border); border-radius: 4px; min-height: 44px; }
 .explore-page .consumer-filters button[aria-pressed="true"] { background: var(--website-accent); color: var(--catch-color-light-primary-ink); border-color: var(--website-accent); }
@@ -42,11 +39,11 @@
  .explore-intro h1 { font-size: 38px; }
  .explore-intro>p { font-size: 15px; margin: 14px 0 20px; }
  .explore-toolbar { align-items: stretch; gap: 14px; }
- .explore-toolbar>.field-block { flex: 1 1 100%; min-width: 0; }
+ .explore-toolbar>:has(select) { flex: 1 1 100%; min-width: 0; }
  .explore-search { flex-basis: 100%; gap: 8px; }
- .explore-search>.field-block { flex: 1; }
+ .explore-search>:has(input) { flex: 1; }
  .explore-search .button { padding: 12px; }
- .explore-intro>.explore-toolbar:has(.explore-experience-filter)>.field-block { flex: 1 1 130px; }
+ .explore-intro>.explore-toolbar:has(.explore-experience-filter)>:has(select) { flex: 1 1 130px; }
  .explore-experience-filter { flex: 1 1 160px; padding: 8px; font-size: 12px; }
  .explore-page .consumer-filters { gap: 8px; }
  .explore-page .consumer-filters button { font-size: 12px; min-height: 42px; }

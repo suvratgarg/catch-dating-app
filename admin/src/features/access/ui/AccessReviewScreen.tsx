@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -20,6 +21,7 @@ import {
   AdminDirectoryScreenStack,
   AdminEditorPanel,
   AdminEditorSection,
+  AdminFieldGrid,
   AdminForm,
   AdminMetricCard,
   AdminMetricGrid,
@@ -38,8 +40,6 @@ import {
   SearchField,
   StateRow,
   TableActionButton,
-  TextareaField,
-  TextField,
   AdminRowTitle,
   AdminTagRow,
 } from "../../../shared/ui/AdminPrimitives";
@@ -375,18 +375,22 @@ function AccessDecisionPanel({
         }}>
           <AdminEditorSection>
             <legend>Decision inputs</legend>
-            <TextField
-              label="Cohort ID (optional)"
-              onChange={(cohortId) => onFormChange({...form, cohortId})}
-              placeholder="indore-founders"
-              value={form.cohortId}
-            />
-            <TextareaField
-              label="Review note"
-              onChange={(note) => onFormChange({...form, note})}
-              rows={5}
-              value={form.note}
-            />
+            <AdminFieldGrid columns={1}>
+              <CatchField
+                recipe="input"
+                title="Cohort ID (optional)"
+                onChanged={(cohortId) => onFormChange({...form, cohortId})}
+                inputHint="indore-founders"
+                value={form.cohortId}
+              />
+              <CatchField
+                recipe="input"
+                title="Review note"
+                onChanged={(note) => onFormChange({...form, note})}
+                maxLines={5}
+                value={form.note}
+              />
+            </AdminFieldGrid>
             {validationIssue ? (
               <AdminRoadmapListItem>
                 <FileWarning size={15} strokeWidth={1.9} />

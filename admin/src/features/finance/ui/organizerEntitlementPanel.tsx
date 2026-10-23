@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   BadgeCheck,
   CircleDollarSign,
@@ -16,11 +17,9 @@ import {
   EmptyState,
   Panel,
   QualityList,
-  SelectField,
+  selectOptions,
   StateRow,
   TableActionButton,
-  TextareaField,
-  TextField,
 } from "../../../shared/ui/AdminPrimitives";
 import type {
   OrganizerEntitlementController,
@@ -80,9 +79,10 @@ export function renderOrganizerEntitlementPanel(
           payment, contact a provider, or grant dispatch authority.
         </AlertRow>
         <AdminToolbar>
-          <TextField
-            label="Organizer ID"
-            onChange={controller.setOrganizerId}
+          <CatchField
+            recipe="input"
+            title="Organizer ID"
+            onChanged={controller.setOrganizerId}
             value={controller.organizerId}
           />
           <AdminButton
@@ -139,55 +139,62 @@ export function renderOrganizerEntitlementPanel(
               </AlertRow>
             ) : null}
             <AdminToolbar>
-              <SelectField
-                label="SKU"
-                onChange={(value) => controller.setGrantField(
+              <CatchField
+                recipe="select"
+                title="SKU"
+                onChanged={(value) => controller.setGrantField(
                   "sku",
-                  value as OrganizerEntitlementSku
+                  (value ?? "") as OrganizerEntitlementSku
                 )}
-                options={skuOptions(catalog)}
+                {...selectOptions(skuOptions(catalog))}
                 value={controller.grantForm.sku}
               />
-              <SelectField
-                label="Unit"
-                onChange={(value) => controller.setGrantField(
+              <CatchField
+                recipe="select"
+                title="Unit"
+                onChanged={(value) => controller.setGrantField(
                   "unit",
-                  value as OrganizerEntitlementUnit
+                  (value ?? "") as OrganizerEntitlementUnit
                 )}
-                options={unitOptions}
+                {...selectOptions(unitOptions)}
                 value={controller.grantForm.unit}
               />
-              <TextField
-                inputMode="numeric"
-                label="Quantity"
-                onChange={(value) => controller.setGrantField("quantity", value)}
+              <CatchField
+                recipe="input"
+                title="Quantity"
+                onChanged={(value) => controller.setGrantField("quantity", value)}
                 value={controller.grantForm.quantity}
+                keyboardType="number"
               />
-              <TextField
-                label="Valid from (optional)"
-                onChange={(value) => controller.setGrantField("validFrom", value)}
-                type="datetime-local"
+              <CatchField
+                recipe="input"
+                title="Valid from (optional)"
+                onChanged={(value) => controller.setGrantField("validFrom", value)}
                 value={controller.grantForm.validFrom}
+                keyboardType="datetime"
               />
-              <TextField
-                label="Valid until (optional)"
-                onChange={(value) => controller.setGrantField("validUntil", value)}
-                type="datetime-local"
+              <CatchField
+                recipe="input"
+                title="Valid until (optional)"
+                onChanged={(value) => controller.setGrantField("validUntil", value)}
                 value={controller.grantForm.validUntil}
+                keyboardType="datetime"
               />
-              <SelectField
-                label="Source"
-                onChange={(value) => controller.setGrantField(
+              <CatchField
+                recipe="select"
+                title="Source"
+                onChanged={(value) => controller.setGrantField(
                   "source",
-                  value as OrganizerEntitlementSource
+                  (value ?? "") as OrganizerEntitlementSource
                 )}
-                options={sourceOptions}
+                {...selectOptions(sourceOptions)}
                 value={controller.grantForm.source}
               />
-              <TextField
-                label="Invoice receipt reference"
-                onChange={(value) => controller.setGrantField("receiptRef", value)}
-                placeholder="INV-2026-0042"
+              <CatchField
+                recipe="input"
+                title="Invoice receipt reference"
+                onChanged={(value) => controller.setGrantField("receiptRef", value)}
+                inputHint="INV-2026-0042"
                 value={controller.grantForm.receiptRef}
               />
             </AdminToolbar>
@@ -202,10 +209,11 @@ export function renderOrganizerEntitlementPanel(
                 />
               </QualityList>
             ) : null}
-            <TextareaField
-              label="Grant note"
-              onChange={(value) => controller.setGrantField("note", value)}
-              rows={2}
+            <CatchField
+              recipe="input"
+              title="Grant note"
+              onChanged={(value) => controller.setGrantField("note", value)}
+              maxLines={2}
               value={controller.grantForm.note}
             />
             {controller.grantDisabledReason ? (
@@ -252,10 +260,11 @@ export function renderOrganizerEntitlementPanel(
                   to check whether it was recorded.
                 </AlertRow>
               ) : null}
-              <TextareaField
-                label="Revoke reason"
-                onChange={controller.setRevokeReason}
-                rows={2}
+              <CatchField
+                recipe="input"
+                title="Revoke reason"
+                onChanged={controller.setRevokeReason}
+                maxLines={2}
                 value={controller.revokeReason}
               />
               {controller.revokeDisabledReason ? (

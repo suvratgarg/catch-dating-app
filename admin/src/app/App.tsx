@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   lazy,
   Suspense,
@@ -57,7 +58,6 @@ import {
   AdminTopbarActions,
   AdminWorkspace,
   StatusBanner,
-  TextField,
 } from "../shared/ui/AdminPrimitives";
 import {
   confirmPhoneSignInCode,
@@ -993,31 +993,33 @@ function SignInScreen({
         </AdminButton>
         <AdminForm onSubmit={handlePhoneSubmit}>
           {phoneSignInStage === "phone" ? (
-            <TextField
+            <CatchField
+              recipe="input"
               autoComplete="tel"
-              disabled={isSigningIn}
-              inputMode="tel"
-              label="Phone number"
+              inputMode={isSigningIn ? "inactive" : "editable"}
+              title="Phone number"
               name="phone"
-              onChange={onPhoneNumberChange}
-              placeholder="+91 90000 00000"
+              onChanged={onPhoneNumberChange}
+              inputHint="+91 90000 00000"
               value={phoneNumber}
+              keyboardType="phone"
             />
           ) : (
             <>
               <AdminSignInMeta>
                 Verification code sent to {phoneNumber}.
               </AdminSignInMeta>
-              <TextField
+              <CatchField
+                recipe="input"
                 autoComplete="one-time-code"
-                disabled={isSigningIn}
-                inputMode="numeric"
-                label="Verification code"
+                inputMode={isSigningIn ? "inactive" : "editable"}
+                title="Verification code"
                 maxLength={6}
                 name="verification-code"
-                onChange={onPhoneCodeChange}
-                placeholder="000000"
+                onChanged={onPhoneCodeChange}
+                inputHint="000000"
                 value={phoneCode}
+                keyboardType="number"
               />
             </>
           )}

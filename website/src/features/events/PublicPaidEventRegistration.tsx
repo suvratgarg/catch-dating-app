@@ -1,4 +1,4 @@
-import {CatchGap} from "@catch/web-ui";
+import {CatchField, CatchGap} from "@catch/web-ui";
 import { usePublicCheckoutController } from "./usePublicCheckoutController";
 import {
   eventDetailCopy,
@@ -15,7 +15,6 @@ import {
 import {
   Button,
   ButtonLink,
-  TextField,
   FormStatus,
   EventRuntimeLoading,
   EventRuntimeForm,
@@ -98,31 +97,28 @@ export function PublicPaidRegistrationView(
           onSubmit={phase === "phone" ? c.sendCode : c.verifyCode}
         >
           {phase === "phone" ? (
-            <TextField
+            <CatchField
+              recipe="input"
               id={`${c.recaptchaId}-phone`}
-              label={text.phoneLabel}
-              type="tel"
-              inputMode="tel"
+              title={text.phoneLabel}
               autoComplete="tel"
-              placeholder={text.phonePlaceholder}
+              inputHint={text.phonePlaceholder}
               value={c.phone}
-              onChange={(event) =>
-                c.setPhone(event.target.value.replace(/\s/gu, ""))
-              }
+              onChanged={(value) => c.setPhone(value.replace(/\s/gu, ""))}
+              keyboardType="phone"
             />
           ) : (
             <>
               <p>{offerCodeSent(c.phone)}</p>
-              <TextField
+              <CatchField
+                recipe="input"
                 id={`${c.recaptchaId}-code`}
-                label={text.codeLabel}
-                inputMode="numeric"
+                title={text.codeLabel}
                 autoComplete="one-time-code"
                 maxLength={6}
                 value={c.code}
-                onChange={(event) =>
-                  c.setCode(event.target.value.replace(/\D/gu, ""))
-                }
+                onChanged={(value) => c.setCode(value.replace(/\D/gu, ""))}
+                keyboardType="number"
               />
             </>
           )}
@@ -206,14 +202,15 @@ export function PublicPaidRegistrationView(
           ) : null}
           {quote && !admission ? (
             <>
-              <TextField
+              <CatchField
+                recipe="input"
                 id={`${c.recaptchaId}-name`}
-                label={eventDetailCopy.hero.webRegistration.nameLabel}
+                title={eventDetailCopy.hero.webRegistration.nameLabel}
                 autoComplete="name"
                 maxLength={120}
-                disabled={pending || c.nameLocked}
+                inputMode={pending || c.nameLocked ? "inactive" : "editable"}
                 value={c.name}
-                onChange={(event) => c.setName(event.target.value)}
+                onChanged={(value) => c.setName(value)}
               />
               <p>{copy.signedIn(c.user?.phoneNumber ?? c.phone)}</p>
             </>

@@ -1,5 +1,6 @@
+import {CatchField} from "@catch/web-ui";
 import {MessageCircle} from "lucide-react";
-import {AdminButton, CheckboxField, Panel, TextareaField, TextField} from
+import {AdminButton, CheckboxField, Panel} from
   "../../../shared/ui/AdminPrimitives";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {useCatchWhatsappTrialController} from
@@ -20,23 +21,40 @@ export function CatchWhatsappTrialWorkspace({scope, enabled: override, api}: {
   return <Panel title="WhatsApp support" icon={<MessageCircle size={18} />}>
     {!enabled ? <p>WhatsApp support is currently unavailable.</p> : <>
       <p>Review one approved support request, then confirm the exact reply.</p>
-      <TextField label="Support request ID" value={controller.eventId}
-        onChange={controller.setEventId} maxLength={69}
-        disabled={locked || controller.terminal} autoComplete="off" />
+      <CatchField
+        recipe="input"
+        title="Support request ID"
+        value={controller.eventId}
+        onChanged={controller.setEventId}
+        maxLength={69}
+        inputMode={locked || controller.terminal ? "inactive" : "editable"}
+        autoComplete="off"
+      />
       <AdminButton onClick={() => void controller.review()}
         disabled={locked || controller.terminal ||
           !/^cwhe_[a-f0-9]{64}$/u.test(controller.eventId)}>
         Review request
       </AdminButton>
       {controller.inbound ? <>
-        <TextareaField label="Received support request"
-          value={controller.inbound.inboundText} onChange={() => undefined}
-          readOnly rows={4} />
+        <CatchField
+          recipe="input"
+          title="Received support request"
+          value={controller.inbound.inboundText}
+          onChanged={() => undefined}
+          inputMode="readOnly"
+          maxLines={4}
+        />
         <p>Reply before {new Date(controller.inbound.deadlineMillis)
           .toLocaleString()}.</p>
-        <TextareaField label="Exact reply" value={controller.replyBody}
-          onChange={controller.editReply} rows={4} maxLength={4096}
-          disabled={!canEdit} />
+        <CatchField
+          recipe="input"
+          title="Exact reply"
+          value={controller.replyBody}
+          onChanged={controller.editReply}
+          maxLines={4}
+          maxLength={4096}
+          inputMode={!canEdit ? "inactive" : "editable"}
+        />
         <CheckboxField
           label="This message requests support, and I approve the exact reply shown."
           checked={controller.phase === "confirmed"}

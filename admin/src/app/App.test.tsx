@@ -34,9 +34,8 @@ vi.mock("../shared/api/firebase", () => ({
 
 vi.mock("../features/marketing/ui/MarketingOpsScreen", async () => {
   const {useState} = await import("react");
-  const {AdminButton, AdminTextField} = await import(
-    "../shared/ui/AdminPrimitives"
-  );
+  const {AdminButton} = await import("../shared/ui/AdminPrimitives");
+  const {CatchField} = await import("@catch/web-ui");
   return {
     MarketingOpsScreen: ({
       onTabChange,
@@ -48,10 +47,11 @@ vi.mock("../features/marketing/ui/MarketingOpsScreen", async () => {
       const [caption, setCaption] = useState("Original caption");
       return (
         <section aria-label="Marketing fixture">
-          <AdminTextField
-            label="Draft caption"
+          <CatchField
+            recipe="input"
+            title="Draft caption"
             value={caption}
-            onChange={(value) => {
+            onChanged={(value) => {
               setCaption(value);
               onUnsavedChangesChange(true);
             }}

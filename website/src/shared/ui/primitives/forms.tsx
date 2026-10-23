@@ -1,12 +1,10 @@
 import {forwardRef} from "react";
-import {CheckboxControl, SelectControl, TextareaControl, TextInputControl} from "@catch/web-ui";
+import {CheckboxControl} from "@catch/web-ui";
 import type {
   FormHTMLAttributes,
   HTMLAttributes,
   InputHTMLAttributes,
   ReactNode,
-  SelectHTMLAttributes,
-  TextareaHTMLAttributes,
 } from "react";
 import type {FormStatus as FormStatusModel} from "../../forms/types";
 import {usePendingRequestNavigationBlocked} from "../../pendingRequest";
@@ -16,11 +14,6 @@ import {classNames} from "@catch/web-ui";
 import {ChipRail} from "./layout2";
 
 export type SearchFormVariant = "organizer" | "public";
-
-type FieldValidationProps = {
-  descriptionId?: string;
-  invalid?: boolean;
-};
 
 export function WaitlistSection({
   body,
@@ -183,62 +176,6 @@ export function HostPreviewFormatRail({
   );
 }
 
-export function Field({
-  children,
-  className,
-  hidden,
-  label,
-  span = false,
-}: {
-  children: ReactNode;
-  className?: string;
-  hidden?: boolean;
-  label?: ReactNode;
-  span?: boolean;
-}) {
-  return (
-    <div className={classNames("field-block", span && "span-2", className)} hidden={hidden}>
-      {label}
-      {children}
-    </div>
-  );
-}
-
-export function TextField({
-  className,
-  descriptionId,
-  id,
-  invalid,
-  label,
-  hidden,
-  span,
-  ...props
-}: Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "aria-describedby" | "aria-invalid" | "id"
-> & FieldValidationProps & {
-  id: string;
-  label: ReactNode;
-  hidden?: boolean;
-  span?: boolean;
-}) {
-  return (
-    <Field
-      className={className}
-      hidden={hidden}
-      span={span}
-      label={<label htmlFor={id}>{label}</label>}
-    >
-      <TextInputControl
-        descriptionId={descriptionId}
-        id={id}
-        invalid={invalid}
-        {...props}
-      />
-    </Field>
-  );
-}
-
 export function InlineInputField({
   className,
   label,
@@ -251,80 +188,6 @@ export function InlineInputField({
       <span>{label}</span>
       <input {...props} />
     </label>
-  );
-}
-
-export function SelectField({
-  children,
-  className,
-  descriptionId,
-  id,
-  invalid,
-  label,
-  hidden,
-  span,
-  ...props
-}: Omit<
-  SelectHTMLAttributes<HTMLSelectElement>,
-  "aria-describedby" | "aria-invalid" | "id"
-> & FieldValidationProps & {
-  children: ReactNode;
-  hidden?: boolean;
-  id: string;
-  label: ReactNode;
-  span?: boolean;
-}) {
-  return (
-    <Field
-      className={className}
-      hidden={hidden}
-      span={span}
-      label={<label htmlFor={id}>{label}</label>}
-    >
-      <SelectControl
-        descriptionId={descriptionId}
-        id={id}
-        invalid={invalid}
-        {...props}
-      >
-        {children}
-      </SelectControl>
-    </Field>
-  );
-}
-
-export function TextAreaField({
-  className,
-  descriptionId,
-  id,
-  invalid,
-  label,
-  hidden,
-  span,
-  ...props
-}: Omit<
-  TextareaHTMLAttributes<HTMLTextAreaElement>,
-  "aria-describedby" | "aria-invalid" | "id"
-> & FieldValidationProps & {
-  hidden?: boolean;
-  id: string;
-  label: ReactNode;
-  span?: boolean;
-}) {
-  return (
-    <Field
-      className={className}
-      hidden={hidden}
-      span={span}
-      label={<label htmlFor={id}>{label}</label>}
-    >
-      <TextareaControl
-        descriptionId={descriptionId}
-        id={id}
-        invalid={invalid}
-        {...props}
-      />
-    </Field>
   );
 }
 

@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {RefreshCw, Search} from "lucide-react";
 import {useEffect, useMemo, useState} from "react";
 
@@ -11,9 +12,7 @@ import {
   AdminIntakeTaskToolbar,
   AdminLinkButton,
   SearchField,
-  SelectField,
-  TextareaField,
-  TextField,
+  selectOptions,
 } from "../../../../shared/ui/AdminPrimitives";
 import type {
   EventIntakeCandidate,
@@ -331,32 +330,36 @@ function EventTaskWorkbench({
             setSelectedId(null);
           }}
         />
-        <SelectField
-          label="Category"
-          options={[
+        <CatchField
+          recipe="select"
+          title="Category"
+          labelMode="hidden"
+          {...selectOptions([
             {value: "all", label: "All categories"},
             ...categories.map((value) => ({
               value,
               label: value.replaceAll("_", " "),
             })),
-          ]}
+          ])}
           value={category}
-          onChange={(value) => {
-            setCategory(value);
+          onChanged={(value) => {
+            setCategory((value ?? ""));
             setSelectedId(null);
           }}
         />
-        <SelectField
-          label="Source state"
-          options={[
+        <CatchField
+          recipe="select"
+          title="Source state"
+          labelMode="hidden"
+          {...selectOptions([
             {value: "all", label: "All source states"},
             {value: "sourced", label: "Source-backed"},
             {value: "missing", label: "Missing source"},
             {value: "manual", label: "Manual reference"},
-          ]}
+          ])}
           value={sourceState}
-          onChange={(value) => {
-            setSourceState(value);
+          onChanged={(value) => {
+            setSourceState((value ?? ""));
             setSelectedId(null);
           }}
         />
@@ -622,79 +625,83 @@ function detailForRecord({
   );
   const editableSection = (
     <AdminIntakeSection variant="event-editor">
-      <TextField
-        label="Title"
+      <CatchField
+        recipe="input"
+        title="Title"
         value={draft.title ?? record.value.title}
-        onChange={(value) => onEditField("title", value)}
+        onChanged={(value) => onEditField("title", value)}
       />
       {candidate ? (
         <>
-          <TextField
-            label="Start date"
-            type="date"
+          <CatchField
+            recipe="input"
+            title="Start date"
             value={draft.startDate ?? candidate.startDate}
-            onChange={(value) => onEditField("startDate", value)}
+            onChanged={(value) => onEditField("startDate", value)}
+            keyboardType="date"
           />
-          <TextField
-            label="Time"
+          <CatchField
+            recipe="input"
+            title="Time"
             value={draft.time ?? candidate.time}
-            onChange={(value) => onEditField("time", value)}
+            onChanged={(value) => onEditField("time", value)}
           />
-          <TextField
-            label="Venue"
+          <CatchField
+            recipe="input"
+            title="Venue"
             value={draft.venue ?? candidate.venue}
-            onChange={(value) => onEditField("venue", value)}
+            onChanged={(value) => onEditField("venue", value)}
           />
-          <TextField
-            label="Neighborhood"
+          <CatchField
+            recipe="input"
+            title="Neighborhood"
             value={draft.neighborhood ?? candidate.neighborhood}
-            onChange={(value) => onEditField("neighborhood", value)}
+            onChanged={(value) => onEditField("neighborhood", value)}
           />
-          <TextField
-            label="Official source URL"
-            type="url"
+          <CatchField
+            recipe="input"
+            title="Official source URL"
             value={draft.sourceUrl ?? candidate.sourceUrl ?? ""}
-            onChange={(value) => onEditField("sourceUrl", value)}
+            onChanged={(value) => onEditField("sourceUrl", value)}
+            keyboardType="url"
           />
-          <TextareaField
-            label="Public description"
-            rows={3}
+          <CatchField
+            recipe="input"
+            title="Public description"
+            maxLines={3}
             value={draft.publicDescription ?? candidate.publicDescription}
-            onChange={(value) => onEditField("publicDescription", value)}
+            onChanged={(value) => onEditField("publicDescription", value)}
           />
           <AdminIntakeSection variant="event-ceiling">
-            <SelectField
-              descriptionId={`event-ceiling-${candidate.id}`}
-              disabled
-              label="App visibility ceiling"
-              options={[
-                {value: "discoverable", label: "Discoverable"},
-                {value: "hidden", label: "Hidden"},
-              ]}
+            <CatchField
+              recipe="select"
+              inputMode="inactive"
+              title="App visibility ceiling"
+              helperText={candidate.organizerCeiling?.reason ??
+                "Organizer visibility was not projected; app discovery remains blocked."}
+              values={["discoverable", "hidden"]}
+              itemLabelBuilder={(ceiling) => ceiling === "discoverable" ? "Discoverable" : "Hidden"}
               value={candidate.organizerCeiling?.canAppDiscover ?
                 "discoverable" :
                 "hidden"}
-              onChange={() => undefined}
             />
-            <small id={`event-ceiling-${candidate.id}`}>
-              {candidate.organizerCeiling?.reason ??
-                "Organizer visibility was not projected; app discovery remains blocked."}
-            </small>
           </AdminIntakeSection>
         </>
       ) : (
         <>
-          <TextField
-            label="Source URL"
-            type="url"
+          <CatchField
+            recipe="input"
+            title="Source URL"
             value={draft.url ?? source!.url}
-            onChange={(value) => onEditField("url", value)}
+            onChanged={(value) => onEditField("url", value)}
+            keyboardType="url"
           />
-          <TextareaField
-            label="Source snippet"
-            rows={3}
+          <CatchField
+            recipe="input"
+            title="Source snippet"
+            maxLines={3}
             value={draft.snippet ?? source!.snippet}
-            onChange={(value) => onEditField("snippet", value)}
+            onChanged={(value) => onEditField("snippet", value)}
           />
         </>
       )}
@@ -893,12 +900,13 @@ function detailForRecord({
       {
         content: (
           <AdminIntakeSection>
-            <TextareaField
-              label="Decision note"
-              placeholder="Record source, duplicate, timing, or location evidence..."
-              rows={2}
+            <CatchField
+              recipe="input"
+              title="Decision note"
+              inputHint="Record source, duplicate, timing, or location evidence..."
+              maxLines={2}
               value={note}
-              onChange={onNoteChange}
+              onChanged={onNoteChange}
             />
           </AdminIntakeSection>
         ),

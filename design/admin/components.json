@@ -61,9 +61,6 @@
       "concept": "field_row",
       "source": "admin/src/features/organizers/ui/organizerDetailPanels.tsx",
       "components": [
-        "TextField",
-        "TextareaField",
-        "SelectField",
         "CheckboxField"
       ]
     }
@@ -3201,25 +3198,6 @@
       "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
     },
     {
-      "id": "shared_admin_marketing_select_field",
-      "kind": "feature-component",
-      "owner": "features/marketing",
-      "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
-      "exportName": "AdminMarketingSelectField",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
-        "exportName": "AdminMarketingSelectFieldStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
-    },
-    {
       "id": "shared_admin_marketing_slide_editor",
       "kind": "feature-component",
       "owner": "features/marketing",
@@ -4816,48 +4794,6 @@
       "comparisonReason": "Flex row that lays out badges; CatchMetaRow renders text metadata entries and CatchIndexRow is a navigation row."
     },
     {
-      "id": "shared_admin_textarea_field",
-      "kind": "feature-component",
-      "owner": "features/marketing",
-      "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
-      "exportName": "AdminTextareaField",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminTextareaFieldStory",
-        "states": [
-          "default",
-          "compact"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Second, marketing-only adapter of TextareaControl beside TextareaField.",
-      "componentId": "catch.field"
-    },
-    {
-      "id": "shared_admin_text_field",
-      "kind": "feature-component",
-      "owner": "features/marketing",
-      "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
-      "exportName": "AdminTextField",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminTextFieldStory",
-        "states": [
-          "default",
-          "disabled"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Second, marketing-only adapter of TextInputControl beside TextField.",
-      "componentId": "catch.field"
-    },
-    {
       "id": "shared_admin_toolbar",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -5128,7 +5064,11 @@
           "blocked"
         ]
       },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
+      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
+      "comparedWith": [
+        "catch.field"
+      ],
+      "comparisonReason": "Review decision footer that composes a CatchField note with decision actions; the field contract owns the note, not the footer."
     },
     {
       "id": "shared_empty_state",
@@ -5377,30 +5317,6 @@
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
     },
     {
-      "id": "shared_select_field",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
-      "exportName": "SelectField",
-      "interactionContract": {
-        "concept": "field_row",
-        "mode": "select"
-      },
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "SelectFieldStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Admin adapter of SelectControl.",
-      "componentId": "catch.field"
-    },
-    {
       "id": "shared_state_row",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -5502,56 +5418,6 @@
         ]
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_textarea_field",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
-      "exportName": "TextareaField",
-      "interactionContract": {
-        "concept": "field_row",
-        "mode": "input"
-      },
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "TextareaFieldStory",
-        "states": [
-          "default",
-          "wide"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Admin adapter of TextareaControl.",
-      "componentId": "catch.field"
-    },
-    {
-      "id": "shared_text_field",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "TextFieldStory",
-        "states": [
-          "default",
-          "wide"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
-      "exportName": "TextField",
-      "interactionContract": {
-        "concept": "field_row",
-        "mode": "input"
-      },
-      "componentId": "catch.field"
     },
     {
       "id": "workspace_event_intake",

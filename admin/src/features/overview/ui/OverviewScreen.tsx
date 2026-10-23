@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   ArrowRight,
   CircleDollarSign,
@@ -25,10 +26,9 @@ import {
   EmptyState,
   Panel,
   QualityList,
-  SelectField,
+  selectOptions,
   StateRow,
   StatusBanner,
-  TextField,
 } from "../../../shared/ui/AdminPrimitives";
 import type {
   AdminOverviewResponse,
@@ -382,38 +382,62 @@ function HostAnalyticsDigest({
           </StatusBanner>
         ) : null}
         <AdminFilterBar ariaLabel="Marketplace analytics filters">
-          <SelectField
-            label="Range"
-            onChange={(value) =>
-              onAnalyticsRangePresetChange(value as OverviewAnalyticsRangePreset)}
-            options={[
+          <CatchField
+            recipe="select"
+            title="Range"
+            onChanged={(value) => onAnalyticsRangePresetChange((value ?? "") as OverviewAnalyticsRangePreset)}
+            {...selectOptions([
               {label: "Last 7 days", value: "7d"},
               {label: "Last 30 days", value: "30d"},
               {label: "Last 90 days", value: "90d"},
               {label: "This month", value: "month"},
               {label: "Custom", value: "custom"},
-            ]}
+            ])}
             value={analyticsRangePreset}
           />
-          <SelectField
-            label="Group by"
-            onChange={(value) =>
-              onAnalyticsGranularityChange(value as OverviewAnalyticsGranularity)}
-            options={[
+          <CatchField
+            recipe="select"
+            title="Group by"
+            onChanged={(value) => onAnalyticsGranularityChange((value ?? "") as OverviewAnalyticsGranularity)}
+            {...selectOptions([
               {label: "Day", value: "day"},
               {label: "Week", value: "week"},
               {label: "Month", value: "month"},
-            ]}
+            ])}
             value={analyticsGranularity}
           />
           {analyticsRangePreset === "custom" ? (
             <>
-              <TextField label="Start date" onChange={onAnalyticsStartDateChange} type="date" value={analyticsStartDate} />
-              <TextField label="End date" onChange={onAnalyticsEndDateChange} type="date" value={analyticsEndDate} />
+              <CatchField
+                recipe="input"
+                title="Start date"
+                onChanged={onAnalyticsStartDateChange}
+                value={analyticsStartDate}
+                keyboardType="date"
+              />
+              <CatchField
+                recipe="input"
+                title="End date"
+                onChanged={onAnalyticsEndDateChange}
+                value={analyticsEndDate}
+                keyboardType="date"
+              />
             </>
           ) : null}
-          <TextField label="Organizer ID" onChange={onAnalyticsClubIdChange} placeholder="all organizers" value={analyticsClubId} />
-          <TextField label="Event ID" onChange={onAnalyticsEventIdChange} placeholder="all events" value={analyticsEventId} />
+          <CatchField
+            recipe="input"
+            title="Organizer ID"
+            onChanged={onAnalyticsClubIdChange}
+            inputHint="all organizers"
+            value={analyticsClubId}
+          />
+          <CatchField
+            recipe="input"
+            title="Event ID"
+            onChanged={onAnalyticsEventIdChange}
+            inputHint="all events"
+            value={analyticsEventId}
+          />
           <AdminButton
             disabled={!analyticsClubId.trim() && !analyticsEventId.trim()}
             onClick={onClearAnalyticsScope}

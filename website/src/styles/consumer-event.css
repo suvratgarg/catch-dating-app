@@ -47,8 +47,6 @@
 .consumer-event-page .event-guest-dialog { background: var(--website-bg); border-radius: 6px; padding: 28px; }
 .consumer-event-page .event-guest-dialog__heading h2 { font-family: var(--catch-font-voice),sans-serif; font-size: 30px; }
 .consumer-event-page .event-guest-dialog__heading .button { flex-shrink: 0; }
-.consumer-event-page .event-registration label { font-family: inherit; font-size: 13px; text-transform: none; letter-spacing: 0; }
-.consumer-event-page input, .consumer-event-page select, .consumer-event-page textarea { background: var(--website-surface); border-color: var(--website-input-border); border-radius: 4px; color: var(--website-text); }
 .consumer-event-page .event-registration__privacy { font-size: 13px; }
 @media (max-width: 900px) {
   .consumer-event-page .event-detail-hero__inner { gap: 30px; }

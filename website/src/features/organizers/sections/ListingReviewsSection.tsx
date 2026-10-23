@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {organiserProfileCopy} from "../../../content/organiserProfile";
 import {organizerPresenceCopy} from "@content/organizerPresence";
 import {websiteCopy} from "@content/generated";
@@ -16,9 +17,6 @@ import {
   ListingSection,
   OwnerResponsePrompt,
   ReviewSignalLane,
-  SelectField,
-  TextAreaField,
-  TextField,
   UiLabel,
 } from "../../../shared/ui/primitives";
 import {trackCtaClick} from "../../marketing/tracking";
@@ -172,39 +170,46 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
               <UiLabel>{websiteCopy["listingreviewssection_0424"]}</UiLabel>
               <h3>{websiteCopy["listingreviewssection_0438"]} {listing.name}.</h3>
             </div>
-            <SelectField
+            <CatchField
+              recipe="select"
               id={`${reviewFormId}-rating`}
-              label={websiteCopy["listingreviewssection_0435"]}
+              title={websiteCopy["listingreviewssection_0435"]}
+              values={[5, 4, 3, 2, 1]}
+              itemLabelBuilder={(stars) => ({
+                5: websiteCopy["listingreviewssection_0423"],
+                4: websiteCopy["listingreviewssection_0422"],
+                3: websiteCopy["listingreviewssection_0421"],
+                2: websiteCopy["listingreviewssection_0420"],
+                1: websiteCopy["listingreviewssection_0419"],
+              })[stars] ?? String(stars)}
               value={rating}
-              onChange={(event) => setRating(Number(event.target.value))}
-            >
-              <option value={5}>{websiteCopy["listingreviewssection_0423"]}</option>
-              <option value={4}>{websiteCopy["listingreviewssection_0422"]}</option>
-              <option value={3}>{websiteCopy["listingreviewssection_0421"]}</option>
-              <option value={2}>{websiteCopy["listingreviewssection_0420"]}</option>
-              <option value={1}>{websiteCopy["listingreviewssection_0419"]}</option>
-            </SelectField>
-            <TextField
+              onChanged={(stars) => {
+                if (stars !== null) setRating(stars);
+              }}
+            />
+            <CatchField
+              recipe="input"
               id={`${reviewFormId}-reviewer`}
-              label={websiteCopy["listingreviewssection_0427"]}
+              title={websiteCopy["listingreviewssection_0427"]}
               value={reviewerName}
-              disabled={isAnonymous}
+              inputMode={isAnonymous ? "inactive" : "editable"}
               maxLength={120}
-              onChange={(event) => setReviewerName(event.target.value)}
-              placeholder={isAnonymous ? "Anonymous reviewer" : "Your name"}
+              onChanged={(value) => setReviewerName(value)}
+              inputHint={isAnonymous ? "Anonymous reviewer" : "Your name"}
             />
             <ListingReviewCheckbox
               checked={isAnonymous}
               onChange={(event) => setIsAnonymous(event.target.checked)}
             >{websiteCopy["listingreviewssection_0432"]}</ListingReviewCheckbox>
-            <TextAreaField
+            <CatchField
+              recipe="input"
               id={`${reviewFormId}-comment`}
-              label={websiteCopy["listingreviewssection_0436"]}
+              title={websiteCopy["listingreviewssection_0436"]}
               value={comment}
               maxLength={1000}
-              rows={6}
-              onChange={(event) => setComment(event.target.value)}
-              placeholder={websiteCopy["listingreviewssection_0446"]}
+              maxLines={6}
+              onChanged={(value) => setComment(value)}
+              inputHint={websiteCopy["listingreviewssection_0446"]}
             />
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Submitting..." : "Submit review"}

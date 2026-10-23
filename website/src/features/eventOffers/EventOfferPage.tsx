@@ -1,9 +1,9 @@
-import {CatchGap} from "@catch/web-ui";
+import {CatchField, CatchGap} from "@catch/web-ui";
 import {eventOfferCopy as text, offerCodeSent, offerHoldEnds, offerRefundDeadline, offerCancellationRefund} from "../../content/eventOffer";
 import type {OfferCredential} from "./offerCredential";
 import {useOfferCheckoutController} from "./useOfferCheckoutController";
 import {formatOfferAmount, paymentCopy} from "./offerCheckoutModel";
-import {Button, ButtonLink, TextField, FormStatus, EventRuntimeFrame,
+import {Button, ButtonLink, FormStatus, EventRuntimeFrame,
   EventRuntimePanel, EventRuntimeLoading, EventRuntimeForm,
   EventRuntimeModule} from
   "../../shared/ui/primitives";
@@ -27,9 +27,16 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
       phase === "phone" ? <EventRuntimePanel kicker={text.phoneKicker}
         title={text.phoneTitle} body={text.phoneBody}>
         <EventRuntimeForm onSubmit={controller.sendCode} pending={pending}>
-          <TextField id="offer-phone" label={text.phoneLabel} type="tel" inputMode="tel"
-            autoComplete="tel" placeholder={text.phonePlaceholder} value={controller.phone}
-            onChange={(event) => controller.setPhone(event.target.value.replace(/\s/gu, ""))} />
+          <CatchField
+            recipe="input"
+            id="offer-phone"
+            title={text.phoneLabel}
+            autoComplete="tel"
+            inputHint={text.phonePlaceholder}
+            value={controller.phone}
+            onChanged={(value) => controller.setPhone(value.replace(/\s/gu, ""))}
+            keyboardType="phone"
+          />
           <div id={controller.recaptchaId} />
           <Button type="submit" loading={pending} loadingLabel={text.sending}>{text.send}</Button>
           <FormStatus status={controller.status} />
@@ -37,9 +44,16 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
       </EventRuntimePanel> : phase === "otp" ? <EventRuntimePanel kicker={text.otpKicker}
         title={text.otpTitle} body={offerCodeSent(controller.phone)}>
         <EventRuntimeForm onSubmit={controller.verifyCode} pending={pending}>
-          <TextField id="offer-code" label={text.codeLabel} inputMode="numeric"
-            autoComplete="one-time-code" maxLength={6} value={controller.code}
-            onChange={(event) => controller.setCode(event.target.value.replace(/\D/gu, ""))} />
+          <CatchField
+            recipe="input"
+            id="offer-code"
+            title={text.codeLabel}
+            autoComplete="one-time-code"
+            maxLength={6}
+            value={controller.code}
+            onChanged={(value) => controller.setCode(value.replace(/\D/gu, ""))}
+            keyboardType="number"
+          />
           <Button type="submit" loading={pending} loadingLabel={text.verifying} disabled={controller.code.length !== 6}>{text.verify}</Button>
           <Button type="button" variant="ghost" disabled={pending} onClick={controller.changePhone}>{text.changeNumber}</Button>
           <FormStatus status={controller.status} />

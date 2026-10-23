@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
   CheckCircle2,
@@ -56,8 +57,6 @@ import {
   AdminStateRow,
   AdminTag,
   AdminTagList,
-  AdminTextField,
-  AdminTextareaField,
   AdminWorkspace,
   AlertRow,
   EmptyState,
@@ -284,7 +283,13 @@ export const AdminIntakeReviewWorkbenchStory: Story = {
               title: "Handoff impact",
             },
             {
-              content: <AdminTextareaField label="Decision note" rows={2} value="" onChange={() => undefined} />,
+              content: <CatchField
+                recipe="input"
+                title="Decision note"
+                maxLines={2}
+                value=""
+                onChanged={() => undefined}
+              />,
               id: "note",
               kind: "content",
               title: "Decision note",
@@ -589,7 +594,13 @@ export const AdminIntakeDecisionBoxStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminIntakeDecisionBox>
-        <AdminTextareaField label="Decision note" onChange={() => undefined} rows={3} value="Evidence is sufficient for curation approval." />
+        <CatchField
+          recipe="input"
+          title="Decision note"
+          onChanged={() => undefined}
+          maxLines={3}
+          value="Evidence is sufficient for curation approval."
+        />
         <AdminIntakeDecisionActions>
           <AdminButton>Hold</AdminButton>
           <AdminButton variant="primary">Approve</AdminButton>
@@ -773,8 +784,18 @@ export const AdminOrganizerLocationResolutionFormStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminOrganizerLocationResolutionForm>
-        <AdminTextField label="City" onChange={() => undefined} value="San Francisco" />
-        <AdminTextField label="Neighborhood" onChange={() => undefined} value="SoMa" />
+        <CatchField
+          recipe="input"
+          title="City"
+          onChanged={() => undefined}
+          value="San Francisco"
+        />
+        <CatchField
+          recipe="input"
+          title="Neighborhood"
+          onChanged={() => undefined}
+          value="SoMa"
+        />
         <AdminButton icon={<MapPin size={16} />}>Resolve</AdminButton>
       </AdminOrganizerLocationResolutionForm>
     </AdminWorkspace>

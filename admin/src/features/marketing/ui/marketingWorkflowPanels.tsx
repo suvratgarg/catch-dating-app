@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {type ChangeEvent, useCallback, useEffect, useState} from "react";
 import {
   CheckCircle2,
@@ -13,14 +14,6 @@ import {
   AdminButton,
   AdminCard,
   AdminCardList,
-  AdminIconButton,
-  AdminPanel,
-  AdminTextareaField,
-  AdminTextField,
-  CardHeader,
-  EmptyState,
-  QualityRow,
-  StatusChip,
   AdminEyebrow,
   AdminFeatureDropCaptureThumb,
   AdminFeatureDropControlGrid,
@@ -29,9 +22,10 @@ import {
   AdminFeatureDropPreviewCard,
   AdminFeatureDropPreviewGrid,
   AdminFeatureDropWideField,
-  AdminMarketingExportStatus,
+  AdminIconButton,
   AdminMarketingAuditList,
   AdminMarketingAuditRow,
+  AdminMarketingExportStatus,
   AdminMarketingFilePickerButton,
   AdminMarketingHelpText,
   AdminMarketingImageControls,
@@ -43,11 +37,16 @@ import {
   AdminMarketingImageSourceNote,
   AdminMarketingImageThumb,
   AdminMarketingPreviewToolbar,
-  AdminMarketingSelectField,
   AdminMarketingSlideEditor,
   AdminMarketingSlideList,
   AdminMarketingStackedSections,
+  AdminPanel,
+  CardHeader,
   DecisionFooter,
+  EmptyState,
+  QualityRow,
+  selectOptions,
+  StatusChip,
 } from "../../../shared/ui/AdminPrimitives";
 import {appScreenshotPreviewUrl, appScreenshotRawPreviewUrl} from "../assets/marketingAppScreenshotAssets";
 import {
@@ -215,76 +214,81 @@ function MarketingFeatureDropView({
         action={`${config.audience} / ${config.register} / ${config.accent}`}
       >
         <AdminFeatureDropControlGrid>
-          <AdminMarketingSelectField
-            label="Audience"
-            onChange={(value) =>
-              updateAudience(value as MarketingFeatureDropAudience)}
-            options={[
+          <CatchField
+            recipe="select"
+            title="Audience"
+            onChanged={(value) => updateAudience((value ?? "") as MarketingFeatureDropAudience)}
+            {...selectOptions([
               {label: "Members", value: "members"},
               {label: "Hosts", value: "hosts"},
-            ]}
+            ])}
             value={config.audience}
           />
-          <AdminMarketingSelectField
-            label="Register"
-            onChange={(value) =>
-              updateConfig({register: value as MarketingFeatureDropRegister})}
-            options={[
+          <CatchField
+            recipe="select"
+            title="Register"
+            onChanged={(value) => updateConfig({register: (value ?? "") as MarketingFeatureDropRegister})}
+            {...selectOptions([
               {label: "Dark", value: "dark"},
               {label: "Light", value: "light"},
               {label: "System", value: "system"},
-            ]}
+            ])}
             value={config.register}
           />
-          <AdminMarketingSelectField
-            label="Accent"
-            onChange={(value) =>
-              updateConfig({accent: value as MarketingFeatureDropAccent})}
-            options={[
+          <CatchField
+            recipe="select"
+            title="Accent"
+            onChanged={(value) => updateConfig({accent: (value ?? "") as MarketingFeatureDropAccent})}
+            {...selectOptions([
               {label: "Run", value: "run"},
               {label: "Padel", value: "padel"},
               {label: "Yoga", value: "yoga"},
               {label: "Cycling", value: "cycling"},
               {label: "Dinner", value: "dinner"},
-            ]}
+            ])}
             value={config.accent}
           />
-          <AdminMarketingSelectField
-            label="Wordmark"
-            onChange={(value) =>
-              updateConfig({showWordmark: value === "shown"})}
-            options={[
+          <CatchField
+            recipe="select"
+            title="Wordmark"
+            onChanged={(value) => updateConfig({showWordmark: (value ?? "") === "shown"})}
+            {...selectOptions([
               {label: "Shown", value: "shown"},
               {label: "Hidden", value: "hidden"},
-            ]}
+            ])}
             value={config.showWordmark ? "shown" : "hidden"}
           />
-          <AdminTextField
-            label="Cover meta"
+          <CatchField
+            recipe="input"
+            title="Cover meta"
             value={config.coverMeta}
-            onChange={(value) => updateConfig({coverMeta: value})}
+            onChanged={(value) => updateConfig({coverMeta: value})}
           />
-          <AdminTextField
-            label="Month label"
+          <CatchField
+            recipe="input"
+            title="Month label"
             value={config.monthLabel}
-            onChange={(value) => updateConfig({monthLabel: value})}
+            onChanged={(value) => updateConfig({monthLabel: value})}
           />
-          <AdminTextField
-            label="Cover headline"
+          <CatchField
+            recipe="input"
+            title="Cover headline"
             value={config.coverHeadline}
-            onChange={(value) => updateConfig({coverHeadline: value})}
+            onChanged={(value) => updateConfig({coverHeadline: value})}
           />
-          <AdminTextField
-            label="Outro line"
+          <CatchField
+            recipe="input"
+            title="Outro line"
             value={config.outroLine}
-            onChange={(value) => updateConfig({outroLine: value})}
+            onChanged={(value) => updateConfig({outroLine: value})}
           />
           <AdminFeatureDropWideField>
-            <AdminTextareaField
-              label="Cover body"
-              rows={2}
+            <CatchField
+              recipe="input"
+              title="Cover body"
+              maxLines={2}
               value={config.coverBody}
-              onChange={(value) => updateConfig({coverBody: value})}
+              onChanged={(value) => updateConfig({coverBody: value})}
             />
           </AdminFeatureDropWideField>
         </AdminFeatureDropControlGrid>
@@ -325,25 +329,27 @@ function MarketingFeatureDropView({
                     />
                   ) : null}
                 </AdminMarketingImageEditorHeader>
-                <AdminTextField
-                  label="Title"
+                <CatchField
+                  recipe="input"
+                  title="Title"
                   value={feature.title}
-                  onChange={(value) => updateFeature(feature.id, {title: value})}
+                  onChanged={(value) => updateFeature(feature.id, {title: value})}
                 />
-                <AdminTextareaField
-                  label="Body"
-                  rows={4}
+                <CatchField
+                  recipe="input"
+                  title="Body"
+                  maxLines={4}
                   value={feature.body}
-                  onChange={(value) => updateFeature(feature.id, {body: value})}
+                  onChanged={(value) => updateFeature(feature.id, {body: value})}
                 />
-                <AdminMarketingSelectField
-                  label="App capture"
-                  onChange={(value) =>
-                    updateFeature(feature.id, {captureId: value})}
-                  options={appCaptures.map((capture) => ({
+                <CatchField
+                  recipe="select"
+                  title="App capture"
+                  onChanged={(value) => updateFeature(feature.id, {captureId: (value ?? "")})}
+                  {...selectOptions(appCaptures.map((capture) => ({
                     label: `${capture.audience} / ${capture.surface}`,
                     value: capture.id,
-                  }))}
+                  })))}
                   value={feature.captureId}
                 />
               </AdminFeatureDropFeatureEditor>
@@ -461,17 +467,19 @@ function MarketingDrafts({
               {draft.slides.map((slide) => (
                 <AdminMarketingSlideEditor key={slide.id}>
                   <AdminEyebrow>{slide.role}</AdminEyebrow>
-                  <AdminTextField
-                    label="Headline"
+                  <CatchField
+                    recipe="input"
+                    title="Headline"
                     value={slide.headline}
-                    onChange={(value) =>
+                    onChanged={(value) =>
                       onSlideChange(draft.id, slide.id, {headline: value})}
                   />
-                  <AdminTextareaField
-                    label="Body"
-                    rows={2}
+                  <CatchField
+                    recipe="input"
+                    title="Body"
+                    maxLines={2}
                     value={slide.body}
-                    onChange={(value) =>
+                    onChanged={(value) =>
                       onSlideChange(draft.id, slide.id, {body: value})}
                   />
                   <MarketingSlideImageEditor
@@ -484,11 +492,12 @@ function MarketingDrafts({
                 </AdminMarketingSlideEditor>
               ))}
             </AdminMarketingSlideList>
-            <AdminTextareaField
-              label="Caption"
-              rows={8}
+            <CatchField
+              recipe="input"
+              title="Caption"
+              maxLines={8}
               value={draft.caption}
-              onChange={(value) => onDraftChange(draft.id, {caption: value})}
+              onChanged={(value) => onDraftChange(draft.id, {caption: value})}
             />
             <DecisionFooter
               defaultNote={`Content draft ${draft.id} reviewed for export.`}
@@ -606,16 +615,17 @@ function MarketingSlideImageEditor({
         ) : null}
       </AdminMarketingImageEditorHeader>
       <AdminMarketingImageControls>
-        <AdminMarketingSelectField
-          label="App screenshot"
-          onChange={selectAppCapture}
-          options={[
+        <CatchField
+          recipe="select"
+          title="App screenshot"
+          onChanged={(value) => selectAppCapture(value ?? "")}
+          {...selectOptions([
             {label: "No app screenshot", value: ""},
             ...appCaptures.map((capture) => ({
               label: `${capture.walkthroughStep} / ${capture.surface}`,
               value: capture.id,
             })),
-          ]}
+          ])}
           value={selectedCapture?.id ?? ""}
         />
         <AdminMarketingFilePickerButton
@@ -626,10 +636,11 @@ function MarketingSlideImageEditor({
         >
           Choose image
         </AdminMarketingFilePickerButton>
-        <AdminTextField
-          label="Image URL"
+        <CatchField
+          recipe="input"
+          title="Image URL"
           value={image?.sourceType === "url" ? image.url : ""}
-          onChange={(value) =>
+          onChanged={(value) =>
             value.trim() ?
               updateImage({
                 sourceType: "url",
@@ -642,14 +653,14 @@ function MarketingSlideImageEditor({
               }) :
               onChange(null)}
         />
-        <AdminMarketingSelectField
-          label="Fit"
-          onChange={(value) =>
-            updateImage({fit: value as "cover" | "contain"})}
-          options={[
+        <CatchField
+          recipe="select"
+          title="Fit"
+          onChanged={(value) => updateImage({fit: (value ?? "") as "cover" | "contain"})}
+          {...selectOptions([
             {label: "Cover crop", value: "cover"},
             {label: "Contain", value: "contain"},
-          ]}
+          ])}
           value={image?.fit ?? "cover"}
         />
       </AdminMarketingImageControls>
@@ -660,15 +671,17 @@ function MarketingSlideImageEditor({
             src={previewUrl}
           />
           <AdminMarketingImageMetaFields>
-            <AdminTextField
-              label="Alt text"
+            <CatchField
+              recipe="input"
+              title="Alt text"
               value={image?.altText ?? ""}
-              onChange={(value) => updateImage({altText: value})}
+              onChanged={(value) => updateImage({altText: value})}
             />
-            <AdminTextField
-              label="Credit / rights note"
+            <CatchField
+              recipe="input"
+              title="Credit / rights note"
               value={image?.credit ?? ""}
-              onChange={(value) => updateImage({credit: value})}
+              onChanged={(value) => updateImage({credit: value})}
             />
             <AdminMarketingImageSourceNote>
               {image?.sourceType === "app_capture" ?

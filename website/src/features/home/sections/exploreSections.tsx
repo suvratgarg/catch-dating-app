@@ -1,10 +1,11 @@
+import {CatchField} from "@catch/web-ui";
 import {useState} from "react";
 import {ArrowRight, CalendarDays, MapPin, Search, Sparkles, Users} from "lucide-react";
 import {exploreCopy as copy} from "@content/explore";
 import {consumerHomeCopy} from "@content/consumerHome";
 import {activeMarket} from "@content/markets";
 import {interpolateContent as fill} from "@content/interpolate";
-import {Button, ButtonLink, PlainButton, PlainLink, TextField, SelectField} from "../../../shared/ui/primitives";
+import {Button, ButtonLink, PlainButton, PlainLink} from "../../../shared/ui/primitives";
 import {ConsumerFilters, ConsumerEmpty, ConsumerEventGrid, ConsumerEventLink, ConsumerEventMedia, ConsumerPhotoNote, ConsumerCategory, ConsumerAvailability} from "../../../shared/ui/primitives/consumerHome";
 import {ExploreIntro, ExploreSearchForm, ExploreToolbar, ExploreExperience, ExploreResults, ExploreResultsHeading, ExploreBadge, ExploreExperienceFilter, ExploreFooterInvite} from "../../../shared/ui/primitives/explore";
 import type {useExploreController} from "../useExploreController";
@@ -12,7 +13,15 @@ type Controller = ReturnType<typeof useExploreController>;
 function ExploreSearch({explore}: {explore: Controller}) {
   const [query, setQuery] = useState(explore.filters.query);
   return <ExploreSearchForm role="search" onSubmit={event => {event.preventDefault();explore.update({query:query.trim().slice(0,120)});}}>
-    <TextField id="explore-query" label={copy.search} placeholder={copy.placeholder} value={query} maxLength={120} onChange={event => setQuery(event.target.value)} />
+    <CatchField
+      recipe="input"
+      id="explore-query"
+      title={copy.search}
+      inputHint={copy.placeholder}
+      value={query}
+      maxLength={120}
+      onChanged={(value) => setQuery(value)}
+    />
     <Button type="submit"><Search size={18} aria-hidden="true" />{copy.searchAction}</Button>
   </ExploreSearchForm>;
 }
@@ -21,12 +30,17 @@ export function renderExploreDiscovery(explore: Controller) {
   return <>
     <ExploreIntro aria-labelledby="explore-title"><h1 id="explore-title">{copy.title}</h1><p>{copy.body}</p>
       <ExploreToolbar>
-        <SelectField id="explore-city" label={copy.city} value={explore.city.slug} onChange={event => explore.update({city:event.target.value})}>{activeMarket.cities.map(city => <option key={city.slug} value={city.slug}>{city.label}</option>)}</SelectField>
+        <CatchField recipe="select" id="explore-city" title={copy.city} values={activeMarket.cities}
+          itemLabelBuilder={city => city.label} itemValueBuilder={city => city.slug} value={explore.city}
+          onChanged={city => {if (city) explore.update({city: city.slug});}} />
         <ExploreSearch key={explore.filters.query} explore={explore} />
       </ExploreToolbar>
       <ConsumerFilters role="group" aria-label={consumerHomeCopy.filtersLabel}>{consumerHomeCopy.categories.map(item => <PlainButton key={item.id} aria-pressed={explore.filters.category === item.id} onClick={() => explore.update({category:item.id})}>{item.label}</PlainButton>)}</ConsumerFilters>
       <ExploreToolbar>
-        <SelectField id="explore-date" label={copy.date} value={explore.filters.date} onChange={event => explore.update({date:event.target.value as Controller["filters"]["date"]})}>{copy.dates.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}</SelectField>
+        <CatchField recipe="select" id="explore-date" title={copy.date} values={copy.dates}
+          itemLabelBuilder={item => item.label} itemValueBuilder={item => item.id}
+          value={copy.dates.find(item => item.id === explore.filters.date) ?? null}
+          onChanged={item => {if (item) explore.update({date: item.id as Controller["filters"]["date"]});}} />
         <ExploreExperienceFilter type="button" aria-pressed={explore.filters.experience} onClick={() => explore.update({experience:!explore.filters.experience})}><Sparkles size={17} aria-hidden="true" />{copy.experienceFilter}</ExploreExperienceFilter>
         {active ? <PlainButton onClick={explore.clear}>{copy.clear}</PlainButton> : null}
       </ExploreToolbar>

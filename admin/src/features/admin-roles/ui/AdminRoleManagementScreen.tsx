@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -30,12 +31,10 @@ import {
   Panel,
   QualityList,
   SearchField,
-  SelectField,
+  selectOptions,
   StateRow,
   StatusChip,
   TableActionButton,
-  TextareaField,
-  TextField,
 } from "../../../shared/ui/AdminPrimitives";
 import {
   type AdminRoleAssignmentStatusFilter,
@@ -181,10 +180,11 @@ function AssignmentRegisterPanel({controller}: {controller: AdminRoleManagementC
           placeholder="Search these returned assignments"
           value={controller.assignmentQuery}
         />
-        <SelectField
-          label="Status"
-          onChange={(value) => controller.setAssignmentFilter(value as AdminRoleAssignmentStatusFilter)}
-          options={assignmentStatusOptions}
+        <CatchField
+          recipe="select"
+          title="Status"
+          onChanged={(value) => controller.setAssignmentFilter((value ?? "") as AdminRoleAssignmentStatusFilter)}
+          {...selectOptions(assignmentStatusOptions)}
           value={controller.assignmentFilter}
         />
         <AdminButton
@@ -248,10 +248,11 @@ function ExactUidLookupPanel({controller}: {controller: AdminRoleManagementContr
       action="Fallback"
     >
       <AdminToolbar>
-        <TextField
-          label="Firebase Auth uid"
-          onChange={controller.setTargetUid}
-          placeholder="Enter an exact uid"
+        <CatchField
+          recipe="input"
+          title="Firebase Auth uid"
+          onChanged={controller.setTargetUid}
+          inputHint="Enter an exact uid"
           value={controller.targetUid}
         />
         <AdminButton
@@ -328,11 +329,12 @@ function RoleEditorPanel({
         })}
       </AdminFieldGrid>
       <RoleDiffPanel controller={controller} />
-      <TextareaField
-        label="Review note"
-        onChange={controller.setNote}
-        placeholder="Who requested this change, why, and what was verified?"
-        rows={4}
+      <CatchField
+        recipe="input"
+        title="Review note"
+        onChanged={controller.setNote}
+        inputHint="Who requested this change, why, and what was verified?"
+        maxLines={4}
         value={controller.note}
       />
       {controller.hasHighRiskChange ? (

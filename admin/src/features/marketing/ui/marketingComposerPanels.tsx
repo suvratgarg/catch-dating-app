@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   CheckCircle2,
   Download,
@@ -14,8 +15,6 @@ import {
   AdminPanel,
   AdminStateRow,
   AdminStatGrid,
-  AdminTextareaField,
-  AdminTextField,
   AlertRow,
   CheckboxField,
   EmptyState,
@@ -609,17 +608,19 @@ function MarketingCopyStep({
                   </StatusChip>
                 ) : null}
               </AdminMarketingSlideEditorTopline>
-              <AdminTextField
-                label="Headline"
+              <CatchField
+                recipe="input"
+                title="Headline"
                 value={slide.headline}
-                onChange={(value) =>
+                onChanged={(value) =>
                   onSlideChange(draft.id, slide.id, {headline: value})}
               />
-              <AdminTextareaField
-                label="Body"
-                rows={3}
+              <CatchField
+                recipe="input"
+                title="Body"
+                maxLines={3}
                 value={slide.body}
-                onChange={(value) =>
+                onChanged={(value) =>
                   onSlideChange(draft.id, slide.id, {body: value})}
               />
             </AdminMarketingSlideEditor>
@@ -631,11 +632,12 @@ function MarketingCopyStep({
         title="Caption"
         action="Manual upload copy"
       >
-        <AdminTextareaField
-          label="Caption"
-          rows={10}
+        <CatchField
+          recipe="input"
+          title="Caption"
+          maxLines={10}
           value={draft.caption}
-          onChange={(value) => onDraftChange(draft.id, {caption: value})}
+          onChanged={(value) => onDraftChange(draft.id, {caption: value})}
         />
         <TagList>
           {draft.ctas.map((cta) => (

@@ -1,0 +1,199 @@
+/*
+ * The CatchField row from packages/catch_ui (CatchFieldTokens, CatchFieldSurface):
+ * a quiet caption-over-value row at rest, and an active tile while focused.
+ *
+ * Interim component values: Flutter owns these in Dart only, and the token
+ * generator will emit them under these exact names; delete each declaration
+ * in the slice that adopts the generated token. foundationParity.test.ts pins
+ * them to the Dart sources.
+ *
+ * Inner rules are scoped under .field so a surface's legacy element rule
+ * (".claim-request-form input") cannot restyle the field.
+ */
+.field {
+  --catch-field-motion-fast: 150ms;
+  --catch-field-motion-curve: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --catch-field-leading-extent: 18px;
+
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--catch-space-s3) var(--catch-space-s4);
+  border: var(--catch-stroke-hairline) solid transparent;
+  border-radius: var(--catch-radius-interactive-tile);
+  background: transparent;
+  /* A field reads from the start edge, whatever its container aligns. */
+  text-align: start;
+  transition:
+    background-color var(--catch-field-motion-fast) var(--catch-field-motion-curve),
+    border-color var(--catch-field-motion-fast) var(--catch-field-motion-curve),
+    box-shadow var(--catch-field-motion-fast) var(--catch-field-motion-curve);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field { transition: none; }
+}
+
+.field[data-input-mode="editable"]:hover:not([data-focused]) {
+  background: color-mix(in srgb, var(--catch-theme-ink)
+    calc(var(--catch-opacity-control-overlay-hover) * 100%), transparent);
+}
+
+.field[data-focused] {
+  border-color: var(--catch-theme-line2);
+  background: color-mix(in srgb, var(--catch-theme-ink)
+    calc(var(--catch-field-active-tint-alpha) * 100%), var(--catch-theme-surface));
+  box-shadow: var(--catch-elevation-field-active);
+}
+
+.field:has(.control:focus-visible) {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-primary);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.field[data-input-mode="inactive"] {
+  opacity: var(--catch-field-disabled-opacity);
+}
+
+.field[data-leading] {
+  display: grid;
+  grid-template-columns: var(--catch-field-leading-extent) minmax(0, 1fr);
+  column-gap: var(--catch-space-micro14);
+  align-items: center;
+}
+
+.field[data-leading] > :not(.leading) {
+  grid-column: 2;
+}
+
+.field .leading {
+  display: flex;
+  grid-row: 1 / span 3;
+  align-items: center;
+  justify-content: center;
+  width: var(--catch-field-leading-extent);
+  color: var(--catch-theme-ink2);
+}
+
+.field .caption {
+  margin: 0;
+  color: var(--catch-theme-ink2);
+  text-transform: none;
+  font-family: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: var(--catch-typography-web-field-label-size);
+  font-weight: var(--catch-typography-web-field-label-weight);
+  line-height: var(--catch-typography-web-field-label-line-height);
+  letter-spacing: var(--catch-typography-web-field-label-tracking);
+}
+
+.field[data-status="error"] .caption {
+  color: var(--catch-theme-danger);
+}
+
+.field .hiddenLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.field .control {
+  /* Resets every box property a surface's legacy element rule could set. */
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  text-transform: none;
+  color: var(--catch-theme-ink);
+  font-family: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: var(--catch-typography-web-field-value-size);
+  font-weight: var(--catch-typography-web-field-value-weight);
+  line-height: var(--catch-typography-web-field-value-line-height);
+  letter-spacing: var(--catch-typography-web-field-value-tracking);
+}
+
+.field .control:focus,
+.field .control:focus-visible {
+  outline: none;
+}
+
+.field .control::placeholder {
+  color: var(--catch-theme-ink3);
+  opacity: 1;
+}
+
+.field textarea.control {
+  resize: vertical;
+}
+
+.field .selectLane {
+  position: relative;
+  display: block;
+}
+
+.field select.control {
+  appearance: none;
+  padding: 0 calc(var(--catch-space-s4) + var(--catch-space-s2)) 0 0;
+  cursor: pointer;
+}
+
+.field .chevron {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: var(--catch-space-s4);
+  height: var(--catch-space-s4);
+  transform: translateY(-50%);
+  fill: none;
+  stroke: var(--catch-theme-ink2);
+  stroke-width: var(--catch-stroke-emphasis);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.field .support {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--catch-space-s3);
+  margin-top: var(--catch-space-micro6);
+}
+
+.field .supportText {
+  margin: 0;
+  color: var(--catch-theme-ink2);
+  font-family: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: var(--catch-typography-web-field-label-size);
+  font-weight: var(--catch-typography-web-field-label-weight);
+  line-height: var(--catch-typography-web-field-label-line-height);
+}
+
+.field .supportText[data-tone="brand"] { color: var(--catch-theme-primary); }
+.field .supportText[data-tone="success"] { color: var(--catch-theme-positive-text); }
+.field .supportText[data-tone="danger"] { color: var(--catch-theme-danger); }
+
+.field .counter {
+  flex: none;
+  margin-inline-start: auto;
+  color: var(--catch-theme-ink3);
+  font-family: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: var(--catch-typography-web-context-size);
+  line-height: var(--catch-typography-web-context-line-height);
+  font-variant-numeric: tabular-nums;
+}
+
+.field .counter:not([data-visible]) {
+  visibility: hidden;
+}

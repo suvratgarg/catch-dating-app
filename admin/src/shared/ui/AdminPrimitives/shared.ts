@@ -1,7 +1,23 @@
 import type {ReactNode} from "react";
 import {classNames} from "@catch/web-ui";
 
-export type SelectOption = string | {label: ReactNode; value: string};
+export type SelectOption = string | {label: string; value: string};
+
+/**
+ * CatchField's select `values` and `itemLabelBuilder` for an option list whose
+ * values are strings; spread it onto the field.
+ */
+export function selectOptions(options: readonly SelectOption[]): {
+  itemLabelBuilder: (value: string) => string;
+  values: string[];
+} {
+  const labels = new Map(options.map((option) =>
+    typeof option === "string" ? [option, option] : [option.value, option.label]));
+  return {
+    itemLabelBuilder: (value) => labels.get(value) ?? value,
+    values: [...labels.keys()],
+  };
+}
 
 export type ChipTone = "base" | "neutral" | "muted" | "warning" | "success" | "danger" | "ready" | "blocked" | string;
 export type AlertTone = "neutral" | "warning" | "success" | "blocked";

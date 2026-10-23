@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -29,7 +30,7 @@ import {
   QualityList,
   RiskBadge,
   SearchField,
-  SelectField,
+  selectOptions,
   StateRow,
   TableActionButton,
 } from "../../../shared/ui/AdminPrimitives";
@@ -165,10 +166,11 @@ export function FinanceOpsWorkspace({
             placeholder="Search payment, event, or status"
             value={controller.query}
           />
-          <SelectField
-            label="Issue type"
-            onChange={(value) => controller.setKindFilter(value as FinanceIssueKind)}
-            options={kindOptions}
+          <CatchField
+            recipe="select"
+            title="Issue type"
+            onChanged={(value) => controller.setKindFilter((value ?? "") as FinanceIssueKind)}
+            {...selectOptions(kindOptions)}
             value={controller.kindFilter}
           />
           <AdminButton

@@ -1,3 +1,4 @@
+import {CatchField, CatchGap} from "@catch/web-ui";
 import {websiteCopy} from "@content/generated";
 import {websiteTemplates} from "@content/templates";
 import {trackMarketingEvent} from "../../../analytics";
@@ -15,17 +16,13 @@ import {
   ChoiceCard,
   ContentGrid,
   EmptyState,
-  FieldGrid,
   FormStatus,
   OwnerUnlockBoard,
   ProcessStatusPanel,
   type ProcessStatusAction,
-  SelectField,
   SelectedListingCard,
   StepRail,
   TextActionButton,
-  TextAreaField,
-  TextField,
   UiLabel,
   VerificationMethodGrid,
 } from "../../../shared/ui/primitives";
@@ -120,12 +117,13 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
       <ClaimFlowPanel aria-live="polite">
         {step === "listing" ? (
           <ClaimFlowStage>
-            <TextField
+            <CatchField
+              recipe="input"
               id="claim-search"
-              label={websiteCopy["claimpagesections_0085"]}
+              title={websiteCopy["claimpagesections_0085"]}
               value={query}
-              placeholder={websiteCopy["claimpagesections_0071"]}
-              onChange={(event) => setQuery(event.currentTarget.value)}
+              inputHint={websiteCopy["claimpagesections_0071"]}
+              onChanged={(value) => setQuery(value)}
             />
             <ClaimListingResults>
               {searchResults.map((item) => (
@@ -178,54 +176,57 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
               <TextActionButton onClick={() => setStep("listing")}>{websiteCopy["claimpagesections_0043"]}</TextActionButton>
             </SelectedListingCard>
 
-            <FieldGrid>
-              <TextField
+            <CatchGap size="formField">
+              <CatchField
+                recipe="input"
                 id="claim-name"
-                label={websiteCopy["claimpagesections_0101"]}
+                title={websiteCopy["claimpagesections_0101"]}
                 value={requesterName}
                 autoComplete="name"
-                onChange={(event) => setRequesterName(event.currentTarget.value)}
+                onChanged={(value) => setRequesterName(value)}
                 required
               />
-              <SelectField
+              <CatchField
+                recipe="select"
                 id="claim-role"
-                label={websiteCopy["claimpagesections_0081"]}
-                value={requesterRole}
-                onChange={(event) => setRequesterRole(event.currentTarget.value as ClaimRole)}
+                title={websiteCopy["claimpagesections_0081"]}
+                values={claimRoleOptions}
+                itemLabelBuilder={(option) => option.label}
+                itemValueBuilder={(option) => option.value}
+                value={claimRoleOptions.find((option) => option.value === requesterRole) ?? null}
+                onChanged={(option) => {
+                  if (option) setRequesterRole(option.value as ClaimRole);
+                }}
                 required
-              >
-                {claimRoleOptions.map((option) => (
-                  <option value={option.value} key={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </SelectField>
-              <TextField
+              />
+              <CatchField
+                recipe="input"
                 id="claim-email"
-                label={websiteCopy["claimpagesections_0038"]}
-                type="email"
+                title={websiteCopy["claimpagesections_0038"]}
                 value={businessEmail}
                 autoComplete="email"
-                onChange={(event) => setBusinessEmail(event.currentTarget.value)}
+                onChanged={(value) => setBusinessEmail(value)}
+                keyboardType="emailAddress"
               />
-              <TextField
+              <CatchField
+                recipe="input"
                 id="claim-phone"
-                label={websiteCopy["claimpagesections_0039"]}
-                type="tel"
+                title={websiteCopy["claimpagesections_0039"]}
                 value={businessPhone}
                 autoComplete="tel"
-                onChange={(event) => setBusinessPhone(event.currentTarget.value)}
+                onChanged={(value) => setBusinessPhone(value)}
+                keyboardType="phone"
               />
-              <TextAreaField
+              <CatchField
+                recipe="input"
                 id="claim-proof"
-                label={websiteCopy["claimpagesections_0074"]}
-                rows={3}
+                title={websiteCopy["claimpagesections_0074"]}
+                maxLines={3}
                 value={proofUrls}
-                placeholder={websiteCopy["claimpagesections_0069"]}
-                onChange={(event) => setProofUrls(event.currentTarget.value)}
-                span
+                inputHint={websiteCopy["claimpagesections_0069"]}
+                onChanged={(value) => setProofUrls(value)}
               />
-            </FieldGrid>
+            </CatchGap>
 
             <ActionGroup>
               <Button variant="ghost" type="button" onClick={() => setStep("listing")}>{websiteCopy["claimpagesections_0037"]}</Button>
@@ -278,14 +279,15 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
               </div>
             </ContentGrid>
 
-            <TextAreaField
+            <CatchField
+              recipe="input"
               id="claim-message"
-              label={websiteCopy["claimpagesections_0068"]}
-              rows={3}
+              title={websiteCopy["claimpagesections_0068"]}
+              maxLines={3}
               value={message}
               maxLength={1000}
-              placeholder={websiteCopy["claimpagesections_0033"]}
-              onChange={(event) => setMessage(event.currentTarget.value)}
+              inputHint={websiteCopy["claimpagesections_0033"]}
+              onChanged={(value) => setMessage(value)}
             />
 
             <AuthStatusRow

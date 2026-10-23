@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {websiteCopy} from "@content/generated";
 import {
   AuthStatusRow,
@@ -12,9 +13,6 @@ import {
   FormStatus,
   ListingSectionIntro,
   PanelShell,
-  SelectField,
-  TextAreaField,
-  TextField,
   UiLabel,
 } from "../../../shared/ui/primitives";
 import {claimRoleOptions} from "../../claims/claimModel";
@@ -149,58 +147,59 @@ function ClaimListingPanel({
       </AuthStatusRow>
 
       <ClaimRequestForm onSubmit={handleSubmit} pending={isSubmitting}>
-        <TextField
+        <CatchField
+          recipe="input"
           id={`claim-${listing.id}-requester-name`}
-          label={websiteCopy["listingclaimsections_0384"]}
+          title={websiteCopy["listingclaimsections_0384"]}
           name="requesterName"
           autoComplete="name"
-          defaultValue={user?.displayName ?? ""}
+          initialValue={user?.displayName ?? ""}
           required
         />
-        <SelectField
+        <CatchField
+          recipe="select"
           id={`claim-${listing.id}-requester-role`}
-          label={websiteCopy["listingclaimsections_0379"]}
+          title={websiteCopy["listingclaimsections_0379"]}
           name="requesterRole"
-          defaultValue="owner"
+          values={claimRoleOptions}
+          itemLabelBuilder={(option) => option.label}
+          itemValueBuilder={(option) => option.value}
+          initialValue={claimRoleOptions.find((option) => option.value === "owner")}
           required
-        >
-          {claimRoleOptions.map((option) => (
-            <option value={option.value} key={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </SelectField>
-        <TextField
+        />
+        <CatchField
+          recipe="input"
           id={`claim-${listing.id}-business-email`}
-          label={websiteCopy["listingclaimsections_0368"]}
+          title={websiteCopy["listingclaimsections_0368"]}
           name="businessEmail"
-          type="email"
           autoComplete="email"
-          defaultValue={user?.email ?? ""}
+          initialValue={user?.email ?? ""}
+          keyboardType="emailAddress"
         />
-        <TextField
+        <CatchField
+          recipe="input"
           id={`claim-${listing.id}-business-phone`}
-          label={websiteCopy["listingclaimsections_0369"]}
+          title={websiteCopy["listingclaimsections_0369"]}
           name="businessPhone"
-          type="tel"
           autoComplete="tel"
+          keyboardType="phone"
         />
-        <TextAreaField
+        <CatchField
+          recipe="input"
           id={`claim-${listing.id}-proof-urls`}
-          label={websiteCopy["listingclaimsections_0377"]}
+          title={websiteCopy["listingclaimsections_0377"]}
           name="proofUrls"
-          rows={3}
-          placeholder={websiteCopy["listingclaimsections_0375"]}
-          span
+          maxLines={3}
+          inputHint={websiteCopy["listingclaimsections_0375"]}
         />
-        <TextAreaField
+        <CatchField
+          recipe="input"
           id={`claim-${listing.id}-message`}
-          label={websiteCopy["listingclaimsections_0374"]}
+          title={websiteCopy["listingclaimsections_0374"]}
           name="message"
-          rows={3}
+          maxLines={3}
           maxLength={1000}
-          placeholder={websiteCopy["listingclaimsections_0364"]}
-          span
+          inputHint={websiteCopy["listingclaimsections_0364"]}
         />
         <Button disabled={!user || isSubmitting} type="submit">
           {isSubmitting ? "Submitting..." : "Request claim"}

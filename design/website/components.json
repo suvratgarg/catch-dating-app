@@ -1708,31 +1708,6 @@
       "componentId": "catch.typography"
     },
     {
-      "id": "shared_field_grid",
-      "kind": "supporting-component",
-      "routeIds": [
-        "host",
-        "claim"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/forms2.tsx",
-      "exportName": "FieldGrid",
-      "css": [
-        "website/src/styles/flows.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/LayoutPrimitives.stories.tsx",
-        "exportName": "FieldGridStory",
-        "states": [
-          "two-column",
-          "span-field",
-          "select-field"
-        ]
-      },
-      "notes": "Shared website field-layout primitive used by host and claim flows; raw flow-field-grid containers are blocked by web:react-component-governance."
-    },
-    {
       "id": "shared_operational_step_rail",
       "kind": "supporting-component",
       "routeIds": [
@@ -1944,44 +1919,6 @@
         ]
       },
       "notes": "Website adapter of catch.button over the @catch/web-ui ButtonControl; Phase 7e replaces it with the styled CatchButton. Route coverage is the 2026-10-18 TypeScript reference measurement."
-    },
-    {
-      "id": "shared_text_field",
-      "kind": "supporting-component",
-      "routeIds": [
-        "claim",
-        "claim_lookup",
-        "event_booking",
-        "event_detail_canonical",
-        "event_invite",
-        "event_offer",
-        "event_runtime",
-        "host_apply",
-        "household_rsvp",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy",
-        "organizer_search",
-        "public_form",
-        "sales_demo",
-        "visitor_discovery"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/forms.tsx",
-      "exportName": "TextField",
-      "componentId": "catch.field",
-      "css": [
-        "website/src/styles/flows.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "default",
-          "described",
-          "invalid",
-          "required"
-        ]
-      },
-      "notes": "Website adapter of catch.field over the @catch/web-ui TextInputControl; Phase 7e replaces it with the styled CatchField. Route coverage is the 2026-10-18 TypeScript reference measurement."
     },
     {
       "id": "shared_site_header",
@@ -2326,104 +2263,6 @@
         ]
       },
       "notes": "Website adapter of CheckboxControl, the one-boolean input."
-    },
-    {
-      "id": "shared_field",
-      "kind": "supporting-component",
-      "routeIds": [
-        "claim",
-        "claim_lookup",
-        "event_booking",
-        "event_detail_canonical",
-        "event_invite",
-        "event_offer",
-        "event_runtime",
-        "host_apply",
-        "household_rsvp",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy",
-        "organizer_search",
-        "public_form",
-        "sales_demo",
-        "visitor_discovery"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/forms.tsx",
-      "exportName": "Field",
-      "componentId": "catch.field",
-      "css": [
-        "website/src/styles/flows.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "labelled",
-          "spanning",
-          "hidden"
-        ]
-      },
-      "notes": "Label and layout anatomy shared by the website field adapters."
-    },
-    {
-      "id": "shared_select_field",
-      "kind": "supporting-component",
-      "routeIds": [
-        "claim",
-        "claim_lookup",
-        "event_runtime",
-        "host_apply",
-        "household_rsvp",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy",
-        "organizer_search",
-        "public_form",
-        "visitor_discovery"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/forms.tsx",
-      "exportName": "SelectField",
-      "componentId": "catch.field",
-      "css": [
-        "website/src/styles/flows.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "default",
-          "invalid",
-          "described"
-        ]
-      },
-      "notes": "Website adapter of SelectControl."
-    },
-    {
-      "id": "shared_text_area_field",
-      "kind": "supporting-component",
-      "routeIds": [
-        "claim",
-        "claim_lookup",
-        "event_runtime",
-        "host_apply",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy",
-        "public_form"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/forms.tsx",
-      "exportName": "TextAreaField",
-      "componentId": "catch.field",
-      "css": [
-        "website/src/styles/flows.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "default",
-          "invalid",
-          "described"
-        ]
-      },
-      "notes": "Website adapter of TextareaControl."
     },
     {
       "id": "shared_host_preview_section",

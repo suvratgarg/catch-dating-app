@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   BarChart3,
   Clock3,
@@ -24,12 +25,16 @@ import {
   AdminEditorGrid,
   AdminEditorPanel,
   AdminFieldGrid,
+  AdminIntakeSection,
+  AdminIntakeSectionTitle,
   AdminMetricCard,
   AdminMetricGrid,
   AdminRoadmapList,
   AdminRoadmapListItem,
+  AdminRowTitle,
   AdminSecondaryDisclosure,
   AdminTag,
+  AdminTagList,
   AdminToolbar,
   AdminTrendSeries,
   AdminWorkbenchNote,
@@ -40,14 +45,9 @@ import {
   Panel,
   QualityList,
   SegmentedControl,
-  SelectField,
+  selectOptions,
   StateRow,
   StatusBanner,
-  TextField,
-  AdminTagList,
-  AdminIntakeSection,
-  AdminIntakeSectionTitle,
-  AdminRowTitle,
 } from "../../../shared/ui/AdminPrimitives";
 import {
   type UserAnalyticsController,
@@ -96,10 +96,11 @@ export function UserAnalyticsWorkspace({
         span={2}
       >
         <AdminToolbar>
-          <TextField
-            label="users/{uid}"
-            onChange={controller.setUserId}
-            placeholder="user uid"
+          <CatchField
+            recipe="input"
+            title="users/{uid}"
+            onChanged={controller.setUserId}
+            inputHint="user uid"
             value={controller.userId}
           />
           <SegmentedControl<UserAnalyticsRangePreset>
@@ -114,15 +115,15 @@ export function UserAnalyticsWorkspace({
             value={controller.rangePreset}
             onChange={controller.setRangePreset}
           />
-          <SelectField
-            label="Group by"
-            onChange={(value) =>
-              controller.setGranularity(value as UserAnalyticsGranularity)}
-            options={[
+          <CatchField
+            recipe="select"
+            title="Group by"
+            onChanged={(value) => controller.setGranularity((value ?? "") as UserAnalyticsGranularity)}
+            {...selectOptions([
               {value: "day", label: "Day"},
               {value: "week", label: "Week"},
               {value: "month", label: "Month"},
-            ]}
+            ])}
             value={controller.granularity}
           />
           <AdminButton
@@ -138,17 +139,19 @@ export function UserAnalyticsWorkspace({
         </AdminToolbar>
         {controller.rangePreset === "custom" && (
           <AdminFieldGrid columns={2}>
-            <TextField
-              label="Start date"
-              onChange={controller.setStartDate}
-              type="date"
+            <CatchField
+              recipe="input"
+              title="Start date"
+              onChanged={controller.setStartDate}
               value={controller.startDate}
+              keyboardType="date"
             />
-            <TextField
-              label="End date"
-              onChange={controller.setEndDate}
-              type="date"
+            <CatchField
+              recipe="input"
+              title="End date"
+              onChanged={controller.setEndDate}
               value={controller.endDate}
+              keyboardType="date"
             />
           </AdminFieldGrid>
         )}

@@ -3319,6 +3319,91 @@
             "dartType": "CatchFieldSecondaryAction",
             "tsType": "CatchFieldSecondaryAction",
             "notes": "Typed independent menu, icon command, text button or action group. Field owns placement and target separation."
+          },
+          {
+            "name": "initialValue",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "Uncontrolled starting value; the select recipe takes the starting item."
+          },
+          {
+            "name": "value",
+            "type": "object",
+            "required": false,
+            "dartType": "T?",
+            "tsType": "T | null",
+            "notes": "The select recipe's chosen item; React's input recipe also takes a controlled string where Flutter passes a controller."
+          },
+          {
+            "name": "onChanged",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<String>?",
+            "tsType": "(value: string) => void",
+            "notes": "The select recipe reports the chosen item, T | null."
+          },
+          {
+            "name": "onSubmitted",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<String>?",
+            "tsType": "(value: string) => void"
+          },
+          {
+            "name": "keyboardType",
+            "type": "object",
+            "required": false,
+            "dartType": "TextInputType?",
+            "tsType": "CatchFieldKeyboardType",
+            "notes": "React names the TextInputType: text, emailAddress, phone, url, number, decimal, datetime; date and time are web pickers."
+          },
+          {
+            "name": "maxLines",
+            "type": "number",
+            "required": false,
+            "dartType": "int?",
+            "tsType": "number | null"
+          },
+          {
+            "name": "minLines",
+            "type": "number",
+            "required": false,
+            "dartType": "int?",
+            "tsType": "number"
+          },
+          {
+            "name": "autofocus",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "tsType": "boolean"
+          },
+          {
+            "name": "values",
+            "type": "generic-list",
+            "required": false,
+            "dartType": "List<T>",
+            "tsType": "readonly T[]",
+            "notes": "Required by the select recipe."
+          },
+          {
+            "name": "itemLabelBuilder",
+            "type": "callback",
+            "required": false,
+            "dartType": "String Function(T item)",
+            "tsType": "(item: T) => string",
+            "notes": "Required by the select recipe."
+          },
+          {
+            "name": "hintText",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "The select recipe's empty first choice, which selects null."
           }
         ],
         "states": [
@@ -4568,26 +4653,29 @@
         ]
       },
       "react": {
-        "symbol": "TextInputControl",
-        "file": "packages/web-ui/src/primitives.tsx",
-        "api": "headless-control",
-        "additionalSymbols": [
-          "SelectControl",
-          "TextareaControl"
-        ],
+        "symbol": "CatchField",
+        "file": "packages/web-ui/src/components/CatchField.tsx",
+        "api": "styled",
         "storybook": {
           "status": "ready",
-          "story": "packages/web-ui/src/primitives.stories.tsx",
-          "exportName": "Fields",
+          "story": "packages/web-ui/src/components/CatchField.stories.tsx",
+          "exportName": "Contract",
           "states": [
-            "text",
-            "invalid",
-            "described",
+            "empty",
+            "populated",
+            "helper-success",
+            "error",
+            "read-only",
+            "inactive",
+            "multiline-counter",
             "select",
-            "textarea"
+            "select-hint",
+            "hidden-label",
+            "leading",
+            "dark"
           ]
         },
-        "notes": "Shared native controls normalize validation and description semantics; surface adapters own labels, controlled-value callbacks, layout, and styling."
+        "notes": "React implements CatchField.input and CatchField.select as recipe=\"input\" | \"select\" on one component. The input recipe takes a controlled value where Flutter passes a controller, renders a text area when maxLines is not 1, and adds native min, max, step, pattern and minLength. The select recipe keys options through itemValueBuilder because web options are strings, and takes labelMode where Flutter's select takes showLabel. Native form attributes (id, name, form, required, autoComplete) pass through."
       },
       "level": "L3",
       "roleNoun": "Field",
@@ -8862,7 +8950,10 @@
             "labelled-group"
           ]
         },
-        "notes": "Shared labelled-group semantics for one-of-many choice groups; the admin segmented-control adapter and the website choice grids render it."
+        "notes": "Shared labelled-group semantics for one-of-many choice groups; the admin segmented-control adapter and the website choice grids render it. SelectControl is the native select the admin segmented control falls back to on narrow screens.",
+        "additionalSymbols": [
+          "SelectControl"
+        ]
       },
       "design": {
         "figma": {

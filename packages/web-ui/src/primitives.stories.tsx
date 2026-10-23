@@ -5,9 +5,6 @@ import {
   CheckboxControl,
   DataTableControl,
   EmptyStateControl,
-  SelectControl,
-  TextareaControl,
-  TextInputControl,
   ToggleButtonControl,
   ToggleGroupControl,
   UiLabel,
@@ -59,18 +56,6 @@ export const DataTable = {
       <thead><tr><th>Organizer</th><th>Status</th></tr></thead>
       <tbody><tr><td>Catch Club</td><td>Ready</td></tr></tbody>
     </DataTableControl>
-  ),
-};
-
-export const Fields = {
-  render: () => (
-    <div style={{display: "grid", gap: 12, maxWidth: 320}}>
-      <TextInputControl aria-label="Default text field" placeholder="Default" />
-      <TextInputControl aria-label="Invalid text field" descriptionId="field-error" invalid />
-      <span id="field-error">Enter a valid value.</span>
-      <SelectControl aria-label="Select field"><option>Option</option></SelectControl>
-      <TextareaControl aria-label="Textarea field" rows={3} />
-    </div>
   ),
 };
 

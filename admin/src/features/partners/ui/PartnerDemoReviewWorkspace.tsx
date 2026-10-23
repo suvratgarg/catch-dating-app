@@ -1,6 +1,7 @@
+import {CatchField} from "@catch/web-ui";
 import {ClipboardList} from "lucide-react";
 import {useEffect, useState} from "react";
-import {AdminButton, AdminForm, CheckboxField, EmptyState, Panel, StateRow, TextareaField, TextField} from "../../../shared/ui/AdminPrimitives";
+import {AdminButton, AdminForm, CheckboxField, EmptyState, Panel, StateRow} from "../../../shared/ui/AdminPrimitives";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {usePartnerDemoReviewController} from "../controllers/usePartnerDemoReviewController";
 import type {PartnerDemoReviewApi} from "../api/partnerDemoReview";
@@ -44,9 +45,28 @@ function PreviewEditor({row, visible, disabled, propose}: {row: PartnerDemoRevie
     {row.preview.limitations.map((limit, i) => <p key={i}>{limit}</p>)}
     <p>Approved call to action: {row.preview.cta}</p><p>Sample only. No guests, messages or admissions are real.</p>
     {row.proposedWording && <p role="status">Your wording is awaiting Owner review. The approved preview remains above.</p>}
-    <TextField label="Proposed headline" value={wording.headline} disabled={disabled} onChange={(headline) => edit({headline})} />
-    <TextareaField rows={2} label="Proposed scenario" value={wording.scenario} disabled={disabled} onChange={(scenario) => edit({scenario})} />
-    <TextField label="Proposed call to action" value={wording.cta} disabled={disabled} onChange={(cta) => edit({cta})} />
+    <CatchField
+      recipe="input"
+      title="Proposed headline"
+      value={wording.headline}
+      inputMode={disabled ? "inactive" : "editable"}
+      onChanged={(headline) => edit({headline})}
+    />
+    <CatchField
+      recipe="input"
+      maxLines={2}
+      title="Proposed scenario"
+      value={wording.scenario}
+      inputMode={disabled ? "inactive" : "editable"}
+      onChanged={(scenario) => edit({scenario})}
+    />
+    <CatchField
+      recipe="input"
+      title="Proposed call to action"
+      value={wording.cta}
+      inputMode={disabled ? "inactive" : "editable"}
+      onChanged={(cta) => edit({cta})}
+    />
     <CheckboxField label="I reviewed the wording and kept the simulation limitations truthful" checked={reviewed} disabled={disabled} onChange={setReviewed} />
     <AdminButton type="submit" disabled={disabled || !reviewed || !valid}>Propose wording for Owner review</AdminButton>
   </AdminForm></Panel>;

@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {ExternalLink, Search} from "lucide-react";
 import {useEffect, useMemo, useState} from "react";
 
@@ -12,9 +13,7 @@ import {
   AdminOrganizerIntakeCheckboxField,
   AdminWorkbenchNote,
   SearchField,
-  SelectField,
-  TextareaField,
-  TextField,
+  selectOptions,
 } from "../../../../shared/ui/AdminPrimitives";
 import type {AdminDecideOrganizerIntakeResponse} from
   "../../../../shared/types/adminTypes";
@@ -297,26 +296,30 @@ function OrganizerTaskWorkbench({
             setSelectedEntryId(null);
           }}
         />
-        <SelectField
-          label="City"
-          options={cityOptions}
+        <CatchField
+          recipe="select"
+          title="City"
+          labelMode="hidden"
+          {...selectOptions(cityOptions)}
           value={city}
-          onChange={(value) => {
-            setCity(value);
+          onChanged={(value) => {
+            setCity((value ?? ""));
             setSelectedEntryId(null);
           }}
         />
-        <SelectField
-          label="Priority"
-          options={[
+        <CatchField
+          recipe="select"
+          title="Priority"
+          labelMode="hidden"
+          {...selectOptions([
             {value: "all", label: "All priorities"},
             {value: "p0", label: "P0"},
             {value: "p1", label: "P1"},
             {value: "p2", label: "P2"},
-          ]}
+          ])}
           value={priority}
-          onChange={(value) => {
-            setPriority(value);
+          onChanged={(value) => {
+            setPriority((value ?? ""));
             setSelectedEntryId(null);
           }}
         />
@@ -424,12 +427,13 @@ function OrganizerTaskWorkbench({
                       setForms={setVisibilityForms}
                     />
                   ) : null}
-                  <TextareaField
-                    label="Decision note"
-                    placeholder="Add evidence or explain why this organizer should advance..."
-                    rows={2}
+                  <CatchField
+                    recipe="input"
+                    title="Decision note"
+                    inputHint="Add evidence or explain why this organizer should advance..."
+                    maxLines={2}
                     value={decisionNotes[item.entityId] ?? ""}
-                    onChange={(note) => setDecisionNotes((current) => ({
+                    onChanged={(note) => setDecisionNotes((current) => ({
                       ...current,
                       [item.entityId]: note,
                     }))}
@@ -491,16 +495,19 @@ function OrganizerTaskWorkbench({
             tone: candidateHasDuplicateKey ? "danger" as const : "warning" as const,
           })),
           actions: candidate.existingEntityMatches.length > 0 ? (<>
-            <SelectField label="Reviewed canonical organizer"
+            <CatchField
+              recipe="select"
+              title="Reviewed canonical organizer"
               value={selectedMatch}
-              disabled={Boolean(candidateCuration)}
-              onChange={(value) => setSelectedMatchByCandidate((current) => ({
-                ...current, [candidate.candidateId]: value,
+              inputMode={Boolean(candidateCuration) ? "inactive" : "editable"}
+              onChanged={(value) => setSelectedMatchByCandidate((current) => ({
+                ...current, [candidate.candidateId]: (value ?? ""),
               }))}
-              options={[{value: "", label: "Choose a matched organizer"},
+              {...selectOptions([{value: "", label: "Choose a matched organizer"},
                 ...candidate.existingEntityMatches.map((match) => ({
                   value: match.entityId, label: match.entityId,
-                }))]} />
+                }))])}
+            />
             <AdminButton
               disabled={!selectedMatch || candidateInFlight ||
                 candidateSalesPending || Boolean(candidateCuration)}
@@ -592,16 +599,18 @@ function OrganizerTaskWorkbench({
                     candidateDraftForm ? (
                       <AdminIntakeSection>
                         <AdminFieldGrid columns={2}>
-                          <TextField
-                            label="Organizer name"
-                            readOnly
+                          <CatchField
+                            recipe="input"
+                            title="Organizer name"
+                            inputMode="readOnly"
                             value={candidateDraftForm.name}
-                            onChange={() => undefined}
+                            onChanged={() => undefined}
                           />
-                          <TextField
-                            label="Public page slug"
+                          <CatchField
+                            recipe="input"
+                            title="Public page slug"
                             value={candidateDraftForm.publicSlug}
-                            onChange={(publicSlug) =>
+                            onChanged={(publicSlug) =>
                               setOrganizerDraftForms((current) => ({
                                 ...current,
                                 [candidate.candidateId]: {
@@ -611,17 +620,17 @@ function OrganizerTaskWorkbench({
                               }))}
                           />
                         </AdminFieldGrid>
-                        <SelectField
-                          label="Organizer type"
-                          options={organizerTypeOptions}
+                        <CatchField
+                          recipe="select"
+                          title="Organizer type"
+                          {...selectOptions(organizerTypeOptions)}
                           value={candidateDraftForm.organizerType}
-                          onChange={(organizerType) =>
-                            setOrganizerDraftForms((current) => ({
+                          onChanged={(organizerType) => setOrganizerDraftForms((current) => ({
                               ...current,
                               [candidate.candidateId]: {
                                 ...candidateDraftForm,
                                 organizerType:
-                                  organizerType as
+                                  (organizerType ?? "") as
                                     Intake.OrganizerDraftFormState["organizerType"],
                               },
                             }))}
@@ -633,11 +642,12 @@ function OrganizerTaskWorkbench({
                           locality, and listing descriptor stay blank until they
                           are verified.
                         </AdminWorkbenchNote>
-                        <TextareaField
-                          label="Creation review note"
-                          rows={2}
+                        <CatchField
+                          recipe="input"
+                          title="Creation review note"
+                          maxLines={2}
                           value={candidateDraftForm.reviewNote}
-                          onChange={(reviewNote) =>
+                          onChanged={(reviewNote) =>
                             setOrganizerDraftForms((current) => ({
                               ...current,
                               [candidate.candidateId]: {

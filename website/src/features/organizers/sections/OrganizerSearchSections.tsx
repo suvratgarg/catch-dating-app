@@ -1,10 +1,11 @@
+import {CatchField} from "@catch/web-ui";
 import {organiserDirectoryCopy as copy} from "@content/organiserDirectory";
 import {interpolateContent as fill} from "@content/interpolate";
 import {websiteCopy} from "@content/generated";
 import {websiteTemplates} from "@content/templates";
 import {useEffect} from "react";
 import {ArrowRight, MapPin, Search, Users} from "lucide-react";
-import {BadgeRow, Button, DirectoryClaimPressureCopy, DirectoryClaimPressureCta, DirectoryClaimPressureList, DirectoryClaimPressureStats, ListingFormatRow, OrganizerEventHighlights, OrganizerResultCardBody, OrganizerResultCardFooter, OrganizerResultCardShell, OrganizerResultCardTopline, OrganizerSearchSection, PlainLink, SearchFormShell, SelectField, TextActionButton, TextField, ToggleChipButton, UiLabel} from "../../../shared/ui/primitives";
+import {BadgeRow, Button, DirectoryClaimPressureCopy, DirectoryClaimPressureCta, DirectoryClaimPressureList, DirectoryClaimPressureStats, ListingFormatRow, OrganizerEventHighlights, OrganizerResultCardBody, OrganizerResultCardFooter, OrganizerResultCardShell, OrganizerResultCardTopline, OrganizerSearchSection, PlainLink, SearchFormShell, TextActionButton, ToggleChipButton, UiLabel} from "../../../shared/ui/primitives";
 import {ConsumerEmpty} from "../../../shared/ui/primitives/consumerHome";
 import {DirectoryIntro, DirectoryFilters, DirectoryMoreFilters, DirectoryResults, DirectoryResultsGrid, DirectoryResultsHeading, DirectoryTrust} from "../../../shared/ui/primitives/organiserDirectory";
 import {trackOrganizerSearchAppearance} from "../analytics";
@@ -21,22 +22,43 @@ export function OrganizerSearchHeroSection({controller: c}: {controller: Organiz
   return <DirectoryIntro aria-labelledby="organizer-search-title">
     <h1 id="organizer-search-title">{copy.title}</h1><p>{copy.body}</p>
     <SearchFormShell variant="organizer" role="search" onSubmit={c.handleSearch}>
-      <TextField id="organizer-search-query" label={copy.search} name="q" value={c.query} maxLength={120} onChange={event => c.setQuery(event.target.value)} placeholder={copy.placeholder} />
+      <CatchField
+        recipe="input"
+        id="organizer-search-query"
+        title={copy.search}
+        name="q"
+        value={c.query}
+        maxLength={120}
+        onChanged={(value) => c.setQuery(value)}
+        inputHint={copy.placeholder}
+      />
       <Button type="submit"><Search size={18} aria-hidden="true" />{copy.searchAction}</Button>
     </SearchFormShell>
     <DirectoryFilters>
-      <SelectField id="organizer-city-filter" label={copy.city} value={c.cityFilter} onChange={event => c.setCityFilter(event.target.value)}><option value="all">{copy.allCities}</option>{c.cityOptions.map(city => <option key={city}>{city}</option>)}</SelectField>
-      <SelectField id="organizer-format-filter" label={copy.format} value={c.formatFilter} onChange={event => c.setFormatFilter(event.target.value)}><option value="all">{copy.allFormats}</option>{c.formatOptions.map(format => <option key={format}>{format}</option>)}</SelectField>
+      <CatchField recipe="select" id="organizer-city-filter" title={copy.city} values={["all", ...c.cityOptions]}
+        itemLabelBuilder={city => city === "all" ? copy.allCities : city} value={c.cityFilter}
+        onChanged={city => c.setCityFilter(city ?? "all")} />
+      <CatchField recipe="select" id="organizer-format-filter" title={copy.format} values={["all", ...c.formatOptions]}
+        itemLabelBuilder={format => format === "all" ? copy.allFormats : format} value={c.formatFilter}
+        onChanged={format => c.setFormatFilter(format ?? "all")} />
       <ToggleChipButton selected={c.upcomingOnly} onClick={() => c.setUpcomingOnly(value => !value)}>{copy.upcoming}</ToggleChipButton>
       {filtered ? <TextActionButton onClick={c.clearFilters}>{copy.clear}</TextActionButton> : null}
     </DirectoryFilters>
     <DirectoryMoreFilters open={c.statusFilter !== "all" || c.minRating > 0 || c.sort !== "relevance" || undefined}>
       <summary>{copy.more}</summary><DirectoryFilters>
-        <SelectField id="organizer-status-filter" label={copy.status} value={c.statusFilter} onChange={event => c.setStatusFilter(event.target.value as OrganizerStatusFilter)}>
-          <option value="all">{copy.allStatuses}</option><option value="verified">{copy.verified}</option><option value="claimed">{copy.claimed}</option><option value="unclaimed">{copy.unclaimed}</option>
-        </SelectField>
-        <SelectField id="organizer-rating-filter" label={copy.rating} value={c.minRating} onChange={event => c.setMinRating(Number(event.target.value))}><option value={0}>{copy.allRatings}</option><option value={4}>4.0+</option><option value={4.5}>4.5+</option></SelectField>
-        <SelectField id="organizer-sort" label={copy.sort} value={c.sort} onChange={event => c.setSort(event.target.value as OrganizerSort)}><option value="relevance">{copy.recommended}</option><option value="reviews">{copy.reviews}</option><option value="rating">{copy.highestRating}</option><option value="upcoming">{copy.upcomingSort}</option><option value="confidence">{copy.confidence}</option></SelectField>
+        <CatchField recipe="select" id="organizer-status-filter" title={copy.status}
+          values={["all", "verified", "claimed", "unclaimed"] satisfies OrganizerStatusFilter[]}
+          itemLabelBuilder={status => ({all: copy.allStatuses, verified: copy.verified, claimed: copy.claimed,
+            unclaimed: copy.unclaimed})[status]}
+          value={c.statusFilter} onChanged={status => c.setStatusFilter(status ?? "all")} />
+        <CatchField recipe="select" id="organizer-rating-filter" title={copy.rating} values={[0, 4, 4.5]}
+          itemLabelBuilder={rating => rating === 0 ? copy.allRatings : `${rating.toFixed(1)}+`}
+          value={c.minRating} onChanged={rating => c.setMinRating(rating ?? 0)} />
+        <CatchField recipe="select" id="organizer-sort" title={copy.sort}
+          values={["relevance", "reviews", "rating", "upcoming", "confidence"] satisfies OrganizerSort[]}
+          itemLabelBuilder={sort => ({relevance: copy.recommended, reviews: copy.reviews, rating: copy.highestRating,
+            upcoming: copy.upcomingSort, confidence: copy.confidence})[sort]}
+          value={c.sort} onChanged={sort => c.setSort(sort ?? "relevance")} />
       </DirectoryFilters>
     </DirectoryMoreFilters>
   </DirectoryIntro>;

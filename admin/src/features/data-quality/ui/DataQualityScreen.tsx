@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -24,7 +25,7 @@ import {
   QualityList,
   RiskBadge,
   SearchField,
-  SelectField,
+  selectOptions,
   StateRow,
   TableActionButton,
 } from "../../../shared/ui/AdminPrimitives";
@@ -116,19 +117,21 @@ export function DataQualityWorkspace({
             placeholder="Search signal, source, or owner"
             value={controller.query}
           />
-          <SelectField
-            label="Severity"
-            onChange={(value) => controller.setSeverityFilter(value as DataQualitySeverity)}
-            options={severityOptions}
+          <CatchField
+            recipe="select"
+            title="Severity"
+            onChanged={(value) => controller.setSeverityFilter((value ?? "") as DataQualitySeverity)}
+            {...selectOptions(severityOptions)}
             value={controller.severityFilter}
           />
-          <SelectField
-            label="Owner"
-            onChange={controller.setOwnerFilter}
-            options={[
+          <CatchField
+            recipe="select"
+            title="Owner"
+            onChanged={(value) => controller.setOwnerFilter(value ?? "")}
+            {...selectOptions([
               {label: "All owners", value: "all"},
               ...controller.ownerOptions.map((owner) => ({label: owner, value: owner})),
-            ]}
+            ])}
             value={controller.ownerFilter}
           />
           <AdminButton

@@ -1,6 +1,7 @@
+import {CatchField} from "@catch/web-ui";
 import {Handshake} from "lucide-react";
 import {useState} from "react";
-import {AdminButton, AdminForm, CheckboxField, Panel, TextareaField, TextField} from "../../../shared/ui/AdminPrimitives";
+import {AdminButton, AdminForm, CheckboxField, Panel} from "../../../shared/ui/AdminPrimitives";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {useSalesPartnerOfferController} from "../controllers/useSalesPartnerOfferController";
 
@@ -27,11 +28,45 @@ function PartnerOffer({actorUid, organizerId, organizerName}: {
         reviewAt: Number.isFinite(Date.parse(reviewAt)) ? new Date(reviewAt).toISOString() : "",
         expiresAt: Number.isFinite(Date.parse(expiresAt)) ? new Date(expiresAt).toISOString() : ""});
     }}>
-      <TextField label="Verified partner account UID" value={partnerUid} onChange={change(setPartnerUid)} disabled={disabled} />
-      <TextareaField label="Next action for the partner" value={nextAction} onChange={change(setNextAction)} disabled={disabled} rows={3} />
-      <TextField label="Review at (your local time)" type="datetime-local" value={reviewAt} onChange={change(setReviewAt)} disabled={disabled} />
-      <TextField label="Assignment expires (your local time)" type="datetime-local" value={expiresAt} onChange={change(setExpiresAt)} disabled={disabled} />
-      <TextareaField label="Reason for this assignment" value={reason} onChange={change(setReason)} disabled={disabled} rows={2} />
+      <CatchField
+        recipe="input"
+        title="Verified partner account UID"
+        value={partnerUid}
+        onChanged={change(setPartnerUid)}
+        inputMode={disabled ? "inactive" : "editable"}
+      />
+      <CatchField
+        recipe="input"
+        title="Next action for the partner"
+        value={nextAction}
+        onChanged={change(setNextAction)}
+        inputMode={disabled ? "inactive" : "editable"}
+        maxLines={3}
+      />
+      <CatchField
+        recipe="input"
+        title="Review at (your local time)"
+        value={reviewAt}
+        onChanged={change(setReviewAt)}
+        inputMode={disabled ? "inactive" : "editable"}
+        keyboardType="datetime"
+      />
+      <CatchField
+        recipe="input"
+        title="Assignment expires (your local time)"
+        value={expiresAt}
+        onChanged={change(setExpiresAt)}
+        inputMode={disabled ? "inactive" : "editable"}
+        keyboardType="datetime"
+      />
+      <CatchField
+        recipe="input"
+        title="Reason for this assignment"
+        value={reason}
+        onChanged={change(setReason)}
+        inputMode={disabled ? "inactive" : "editable"}
+        maxLines={2}
+      />
       <CheckboxField label={`I reviewed this organizer identity and the exact partner account ${partnerUid || "above"}`} checked={reviewed} onChange={setReviewed} disabled={disabled} />
       <AdminButton type="submit" variant="primary" disabled={disabled || !reviewed || !partnerUid.trim() || !nextAction.trim() || !reason.trim() || !reviewAt || !expiresAt}>Offer lead</AdminButton>
     </AdminForm>}

@@ -1,28 +1,29 @@
+import {CatchField} from "@catch/web-ui";
 import {CheckCircle2, FileWarning, Lock} from "lucide-react";
 import {
   AdminButton,
-  AdminTag,
-  EmptyState,
-  QualityRow,
-  StateRow,
-  SelectField,
-  StatusChip,
   AdminCommandRow,
   AdminCommandStack,
   AdminEyebrow,
+  AdminIntakeDecisionState,
   AdminIntakeGate,
   AdminIntakeGateList,
-  AdminIntakeDecisionState,
-  AdminTagList,
   AdminIntakeSection,
   AdminIntakeSectionTitle,
+  AdminIntakeStateGrid,
   AdminSearchCandidateActions,
   AdminSearchCandidateCard,
   AdminSearchCandidateHeader,
   AdminSearchCandidateList,
   AdminSearchCandidatePanel,
   AdminSearchCandidateSnippet,
-  AdminIntakeStateGrid,
+  AdminTag,
+  AdminTagList,
+  EmptyState,
+  QualityRow,
+  selectOptions,
+  StateRow,
+  StatusChip,
 } from "../../../../shared/ui/AdminPrimitives";
 import type {
   AdminRecordOrganizerCurationResponse,
@@ -871,15 +872,17 @@ function OrganizerSearchCandidateCard({
       </AdminTagList>
       {candidate.reviewAction !== "supporting_evidence_only" ? (
         <AdminSearchCandidateActions>
-          {matchedEntityIds.length > 0 ? <SelectField
-            label="Reviewed canonical organizer"
+          {matchedEntityIds.length > 0 ? <CatchField
+            recipe="select"
+            title="Reviewed canonical organizer"
             value={selectedMatch}
-            onChange={(value) => onSelectMatch(candidate.candidateId, value)}
-            disabled={Boolean(localCuration)}
-            options={[{value: "", label: "Choose a matched organizer"},
+            onChanged={(value) => onSelectMatch(candidate.candidateId, (value ?? ""))}
+            inputMode={Boolean(localCuration) ? "inactive" : "editable"}
+            {...selectOptions([{value: "", label: "Choose a matched organizer"},
               ...matchedEntityIds.map((entityId) => ({
                 value: entityId, label: entityId,
-              }))]} /> : null}
+              }))])}
+          /> : null}
           {localCuration ? (
             <AdminIntakeDecisionState>
               <CheckCircle2 size={16} strokeWidth={1.9} />

@@ -47,7 +47,6 @@
 .organiser-profile .listing-status-ledger dd { text-align: left; font: inherit; font-size: 13px; letter-spacing: 0; text-transform: none; }
 .organiser-profile .listing-review-workspace { grid-template-columns: 1fr; }
 .organiser-profile .listing-review-form, .organiser-profile .owner-response-prompt, .organiser-profile .review-signal-lane, .organiser-profile .claim-request-panel, .organiser-profile .claim-unlocks { border: 1px solid var(--website-line-strong); background: var(--catch-color-light-primary-soft); border-radius: 5px; box-shadow: none; }
-.organiser-profile input, .organiser-profile select, .organiser-profile textarea { background: var(--website-surface); color: var(--website-text); border-color: var(--website-input-border); border-radius: 4px; }
 .organiser-profile .claim-band__grid { grid-template-columns: 1fr; }
 @media (max-width: 960px) {
   .organiser-profile .listing-profile-layout { display: flex; gap: 0; padding-top: 18px; }

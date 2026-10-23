@@ -1,4 +1,4 @@
-import {act, cleanup, fireEvent, render, screen, waitFor} from
+import {act, cleanup, fireEvent, render, screen, waitFor, within} from
   "@testing-library/react";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {afterEach, expect, it, vi} from "vitest";
@@ -128,14 +128,18 @@ it("lets an owner configure seven factors without seeded strategy", async () => 
     {name: "Set up private fit policy"}));
   expect(screen.getByLabelText("Factor 1 name")).toHaveProperty("value", "");
   for (let number = 1; number <= 7; number++) {
-    fireEvent.change(screen.getByLabelText(`Factor ${number} name`),
+    // Scope lookups to the factor's fieldset: label and role queries scan every
+    // element of this large form, which made the test brush its timeout.
+    const factor = within(screen.getByText(`Factor ${number}`, {selector: "legend"})
+      .closest("fieldset")!);
+    fireEvent.change(factor.getByLabelText(`Factor ${number} name`),
       {target: {value: `Factor ${number}`}});
-    fireEvent.change(screen.getByLabelText(`Factor ${number} weight out of 100`),
+    fireEvent.change(factor.getByLabelText(`Factor ${number} weight out of 100`),
       {target: {value: number === 7 ? "16" : "14"}});
-    fireEvent.change(screen.getByLabelText(
+    fireEvent.change(factor.getByLabelText(
       `Factor ${number} evidence age limit in days`),
     {target: {value: "30"}});
-    fireEvent.click(screen.getByLabelText(`Current operations · factor ${number}`));
+    fireEvent.click(factor.getByLabelText(`Current operations · factor ${number}`));
   }
   fireEvent.change(screen.getByLabelText("High priority begins at"),
     {target: {value: "80"}});
