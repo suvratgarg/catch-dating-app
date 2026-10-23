@@ -939,7 +939,13 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   assert.match(namedStep(react, "Build marketing website"),
     /if: \$\{\{ inputs.surface == 'marketing' && !inputs.skip_deployable_build \}\}/u);
   assert.match(namedStep(react, "Build marketing Storybook"),
-    /if: \$\{\{ inputs.surface == 'marketing' \}\}/u);
+    /if: \$\{\{ inputs.surface == 'marketing' && \(github\.event_name != 'pull_request' \|\| inputs\.update_visual_baselines\) \}\}/u);
+  // Pull requests skip screenshots; merge_group, main and deploy runs compare every story.
+  for (const name of ["Run marketing and shared web UI visual regression", "Run admin visual regression"]) {
+    assert.match(namedStep(react, name), /!inputs\.update_visual_baselines && github\.event_name != 'pull_request' \}\}/u, name);
+  }
+  assert.match(namedStep(react, "Build admin Storybook"),
+    /if: \$\{\{ inputs.surface == 'admin' && \(github\.event_name != 'pull_request' \|\| inputs\.update_visual_baselines\) \}\}/u);
   const rootScripts = repositorySnapshot.readJson("package.json", {required: true}).scripts;
   assert.equal(rootScripts["web:marketing:build"], "npm --workspace catch-marketing run build");
   const scripts = repositorySnapshot.readJson("website/package.json", {required: true}).scripts;

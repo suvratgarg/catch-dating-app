@@ -31,14 +31,6 @@ private let archivoWeight: CGFloat = 600
 private let archivoWidthAxis = NSNumber(value: openTypeTag("wdth"))
 private let archivoWeightAxis = NSNumber(value: openTypeTag("wght"))
 
-private let androidIconSizes: [(folder: String, size: Int)] = [
-  ("mipmap-mdpi", 48),
-  ("mipmap-hdpi", 72),
-  ("mipmap-xhdpi", 96),
-  ("mipmap-xxhdpi", 144),
-  ("mipmap-xxxhdpi", 192),
-]
-
 registerArchivoFont()
 
 let square = renderIcon(mask: .square, size: iconSize)
@@ -47,7 +39,6 @@ writePNG(square, to: squarePreviewURL)
 
 let round = renderIcon(mask: .round, size: iconSize)
 writePNG(round, to: roundIconURL)
-writeAndroidRoundIcons(from: round)
 
 let splashMarkLight = renderSplashMark(ink: roundInk, size: iconSize)
 writePNG(splashMarkLight, to: splashMarkLightURL)
@@ -312,16 +303,6 @@ private func hostTextAttributes(font: NSFont, color: NSColor) -> [NSAttributedSt
   ]
 }
 
-private func writeAndroidRoundIcons(from image: NSBitmapImageRep) {
-  for entry in androidIconSizes {
-    let resized = image.resized(to: entry.size)
-    let url = root.appendingPathComponent(
-      "android/app/src/main/res/\(entry.folder)/ic_launcher_round.png"
-    )
-    writePNG(resized, to: url)
-  }
-}
-
 private func writePNG(_ image: NSBitmapImageRep, to url: URL) {
   guard let data = image.representation(using: .png, properties: [:]) else {
     fatalError("Unable to encode PNG for \(url.path)")
@@ -352,22 +333,6 @@ private func makeBitmap(width: Int, height: Int) -> NSBitmapImageRep {
   )!
   bitmap.size = NSSize(width: width, height: height)
   return bitmap
-}
-
-private extension NSBitmapImageRep {
-  func resized(to pixelSize: Int) -> NSBitmapImageRep {
-    let source = NSImage(size: size)
-    source.addRepresentation(self)
-
-    let bitmap = makeBitmap(size: pixelSize)
-    let context = NSGraphicsContext(bitmapImageRep: bitmap)!
-    NSGraphicsContext.saveGraphicsState()
-    NSGraphicsContext.current = context
-    context.imageInterpolation = .high
-    source.draw(in: NSRect(x: 0, y: 0, width: pixelSize, height: pixelSize))
-    NSGraphicsContext.restoreGraphicsState()
-    return bitmap
-  }
 }
 
 private extension NSColor {

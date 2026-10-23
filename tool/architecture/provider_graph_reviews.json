@@ -953,6 +953,16 @@
       "rationale": "Existing bounded review signal at _HostFormTemplatesScreenState._create (await:hostFormsControllerProvider.create). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration."
     },
     {
+      "id": "ownership-widget-async:lib/hosts/presentation/host_operations/host_clubs_scaffold.dart#_HostClubsScaffoldState._openLegalLink:await:externalLinkControllerProvider.openExternal",
+      "path": "lib/hosts/presentation/host_operations/host_clubs_scaffold.dart",
+      "symbol": "_HostClubsScaffoldState._openLegalLink",
+      "operation": "await:externalLinkControllerProvider.openExternal",
+      "maxCallsites": 1,
+      "status": "watch",
+      "debtId": "CAT156",
+      "rationale": "Host account-menu launch of the public Privacy, Terms or Help page. The only widget-owned field is _legalLinkPending, an in-flight latch that joins the account menu's exclusive pending state with the sign-out and deletion mutations while the platform launch is awaited; false and thrown outcomes become a transient notice. No loaded data, authorization or retry identity is held. It mirrors _SettingsScreenState._launchExternalLink, which has the same watch disposition. This watch disposition does not certify compliance; move the latch into a generated owner if the account surface gains one under CAT156."
+    },
+    {
       "id": "ownership-widget-async:lib/hosts/presentation/host_operations/host_club_edit_body.dart#_HostClubEditBodyState._discardMedia:await:hostClubEditControllerProvider.discardClubMedia",
       "path": "lib/hosts/presentation/host_operations/host_club_edit_body.dart",
       "symbol": "_HostClubEditBodyState._discardMedia",

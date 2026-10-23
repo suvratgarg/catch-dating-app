@@ -75,7 +75,7 @@
 .event-detail-facts dd { margin: var(--catch-space-s2) 0 0; white-space: pre-line; line-height: 1.6; }
 .event-detail-section--provenance p { color: var(--website-copy-muted); font-size: 13px; line-height: 1.6; }
 .event-guest-dialog { width: min(540px, calc(100% - 32px)); max-height: 85dvh; overflow-y: auto; border: 1px solid var(--website-line); border-radius: var(--catch-radius-md); padding: var(--catch-space-s6); background: var(--website-bg); color: var(--website-text); }
-.event-guest-dialog::backdrop { background: rgb(0 0 0 / 40%); }
+.event-guest-dialog::backdrop { background: var(--catch-color-light-overlay); }
 .event-guest-dialog__heading { display: flex; align-items: start; justify-content: space-between; gap: var(--catch-space-s3); margin-bottom: var(--catch-space-s6); }
 .event-guest-dialog__heading h2 { font-size: 28px; margin: 0; }
 .event-guest-dialog .event-registration + .event-registration { margin-top: var(--catch-space-s8); border-top: 1px solid var(--website-line); padding-top: var(--catch-space-s6); }

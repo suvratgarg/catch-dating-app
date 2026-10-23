@@ -21,7 +21,7 @@
   --website-light-faint: var(--catch-color-light-ink3);
   --website-light-line: var(--catch-color-light-line2);
   --website-activity-dinner: var(--catch-activity-dinner-accent);
-  --website-shadow-soft: 0 18px 44px rgba(26, 20, 16, 0.08);
+  --website-shadow-soft: 0 18px 44px color-mix(in srgb, var(--catch-color-light-ink) 8%, transparent);
   --website-copy: color-mix(in srgb, var(--website-text) 78%, transparent);
   --website-copy-muted: color-mix(in srgb, var(--website-text) 72%, transparent);
   --website-copy-faint: color-mix(in srgb, var(--website-text) 68%, transparent);

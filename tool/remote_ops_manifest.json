@@ -76,7 +76,7 @@
       "notes": [
         "Environment aliases are defined in .firebaserc.",
         "Active checked-in config files are copied from firebase/<env> or firebase/<env>/host by tool/use_firebase_environment.sh.",
-        "The Android source-set google-services.json at android/app/src/<env>/ is also an active working copy and must match the selected app role."
+        "The Android source-set google-services.json at apps/<role>/android/app/src/<env>/ is also an active working copy and must match the selected app role."
       ]
     },
     {

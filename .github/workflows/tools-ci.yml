@@ -89,9 +89,14 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: tool/impact/package-lock.json
 
       - name: Check CI toolchain pins
         run: bash tool/ci/check_toolchain_consistency.sh
+
+      - name: Install the pinned import-graph tool
+        run: npm ci --prefix tool/impact --no-audit --no-fund
 
       - id: impact
         name: Resolve affected tool checks
@@ -117,9 +122,10 @@ jobs:
             shared_flags=(--marketing-checks-in-react)
           fi
           mkdir -p build/ci
+          node tool/impact/import_owners.mjs > build/ci/import-owners.json
           node tool/run.mjs affected-tools \
             --base "$BASE_SHA" --head "$SOURCE_SHA" "${window_flag[@]}" \
-            --mode "$MODE" \
+            --mode "$MODE" --import-owners build/ci/import-owners.json \
             "${full_flag[@]}" "${shared_flags[@]}" \
             --github-output "$GITHUB_OUTPUT" \
             --json > build/ci/affected-tools-plan.json
@@ -244,6 +250,9 @@ jobs:
         if: ${{ contains(fromJSON(needs.preflight.outputs.setup_requirements), 'playwright') }}
         run: npx playwright install chromium
 
+      - name: Install the pinned import-graph tool
+        run: npm ci --prefix tool/impact --no-audit --no-fund
+
       - name: Check affected tools
         env:
           BASE_SHA: ${{ inputs.base_sha }}
@@ -270,7 +279,10 @@ jobs:
           if [[ "$COMMIT_WINDOW" == "true" ]]; then
             window_flag=(--commit-window)
           fi
-          node tool/run.mjs affected-tools --base "$BASE_SHA" --head "$SOURCE_SHA" --mode "$MODE" --check "${shared_flags[@]}" "${window_flag[@]}"
+          mkdir -p build/ci
+          node tool/impact/import_owners.mjs > build/ci/import-owners.json
+          node tool/run.mjs affected-tools --base "$BASE_SHA" --head "$SOURCE_SHA" --mode "$MODE" \
+            --import-owners build/ci/import-owners.json --check "${shared_flags[@]}" "${window_flag[@]}"
 
       - name: Upload visual diagnostics
         if: ${{ failure() }}
