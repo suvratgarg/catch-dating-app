@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.14.1
-updated: 2026-10-22
+version: 0.15.0
+updated: 2026-10-24
 owner: marketing_website
 status: active
 ---
@@ -286,38 +286,23 @@ The website is already split out of the old monolithic shell:
   blocked by `web:react-component-governance`.
 - `website/src/features/host/HostPage.tsx` is the single canonical host route.
   `/host/preview{,/**}` is retired at Firebase Hosting with a permanent redirect
-  to `/host/`. Host sections live under `website/src/features/host/sections/**`;
-  `HostPageSections.tsx` owns the core sequence, `HostSupportingSections.tsx`
-  owns offer/trust/FAQ, and `PlaybookShowcase.tsx` owns the stage rail and
-  deep-linkable module catalog. The public route starts with an external guest
+  to `/host/`. Host sections live under `website/src/features/host/sections/**`:
+  `hostLandingSections.tsx` renders the route, and `HostPageSections.tsx`
+  keeps `HostApplySection` for `/host/apply/`. The pre-#704 host sections
+  were retired in CAT-218; Linear CAT-224 records their copy. The public route starts with an external guest
   list and a no-download attendee runtime; Catch-native booking, member
   profiles, chats, and network effects stay below the explicit coming-later
   boundary.
   Host application form state lives under `website/src/features/host/application/**`.
-- The remaining legacy-named `HostPreview*` Storybook and offer/trust/FAQ
-  primitives are internal implementation details in the host primitive family;
+- The remaining legacy-named `HostPreviewSection`, `HostPreviewSectionHead`
+  and `HostPreviewFaqList` primitives serve the claim page;
   no preview route or preview feature owner remains. New public concepts use
   Host or Playbook names and must not recreate the retired route boundary.
-- Shared Host Page route shells live in
-  `website/src/shared/ui/primitives/` as `HostHero*` and
-  `HostPageSection`; `CaptureGrid` owns the host capture-grid modifier.
-  Host sections configure those primitives; they do not render raw host hero,
-  evidence, surface, fill-room, proof-ledger, or capture-grid modifier shells
-  directly.
 - Shared Host Application flow shells live in
   `website/src/shared/ui/primitives/` as `HostApplication*` and
   `OperationalNote`. `HostApplicationFlow.tsx` owns the form state and field
   choices, but configures shared flow shells instead of rendering raw
   `host-application*`, `submitted-panel__mark`, or `operational-note` markup.
-- Shared Host feature section shells live in
-  `website/src/shared/ui/primitives/` as `HostFeatureSection`,
-  `HostFeatureGrid`, `HostFeatureRail`, `HostCreateFlowCapture`,
-  `HostComparisonTable*`, `PrivacyGuardrail`, and `PhoneCaptureShell`.
-  `CreateEventWalkthrough`, `EventSuccessShowcase`, `HostComparisonSection`,
-  and `CaptureFrames` own state, content, and capture selection, but configure
-  shared section shells instead of rendering raw `host-create-flow*`,
-  `event-success-*`, `host-comparison*`, `comparison-table*`,
-  `privacy-guardrail`, or `phone-capture*` markup.
 - Shared app capture card shells live in
   `website/src/shared/ui/primitives/` as `CaptureCard`.
   Home and Host sections pass capture manifests and fallback labels to that
@@ -347,39 +332,27 @@ The website is already split out of the old monolithic shell:
 - `website/src/features/host/HostPages.tsx` is a compatibility re-export only.
 - `website/src/features/home/HomePage.tsx` is now a thin home route shell.
   Visible Home route sections live in
-  `website/src/features/home/sections/HomePageSections.tsx`, with route and
+  `website/src/features/home/sections/consumerHomeSections.tsx`, with route and
   section Storybook coverage registered in `design/website/components.json`.
-- Shared Home and marketing section shells live in
-  `website/src/shared/ui/primitives/` as `HomeHero*`,
-  `MarketingSection`, `MarketingSectionCopy`, `MarketingFormatCard`,
-  `MarketingInfoCardGrid`, `HostComparisonSummaryCards`, `MarketingLoopList`,
-  `FeaturedOrganizerCardGrid`, and `LiveMeter`. Feature sections configure
-  those primitives with item arrays and route-specific copy; they do not render
-  the raw marketing section, loop-list, or reveal-article info-card shells
-  directly.
+- Shared marketing shells live in `website/src/shared/ui/primitives/` as
+  `MarketingLoopList` and `FeaturedOrganizerCardGrid`; feature sections
+  configure them with item arrays and route-specific copy.
 - Shared marketing consent banner presentation lives in
   `website/src/shared/ui/primitives/` as `MarketingConsentBannerShell`.
   `website/src/features/marketing/MarketingConsentBanner.tsx` owns consent
   state and analytics choices, but configures the shared shell instead of
   rendering raw `consent-banner` markup.
-- Featured organizer cards use `FeaturedOrganizerCardGrid`; Home featured
-  organizers and listing recommendations provide card item config through
+- Featured organizer cards use `FeaturedOrganizerCardGrid`; listing
+  recommendations provide card item config through
   `featuredOrganizerCardItemForListing` rather than rendering feature-owned
   mini-card shells.
-- Shared app-download CTA presentation lives in
-  `website/src/shared/ui/primitives/` as `AppDownloadCtaGroup`, with
-  `AppDownloadCtas*` and `StoreButton*` kept as shared implementation helpers.
-  `website/src/features/marketing/useAppDownloadCtas.ts` owns store-link
-  analytics configuration only. Route sections pass placement, variant, and
-  optional initial status into `AppDownloadCtaGroup`; they must not recreate the
-  deleted `AppDownloadCtas.tsx` feature component or render raw
-  `app-download-ctas` / `store-button` structure directly.
-- Shared waitlist form presentation lives in
-  `website/src/shared/ui/primitives/` as `WaitlistFormShell`.
-  `website/src/features/waitlist/WaitlistForm.tsx` owns controller-driven form
-  state, field choices, and submission behavior, but configures the shared form
-  shell instead of passing raw `waitlist-form` classes through a generic
-  primitive.
+- App-download CTAs and store buttons were retired in CAT-218 (Linear
+  CAT-224). `web:react-component-governance` still blocks raw
+  `app-download-ctas` and `store-button` markup, so a rebuild goes through
+  `@catch/web-ui`.
+- The consumer waitlist form was retired in CAT-218 (Linear CAT-224). The
+  `joinWaitlist` contract and `/api/join-waitlist` route stay, because the
+  host application flow submits through them.
 - Shared UI label shells live in `website/src/shared/ui/primitives/` as
   `UiLabel`, with the base `.ui-label` style owned by `site-shell.css`.
   Route sections and legacy website display components configure `UiLabel`
@@ -399,19 +372,15 @@ The website is already split out of the old monolithic shell:
   Storybook/component-registry entries.
 - Shared organizer listing shells live in
   `website/src/shared/ui/primitives/` as `ListingSection`,
-  `ListingSectionIntro`, `ListingFactGrid`, `ListingNoteGrid`,
-  `ListingFormatRow`, `ListingDiagnostics*`, `ListingEventDownloadPanel`,
-  `ListingEventEvidenceList`, `ListingReview*`, and `ListingSourceLedger`.
+  `ListingSectionIntro`, `ListingFactGrid`, `ListingFormatRow`,
+  `ListingEventEvidenceList`, and `ListingReview*`.
   Organizer sections configure those primitives; they do not render raw
   `listing-*` structural shells or revealed intro wrappers directly.
 - `ListingFactsSection.tsx` owns the compact About and organizer-format
-  presentation beneath the polaroid; `ListingFitSection.tsx` owns lower-page
-  positioning notes and configures `ListingNoteGrid` instead of composing
-  listing grid/card shells directly.
-- `ListingEventsSections.tsx` owns event data selection, app-download placement,
-  and outbound analytics behavior, but configures `ListingEventDownloadPanel`
-  and `ListingEventEvidenceList` instead of composing event download/card/meta
-  shells directly.
+  presentation beneath the polaroid.
+- `ListingEventsSections.tsx` owns event data selection and outbound analytics
+  behavior, but configures `ListingEventEvidenceList` instead of composing
+  event card/meta shells directly.
 - `ListingSourcesSection.tsx` owns source data and analytics event selection,
   but configures the compact `ListingRailLinkList` so sources remain visible in
   the sticky action rail without feature-owned anchor shells.
@@ -476,7 +445,6 @@ The website is already split out of the old monolithic shell:
   governed visual primitives from `website/src/shared/ui/primitives/`, and
   domain adapters from their owning feature folder.
 - `website/.storybook/**`, `website/src/stories/MarketingRoutes.stories.tsx`,
-  `website/src/stories/HomeSections.stories.tsx`,
   `website/src/stories/HostSections.stories.tsx`, and
   `website/src/stories/ClaimSections.stories.tsx`,
   `website/src/stories/OrganizerSearchSections.stories.tsx`, and
@@ -577,7 +545,7 @@ aggregation points:
 
 | File | Current role | Refactor pressure |
 |---|---|---|
-| `website/src/features/home/HomePage.tsx` | Thin home route shell that wires site chrome to `HomePageSections` | Keep route assembly here; move future Home section edits into `features/home/sections/` and only promote neutral, repeated shells to shared UI. |
+| `website/src/features/home/HomePage.tsx` | Thin home route shell that wires site chrome to `consumerHomeSections` | Keep route assembly here; move future Home section edits into `features/home/sections/` and only promote neutral, repeated shells to shared UI. |
 | `website/src/features/organizers/HostListingPage.tsx` | Thin listing route shell that wires site chrome to `useHostListingPageController` and `HostListingSections` | Keep page-local sections under `features/organizers/sections/`; avoid moving listing-specific blocks into shared UI too early. |
 | `website/src/features/host/HostPage.tsx` | Canonical host assembly with core, supporting, and Playbook section imports | Keep the route file as a table of contents; section bodies stay under `features/host/sections/`. |
 | `website/src/features/claims/ClaimPage.tsx` | Thin claim route shell using injected `ClaimRouteState`, `useClaimFlowController`, and `ClaimPageSections` | Keep route URL parsing in `features/claims/claimRouting.ts` and the React Router shell; keep auth/submission behavior in the controller; keep visible route sections in `features/claims/sections/`. |
@@ -853,7 +821,6 @@ website/src/
       HomePage.tsx
       homeContent.ts
       sections/
-        HomePageSections.tsx
     host/
       HostPage.tsx
       application/
@@ -862,8 +829,6 @@ website/src/
         useHostApplicationController.ts
       sections/
         HostPageSections.tsx
-        HostSupportingSections.tsx
-        PlaybookShowcase.tsx
     organizers/
       OrganizerSearchPage.tsx
       HostListingPage.tsx
@@ -882,7 +847,6 @@ website/src/
         ListingClaimSections.tsx
         ListingReviewsSection.tsx
         ListingSourcesSection.tsx
-        ListingFitSection.tsx
       routing.ts
       selectors.ts
       types.ts
@@ -897,14 +861,10 @@ website/src/
       reviewModel.ts
       useListingReviewsController.ts
       components/
-    waitlist/
-      WaitlistForm.tsx
-      useWaitlistFormController.ts
     marketing/
       MarketingConsentBanner.tsx
       content.ts
       tracking.ts
-      useAppDownloadCtas.ts
   shared/
     analytics/
     firebase/
@@ -1013,7 +973,6 @@ website/src/
    - `ListingEventEvidenceSection`
    - `ListingReviewsSection`
    - `ListingEventSuccessSection`
-   - `ListingFitSection`
    - `ListingSourcesSection`
    - `ListingMissingEvidenceSection`
    - `RecommendedOrganizersSection`
