@@ -54,7 +54,7 @@ it has **no Host analytics hold**.
 | Crashlytics | Collecting, with a `user_id` custom key | Same |
 | Firebase Messaging | FCM token and installation id stored under `users/{uid}/pushInstallations` | Same |
 | Google Maps 9.4.0 | Linked. Its SDK privacy manifest declares Crash Data, Performance Data, Product Interaction, Device ID and Other Data Types. | Same |
-| In-app Privacy/Terms/Help links | Absent. The Account menu has only Delete account. | Being added by PR #738 |
+| In-app Privacy/Terms/Help links | Absent. The Account menu has only Delete account. | Present in the Account menu since PR #738, merged 2026-10-22 |
 
 Both builds share these features and the same Host native graph
 (`apps/host/ios/Podfile.lock`):
@@ -176,5 +176,5 @@ It does not mention these Host-specific categories:
 | --- | --- | --- |
 | Delete account | Organizer tab → Account menu → Delete account (PR #713) | Present. The production deletion release and index repair passed a live deletion test on a disposable fixture. |
 | Report / block | Inbox → guest conversation → actions menu | Present |
-| Privacy policy, Terms, Help & support | Organizer tab → Account menu | Absent from build `202610200000357901`; added by PR #738 |
+| Privacy policy, Terms, Help & support | Organizer tab → Account menu | Absent from build `202610200000357901`. Added on `main` by PR #738, merged 2026-10-22. |
 | Public deletion instructions | `https://catchdates.com/help/` | Live (PRs #717 and #722) |

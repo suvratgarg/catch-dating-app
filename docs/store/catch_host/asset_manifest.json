@@ -16,7 +16,7 @@
     "entitlements": "apps/host/ios/Runner/RunnerHost.entitlements"
   },
   "liveSubmission": {
-    "recordedAt": "2026-10-22",
+    "recordedAt": "2026-10-23",
     "evidence": "build/store-upload/ (ignored local console evidence; private credential files excluded)",
     "sourceSha": "171c1cb07e5b8b405904ad8e3504b6e1ea93607b",
     "apple": {
@@ -24,6 +24,14 @@
       "build": "202610200000357901",
       "status": "waiting_for_review",
       "submittedOn": "2026-10-21",
+      "statusCheckedOn": "2026-10-23",
+      "laterEdits": {
+        "on": "2026-10-22",
+        "changes": [
+          "description wording corrected to \"organizers\"",
+          "App Review notes additions"
+        ]
+      },
       "seller": "Suvrat Garg (individual account)",
       "copyright": "2026 Torana",
       "name": "Catch Host",

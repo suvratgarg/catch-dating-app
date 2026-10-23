@@ -17,8 +17,8 @@ payment and review posture of the submitted build. That build is iOS `1.0.1`
 | Credential storage | Only in the consoles and the private local file `build/store-upload/host-reviewer-private.json`. Never in this public repository. |
 | Account deletion testing | Deletion acceptance used a separate disposable fixture. The shared reviewer account and any account that owns an organizer must not be deleted. |
 
-The review-notes text submitted to Apple is in App Store Connect and is not
-reproduced here.
+The review-notes text submitted to Apple, including the additions saved on
+2026-10-22, is in App Store Connect and is not reproduced here.
 
 ## Payments and in-app purchase posture
 
@@ -60,7 +60,7 @@ status today.
 
 | Destination | Opened from | State on 2026-10-22 |
 | --- | --- | --- |
-| `https://catchdates.com/privacy/`, `/terms/`, `/help/` | Organizer → Account menu, from PR #738 onward. The submitted build has no such links. | HTTP 200. Every page carries the site header with "Pricing and access" (`/host/#pricing`) and "Apply for a pilot" (`website/src/content/site.ts`). `/host/#pricing` says the pilot is free and lists no purchasable tiers (`website/src/content/hostProduct.ts`). |
+| `https://catchdates.com/privacy/`, `/terms/`, `/help/` | Organizer → Account menu on `main` since PR #738 (merged 2026-10-22). The submitted build has no such links. | HTTP 200. Every page carries the site header with "Pricing and access" (`/host/#pricing`) and "Apply for a pilot" (`website/src/content/site.ts`). `/host/#pricing` says the pilot is free and lists no purchasable tiers (`website/src/content/hostProduct.ts`). |
 | `https://catchdates.com/host/organizer/<id>/messaging` | Organizer → messaging setup → "Connect WhatsApp Business" on iOS and Android (`lib/core/external_links.dart`, `openHostMessagingSetup`). Present in `171c1cb07`. | HTTP 404. No website route is registered in `design/website/routes.json`. |
 | Stripe hosted onboarding, provider OAuth pages, `wa.me` handoffs, map directions | Payout setup, form payments, guest messaging, events | Third-party destinations with no Catch pricing |
 

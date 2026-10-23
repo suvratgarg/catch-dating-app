@@ -21,7 +21,8 @@ here.
 | Apple app ID | `6778927317` |
 | Bundle ID / SKU | `com.catchdates.host` / `catch-host-ios` |
 | Version / build | `1.0.1` / `202610200000357901` (source `171c1cb07`) |
-| Status | Submitted 2026-10-21; Waiting for Review |
+| Status | Submitted 2026-10-21; still Waiting for Review on 2026-10-23 |
+| Later edits | On 2026-10-22 the description wording was corrected to "organizers" and additions to the App Review notes were saved |
 | Developer account (seller) | Individual: Suvrat Garg |
 | Copyright | `2026 Torana` |
 | Primary language | English (U.S.) |
@@ -42,7 +43,10 @@ here.
 The App Store screenshot of the version page shows the promotional text. The
 other product-page values come from the listing copy record.
 
-Description, from the listing copy record (`host-listing-copy-draft.json`):
+Description, from the 2026-10-20 listing copy record
+(`host-listing-copy-draft.json`). The live text includes the 2026-10-22
+"organizers" correction, so App Store Connect is the record for the exact
+wording.
 
 ```text
 Catch Host helps organizers prepare events and manage the people attending them.
@@ -69,7 +73,7 @@ app.
 
 | Declaration | Live value |
 | --- | --- |
-| App Review contact, reviewer sign-in and notes | Saved. Values live only in App Store Connect and the private local credential file. |
+| App Review contact, reviewer sign-in and notes | Saved. The notes were extended on 2026-10-22. Values live only in App Store Connect and the private local credential file. |
 | Content rights | Saved |
 | App Privacy | Published 2026-10-20: 18 data types, all linked, tracking No. See `privacy_inventory.md`. |
 | EU Digital Services Act trader status | Trader declaration submitted. Status In Review, last updated 2026-10-21. |

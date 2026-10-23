@@ -9,7 +9,7 @@ submission is tracked in Linear (`CAT-39` "Prepare Catch Host release", and
 
 | Store | Release | Source | Status |
 | --- | --- | --- | --- |
-| App Store | `1.0.1` build `202610200000357901` | `171c1cb07` (PR #713 merge) | Submitted 2026-10-21; Waiting for Review. The EU DSA trader declaration is In Review. |
+| App Store | `1.0.1` build `202610200000357901` | `171c1cb07` (PR #713 merge) | Submitted 2026-10-21; still Waiting for Review on 2026-10-23. The description correction and App Review notes additions were saved on 2026-10-22. The EU DSA trader declaration is In Review. |
 | Google Play, closed test | `1.0.1 (457901)`, Alpha track, India | `171c1cb07` | Submitted 2026-10-21 with 14 publishing changes. Production access needs at least 12 opted-in testers for 14 continuous days. |
 | Google Play, internal | `1.0.1 (452901)` | earlier 2026-10-20 upload | Available to internal testers since 2026-10-20; not reviewed |
 
@@ -63,7 +63,7 @@ These changes on `main` after `171c1cb07` affect store declarations:
 | Change | Effect on the next submission |
 | --- | --- |
 | PR #726: Host analytics hold (native deactivation plus Dart gate) | The next build collects less. The published Coarse Location row becomes an acceptable over-declaration. |
-| PR #738: Privacy policy, Terms and Help & support in the Host Account menu | Adds the in-app privacy link that the submitted build lacks |
+| PR #738 (merged 2026-10-22): Privacy policy, Terms and Help & support in the Host Account menu, with the URLs in every dart-define file | Adds the in-app privacy link that the submitted build lacks |
 
 ## Apple requirements referenced
 
