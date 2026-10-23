@@ -5,6 +5,7 @@ import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {test} from "node:test";
+import {planAffectedToolChecks} from "../../lib/tool_impact.mjs";
 import {
   baselinePath, consolidationDifferences, consolidationSnapshot,
   pageCssBudgets, parseConsolidationBaseline, previousConsolidationBaseline,
@@ -22,6 +23,16 @@ const empty = () => ({
 const library = "library.t1_web";
 const css = "screens.web_page_css_lines";
 const probes = [
+  ["a baseline-only edit still selects the registered enforcing check", () => {
+    const root = fileURLToPath(new URL("../../../", import.meta.url));
+    const read = (file) => JSON.parse(fs.readFileSync(path.join(root, file), "utf8"));
+    const manifest = read("tool/tools_manifest.json");
+    const plan = planAffectedToolChecks({changedPaths: [baselinePath], manifest,
+      componentGraph: read("tool/harness/component_graph.json")});
+    assert.ok(plan.full || plan.toolIds.includes("web:shared-ui-adoption"));
+    assert.ok(manifest.tools.find((tool) => tool.id === "web:shared-ui-adoption" && tool.status === "active")
+      ?.checks.includes("node tool/web/check_shared_web_ui_adoption.mjs --check"));
+  }],
   ["rejects missing, malformed, duplicate, negative and out-of-scope allowances", () => {
     const malformed = [null, {}, {...empty(), owner: ""}, {...empty(), version: 2}];
     for (const entries of [["catch.button", "catch.button"], ["unknown"], [1], {}]) {
