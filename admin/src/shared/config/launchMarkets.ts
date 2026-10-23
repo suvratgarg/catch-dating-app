@@ -20,8 +20,6 @@ export const launchMarkets = [
 ] as const;
 
 export type LaunchMarket = typeof launchMarkets[number];
-export type LaunchMarketId = LaunchMarket["id"];
-
 export const launchMarketIds = launchMarkets.map((market) => market.id);
 export const launchMarketSlugs =
   launchMarkets.map((market) => market.publicPageCitySlug);

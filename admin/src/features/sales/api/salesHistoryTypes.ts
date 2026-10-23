@@ -41,11 +41,6 @@ export interface SalesImportedHistoryRow {
   reviewedAt: string;
   reviewedBy: string;
 }
-export interface SalesImportedHistoryPage<T> {
-  records?: T[];
-  rows?: T[];
-  nextCursor: string | null;
-}
 export interface SalesHistoryApi {
   listRecords: (input: {organizerId: string; cursor?: string;
     limit: number}) => Promise<{records: SalesImportedHistoryRecord[];
