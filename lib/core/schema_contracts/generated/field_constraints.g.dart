@@ -72447,11 +72447,17 @@ abstract final class CatchContractConstraints {
     maximum: 999999999,
   );
 
+  static const eventSetupReceiptDocumentMediaPayloadHash = CatchContractFieldConstraints(
+    path: 'eventSetupReceiptDocument.mediaPayloadHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventSetupReceiptDocumentOperation = CatchContractFieldConstraints(
     path: 'eventSetupReceiptDocument.operation',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['create', 'update', 'preferences', 'details', 'publish', 'unpublish'],
+    enumValues: <String>['create', 'update', 'preferences', 'details', 'publish', 'unpublish', 'media'],
   );
 
   static const eventSetupReceiptDocumentOrganizerId = CatchContractFieldConstraints(
@@ -72472,6 +72478,12 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventSetupReceiptDocumentRequestId = CatchContractFieldConstraints(
+    path: 'eventSetupReceiptDocument.requestId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,119}\$',
   );
 
   static const eventShareIntentDocumentActorKind = CatchContractFieldConstraints(
@@ -87486,6 +87498,11 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
+  );
+
+  static const hostAcquisitionConsentDocumentAttributionCleanupPending = CatchContractFieldConstraints(
+    path: 'hostAcquisitionConsentDocument.attributionCleanupPending',
+    valueTypes: <String>['boolean'],
   );
 
   static const hostAcquisitionConsentDocumentAuthorityAcceptedAt = CatchContractFieldConstraints(
@@ -149572,6 +149589,98 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const salesInboundIntentsDocumentAcquisitionAttributionAcceptedAt = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.acceptedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionConsentId = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.consentId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionExpiresAt = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionFirstTouchCapturedAt = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.capturedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionFirstTouchLandingPath = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.landingPath',
+    required: true,
+    enumValues: <String>['/host/', '/host/overview/', '/host/platform/', '/host/planners/', '/host/clubs/', '/host/directory/', '/claim/', '/host/claim/', '/host/apply/', '/host/stack/', '/host/workflows/'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmCampaign = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_campaign',
+    enumValues: <String>['launch', 'launch_2026', 'planner_launch', 'host_acquisition_2026', 'synthetic_launch'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmContent = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_content',
+    enumValues: <String>['host_hero', 'host_footer', 'claim_cta', 'application_cta'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmMedium = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_medium',
+    enumValues: <String>['cpc', 'paid_social', 'email', 'organic', 'referral'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmSource = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_source',
+    enumValues: <String>['google', 'meta', 'newsletter', 'catch', 'partner'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionLastTouchCapturedAt = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.capturedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionLastTouchLandingPath = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.landingPath',
+    required: true,
+    enumValues: <String>['/host/', '/host/overview/', '/host/platform/', '/host/planners/', '/host/clubs/', '/host/directory/', '/claim/', '/host/claim/', '/host/apply/', '/host/stack/', '/host/workflows/'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmCampaign = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_campaign',
+    enumValues: <String>['launch', 'launch_2026', 'planner_launch', 'host_acquisition_2026', 'synthetic_launch'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmContent = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_content',
+    enumValues: <String>['host_hero', 'host_footer', 'claim_cta', 'application_cta'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmMedium = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_medium',
+    enumValues: <String>['cpc', 'paid_social', 'email', 'organic', 'referral'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmSource = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_source',
+    enumValues: <String>['google', 'meta', 'newsletter', 'catch', 'partner'],
+  );
+
+  static const salesInboundIntentsDocumentAcquisitionAttributionVersion = CatchContractFieldConstraints(
+    path: 'salesInboundIntentsDocument.acquisitionAttribution.version',
+    required: true,
+  );
+
   static const salesInboundIntentsDocumentAlreadyJoined = CatchContractFieldConstraints(
     path: 'salesInboundIntentsDocument.alreadyJoined',
     required: true,
@@ -160245,6 +160354,28 @@ abstract final class CatchContractConstraints {
   static const updateEventCallablePayloadFieldsStartTimeMillis = CatchContractFieldConstraints(
     path: 'updateEventCallablePayload.fields.startTimeMillis',
     valueTypes: <String>['integer'],
+  );
+
+  static const updateEventCallablePayloadMediaRecoveryExpectedMediaHash = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.mediaRecovery.expectedMediaHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const updateEventCallablePayloadMediaRecoveryOrganizerId = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.mediaRecovery.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventCallablePayloadMediaRecoveryRequestId = CatchContractFieldConstraints(
+    path: 'updateEventCallablePayload.mediaRecovery.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{7,119}\$',
   );
 
   static const updateEventChatAccessCallablePayloadAction = CatchContractFieldConstraints(
@@ -180038,10 +180169,12 @@ abstract final class CatchContractConstraints {
     'eventSetupReceiptDocument.createdAt._seconds': eventSetupReceiptDocumentCreatedAtSeconds,
     'eventSetupReceiptDocument.eventId': eventSetupReceiptDocumentEventId,
     'eventSetupReceiptDocument.expectedSetupRevision': eventSetupReceiptDocumentExpectedSetupRevision,
+    'eventSetupReceiptDocument.mediaPayloadHash': eventSetupReceiptDocumentMediaPayloadHash,
     'eventSetupReceiptDocument.operation': eventSetupReceiptDocumentOperation,
     'eventSetupReceiptDocument.organizerId': eventSetupReceiptDocumentOrganizerId,
     'eventSetupReceiptDocument.outcome': eventSetupReceiptDocumentOutcome,
     'eventSetupReceiptDocument.requestHash': eventSetupReceiptDocumentRequestHash,
+    'eventSetupReceiptDocument.requestId': eventSetupReceiptDocumentRequestId,
     'eventShareIntentDocument.actorKind': eventShareIntentDocumentActorKind,
     'eventShareIntentDocument.actorUid': eventShareIntentDocumentActorUid,
     'eventShareIntentDocument.channelHint': eventShareIntentDocumentChannelHint,
@@ -182069,6 +182202,7 @@ abstract final class CatchContractConstraints {
     'heartbeatEventSuccessPresenceCallableResponse.presenceState': heartbeatEventSuccessPresenceCallableResponsePresenceState,
     'heartbeatEventSuccessPresenceCallableResponse.presentWindowSeconds': heartbeatEventSuccessPresenceCallableResponsePresentWindowSeconds,
     'heartbeatEventSuccessPresenceCallableResponse.serverTimeMillis': heartbeatEventSuccessPresenceCallableResponseServerTimeMillis,
+    'hostAcquisitionConsentDocument.attributionCleanupPending': hostAcquisitionConsentDocumentAttributionCleanupPending,
     'hostAcquisitionConsentDocument.authority.acceptedAt': hostAcquisitionConsentDocumentAuthorityAcceptedAt,
     'hostAcquisitionConsentDocument.authority.advertising': hostAcquisitionConsentDocumentAuthorityAdvertising,
     'hostAcquisitionConsentDocument.authority.analytics': hostAcquisitionConsentDocumentAuthorityAnalytics,
@@ -190648,6 +190782,22 @@ abstract final class CatchContractConstraints {
     'salesImportRowDocument.sourceContentHash': salesImportRowDocumentSourceContentHash,
     'salesImportRowDocument.sourceId': salesImportRowDocumentSourceId,
     'salesImportRowDocument.sourceRowId': salesImportRowDocumentSourceRowId,
+    'salesInboundIntentsDocument.acquisitionAttribution.acceptedAt': salesInboundIntentsDocumentAcquisitionAttributionAcceptedAt,
+    'salesInboundIntentsDocument.acquisitionAttribution.consentId': salesInboundIntentsDocumentAcquisitionAttributionConsentId,
+    'salesInboundIntentsDocument.acquisitionAttribution.expiresAt': salesInboundIntentsDocumentAcquisitionAttributionExpiresAt,
+    'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.capturedAt': salesInboundIntentsDocumentAcquisitionAttributionFirstTouchCapturedAt,
+    'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.landingPath': salesInboundIntentsDocumentAcquisitionAttributionFirstTouchLandingPath,
+    'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_campaign': salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmCampaign,
+    'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_content': salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmContent,
+    'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_medium': salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmMedium,
+    'salesInboundIntentsDocument.acquisitionAttribution.firstTouch.values.utm_source': salesInboundIntentsDocumentAcquisitionAttributionFirstTouchValuesUtmSource,
+    'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.capturedAt': salesInboundIntentsDocumentAcquisitionAttributionLastTouchCapturedAt,
+    'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.landingPath': salesInboundIntentsDocumentAcquisitionAttributionLastTouchLandingPath,
+    'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_campaign': salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmCampaign,
+    'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_content': salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmContent,
+    'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_medium': salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmMedium,
+    'salesInboundIntentsDocument.acquisitionAttribution.lastTouch.values.utm_source': salesInboundIntentsDocumentAcquisitionAttributionLastTouchValuesUtmSource,
+    'salesInboundIntentsDocument.acquisitionAttribution.version': salesInboundIntentsDocumentAcquisitionAttributionVersion,
     'salesInboundIntentsDocument.alreadyJoined': salesInboundIntentsDocumentAlreadyJoined,
     'salesInboundIntentsDocument.city': salesInboundIntentsDocumentCity,
     'salesInboundIntentsDocument.classification': salesInboundIntentsDocumentClassification,
@@ -192111,6 +192261,9 @@ abstract final class CatchContractConstraints {
     'updateEventCallablePayload.fields.startingPointLat': updateEventCallablePayloadFieldsStartingPointLat,
     'updateEventCallablePayload.fields.startingPointLng': updateEventCallablePayloadFieldsStartingPointLng,
     'updateEventCallablePayload.fields.startTimeMillis': updateEventCallablePayloadFieldsStartTimeMillis,
+    'updateEventCallablePayload.mediaRecovery.expectedMediaHash': updateEventCallablePayloadMediaRecoveryExpectedMediaHash,
+    'updateEventCallablePayload.mediaRecovery.organizerId': updateEventCallablePayloadMediaRecoveryOrganizerId,
+    'updateEventCallablePayload.mediaRecovery.requestId': updateEventCallablePayloadMediaRecoveryRequestId,
     'updateEventChatAccessCallablePayload.action': updateEventChatAccessCallablePayloadAction,
     'updateEventChatAccessCallablePayload.closesAtMillis': updateEventChatAccessCallablePayloadClosesAtMillis,
     'updateEventChatAccessCallablePayload.eventId': updateEventChatAccessCallablePayloadEventId,

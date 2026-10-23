@@ -1,0 +1,22 @@
+/* Inset roles mirror CatchInsets in packages/catch_tokens (semantic/catch_insets.dart). */
+.inset {
+  min-width: 0;
+  margin: 0;
+}
+
+.inset[data-padding="content"] { padding: var(--catch-space-s4); }
+.inset[data-padding="contentDense"] { padding: var(--catch-space-s3); }
+.inset[data-padding="contentRelaxed"] { padding: var(--catch-space-s5); }
+.inset[data-padding="contentSpacious"] { padding: var(--catch-space-s6); }
+.inset[data-padding="emptyStateContent"] { padding: var(--catch-space-s8); }
+
+.inset[data-padding="contentBlock"] {
+  padding: var(--catch-space-s3) var(--catch-space-s4) var(--catch-space-s4);
+}
+
+.inset[data-padding="contentHorizontal"] { padding: 0 var(--catch-space-s4); }
+.inset[data-padding="contentVertical"] { padding: var(--catch-space-s3) 0; }
+.inset[data-padding="contentVerticalCompact"] { padding: var(--catch-space-s2) 0; }
+.inset[data-padding="contentVerticalRelaxed"] { padding: var(--catch-space-s5) 0; }
+.inset[data-padding="contentVerticalSpacious"] { padding: var(--catch-space-s6) 0; }
+.inset[data-padding="pageHorizontal"] { padding: 0 var(--catch-layout-page-gutter); }

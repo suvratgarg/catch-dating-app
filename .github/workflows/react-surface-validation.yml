@@ -216,22 +216,25 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      # Storybook screenshots take 5-6 minutes and rarely fail, so pull requests
+      # skip them; the merge queue and main still compare every story on the
+      # exact combined source before anything ships.
       - name: Build marketing Storybook
-        if: ${{ inputs.surface == 'marketing' }}
+        if: ${{ inputs.surface == 'marketing' && (github.event_name != 'pull_request' || inputs.update_visual_baselines) }}
         run: npm --workspace catch-marketing run build:storybook
 
       - name: Build admin Storybook
-        if: ${{ inputs.surface == 'admin' }}
+        if: ${{ inputs.surface == 'admin' && (github.event_name != 'pull_request' || inputs.update_visual_baselines) }}
         run: npm --workspace catch-admin run build:storybook
 
       - name: Run marketing and shared web UI visual regression
         id: marketing-visual-check
-        if: ${{ inputs.surface == 'marketing' && !inputs.update_visual_baselines }}
+        if: ${{ inputs.surface == 'marketing' && !inputs.update_visual_baselines && github.event_name != 'pull_request' }}
         run: npm --workspace catch-marketing run test:visual
 
       - name: Run admin visual regression
         id: admin-visual-check
-        if: ${{ inputs.surface == 'admin' && !inputs.update_visual_baselines }}
+        if: ${{ inputs.surface == 'admin' && !inputs.update_visual_baselines && github.event_name != 'pull_request' }}
         run: npm --workspace catch-admin run test:visual
 
       - name: Capture marketing and shared web UI visual baselines

@@ -1,17 +1,16 @@
+import {CatchGap} from "@catch/web-ui";
 import {useMemo} from "react";
 import {
   Button,
   ButtonLink,
   ChoiceChip,
   ChoiceChipGrid,
-  EventRuntimeActionGrid,
   EventRuntimeConsent,
   EventRuntimeFrame,
   EventRuntimeLoading,
   EventRuntimeModule,
   EventRuntimeNoticeStack,
   EventRuntimePanel,
-  EventRuntimeSectionStack,
   Field,
   FormStatus,
   SelectField,
@@ -294,9 +293,9 @@ export function HouseholdRsvpView({
       eventTitle={screen.kind === "ready" ? screen.view.programTitle : null}>
       {screen.kind === "loading" ? (
         <EventRuntimePanel kicker={copy.kicker} title={copy.loadingTitle} body="">
-          <EventRuntimeSectionStack>
+          <CatchGap size="section">
             <EventRuntimeLoading label={copy.loading} />
-          </EventRuntimeSectionStack>
+          </CatchGap>
         </EventRuntimePanel>
       ) : screen.kind === "unavailable" ? (
         <EventRuntimePanel kicker={copy.kicker}
@@ -304,15 +303,15 @@ export function HouseholdRsvpView({
             copy.networkTitle : copy.unavailableTitle}
           body={screen.reason === "network" ?
             copy.networkBody : copy.unavailableBody}>
-          <EventRuntimeSectionStack>
+          <CatchGap size="section">
             <Button type="button" onClick={refresh} loading={refreshing}
               loadingLabel={copy.refreshing}>{copy.refresh}</Button>
-          </EventRuntimeSectionStack>
+          </CatchGap>
         </EventRuntimePanel>
       ) : (
         <EventRuntimePanel kicker={copy.kicker}
           title={screen.view.householdLabel} body="">
-          <EventRuntimeSectionStack>
+          <CatchGap size="section">
             {screen.view.members.map((member) =>
               member.functions.length === 0 ? null : (
                 <div key={member.guestId}>
@@ -350,7 +349,7 @@ export function HouseholdRsvpView({
               onChange={(event) => setConsent(event.target.checked)}>
               {copy.consentLabel}
             </EventRuntimeConsent>
-            <EventRuntimeActionGrid>
+            <CatchGap direction="horizontal" size="related" wrap>
               <Button type="button" onClick={submit}
                 disabled={!screen.dirty || screen.pending}
                 loading={screen.pending} loadingLabel={copy.sending}>
@@ -364,13 +363,13 @@ export function HouseholdRsvpView({
               <Button type="button" variant="ghost" onClick={refresh}
                 disabled={screen.pending} loading={refreshing}
                 loadingLabel={copy.refreshing}>{copy.refresh}</Button>
-            </EventRuntimeActionGrid>
+            </CatchGap>
             {screen.notice ? (
               <EventRuntimeNoticeStack>
                 <FormStatus status={{message: screen.notice, tone: ""}} />
               </EventRuntimeNoticeStack>
             ) : null}
-          </EventRuntimeSectionStack>
+          </CatchGap>
         </EventRuntimePanel>
       )}
     </EventRuntimeFrame>

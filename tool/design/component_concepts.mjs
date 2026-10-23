@@ -297,6 +297,29 @@ export const flutterMechanismDartTypes = Object.freeze([
   "TextEditingController",
 ]);
 
+// Spacing props whose Flutter callers pass a token constant (CatchSpacing,
+// CatchGaps, CatchInsets) take that token's name in React, so no raw length
+// crosses into a web call site.
+export const tokenPropTsTypes = Object.freeze({
+  gap: "CatchGapSize",
+  inset: "CatchInsetPadding",
+  space: "CatchSpacingStep",
+});
+
+/**
+ * Files of a contract's React symbols. A headless record keeps every symbol in
+ * its one primitives file; a styled record's additional symbols each live in
+ * their own file beside the primary one (one public component per file).
+ */
+export function reactSymbolFiles(react) {
+  const directory = react.file.slice(0, react.file.lastIndexOf("/") + 1);
+  return [
+    [react.symbol, react.file],
+    ...(react.additionalSymbols ?? []).map((symbol) =>
+      [symbol, react.api === "styled" ? `${directory}${symbol}.tsx` : react.file]),
+  ];
+}
+
 export function componentTierProblems(components) {
   const problems = [];
   const tierById = new Map(components.map((component) => [component.id, component.tier]));
@@ -356,6 +379,11 @@ function tsTypeProblem(prop) {
   if (typeof prop.tsType !== "string" || prop.tsType.trim() === "") return "tsType must be a TypeScript type or null";
   if (mechanism) return `${dartType} is a Flutter mechanism; its tsType must be null`;
   const type = prop.tsType.replace(/ \| null$/u, "");
+  if (Object.hasOwn(prop, "token")) {
+    const expected = tokenPropTsTypes[prop.token];
+    if (!expected) return `token must be one of ${Object.keys(tokenPropTsTypes).join(", ")}`;
+    return type === expected ? null : `${prop.token} token tsType must be ${expected}`;
+  }
   switch (prop.type) {
     case "enum": {
       // Catch enums keep their name (D9); SDK enums and recipes list their values.

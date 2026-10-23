@@ -23,7 +23,7 @@ const dependencies = [...required.matchAll(/^      - ([a-z-]+)$/gmu)].map((match
 const graph = JSON.parse(fs.readFileSync(path.join(root, "tool/harness/component_graph.json"), "utf8"));
 const successfulNeeds = () => {
   const needs = Object.fromEntries(dependencies.map((job) =>
-    [job, {result: ["admission", "plan", "source-preflight", ...selectedLanes].includes(job) ? "success" : "skipped"}]));
+    [job, {result: ["plan", "source-preflight", ...selectedLanes].includes(job) ? "success" : "skipped"}]));
   needs.plan.outputs = Object.fromEntries(graph.targets.map(target => [target, "false"]));
   return needs;
 };
@@ -43,7 +43,7 @@ function failed(result) {
 }
 
 test("Required CI retains every automated dependency without the human source gate", () => {
-  assert.deepEqual(dependencies, ["admission", "plan", "source-preflight", "finalize-plan", ...selectedLanes, "package-firebase"]);
+  assert.deepEqual(dependencies, ["plan", "source-preflight", "finalize-plan", ...selectedLanes, "package-firebase"]);
   assert.doesNotMatch(ci, /backend-review|Backend source review|BACKEND_REVIEW_REQUIRED/u);
   passed(run("Require every selected lane"));
   const needs = successfulNeeds();
@@ -72,82 +72,24 @@ for (const result of ["failure", "cancelled", "skipped", "", undefined]) {
   });
 }
 
-for (const admitted of ["false", "", "True"]) {
-  test(`Required CI rejects deferred admission (${JSON.stringify(admitted)})`, () => {
-    failed(run("Refuse deferred PR validation", {ADMITTED: admitted}));
-  });
-}
-test("Required CI accepts the explicit admitted output", () => {
-  passed(run("Refuse deferred PR validation", {ADMITTED: "true"}));
+test("Every ready PR validates in parallel; drafts wait until marked ready", () => {
+  // The merge queue validates the exact combined source before main moves, so
+  // PR validation needs no exclusive admission label or live main recheck.
+  assert.doesNotMatch(ci, /ci:admitted|pr_ci_admission|admission/iu);
+  const plan = ci.slice(ci.indexOf("\n  plan:\n"), ci.indexOf("\n  source-preflight:\n"));
+  assert.match(plan,
+    /^    if: \$\{\{ !cancelled\(\) && \(github\.event_name != 'pull_request' \|\| !github\.event\.pull_request\.draft\) \}\}$/mu);
+  assert.doesNotMatch(plan, /^    needs:/mu, "planning must not wait for any gate");
+  assert.match(required, /^    name: Required CI$/mu);
+  assert.match(required,
+    /^    if: \$\{\{ !cancelled\(\) && !\(github\.event_name == 'pull_request' && github\.event\.pull_request\.draft\) \}\}$/mu);
+  assert.match(ci, /^  group: ci-\$\{\{ github\.event_name \}\}-\$\{\{ github\.event_name == 'pull_request' && github\.event\.pull_request\.number \|\|/mu);
+  assert.match(ci, /^  cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}$/mu);
+  assert.doesNotMatch(ci, /^  queue: max$/mu, "queue: max cannot combine with cancelling PR runs");
 });
 
-const source = "a".repeat(40), head = "b".repeat(40), base = "c".repeat(40);
+const source = "a".repeat(40), head = "b".repeat(40);
 const repository = "owner/repo", runId = "1000", attempt = "2", runNumber = "77";
-function admissionFixture() {
-  const prefix = `repos/${repository}`;
-  const label = {name: "ci:admitted"};
-  return {
-    [`${prefix}/pulls/42`]: {number: 42, state: "open", draft: false, labels: [label],
-      head: {sha: head, repo: {full_name: repository}}, base: {ref: "main", repo: {full_name: repository}}},
-    [`${prefix}/branches/main`]: {commit: {sha: base}},
-    [`${prefix}/issues?state=open&labels=ci%3Aadmitted&per_page=100&page=1`]:
-      [{number: 42, labels: [label], pull_request: {url: "unused"}}],
-    [`${prefix}/actions/workflows/ci.yml/runs?event=pull_request&head_sha=${head}&per_page=100`]:
-      {workflow_runs: [{id: Number(runId), event: "pull_request", head_sha: head,
-        path: ".github/workflows/ci.yml", display_title: "CI PR #42"}]},
-  };
-}
-function liveAdmission(mutate = () => {}, {parents = `${base} ${head}`, unavailable = false} = {}) {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-required-admission-"));
-  try {
-    const values = admissionFixture();
-    mutate(values);
-    const event = path.join(directory, "event.json");
-    fs.writeFileSync(event, JSON.stringify({action: "synchronize", number: 42, pull_request: {head: {sha: head}}}));
-    const hook = path.join(directory, "github.mjs");
-    fs.writeFileSync(hook, `
-      import assert from "node:assert/strict";
-      import childProcess from "node:child_process";
-      import {syncBuiltinESMExports} from "node:module";
-      childProcess.execFileSync = (command, args) => {
-        assert.equal(command, "git");
-        assert.deepEqual(args, ["show", "-s", "--format=%P", "${source}"]);
-        return ${JSON.stringify(parents)};
-      };
-      syncBuiltinESMExports();
-      const values = ${JSON.stringify(values)};
-      globalThis.fetch = async (url) => {
-        const endpoint = url.slice("https://api.github.com/".length);
-        assert.ok(Object.hasOwn(values, endpoint), endpoint);
-        return {ok: ${!unavailable}, status: 503, json: async () => values[endpoint]};
-      };
-    `);
-    return run("Recheck live PR admission and tested source", {
-      NODE_OPTIONS: `--import=${hook}`, GITHUB_EVENT_PATH: event, GITHUB_EVENT_NAME: "pull_request",
-      GITHUB_SHA: source, GITHUB_REPOSITORY: repository, GITHUB_RUN_ID: runId,
-      GITHUB_OUTPUT: path.join(directory, "output"), GITHUB_STEP_SUMMARY: path.join(directory, "summary"),
-    });
-  } finally {
-    fs.rmSync(directory, {recursive: true, force: true});
-  }
-}
-test("Required CI executes live --require admission on the exact tested source", () => {
-  passed(liveAdmission());
-});
-for (const [label, mutate] of [
-  ["removed label", (v) => {v[`repos/${repository}/pulls/42`].labels = [];}],
-  ["changed PR head", (v) => {v[`repos/${repository}/pulls/42`].head.sha = "d".repeat(40);}],
-  ["advanced main", (v) => {v[`repos/${repository}/branches/main`].commit.sha = "d".repeat(40);}],
-  ["newer admission run", (v) => {Object.values(v).find((entry) => entry.workflow_runs).workflow_runs.push({
-    id: 1001, event: "pull_request", head_sha: head, path: ".github/workflows/ci.yml", display_title: "CI PR #42"});}],
-]) {
-  test(`Required CI live recheck rejects ${label}`, () => {failed(liveAdmission(mutate));});
-}
-test("Required CI live recheck rejects unavailable evidence and mismatched merge parents", () => {
-  failed(liveAdmission(undefined, {unavailable: true}));
-  failed(liveAdmission(undefined, {parents: `${base} ${"d".repeat(40)}`}));
-});
-
 function mainGuard({mutateNeeds = () => {}, mutateArtifacts = () => {}, deployRequired = true} = {}) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-required-artifacts-"));
   try {
@@ -233,3 +175,20 @@ for (const result of ["failure", "cancelled", "skipped", undefined]) {
     failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(needs)}));
   });
 }
+
+test("Required CI accepts merge-queue-proven lanes only when this source's queue run is cited", () => {
+  const needs = successfulNeeds();
+  for (const lane of ["flutter", "tools", "visual-integration", "admin", "operations", "docs-policy"]) {
+    needs[lane].result = "skipped";
+  }
+  for (const target of ["flutter", "tools", "visual_integration", "admin", "operations", "docs"]) {
+    needs.plan.outputs[target] = "true";
+  }
+  passed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(needs), QUEUE_RUN: "39822205436"}));
+  failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(needs), QUEUE_RUN: ""}));
+  // Delivery producers always run on main, even after a successful queue run.
+  const delivery = successfulNeeds();
+  delivery.functions.result = "skipped";
+  delivery.plan.outputs.functions = "true";
+  failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(delivery), QUEUE_RUN: "39822205436"}));
+});

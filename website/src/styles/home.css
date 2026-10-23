@@ -206,7 +206,7 @@ h3 {
 
 .hero__stage .phone-capture {
   width: min(100%, 340px);
-  animation: hero-stage-float 7s var(--catch-ease-standard) infinite;
+  animation: hero-stage-float 7s var(--catch-motion-standard-curve) infinite;
 }
 
 @keyframes hero-stage-float {
@@ -248,9 +248,9 @@ h3 {
   cursor: pointer;
   text-align: left;
   transition:
-    transform var(--catch-motion-micro) var(--catch-ease-spring),
-    border-color var(--catch-motion-fast) var(--catch-ease-standard),
-    background-color var(--catch-motion-fast) var(--catch-ease-standard);
+    transform var(--catch-motion-micro) var(--catch-motion-spring-curve),
+    border-color var(--catch-motion-fast) var(--catch-motion-standard-curve),
+    background-color var(--catch-motion-fast) var(--catch-motion-standard-curve);
 }
 
 .store-button:hover,
@@ -327,7 +327,7 @@ h3 {
   border: 1px solid var(--website-line-strong);
   border-radius: var(--catch-radius-pill);
   background: var(--website-surface);
-  box-shadow: var(--catch-shadow-card);
+  box-shadow: var(--catch-elevation-card);
 }
 
 .public-search__city {
@@ -356,7 +356,7 @@ h3 {
   color: var(--website-bg);
   cursor: pointer;
   font-weight: 600;
-  transition: background-color var(--catch-motion-fast) var(--catch-ease-standard);
+  transition: background-color var(--catch-motion-fast) var(--catch-motion-standard-curve);
 }
 
 .public-search__go:hover,
@@ -412,7 +412,7 @@ h3 {
   border: 1px solid var(--website-line);
   border-radius: var(--catch-radius-md);
   background: var(--website-line);
-  box-shadow: var(--catch-shadow-raised);
+  box-shadow: var(--catch-elevation-raised);
 }
 
 .public-search__results a {
@@ -422,7 +422,7 @@ h3 {
   gap: 12px;
   padding: 12px 16px;
   background: var(--website-surface);
-  transition: background-color var(--catch-motion-fast) var(--catch-ease-standard);
+  transition: background-color var(--catch-motion-fast) var(--catch-motion-standard-curve);
 }
 
 .public-search__results a:hover,
@@ -491,9 +491,9 @@ h3 {
   border-radius: var(--catch-radius-md);
   background: var(--website-surface);
   transition:
-    transform var(--catch-motion-micro) var(--catch-ease-spring),
-    border-color var(--catch-motion-fast) var(--catch-ease-standard),
-    box-shadow var(--catch-motion-micro) var(--catch-ease-standard);
+    transform var(--catch-motion-micro) var(--catch-motion-spring-curve),
+    border-color var(--catch-motion-fast) var(--catch-motion-standard-curve),
+    box-shadow var(--catch-motion-micro) var(--catch-motion-standard-curve);
 }
 
 /* Punch-hole notches on the perforation seam. */
@@ -521,7 +521,7 @@ h3 {
 .public-event-card:hover,
 .public-event-card:focus-visible {
   border-color: color-mix(in srgb, var(--activity) 50%, var(--website-line));
-  box-shadow: var(--catch-shadow-raised);
+  box-shadow: var(--catch-elevation-raised);
   transform: translateY(-2px);
 }
 
@@ -657,7 +657,7 @@ h3 {
   gap: 22px;
   padding: 22px;
   background: var(--website-surface);
-  transition: background-color var(--catch-motion-base) var(--catch-ease-standard);
+  transition: background-color var(--catch-motion-base) var(--catch-motion-standard-curve);
 }
 
 .format-card:hover {
@@ -756,17 +756,17 @@ h3 {
   border: 1px solid var(--website-line);
   border-radius: var(--catch-radius-md);
   background: var(--website-surface);
-  box-shadow: var(--catch-shadow-card);
+  box-shadow: var(--catch-elevation-card);
   transition:
-    transform var(--catch-motion-micro) var(--catch-ease-spring),
-    border-color var(--catch-motion-fast) var(--catch-ease-standard),
-    box-shadow var(--catch-motion-micro) var(--catch-ease-standard);
+    transform var(--catch-motion-micro) var(--catch-motion-spring-curve),
+    border-color var(--catch-motion-fast) var(--catch-motion-standard-curve),
+    box-shadow var(--catch-motion-micro) var(--catch-motion-standard-curve);
 }
 
 .organizer-mini-card:hover,
 .organizer-mini-card:focus-visible {
   border-color: color-mix(in srgb, var(--activity) 45%, var(--website-line));
-  box-shadow: var(--catch-shadow-raised);
+  box-shadow: var(--catch-elevation-raised);
   transform: translateY(-2px);
 }
 
@@ -926,14 +926,14 @@ h3 {
   border: 1px solid var(--website-line);
   border-radius: var(--catch-radius-lg);
   background: var(--website-surface);
-  box-shadow: var(--catch-shadow-card);
+  box-shadow: var(--catch-elevation-card);
   transition:
-    transform var(--catch-motion-micro) var(--catch-ease-spring),
-    box-shadow var(--catch-motion-micro) var(--catch-ease-standard);
+    transform var(--catch-motion-micro) var(--catch-motion-spring-curve),
+    box-shadow var(--catch-motion-micro) var(--catch-motion-standard-curve);
 }
 
 .capture-card:hover {
-  box-shadow: var(--catch-shadow-raised);
+  box-shadow: var(--catch-elevation-raised);
   transform: translateY(-2px);
 }
 
@@ -988,7 +988,7 @@ h3 {
   border: 1px solid color-mix(in srgb, var(--catch-color-dark-ink) 18%, transparent);
   border-radius: 44px;
   background: var(--catch-color-dark-surface);
-  box-shadow: var(--catch-shadow-overlay);
+  box-shadow: var(--catch-elevation-overlay);
 }
 
 .phone-capture__notch {
@@ -1098,7 +1098,7 @@ h3 {
   border: 1px solid var(--catch-color-dark-line);
   border-radius: var(--catch-radius-lg);
   background: var(--catch-color-light-surface);
-  box-shadow: var(--catch-shadow-overlay);
+  box-shadow: var(--catch-elevation-overlay);
   color: var(--catch-color-light-ink);
 }
 

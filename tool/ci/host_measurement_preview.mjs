@@ -5,10 +5,10 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {gzipSync} from 'node:zlib';
+import {CANONICAL_REPOSITORY_ID, canonicalRepository} from '../lib/canonical_repository.mjs';
 
 // Reviewed PR726 bytes. Changing runtime scope requires another source review.
 export const release = Object.freeze({
-  repository: 'suvratgarg/catch-dating-app',
   workflow: '.github/workflows/host-measurement-preview.yml',
   runtimeSource: '30a66b8e1df3ef405b76fa51ada6cc165bd302c9',
   project: 'catch-dating-app-64e51', site: 'catch-host-measurement',
@@ -30,8 +30,8 @@ const github = endpoint => JSON.parse(command('gh', ['api', '-H', 'Cache-Control
 export function assertInvocation(env) {
   assert.equal(env.GITHUB_EVENT_NAME, 'workflow_dispatch');
   assert.equal(env.GITHUB_REF, 'refs/heads/main');
-  assert.equal(env.GITHUB_REPOSITORY, release.repository);
-  assert.equal(env.GITHUB_WORKFLOW_REF, `${release.repository}/${release.workflow}@refs/heads/main`);
+  const repository = canonicalRepository(env);
+  assert.equal(env.GITHUB_WORKFLOW_REF, `${repository}/${release.workflow}@refs/heads/main`);
   assert.equal(env.GITHUB_RUN_ATTEMPT, '1', 'Use a new reviewed dispatch after failure');
   assert.match(env.GITHUB_SHA ?? '', /^[a-f0-9]{40}$/u);
 }
@@ -40,8 +40,8 @@ export function assertCi(run, sourceSha) {
   assert.equal(run.head_branch, 'main');
   assert.equal(run.event, 'push');
   assert.equal(run.path?.split('@')[0], '.github/workflows/ci.yml');
-  assert.equal(run.repository?.full_name, release.repository);
-  assert.equal(run.head_repository?.full_name, release.repository);
+  assert.equal(run.repository?.id, CANONICAL_REPOSITORY_ID);
+  assert.equal(run.head_repository?.id, CANONICAL_REPOSITORY_ID);
   assert.equal(run.status, 'completed');
   assert.equal(run.conclusion, 'success');
 }
@@ -111,15 +111,15 @@ export function verifyPostDeployPackage(destination, sourceSha) {
 }
 function authorize() {
   assertInvocation(process.env);
-  const sourceSha = process.env.GITHUB_SHA;
+  const repository = canonicalRepository(), sourceSha = process.env.GITHUB_SHA;
   assert.equal(command('git', ['rev-parse', 'HEAD']), sourceSha);
-  assert.equal(github(`repos/${release.repository}/git/ref/heads/main`).object.sha, sourceSha, 'Current main changed');
+  assert.equal(github(`repos/${repository}/git/ref/heads/main`).object.sha, sourceSha, 'Current main changed');
   command('git', ['merge-base', '--is-ancestor', release.runtimeSource, sourceSha]);
   verifyFiles('website');
-  const runs = github(`repos/${release.repository}/actions/workflows/ci.yml/runs?head_sha=${sourceSha}&event=push&per_page=100`).workflow_runs;
+  const runs = github(`repos/${repository}/actions/workflows/ci.yml/runs?head_sha=${sourceSha}&event=push&per_page=100`).workflow_runs;
   const latest = [...runs].sort((a, b) => b.id - a.id)[0];
   assert.ok(latest, 'No exact-source main CI');
-  const run = github(`repos/${release.repository}/actions/runs/${latest.id}`);
+  const run = github(`repos/${repository}/actions/runs/${latest.id}`);
   assertCi(run, sourceSha);
   console.log(JSON.stringify({sourceSha, ciRunId: run.id, ciRunAttempt: run.run_attempt, runtimeSource: release.runtimeSource}));
 }

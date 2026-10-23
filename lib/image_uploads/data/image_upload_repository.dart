@@ -215,6 +215,7 @@ class ImageUploadRepository {
     Map<String, String>? customMetadata,
     ValueChanged<ImageUploadProgress>? onProgress,
     ImageUploadCancellationToken? cancellationToken,
+    bool requireJpeg = false,
   }) async {
     final context = _storageContextForPath(storagePath);
     return withBackendErrorContext(() async {
@@ -228,6 +229,12 @@ class ImageUploadRepository {
         ),
       );
       final prepared = await _prepareUpload(image: image, purpose: purpose);
+      if (requireJpeg && prepared.extension != 'jpg') {
+        throw const ValidationException(
+          'This photo could not be prepared. Select another photo.',
+          code: 'event-photo-preparation-failed',
+        );
+      }
       if (cancellationToken?.isCancellationRequested ?? false) {
         throw _cancelledUpload(context);
       }
@@ -407,6 +414,20 @@ class ImageUploadRepository {
     );
   }
 
+  /// Recovery records this immutable JPEG path before bytes may be uploaded.
+  /// A failed decoder must not silently change it to an unrecorded PNG path.
+  Future<UploadedImage> uploadEventPhotoForRecovery({
+    required String eventId,
+    required int position,
+    required XFile image,
+    required String mediaId,
+  }) => uploadWithMetadata(
+    storagePath: 'events/$eventId/media/$mediaId/original',
+    image: image,
+    purpose: ImageUploadPurpose.eventPhoto,
+    requireJpeg: true,
+  );
+
   Future<String> uploadChatImage({
     required String matchId,
     required String messageId,
@@ -446,16 +467,31 @@ class ImageUploadRepository {
   /// treated as success, and any other failure is swallowed — the caller is
   /// already handling the primary error and must not be derailed by cleanup.
   Future<void> deleteByPath(String storagePath) async {
-    if (storagePath.isEmpty) return;
     try {
-      await _storage.ref(storagePath).delete();
-    } on FirebaseException catch (error) {
-      if (error.code == 'object-not-found') return;
-      // Swallow: cleanup is best-effort and must not mask the original error.
+      await deleteByPathChecked(storagePath);
     } catch (_) {
-      // Swallow: see above.
+      // Best-effort callers already surface the primary failure. Durable media
+      // recovery uses the checked boundary and retains failed compensation.
     }
   }
+
+  /// Idempotent compensation with observable failure. A recovery journal must
+  /// retain this path until deletion succeeds or Storage confirms absence.
+  Future<void> deleteByPathChecked(String storagePath) =>
+      withBackendErrorContext(
+        () async {
+          if (storagePath.isEmpty) return;
+          try {
+            await _storage.ref(storagePath).delete();
+          } on FirebaseException catch (error) {
+            if (error.code != 'object-not-found') rethrow;
+          }
+        },
+        context: const BackendErrorContext(
+          service: BackendService.storage,
+          action: 'delete uploaded image',
+        ),
+      );
 
   // ── Internal ──────────────────────────────────────────────────────────────
 

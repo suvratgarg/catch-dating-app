@@ -4,6 +4,9 @@ const {test} = require("node:test");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+// Protected homes refuse symlinked ancestors, and macOS serves os.tmpdir() through
+// the /var -> /private/var link; fixtures must live under the resolved path.
+const tmpRoot = fs.realpathSync(os.tmpdir());
 const {spawnSync} = require("node:child_process");
 const {createHash} = require("node:crypto");
 const {createOperatorRuntime, protectedHome, credentialMetadata,
@@ -30,7 +33,7 @@ function fixture() {
   expectedActorRevision: 0, expectedRecipientRevision: 0};
 }
 test("offline CLI inspects without ADC, networking or exposing operator scope", () => {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-offline-plan-"));
+  const directory = fs.mkdtempSync(path.join(tmpRoot, "catch-offline-plan-"));
   try {
     const file = path.join(directory, "plan.json");
     const adc = path.join(directory, "forbidden-adc.json");
@@ -75,7 +78,7 @@ test("live commands and caller facts fail without echoing private input", () => 
     assert.equal(result.status, 1);
     assert.ok(!result.stderr.includes("synthetic-private-token"));
   }
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-plan-invalid-"));
+  const directory = fs.mkdtempSync(path.join(tmpRoot, "catch-plan-invalid-"));
   try {
     const file = path.join(directory, "plan.json");
     fs.writeFileSync(file, JSON.stringify({...fixture(), roles: ["adminOwner"]}));
@@ -87,7 +90,7 @@ test("live commands and caller facts fail without echoing private input", () => 
 });
 
 function runtimeFixture(consolidated = false) {
-  const home = fs.mkdtempSync(path.join(os.tmpdir(), "catch-protected-operator-"));
+  const home = fs.mkdtempSync(path.join(tmpRoot, "catch-protected-operator-"));
   const records = new Map();
   let now = 1800000000000;
   let authTime = now / 1000 - 1;

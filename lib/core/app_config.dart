@@ -258,18 +258,38 @@ class AppConfig {
     ),
   );
 
-  /// Owner-approved public legal/support destinations. Empty values keep the
-  /// corresponding Settings rows hidden instead of launching dormant routes.
+  /// Owner-approved public legal/support destinations shown by consumer
+  /// Settings and the Host account menu. Empty values keep those entries
+  /// hidden instead of launching dormant routes.
   static const String _privacyPolicyUrl = String.fromEnvironment(
     'CATCH_PRIVACY_POLICY_URL',
   );
   static const String _termsUrl = String.fromEnvironment('CATCH_TERMS_URL');
   static const String _helpUrl = String.fromEnvironment('CATCH_HELP_URL');
 
+  static Map<String, String>? _legalUrlDefinesOverride;
+
   static Uri? get privacyPolicyUrl =>
-      configuredExternalUriFor(_privacyPolicyUrl);
-  static Uri? get termsUrl => configuredExternalUriFor(_termsUrl);
-  static Uri? get helpUrl => configuredExternalUriFor(_helpUrl);
+      _legalUrl('CATCH_PRIVACY_POLICY_URL', _privacyPolicyUrl);
+  static Uri? get termsUrl => _legalUrl('CATCH_TERMS_URL', _termsUrl);
+  static Uri? get helpUrl => _legalUrl('CATCH_HELP_URL', _helpUrl);
+
+  static Uri? _legalUrl(String name, String compiledValue) =>
+      configuredExternalUriFor(
+        _legalUrlDefinesOverride?[name] ?? compiledValue,
+      );
+
+  /// Supplies dart-define values for the legal URLs to widget tests, which
+  /// run without the environment define files.
+  @visibleForTesting
+  static void overrideLegalUrlDefinesForTesting(Map<String, String> defines) {
+    _legalUrlDefinesOverride = Map.unmodifiable(defines);
+  }
+
+  @visibleForTesting
+  static void resetLegalUrlDefinesOverrideForTesting() {
+    _legalUrlDefinesOverride = null;
+  }
 
   @visibleForTesting
   static Uri? configuredExternalUriFor(String value) {

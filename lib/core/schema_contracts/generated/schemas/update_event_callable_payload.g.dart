@@ -21,6 +21,31 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
+    'mediaRecovery': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'organizerId',
+        'requestId',
+        'expectedMediaHash',
+      ],
+      'description': 'Media-only attachment for an already committed create. Replays its eventSetupReceipts media receipt; never edits schedule or setup fields.',
+      'properties': <String, Object?>{
+        'organizerId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'requestId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{7,119}\$',
+        },
+        'expectedMediaHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+      },
+    },
     'expectedSetupRevision': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
@@ -1216,4 +1241,39 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
       },
     },
   },
+  'allOf': <Object?>[
+    <String, Object?>{
+      'if': <String, Object?>{
+        'required': <Object?>[
+          'mediaRecovery',
+        ],
+      },
+      'then': <String, Object?>{
+        'not': <String, Object?>{
+          'required': <Object?>[
+            'expectedSetupRevision',
+          ],
+        },
+        'properties': <String, Object?>{
+          'fields': <String, Object?>{
+            'required': <Object?>[
+              'photoUrl',
+              'eventPhotos',
+            ],
+            'propertyNames': <String, Object?>{
+              'enum': <Object?>[
+                'photoUrl',
+                'eventPhotos',
+              ],
+            },
+            'properties': <String, Object?>{
+              'eventPhotos': <String, Object?>{
+                'minItems': 1,
+              },
+            },
+          },
+        },
+      },
+    },
+  ],
 };

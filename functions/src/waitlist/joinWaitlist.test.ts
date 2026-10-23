@@ -427,6 +427,15 @@ test("enabled intake binds one queue row to a new consented Host receipt",
       "fixtures/valid/join_waitlist_request_host.json") as
       Record<string, unknown>;
     const body = {...original, email: "synthetic-measured-host@example.test",
+      attribution: {firstTouch: {capturedAt: new Date(now).toISOString(),
+        landingPath: "/host/", landingUrl: "https://catchdates.com/host/",
+        referrer: null, values: {utm_source: "google", utm_medium: "cpc",
+          utm_campaign: "host_acquisition_2026"}},
+      lastTouch: {capturedAt: new Date(now).toISOString(),
+        landingPath: "/host/apply/",
+        landingUrl: "https://catchdates.com/host/apply/", referrer: null,
+        values: {utm_source: "google", utm_medium: "cpc",
+          utm_campaign: "host_acquisition_2026"}}},
       hostMeasurement: {capability, clientId: "123.1792512000"}};
     let calls = 0;
     const submit = async (payload: unknown) => {
@@ -456,12 +465,31 @@ test("enabled intake binds one queue row to a new consented Host receipt",
       {clientId: "123.1792512000", userAgent: "Synthetic Host browser"});
     const intent = records.get(`salesInboundIntents/${queued.intentId}`)!;
     assert.deepEqual(intent.hostLead, first.hostLead);
+    const attributionSnapshot = structuredClone(intent.acquisitionAttribution);
+    assert.ok(attributionSnapshot);
+    assert.equal([...records.entries()].find(([key]) =>
+      key.startsWith("launchWaitlist/"))![1].marketingAttribution, null);
     const privateQueue = JSON.stringify(queued);
     assert.equal(privateQueue.includes(capability), false);
     assert.equal(privateQueue.includes(String(body.email)), false);
     const size = records.size;
     assert.deepEqual(await submit(body), first);
     assert.equal(records.size, size, "exact replay never queues twice");
+    const changedCampaign = {...body, attribution: {...body.attribution,
+      lastTouch: {...body.attribution.lastTouch,
+        values: {utm_source: "meta", utm_medium: "paid_social",
+          utm_campaign: "host_acquisition_2026"}}}};
+    assert.deepEqual(await submit(changedCampaign), first);
+    assert.deepEqual(intent.acquisitionAttribution, attributionSnapshot,
+      "campaign changes on replay cannot rewrite accepted attribution");
+    const later = await submit({...changedCampaign, analytics: {
+      ...(original.analytics as Record<string, unknown>),
+      eventId: "later-host-lead",
+    }});
+    assert.equal(later.hostLead?.isNew, false);
+    assert.equal([...records.entries()].filter(([key, row]) =>
+      key.startsWith("salesInboundIntents/") && row.acquisitionAttribution)
+      .length, 1, "repeat acquisition cannot create a replacement snapshot");
     records.get(`hostAcquisitionConsents/${consentId}`)!.status = "revoked";
     const denied = await submit({...body,
       email: "synthetic-revoked-host@example.test"});
@@ -469,4 +497,8 @@ test("enabled intake binds one queue row to a new consented Host receipt",
       "revocation never blocks operational intake");
     assert.equal(records.has(
       `hostAcquisitionDeliveries/${denied.hostLead!.eventId}`), false);
+    const deniedEventId = denied.hostLead!.eventId;
+    const deniedIntent = [...records.values()].find((row) =>
+      (row.hostLead as {eventId?: string})?.eventId === deniedEventId);
+    assert.equal(deniedIntent?.acquisitionAttribution, undefined);
   });

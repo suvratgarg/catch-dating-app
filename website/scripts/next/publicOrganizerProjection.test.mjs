@@ -30,6 +30,45 @@ test("public publication and live market gates run on every projection", () => {
   assert(projectPublicOrganizer("next-proof", data, markets));
   assert.equal(projectPublicOrganizer("next-proof", data, new Set(["mumbai"])), null);
 });
+test("imported listings stay out of search and never render intake prose", () => {
+  const data = organizerFixture();
+  data.description = "Discovered through a public event page; stays out of search until reviewed.";
+  data.publicProfile = {
+    headline: "Next proof organizer in Indore",
+    summary: "Operator summary for owner review.",
+    sourceSummary: "A public page confirms the organizer.",
+    facts: [{label: "Location", value: "Indore"}, {label: "Claim state", value: "Unclaimed seed listing"},
+      {label: "Indexing", value: "Noindex until verified"}],
+    fitNotes: ["Internal market rationale."],
+  };
+  data.publicSources = [
+    {type: "user_supplied", label: "User seed input", detail: "Operator asked for this listing.", confidence: "medium",
+      href: null, lastCheckedAt: null},
+    {type: "public_event_page", label: "Event page", detail: "Public event page.", confidence: "high",
+      href: "https://example.com/event", lastCheckedAt: null},
+  ];
+  const listing = projectPublicOrganizer("next-proof", data, markets);
+  assert(listing);
+  assert.equal(listing.indexing, "noindex, follow");
+  assert.equal(listing.authority.indexStatus, "indexReady", "reviews still follow the stored index status");
+  const serialized = JSON.stringify(listing);
+  for (const operatorText of ["Operator summary", "stays out of search", "A public page confirms",
+    "Unclaimed seed listing", "Noindex until verified", "Internal market rationale", "Operator asked"]) {
+    assert(!serialized.includes(operatorText), operatorText);
+  }
+  assert.match(listing.description, /^Next proof organizer is an event producer in /u);
+  assert.equal(listing.sourceSummary, listing.description);
+  assert.deepEqual(listing.facts, [{label: "Location", value: "Indore"}]);
+  assert.deepEqual(listing.sources.map(source => source.label), ["Event page"]);
+
+  data.ownership.state = "claimed";
+  data.claim.state = "claimed";
+  const claimed = projectPublicOrganizer("next-proof", data, markets);
+  assert(claimed);
+  assert.equal(claimed.indexing, "index, follow");
+  assert.equal(claimed.description, "Operator summary for owner review.");
+  assert.deepEqual(claimed.fitNotes, []);
+});
 test("runtime validator adapter agrees with repository generated validators", () => {
   const valid = organizerFixture();
   for (const data of [valid, {...valid, name: 17}, {...valid, ownership: {state: "unknown"}}, null]) {
