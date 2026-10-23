@@ -20,6 +20,7 @@ export type MarketingRouteId =
   | "privacy"
   | "terms"
   | "help"
+  | "account_deletion"
   | "not_found";
 
 export interface MarketingRouteDefinition {
@@ -50,6 +51,7 @@ export const marketingRouteDefinitions = [
   {id: "privacy", path: "/privacy/*"},
   {id: "terms", path: "/terms/*"},
   {id: "help", path: "/help/*"},
+  {id: "account_deletion", path: "/delete-account/*"},
   {id: "not_found", path: "*"},
 ] as const satisfies readonly MarketingRouteDefinition[];
 

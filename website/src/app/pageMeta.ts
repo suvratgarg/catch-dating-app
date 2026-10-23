@@ -3,6 +3,7 @@ import type {EventDetailRecord} from "../features/events/eventDetailModel";
 import metaContent from "../content/meta.json";
 import {interpolateContent} from "../content/interpolate";
 import {validatedWebsiteMeta} from "../content/metaContract";
+import type {PublishedLegalPageKey} from "../content/types";
 
 export type PageKey =
   | "sales_demo"
@@ -24,6 +25,7 @@ export type PageKey =
   | "privacy"
   | "terms"
   | "help"
+  | "account_deletion"
   | "not_found";
 
 export interface PageMeta {
@@ -35,6 +37,10 @@ export interface PageMeta {
 }
 
 const websiteMeta = validatedWebsiteMeta(metaContent);
+
+export function isLegalPageKey(page: PageKey): page is PublishedLegalPageKey {
+  return page === "privacy" || page === "terms" || page === "help" || page === "account_deletion";
+}
 
 export const pageMeta: Record<Exclude<PageKey, "listing" | "event_detail">, PageMeta> =
   websiteMeta.routes;
@@ -90,6 +96,7 @@ export function getPageKey(
   if (pathname.startsWith("/privacy")) return "privacy";
   if (pathname.startsWith("/terms")) return "terms";
   if (pathname.startsWith("/help")) return "help";
+  if (pathname.startsWith("/delete-account")) return "account_deletion";
   if (pathname.startsWith("/booking/")) return "event_booking";
   if (pathname.startsWith("/join/")) return "event_runtime";
   if (pathname === "/offer" || pathname === "/offer/") return "event_offer";
@@ -118,7 +125,7 @@ export function pageClassFor(page: PageKey) {
   }
   if (page === "organizers") return "organizers-page";
   if (page === "claim") return "claim-page";
-  if (page === "privacy" || page === "terms" || page === "help") return "legal-page";
+  if (isLegalPageKey(page)) return "legal-page";
   if (page === "not_found") return "not-found-page";
   return "home-page";
 }

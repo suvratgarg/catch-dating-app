@@ -1,6 +1,5 @@
 import {Children, type HTMLAttributes, type ReactNode} from "react";
 import type {CatchGapSize} from "./CatchGap";
-import "../foundations.css";
 import styles from "./CatchSectionList.module.css";
 
 export type CatchSectionListElement = "div" | "section" | "main" | "article" | "ol" | "ul";

@@ -1,5 +1,4 @@
 import type {HTMLAttributes, ReactNode} from "react";
-import "../foundations.css";
 import styles from "./CatchGap.module.css";
 
 /**

@@ -69,6 +69,12 @@
           "paragraphs": [
             "We retain data only as long as reasonably needed for the purposes above, legal requirements, safety, dispute handling, fraud prevention, and backup recovery. Public-source listings may remain while accurate and relevant, subject to correction and takedown requests. Account deletion starts the product deletion workflow, but limited records may remain where law, safety, fraud prevention, or dispute resolution requires it.",
             "We use access controls, encryption in transit, environment separation, service authentication, audit records, and monitoring intended to protect data. No system is perfectly secure; contact us promptly if you believe your account or data has been compromised."
+          ],
+          "links": [
+            {
+              "href": "/delete-account/",
+              "label": "Delete your account and what is kept"
+            }
           ]
         },
         {
@@ -144,6 +150,12 @@
           "paragraphs": [
             "We may change, test, pause, or discontinue features, markets, listings, or the service. We may suspend or terminate access where reasonably necessary for a breach, safety, fraud, legal compliance, or operational risk. You may stop using Catch and request account deletion at any time.",
             "Catch's software, brand, designs, and original content are owned by Torana or its licensors. Except for rights expressly granted here, no rights are transferred to you."
+          ],
+          "links": [
+            {
+              "href": "/delete-account/",
+              "label": "Delete your account"
+            }
           ]
         },
         {
@@ -171,9 +183,13 @@
         {
           "heading": "Delete your Catch or Catch Host account",
           "paragraphs": [
-            "You can request deletion of your Catch or Catch Host account and associated personal data without installing or signing in to the app. Email suvrat.garg@gmail.com with the subject Account deletion and the phone number or email address associated with your account. Torana operates both apps and handles these requests.",
-            "We will verify that the account belongs to you before deleting it. Never send your password or a one-time sign-in code. You may also use Delete account in account settings where available. If you manage an organizer, arrange any necessary ownership transfer before requesting deletion.",
-            "Deletion removes your sign-in account, personal profile and profile photos, and personal Host access and profile details. Shared organizer, event, guest and business records may remain for other authorized users. Limited payment, safety, fraud-prevention, legal, dispute and backup records may also remain for the period necessary for those purposes. Contact us about the records and retention that apply to your request; deleting an app from your device does not delete your account."
+            "You can delete your Catch or Catch Host account in either app, or request deletion of your account and associated data by email without installing or signing in to an app. The account deletion page lists each step and what is deleted or kept. Deleting an app from your device does not delete your account."
+          ],
+          "links": [
+            {
+              "href": "/delete-account/",
+              "label": "Delete your account"
+            }
           ]
         },
         {
@@ -218,6 +234,87 @@
           "heading": "Operator and grievance contact",
           "paragraphs": [
             "Operator: Torana. Grievance officer: Suvrat Garg, Founder. Email: suvrat.garg@gmail.com. Address: 65, Manish Puri, Indore, Madhya Pradesh, India 452018."
+          ]
+        }
+      ]
+    },
+    "account_deletion": {
+      "path": "/delete-account/",
+      "eyebrow": "Account",
+      "title": "Delete your account",
+      "summary": "Delete your Catch or Catch Host account and associated data in the app, or request deletion by email without installing the app.",
+      "sections": [
+        {
+          "heading": "One account for Catch and Catch Host",
+          "paragraphs": [
+            "Catch and Catch Host are operated by Torana and use the same Catch account, including accounts created on catchdates.com when you verify your phone number to register for an event or follow an organizer. Deleting the account in either app or by email deletes it everywhere. Uninstalling an app does not delete your account."
+          ]
+        },
+        {
+          "heading": "Delete your account in the app",
+          "paragraphs": [
+            "In the Catch app, open Settings and choose Delete account, then confirm.",
+            "In the Catch Host app, open the Account menu in the top bar and choose Delete account, then confirm.",
+            "Deletion starts when you confirm in either app, and you are signed out when it completes."
+          ]
+        },
+        {
+          "heading": "Request deletion without the app",
+          "paragraphs": [
+            "You can request deletion of your account and associated data without installing, reinstalling, or signing in to either app. Email suvrat.garg@gmail.com with the subject Account deletion and the phone number or email address associated with your account. Use this route too if you created your account on catchdates.com, which has no Delete account control.",
+            "We will verify that the account belongs to you before deleting it. Never send your password, a one-time sign-in code, payment details, or government identifiers."
+          ]
+        },
+        {
+          "heading": "Before you delete",
+          "paragraphs": [
+            "If you own or host an organizer in Catch Host, transfer organizer ownership first if another person needs to keep managing it. Deletion removes you from every organizer team.",
+            "If you are in the middle of a booking or payment, deletion cannot finish until that checkout is settled. Try again later or email us."
+          ]
+        },
+        {
+          "heading": "What is deleted",
+          "paragraphs": [
+            "Deletion removes the personal data that identifies you, or replaces it with Deleted user, including:"
+          ],
+          "bullets": [
+            "Your sign-in account and the phone number or email address linked to it.",
+            "Your profile: name, date of birth, photos, prompts, personal details, preferences, and city.",
+            "Your Catch Host profile and photo, and your access to organizer teams.",
+            "Event registrations and waitlist places, saved events, and notifications; organizer follows are ended.",
+            "Likes and passes, blocks, and your Cross Paths settings, consents, and invitations.",
+            "Messages you posted in event chats, private event form and room choices, and your communication preferences and consents.",
+            "Broadcasts you sent as a host, and your device notification token."
+          ]
+        },
+        {
+          "heading": "What may be kept, and why",
+          "paragraphs": [
+            "Some records remain after deletion because other people rely on them, or because they are needed for safety, payments, fraud prevention, legal obligations, or disputes. They are kept only as long as reasonably needed for those purposes, as described in the Privacy Policy, and are no longer shown with a profile:"
+          ],
+          "bullets": [
+            "Reviews you wrote stay published under the name Deleted user.",
+            "Your matches are closed and their conversations are hidden from both people; the message records are retained and may be used for safety and abuse review.",
+            "Payment and refund records, for accounting, refunds, disputes, and legal requirements.",
+            "Safety reports you made or that involve you, for review.",
+            "Organizer pages, events, guest lists, and business records that belong to an organizer stay with that organizer and its remaining hosts, without a link to your account.",
+            "A minimal deletion record with your account identifier, so the deletion is respected across Catch."
+          ]
+        },
+        {
+          "heading": "Questions and grievances",
+          "paragraphs": [
+            "Email suvrat.garg@gmail.com about deletion, the records and retention that apply to your account, or a request we have not resolved. Operator: Torana. Grievance officer: Suvrat Garg, Founder. Address: 65, Manish Puri, Indore, Madhya Pradesh, India 452018."
+          ],
+          "links": [
+            {
+              "href": "/privacy/",
+              "label": "Privacy policy"
+            },
+            {
+              "href": "/help/",
+              "label": "Help and safety"
+            }
           ]
         }
       ]

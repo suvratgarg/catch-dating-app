@@ -1,7 +1,6 @@
 /*
  * Function roles from CatchTextStyles (packages/catch_ui). Each role reads
- * the platform typography profile its Flutter role reads; web uses the iOS
- * profile until the web type-role token family lands.
+ * the web typography profile entry its Flutter role reads.
  *
  * Every declaration carries the variant attribute so a surface's legacy
  * descendant rule (".panel p") cannot restyle library text.
@@ -21,106 +20,106 @@
 }
 
 .text[data-variant="headline"] {
-  --catch-text-size: var(--catch-typography-ios-headline-size);
-  --catch-text-line-height: var(--catch-typography-ios-headline-line-height);
-  --catch-text-weight: var(--catch-typography-ios-headline-weight);
-  --catch-text-tracking: var(--catch-typography-ios-headline-tracking);
+  --catch-text-size: var(--catch-typography-web-headline-size);
+  --catch-text-line-height: var(--catch-typography-web-headline-line-height);
+  --catch-text-weight: var(--catch-typography-web-headline-weight);
+  --catch-text-tracking: var(--catch-typography-web-headline-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="titleL"] {
-  --catch-text-size: var(--catch-typography-ios-title-size);
-  --catch-text-line-height: var(--catch-typography-ios-title-line-height);
-  --catch-text-weight: var(--catch-typography-ios-title-weight);
-  --catch-text-tracking: var(--catch-typography-ios-title-tracking);
+  --catch-text-size: var(--catch-typography-web-title-size);
+  --catch-text-line-height: var(--catch-typography-web-title-line-height);
+  --catch-text-weight: var(--catch-typography-web-title-weight);
+  --catch-text-tracking: var(--catch-typography-web-title-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="sectionTitle"] {
-  --catch-text-size: var(--catch-typography-ios-name-size);
-  --catch-text-line-height: var(--catch-typography-ios-name-line-height);
-  --catch-text-weight: var(--catch-typography-ios-name-weight);
-  --catch-text-tracking: var(--catch-typography-ios-name-tracking);
+  --catch-text-size: var(--catch-typography-web-name-size);
+  --catch-text-line-height: var(--catch-typography-web-name-line-height);
+  --catch-text-weight: var(--catch-typography-web-name-weight);
+  --catch-text-tracking: var(--catch-typography-web-name-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="titleS"] {
-  --catch-text-size: var(--catch-typography-ios-secondary-size);
-  --catch-text-line-height: var(--catch-typography-ios-secondary-line-height);
+  --catch-text-size: var(--catch-typography-web-secondary-size);
+  --catch-text-line-height: var(--catch-typography-web-secondary-line-height);
   --catch-text-weight: 700;
-  --catch-text-tracking: var(--catch-typography-ios-secondary-tracking);
+  --catch-text-tracking: var(--catch-typography-web-secondary-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="bodyLead"] {
-  --catch-text-size: var(--catch-typography-ios-field-value-size);
-  --catch-text-line-height: var(--catch-typography-ios-field-value-line-height);
-  --catch-text-weight: var(--catch-typography-ios-field-value-weight);
-  --catch-text-tracking: var(--catch-typography-ios-field-value-tracking);
+  --catch-text-size: var(--catch-typography-web-field-value-size);
+  --catch-text-line-height: var(--catch-typography-web-field-value-line-height);
+  --catch-text-weight: var(--catch-typography-web-field-value-weight);
+  --catch-text-tracking: var(--catch-typography-web-field-value-tracking);
   --catch-text-role-color: var(--catch-theme-ink2);
 }
 
 .text[data-variant="bodyL"] {
-  --catch-text-size: var(--catch-typography-ios-body-size);
-  --catch-text-line-height: var(--catch-typography-ios-body-line-height);
-  --catch-text-weight: var(--catch-typography-ios-body-weight);
-  --catch-text-tracking: var(--catch-typography-ios-body-tracking);
+  --catch-text-size: var(--catch-typography-web-body-size);
+  --catch-text-line-height: var(--catch-typography-web-body-line-height);
+  --catch-text-weight: var(--catch-typography-web-body-weight);
+  --catch-text-tracking: var(--catch-typography-web-body-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="bodyM"] {
-  --catch-text-size: var(--catch-typography-ios-secondary-size);
-  --catch-text-line-height: var(--catch-typography-ios-secondary-line-height);
-  --catch-text-weight: var(--catch-typography-ios-secondary-weight);
-  --catch-text-tracking: var(--catch-typography-ios-secondary-tracking);
+  --catch-text-size: var(--catch-typography-web-secondary-size);
+  --catch-text-line-height: var(--catch-typography-web-secondary-line-height);
+  --catch-text-weight: var(--catch-typography-web-secondary-weight);
+  --catch-text-tracking: var(--catch-typography-web-secondary-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="bodyS"] {
-  --catch-text-size: var(--catch-typography-ios-context-size);
-  --catch-text-line-height: var(--catch-typography-ios-context-line-height);
-  --catch-text-weight: var(--catch-typography-ios-context-weight);
-  --catch-text-tracking: var(--catch-typography-ios-context-tracking);
+  --catch-text-size: var(--catch-typography-web-context-size);
+  --catch-text-line-height: var(--catch-typography-web-context-line-height);
+  --catch-text-weight: var(--catch-typography-web-context-weight);
+  --catch-text-tracking: var(--catch-typography-web-context-tracking);
   --catch-text-role-color: var(--catch-theme-ink2);
 }
 
 .text[data-variant="supporting"] {
-  --catch-text-size: var(--catch-typography-ios-secondary-size);
-  --catch-text-line-height: var(--catch-typography-ios-secondary-line-height);
-  --catch-text-weight: var(--catch-typography-ios-secondary-weight);
-  --catch-text-tracking: var(--catch-typography-ios-secondary-tracking);
+  --catch-text-size: var(--catch-typography-web-secondary-size);
+  --catch-text-line-height: var(--catch-typography-web-secondary-line-height);
+  --catch-text-weight: var(--catch-typography-web-secondary-weight);
+  --catch-text-tracking: var(--catch-typography-web-secondary-tracking);
   --catch-text-role-color: var(--catch-theme-ink2);
 }
 
 .text[data-variant="supportingStrong"] {
-  --catch-text-size: var(--catch-typography-ios-secondary-size);
-  --catch-text-line-height: var(--catch-typography-ios-secondary-line-height);
+  --catch-text-size: var(--catch-typography-web-secondary-size);
+  --catch-text-line-height: var(--catch-typography-web-secondary-line-height);
   --catch-text-weight: 500;
-  --catch-text-tracking: var(--catch-typography-ios-secondary-tracking);
+  --catch-text-tracking: var(--catch-typography-web-secondary-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="fieldLabel"] {
-  --catch-text-size: var(--catch-typography-ios-field-label-size);
-  --catch-text-line-height: var(--catch-typography-ios-field-label-line-height);
-  --catch-text-weight: var(--catch-typography-ios-field-label-weight);
-  --catch-text-tracking: var(--catch-typography-ios-field-label-tracking);
+  --catch-text-size: var(--catch-typography-web-field-label-size);
+  --catch-text-line-height: var(--catch-typography-web-field-label-line-height);
+  --catch-text-weight: var(--catch-typography-web-field-label-weight);
+  --catch-text-tracking: var(--catch-typography-web-field-label-tracking);
   --catch-text-role-color: var(--catch-theme-ink2);
 }
 
 .text[data-variant="statusLabel"] {
-  --catch-text-size: var(--catch-typography-ios-status-size);
-  --catch-text-line-height: var(--catch-typography-ios-status-line-height);
-  --catch-text-weight: var(--catch-typography-ios-status-weight);
-  --catch-text-tracking: var(--catch-typography-ios-status-tracking);
+  --catch-text-size: var(--catch-typography-web-status-size);
+  --catch-text-line-height: var(--catch-typography-web-status-line-height);
+  --catch-text-weight: var(--catch-typography-web-status-weight);
+  --catch-text-tracking: var(--catch-typography-web-status-tracking);
   --catch-text-role-color: var(--catch-theme-ink2);
 }
 
 .text[data-variant="metric"] {
-  --catch-text-size: var(--catch-typography-ios-metric-size);
-  --catch-text-line-height: var(--catch-typography-ios-metric-line-height);
-  --catch-text-weight: var(--catch-typography-ios-metric-weight);
-  --catch-text-tracking: var(--catch-typography-ios-metric-tracking);
+  --catch-text-size: var(--catch-typography-web-metric-size);
+  --catch-text-line-height: var(--catch-typography-web-metric-line-height);
+  --catch-text-weight: var(--catch-typography-web-metric-weight);
+  --catch-text-tracking: var(--catch-typography-web-metric-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
   font-variant-numeric: tabular-nums;
 }
