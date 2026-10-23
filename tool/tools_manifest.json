@@ -64,6 +64,31 @@
       }
     },
     {
+      "id": "functions:emulator-test-selection",
+      "category": "ci",
+      "path": "tool/impact/emulator_test_selection.mjs",
+      "command": "node tool/impact/emulator_test_selection.mjs --base origin/main",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Chooses the strict Firestore/Storage emulator tests a pull request can reach, from the dependency-cruiser graph of functions/ plus the data files tests name; shared inputs and rules changes keep the full list, and only pull requests narrow.",
+      "impactPaths": [
+        "tool/lib/functions_test_selection.mjs",
+        "tool/lib/functions_test_selection.test.mjs",
+        "tool/lib/dependency_cruiser.mjs",
+        "tool/impact/package.json",
+        "tool/impact/package-lock.json"
+      ],
+      "checks": [
+        "node --check tool/impact/emulator_test_selection.mjs",
+        "node --test tool/lib/functions_test_selection.test.mjs"
+      ],
+      "role": "generator",
+      "vacuityProof": {
+        "type": "self-test",
+        "command": "node --test tool/lib/functions_test_selection.test.mjs"
+      }
+    },
+    {
       "id": "tool:import-owners",
       "category": "meta",
       "path": "tool/impact/import_owners.mjs",

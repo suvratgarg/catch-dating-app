@@ -393,6 +393,8 @@ jobs:
     with:
       ci_plan_attempt: ${{ needs.plan.outputs.producer_attempt }}
       ci_plan_source_sha: ${{ needs.plan.outputs.source_sha }}
+      base_sha: ${{ needs.plan.outputs.base_sha }}
+      mode: ${{ needs.plan.outputs.mode }}
     secrets: inherit
 
   flutter:
