@@ -41,7 +41,7 @@ function setup() {
   const command = {organizerId: "org1", eventId: "event1",
     requestId: "publish-one", expectedSetupRevision: 1,
     publicationState: "published" as const};
-  const deps = {db: store.db(), privacyMigrationReady: () => true,
+  const deps = {db: store.db(),
     timestampFromMillis: Timestamp.fromMillis,
     serverTimestamp: () => Timestamp.fromMillis(1) as unknown as
       FirebaseFirestore.FieldValue};
@@ -186,7 +186,7 @@ test("fresh progressive event publishes after details", async () => {
     },
     runTransaction: h.store.runTransaction.bind(h.store),
   } as unknown as FirebaseFirestore.Firestore;
-  const deps = {...h.deps, db, freshEventSeatWritersReady: () => true};
+  const deps = {...h.deps, db};
   const created = await createPrivateEventSetup({actorUid: "host1", deps,
     command: {organizerId: "org1", requestId: "create-fresh",
       basics: {name: "Sunday dinner", city: {mode: "set", value: {

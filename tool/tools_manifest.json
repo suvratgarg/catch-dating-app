@@ -4407,6 +4407,7 @@
         ".github/workflows/*.yml",
         "firebase/remote_config.template.json",
         "functions/src/**/*.ts",
+        "lib/**/*.dart",
         "tool/env/dart_defines/*.json",
         "tool/firebase/check_deploy_parity.mjs",
         "tool/firebase/client_callable_dependencies.json",
@@ -4432,7 +4433,8 @@
           "policy guard requires every discovered switch to be classified",
           "an allowed difference needs a feature gate, owner, reason, CAT ticket and unexpired date",
           "policy-only mode reads a real repository layout offline and fails closed on a new switch",
-          "the CLI collects only read-only metadata, survives an unavailable source and never prints identities"
+          "the CLI collects only read-only metadata, survives an unavailable source and never prints identities",
+          "retired switches may not return outside their allowed sources"
         ]
       }
     },

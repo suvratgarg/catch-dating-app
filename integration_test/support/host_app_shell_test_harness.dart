@@ -13,7 +13,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_s
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
-import 'package:catch_dating_app/hosts/data/host_release_config.dart';
 import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
 import 'package:catch_dating_app/hosts/today/personalization/data/host_today_preference_repository.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
@@ -37,14 +36,6 @@ import 'app_shell_test_harness.dart';
 /// fixtures. Return `null` to defer to [HostShellBackend].
 typedef HostCallableHandler =
     FutureOr<Object?> Function(String name, Object? input);
-
-/// Host release flags the launch build runs with in production Remote Config.
-/// Journeys exercise the shipped configuration rather than bundled defaults.
-const hostLaunchReleaseFlags = <String, bool>{
-  hostPrivateEventSetupFlagKey: true,
-  hostProgressiveEventDefaultsFlagKey: true,
-  hostWeddingPhoneImportFlagKey: true,
-};
 
 const _journeyCity = {'cityId': 'in-mh-mumbai', 'marketId': 'in-mh-mumbai'};
 final _journeyHash = List.filled(64, 'a').join();
@@ -409,7 +400,6 @@ Future<List<Object>> hostAppShellTestOverrides({
   required HostShellBackend backend,
   required UserProfile user,
   required List<Club> organizers,
-  Map<String, bool> releaseFlags = hostLaunchReleaseFlags,
 }) async {
   for (final organizer in organizers) {
     await backend.seedOrganizer(organizer);
@@ -430,8 +420,6 @@ Future<List<Object>> hostAppShellTestOverrides({
     hostTodayPreferenceRepositoryProvider.overrideWithValue(
       backend.todayPreferences,
     ),
-    for (final flag in releaseFlags.entries)
-      hostReleaseFlagProvider(flag.key).overrideWithValue(flag.value),
   ];
 }
 

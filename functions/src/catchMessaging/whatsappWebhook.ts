@@ -1,7 +1,6 @@
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {defineBoolean, defineSecret, defineString} from
-  "firebase-functions/params";
+import {defineSecret, defineString} from "firebase-functions/params";
 import {onRequest} from "firebase-functions/v2/https";
 import {handleCatchWhatsappWebhook, WEBHOOK_RETENTION_MILLIS} from
   "./whatsappWebhookProtocol";
@@ -16,8 +15,6 @@ import {persistCatchVerifiedIngressEvent} from "./whatsappIngressStore";
 export const CATCH_WEBHOOK_COLLECTION = CATCH_RECEIPTS;
 const appSecret = defineSecret("CATCH_WHATSAPP_APP_SECRET");
 const verifyToken = defineSecret("CATCH_WHATSAPP_WEBHOOK_VERIFY_TOKEN");
-const webhookEnabled = defineBoolean("CATCH_WHATSAPP_WEBHOOK_ENABLED",
-  {default: false});
 const wabaId = defineString("CATCH_WHATSAPP_WABA_ID", {default: ""});
 const phoneNumberId = defineString("CATCH_WHATSAPP_PHONE_NUMBER_ID",
   {default: ""});
@@ -63,7 +60,7 @@ export const catchWhatsappWebhook = onRequest({
     method: request.method, query: request.query,
     rawBody: request.rawBody,
     signature: request.header("x-hub-signature-256"),
-  }, {enabled: webhookEnabled.value(), wabaId: wabaId.value().trim(),
+  }, {wabaId: wabaId.value().trim(),
     phoneNumberId: phoneNumberId.value().trim(), appSecret: appSecret.value(),
     verifyToken: verifyToken.value()}, (events) =>
     persistCatchWhatsappWebhookEvents(admin.firestore(), events));

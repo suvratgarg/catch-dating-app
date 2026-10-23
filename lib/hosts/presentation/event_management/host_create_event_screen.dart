@@ -10,12 +10,9 @@ import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_wizard_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_loading_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_route_state.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -203,48 +200,25 @@ class HostCreateEventRouteBody extends ConsumerWidget {
           actions: const [CatchErrorBackButton()],
         ),
       ),
-      HostCreateEventRouteStatus.ready
-          when ref.watch(privateEventSetupAvailableProvider) =>
-        PrivateEventCreateScreen(
-          club: state.club!,
-          initialDraft: initialDraft,
-          initialPrefill: initialPrefill,
-          initialSavedEventId: initialSavedEventId,
-          initialRosterImportPlan: initialRosterImportPlan,
-          promptForDraftsOnStart: promptForDrafts,
-          readOrganizerDefaults: (organizerId) =>
-              ManagerEventSetupDefaultsRepository(
-                ref.read(firebaseFunctionsProvider),
-              ).get(organizerId),
-          returnToResponsesOnSave: returnToResponsesOnSave,
-          onSaved: returnToResponsesOnSave
-              ? (receipt) => WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (context.mounted) {
-                    Navigator.of(context).pop(receipt.eventId);
-                  }
-                })
-              : null,
-        ),
-      HostCreateEventRouteStatus.ready when initialSavedEventId != null =>
-        CatchScaffold.stepFlow(
-          body: CatchErrorState(
-            title: context
-                .l10n
-                .hostsHostCreateEventScreenTitleEventSetupUnavailable,
-            message: context.l10n.hostsPrivateEventSetupUnavailable,
-            actions: const [CatchErrorBackButton()],
-          ),
-        ),
-      HostCreateEventRouteStatus.ready => CreateEventScreen(
+      HostCreateEventRouteStatus.ready => PrivateEventCreateScreen(
         club: state.club!,
         initialDraft: initialDraft,
         initialPrefill: initialPrefill,
-        externalBookingMode: externalBookingMode,
+        initialSavedEventId: initialSavedEventId,
         initialRosterImportPlan: initialRosterImportPlan,
         promptForDraftsOnStart: promptForDrafts,
-        initialStep: initialPrefill == null
-            ? CreateEventWizardStep.eventDetails.index
-            : CreateEventWizardStep.schedule.index,
+        readOrganizerDefaults: (organizerId) =>
+            ManagerEventSetupDefaultsRepository(
+              ref.read(firebaseFunctionsProvider),
+            ).get(organizerId),
+        returnToResponsesOnSave: returnToResponsesOnSave,
+        onSaved: returnToResponsesOnSave
+            ? (receipt) => WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (context.mounted) {
+                  Navigator.of(context).pop(receipt.eventId);
+                }
+              })
+            : null,
       ),
     };
   }

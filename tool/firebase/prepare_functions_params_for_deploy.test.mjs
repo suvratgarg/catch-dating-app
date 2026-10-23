@@ -303,11 +303,12 @@ test("platform Route config is opt-in and pins only a project-local version", ()
 });
 
 
-test("Catch webhook activation is independent and never writes secrets", () => {
+test("configured Catch account ids activate the receiver and never write secrets", () => {
   const result = prepareFunctionsParamsForDeploy({
     functionsDir: fixture(), projectId: "catchdates-dev",
     environment: {...publicIds,
-      CATCH_WHATSAPP_WEBHOOK_ENABLED: "true",
+      // A leftover environment switch is ignored; credentials decide.
+      CATCH_WHATSAPP_WEBHOOK_ENABLED: "false",
       CATCH_WHATSAPP_WABA_ID: "123",
       CATCH_WHATSAPP_PHONE_NUMBER_ID: "456",
       CATCH_WHATSAPP_APP_SECRET: "must-not-be-emitted",
@@ -322,17 +323,16 @@ test("Catch webhook activation is independent and never writes secrets", () => {
   assert.doesNotMatch(contents, /APP_SECRET|VERIFY_TOKEN|must-not-be-emitted/);
 });
 
-test("Catch webhook activation rejects absent or unsafe sender ids", () => {
+test("Catch receiver rejects unpaired or unsafe sender ids", () => {
   for (const patch of [
-    {}, {CATCH_WHATSAPP_WABA_ID: "123"},
+    {CATCH_WHATSAPP_WABA_ID: "123"}, {CATCH_WHATSAPP_PHONE_NUMBER_ID: "456"},
     {CATCH_WHATSAPP_WABA_ID: "bad", CATCH_WHATSAPP_PHONE_NUMBER_ID: "456"},
     {CATCH_WHATSAPP_WABA_ID: "123", CATCH_WHATSAPP_PHONE_NUMBER_ID: "bad"},
   ]) {
     const functionsDir = fixture();
     assert.throws(() => prepareFunctionsParamsForDeploy({
       functionsDir, projectId: "catchdates-dev",
-      environment: {...publicIds, CATCH_WHATSAPP_WEBHOOK_ENABLED: "true",
-        ...patch},
+      environment: {...publicIds, ...patch},
     }), /Catch WABA|numeric Meta/);
     assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")),
       false);
@@ -348,8 +348,7 @@ test("Catch receipt consumers materialize false independently of ingress", () =>
     fs.writeFileSync(output, 'CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED="true"\n');
     const result = prepareFunctionsParamsForDeploy({
       functionsDir, projectId: "catchdates-dev",
-      environment: {...publicIds, CATCH_WHATSAPP_WEBHOOK_ENABLED: "true",
-        CATCH_WHATSAPP_WABA_ID: "123", CATCH_WHATSAPP_PHONE_NUMBER_ID: "456",
+      environment: {...publicIds, CATCH_WHATSAPP_WABA_ID: "123", CATCH_WHATSAPP_PHONE_NUMBER_ID: "456",
         CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: value},
     });
     const contents = fs.readFileSync(result.outputPath, "utf8");
@@ -406,7 +405,7 @@ function rejectsCatchConfig(patch, pattern = /Catch|CATCH_WHATSAPP/) {
   assert.equal(fs.readFileSync(output, "utf8"), "previous-file-must-survive\n");
 }
 
-test("complete Catch scope can be staged or retained during all-gates-off rollback", () => {
+test("complete Catch scope can be staged while ingress gates stay off", () => {
   const functionsDir = fixture();
   const result = prepareFunctionsParamsForDeploy({
     functionsDir, projectId: "catchdates-dev",
@@ -416,10 +415,23 @@ test("complete Catch scope can be staged or retained during all-gates-off rollba
   for (const [name, value] of Object.entries(catchReplyScope)) {
     assert.ok(contents.includes(`${name}=${JSON.stringify(value)}\n`));
   }
-  for (const name of ["WEBHOOK_ENABLED", "RECEIPT_CONSUMERS_ENABLED",
-    "REPLIES_ENABLED", "ATOMIC_STOP_INGRESS_READY"]) {
+  for (const name of ["RECEIPT_CONSUMERS_ENABLED", "REPLIES_ENABLED",
+    "ATOMIC_STOP_INGRESS_READY"]) {
     assert.ok(contents.includes(`CATCH_WHATSAPP_${name}="false"\n`));
   }
+  // Configured account ids alone make the receiver live.
+  assert.ok(contents.includes('CATCH_WHATSAPP_WEBHOOK_ENABLED="true"\n'));
+});
+
+test("unconfigured Catch account ids keep the receiver inert", () => {
+  const result = prepareFunctionsParamsForDeploy({
+    functionsDir: fixture(), projectId: "catchdates-dev",
+    environment: {...publicIds, CATCH_WHATSAPP_WEBHOOK_ENABLED: "true"},
+  });
+  const contents = fs.readFileSync(result.outputPath, "utf8");
+  assert.ok(contents.includes('CATCH_WHATSAPP_WEBHOOK_ENABLED="false"\n'));
+  rejectsCatchConfig({CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: "true"},
+    /configured webhook account ids/);
 });
 
 
@@ -531,7 +543,6 @@ test("clearing Catch configuration removes every previous activation and scope v
     functionsDir, projectId: "catchdates-dev", environment: {...publicIds, ...environment},
   });
   generate({...catchSender, ...catchReplyScope,
-    CATCH_WHATSAPP_WEBHOOK_ENABLED: "true",
     CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: "true",
     CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: "true",
     CATCH_WHATSAPP_REPLIES_ENABLED: "true"});
@@ -549,15 +560,16 @@ test("clearing Catch configuration removes every previous activation and scope v
 });
 
 test("Catch gate combinations fail closed without coupling organizer or other channels", () => {
-  const names = ["WEBHOOK_ENABLED", "ATOMIC_STOP_INGRESS_READY",
-    "RECEIPT_CONSUMERS_ENABLED", "REPLIES_ENABLED"];
-  for (let bits = 0; bits < 16; bits++) {
+  const names = ["ATOMIC_STOP_INGRESS_READY", "RECEIPT_CONSUMERS_ENABLED",
+    "REPLIES_ENABLED"];
+  for (let bits = 0; bits < 8; bits++) {
     const on = names.map((_, index) => Boolean(bits & (1 << index)));
     const gates = Object.fromEntries(names.map((name, index) =>
       [`CATCH_WHATSAPP_${name}`, String(on[index])]));
     const environment = {...catchSender, ...catchReplyScope, ...gates};
-    // Valid progression: disabled, receiver, atomic ingress, consumers, replies.
-    if (!new Set([0, 1, 3, 7, 15]).has(bits)) {
+    // Valid progression on a configured receiver: atomic ingress, consumers,
+    // replies.
+    if (!new Set([0, 1, 3, 7]).has(bits)) {
       rejectsCatchConfig(environment);
       continue;
     }
@@ -570,6 +582,7 @@ test("Catch gate combinations fail closed without coupling organizer or other ch
     for (const [name, value] of Object.entries(gates)) {
       assert.ok(contents.includes(`${name}="${value}"\n`));
     }
+    assert.ok(contents.includes('CATCH_WHATSAPP_WEBHOOK_ENABLED="true"\n'));
     for (const name of ["META_WHATSAPP_ENABLED", "EVENT_ASSISTANCE_RCS_ENABLED",
       "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED", "EVENT_ASSISTANCE_SMS_REPORTS_ENABLED"]) {
       assert.ok(contents.includes(`${name}="false"\n`));
@@ -582,7 +595,6 @@ test("atomic ingress and consumers can precede recipient readiness without repli
   const result = prepareFunctionsParamsForDeploy({
     functionsDir: fixture(), projectId: "catchdates-dev",
     environment: {...publicIds, ...catchSender,
-      CATCH_WHATSAPP_WEBHOOK_ENABLED: "true",
       CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: "true",
       CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: "true"},
   });
@@ -599,8 +611,7 @@ test("partial Catch reply scope and unpaired sender ids never overwrite config",
   rejectsCatchConfig({...catchReplyScope});
   rejectsCatchConfig({...catchReplyScope, CATCH_WHATSAPP_WABA_ID: "123"});
   rejectsCatchConfig({CATCH_WHATSAPP_PHONE_NUMBER_ID: "456"});
-  rejectsCatchConfig({...catchSender, CATCH_WHATSAPP_WEBHOOK_ENABLED: "true",
-    CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: "true",
+  rejectsCatchConfig({...catchSender, CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY: "true",
     CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED: "true",
     CATCH_WHATSAPP_REPLIES_ENABLED: "true"});
 });
@@ -629,8 +640,8 @@ test("malformed Catch scope rejects unsafe identities endpoints digests and vers
 });
 
 test("Catch gates reject non-booleans even with complete valid scope", () => {
-  for (const name of ["WEBHOOK_ENABLED", "RECEIPT_CONSUMERS_ENABLED",
-    "REPLIES_ENABLED", "ATOMIC_STOP_INGRESS_READY"]) {
+  for (const name of ["RECEIPT_CONSUMERS_ENABLED", "REPLIES_ENABLED",
+    "ATOMIC_STOP_INGRESS_READY"]) {
     for (const value of ["1", "yes", "false\nINJECTED=true"]) {
       rejectsCatchConfig({...catchSender, ...catchReplyScope,
         [`CATCH_WHATSAPP_${name}`]: value}, /must be true or false/);
@@ -645,7 +656,7 @@ test("promotion forwards scoped Catch non-secret configuration without secret pa
     promotion.indexOf("      - name: Materialize non-secret Functions params"),
     promotion.indexOf("      - name: Gate Functions param coverage"));
   for (const name of [...Object.keys(catchSender), ...Object.keys(catchReplyScope),
-    "CATCH_WHATSAPP_WEBHOOK_ENABLED", "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED",
+    "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED",
     "CATCH_WHATSAPP_REPLIES_ENABLED", "CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY"]) {
     assert.ok(step.includes(name + ": ${{ vars." + name + " }}"));
   }

@@ -8,7 +8,6 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/data/read_models/host_event_summary_reads.dart';
 import 'package:catch_dating_app/hosts/data/read_models/host_summary_reader.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/private_event_setup_capability.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -198,9 +197,7 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
     }
     final previous = state.value;
     final repository = ref.watch(eventRepositoryProvider);
-    final setups = ref.watch(privateEventSetupAvailableProvider)
-        ? ref.watch(privateEventSetupTimelineRepositoryProvider)
-        : null;
+    final setups = ref.watch(privateEventSetupTimelineRepositoryProvider);
     final active = _capture(
       () => repository.fetchActiveEventsPage(
         organizerId: request.organizerId,
@@ -552,12 +549,10 @@ Future<AsyncValue<T>> _capture<T>(Future<T> Function() read) async {
 }
 
 Future<PrivateEventSetupInventoryPage> _readUnpublishedPage(
-  PrivateEventSetupRepository? repository,
+  PrivateEventSetupRepository repository,
   String organizerId,
   PrivateEventSetupScope scope,
-) async => repository == null
-    ? const PrivateEventSetupInventoryPage(events: [], nextCursor: null)
-    : repository.list(organizerId: organizerId, scope: scope);
+) => repository.list(organizerId: organizerId, scope: scope);
 
 HostEventsTimelineData _initialState(
   CursorPage<Event, DocumentSnapshot<Event>> activePage,

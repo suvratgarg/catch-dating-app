@@ -15,9 +15,9 @@ function setup() {
   const before = {organizerId: "org1", clubId: "org1", status: "active",
     bookedCount: 0, checkedInCount: 0, waitlistedCount: 0} as EventDocument;
   const after = {...before, ...eventListingTermsPatch(before, terms)};
-  const run = (ready = true) => store.db().runTransaction(async (tx) => {
+  const run = () => store.db().runTransaction(async (tx) => {
     const result = await preparePrivateListingTerms({db: store.db(), tx,
-      eventId: "event1", before, after, allWritersIntegrated: () => ready});
+      eventId: "event1", before, after});
     if (result?.ledger) {
       tx.set(store.db().collection("eventSeatLedgers")
         .doc("event1"), result.ledger);
@@ -49,10 +49,7 @@ test("fresh empty event initializes authority atomically", async () => {
   assert.equal(mode, "ready");
 });
 
-test("fresh initialization fences gates, markers and history", async () => {
-  const gated = setup();
-  await assert.rejects(gated.run(false), unavailable);
-  assert.equal(gated.store.writes.length, 0);
+test("fresh initialization fences markers and history", async () => {
   for (const field of ["bookedCount", "checkedInCount", "waitlistedCount"]) {
     const h = setup();
     Object.assign(h.before, {[field]: 1});

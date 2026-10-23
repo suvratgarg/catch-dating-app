@@ -16,21 +16,23 @@ import {
 } from "./check_app_targets.mjs";
 import {resolveAppTarget, valueAtPath} from "./resolve_app_target.mjs";
 
-test("phone rollout rejects its retired compiled hold and open defaults", () => {
+test("phone import rejects compiled holds and retired release gates", () => {
   const sources = {accessSource: "canImportWeddingPhoneContacts",
-    routeSource: "hostReleaseFlagProvider", workSource: "hostReleaseFlagProvider",
-    parameters: {
-      host_wedding_phone_import_enabled: {defaultValue: {value: "false"}},
-      CATCH_WEDDING_PHONE_IMPORT_READY: {defaultValue: {value: "false"}},
-    }};
+    routeSource: "canImportWeddingPhoneContacts",
+    workSource: "canImportWeddingPhoneContacts",
+    parameters: {min_version: {defaultValue: {value: "1.0.1"}}}};
   assert.deepEqual(validateHostReleaseVisibility(sources), []);
   assert.deepEqual(validateHostReleaseVisibility({...sources,
     workSource: "final banner = AppConfig.environment.bannerLabel;"}), []);
   assert.match(validateHostReleaseVisibility({...sources,
     accessSource: "if (AppConfig.environment.isProduction) return false;"})[0],
   /compiled environment release hold/u);
-  assert.match(validateHostReleaseVisibility({...sources, parameters: {}})[0],
-    /default/u);
+  for (const key of ["host_wedding_phone_import_enabled",
+    "CATCH_PRIVATE_EVENT_PRIVACY_READY"]) {
+    assert.match(validateHostReleaseVisibility({...sources, parameters: {
+      [key]: {defaultValue: {value: "false"}}}})[0],
+    /must not reintroduce retired release gate/u);
+  }
 });
 
 function validManifest() {

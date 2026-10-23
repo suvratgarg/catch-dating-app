@@ -131,18 +131,6 @@
         "value": "false"
       },
       "description": "Admin Catch WhatsApp client availability only; setup approval, access grants, backend readiness and human reply approval remain separate."
-    },
-    "host_wedding_phone_import_enabled": {
-      "defaultValue": {
-        "value": "false"
-      },
-      "description": "Host client visibility for reviewed wedding phone import; server release authority remains separate."
-    },
-    "CATCH_WEDDING_PHONE_IMPORT_READY": {
-      "defaultValue": {
-        "value": "false"
-      },
-      "description": "Server release authority for the dedicated wedding phone import callable."
     }
   }
 }

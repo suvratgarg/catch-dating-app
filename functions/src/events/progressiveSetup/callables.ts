@@ -47,8 +47,6 @@ import {validateListOfferEventTargetsCallablePayload} from
   "../../shared/generated/validators/listOfferEventTargetsInput";
 import {validateOfferEventTargetListCallableResponse} from
   "../../shared/generated/validators/offerEventTargetListOutput";
-import {readPrivateEventReleaseReadiness, PrivateEventReleaseReadiness} from
-  "../../shared/privateEventReleaseConfig";
 
 import {setEventPublication as setPublication} from "./publication";
 import {validateSetEventPublicationCallablePayload} from
@@ -61,36 +59,19 @@ export interface SetupCallableDependencies {
   nowMillis?: () => number;
   firestore: () => FirebaseFirestore.Firestore;
   checkRateLimit: typeof checkRateLimit;
-  service: (db: FirebaseFirestore.Firestore,
-    readiness?: PrivateEventReleaseReadiness) => ProgressiveSetupDependencies;
+  service: (db: FirebaseFirestore.Firestore) => ProgressiveSetupDependencies;
 }
 
 const defaultDeps: SetupCallableDependencies = {
   firestore: () => admin.firestore(),
   checkRateLimit,
-  service: (db, readiness) => ({
+  service: (db) => ({
     db,
-    privacyMigrationReady: () => readiness?.privacy === true,
-    freshEventSeatWritersReady: () => readiness?.seatWriters === true,
     timestampFromMillis: admin.firestore.Timestamp.fromMillis,
     serverTimestamp: admin.firestore.FieldValue.serverTimestamp,
     assertBasicsEditable: assertPrivateEventBasicsEditable,
   }),
 };
-
-// The server fetches rollout authority after auth and payload validation. A
-// missing or failed read closes production before any Firestore access.
-async function requireProductionPrivacyReadiness(
-  deps: SetupCallableDependencies
-): Promise<PrivateEventReleaseReadiness | undefined> {
-  if (deps === defaultDeps) {
-    const readiness = await readPrivateEventReleaseReadiness();
-    if (readiness.privacy) return readiness;
-    throw new HttpsError("failed-precondition",
-      "Private event setup is not yet available.");
-  }
-  return undefined;
-}
 
 /** Authenticated entry point; transaction owns final manager authority. */
 export async function createPrivateEventSetupHandler(
@@ -99,10 +80,9 @@ export async function createPrivateEventSetupHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateCreatePrivateEventSetupCallablePayload);
-  const readiness = await requireProductionPrivacyReadiness(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "createPrivateEventSetup");
-  return createSetup({actorUid, command, deps: deps.service(db, readiness)});
+  return createSetup({actorUid, command, deps: deps.service(db)});
 }
 
 /** Keeps mutation request identity intact through the service receipt. */
@@ -112,10 +92,9 @@ export async function updatePrivateEventBasicsHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateUpdatePrivateEventBasicsCallablePayload);
-  const readiness = await requireProductionPrivacyReadiness(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "updatePrivateEventBasics");
-  return updateBasics({actorUid, command, deps: deps.service(db, readiness)});
+  return updateBasics({actorUid, command, deps: deps.service(db)});
 }
 
 /** Returns only a manager-authorized whitelist of saved setup fields. */
@@ -144,11 +123,9 @@ export async function updatePrivateEventPreferencesHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateUpdatePrivateEventPreferencesCallablePayload);
-  const readiness = await requireProductionPrivacyReadiness(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "updatePrivateEventPreferences");
-  return updatePreferences({actorUid, command, deps: deps.service(db,
-    readiness)});
+  return updatePreferences({actorUid, command, deps: deps.service(db)});
 }
 
 export const updatePrivateEventPreferences = onCall(appCheckCallableOptions,
@@ -180,11 +157,10 @@ export async function updatePrivateEventDetailsHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateUpdatePrivateEventDetailsCallablePayload);
-  const readiness = await requireProductionPrivacyReadiness(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "updatePrivateEventDetails");
   const result = await updateDetails({actorUid, command,
-    deps: deps.service(db, readiness)});
+    deps: deps.service(db)});
   if (!validatePrivateEventSetupMutationCallableResponse(result)) {
     throw new HttpsError("internal", "Invalid event setup result.");
   }
@@ -218,11 +194,10 @@ export async function setEventPublicationHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateSetEventPublicationCallablePayload);
-  const readiness = await requireProductionPrivacyReadiness(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "setEventPublication");
   const result = await setPublication({actorUid, command,
-    deps: deps.service(db, readiness)});
+    deps: deps.service(db)});
   if (!validateEventPublicationCallableResponse(result)) {
     throw new HttpsError("internal", "Invalid event publication result.");
   }
@@ -241,12 +216,11 @@ export async function reconcilePrivateEventSeatsHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateReconcilePrivateEventSeatsCallablePayload);
-  const readiness = await requireProductionPrivacyReadiness(deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "reconcilePrivateEventSeats");
   const {discard, ...settings} = command;
   const result = await reconcileSeats({actorUid, command: settings, discard,
-    deps: {...deps.service(db, readiness), auth: deps.seatAuth ?? admin.auth(),
+    deps: {...deps.service(db), auth: deps.seatAuth ?? admin.auth(),
       nowMillis: deps.nowMillis ?? Date.now}});
   if (!validatePrivateSeatReconciliationCallableResponse(result)) {
     throw new HttpsError("internal", "Invalid guest reconciliation result.");

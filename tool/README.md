@@ -756,7 +756,13 @@ reason, `CAT-` Linear ticket and unexpired date; the report marks every other
 gate difference `UNDECLARED-DIFFERENCE`. `--policy-only` is the offline CI
 guard: a new Functions param, workflow variable, Dart define or Remote Config
 template key fails until it is classified, and an expired allowance fails
-until the gate is flipped or renewed.
+until the gate is flipped or renewed. Removed switches move to `retired`: they
+may not reappear in source, the template or a workflow outside their listed
+`allowedIn` sources, and the live report marks leftovers `RETIRED-STILL-LIVE`
+so the owner can delete them. A retired key that older app builds still read
+carries a `liveHold` instead: the report lists it as a retired gate still live
+for old builds and flags `RETIRED-HOLD-BROKEN` if the held live value changes
+or disappears.
 
 ```sh
 node tool/firebase/report_environment_parity.mjs

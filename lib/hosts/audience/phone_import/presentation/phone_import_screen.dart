@@ -7,7 +7,6 @@ import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_review_screen.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_controller.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_submission_controller.dart';
-import 'package:catch_dating_app/hosts/data/host_release_config.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -27,7 +26,6 @@ class PhoneImportScreen extends ConsumerStatefulWidget {
 class _PhoneImportScreenState extends ConsumerState<PhoneImportScreen>
     with WidgetsBindingObserver {
   ProviderSubscription<AsyncValue<String?>>? _authSubscription;
-  ProviderSubscription<bool>? _releaseSubscription;
   Timer? _expiryTimer;
   PhoneImportController? _review;
   PhoneImportSubmissionController? _submission;
@@ -51,12 +49,6 @@ class _PhoneImportScreenState extends ConsumerState<PhoneImportScreen>
         _reload();
       }
     });
-    _releaseSubscription = ref.listenManual(
-      hostReleaseFlagProvider(hostWeddingPhoneImportFlagKey),
-      (previous, next) {
-        if (!next) _reload();
-      },
-    );
     unawaited(_load());
   }
 
@@ -182,7 +174,6 @@ class _PhoneImportScreenState extends ConsumerState<PhoneImportScreen>
 
   @override
   void dispose() {
-    _releaseSubscription?.close();
     _generation++;
     _authSubscription?.close();
     WidgetsBinding.instance.removeObserver(this);

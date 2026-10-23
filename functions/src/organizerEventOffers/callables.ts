@@ -55,21 +55,17 @@ import {validateConfigureEventOfferPreferencesCallablePayload} from
 import {validateConfigureEventOfferPreferencesCallableResponse} from
   "../shared/generated/validators/configureEventOfferPreferencesOutput";
 
-import {eventOfferIntegrationReady} from "./offerIntegration";
 
 export interface OfferCallableDependencies {
   firestore: () => FirebaseFirestore.Firestore;
   repository: (db: FirebaseFirestore.Firestore) => OfferRepository;
   checkRateLimit: typeof checkRateLimit;
-  /** Release boundary; no request or environment flag may bypass it. */
-  integrationReady: () => boolean | Promise<boolean>;
   issueInvitation?: Parameters<typeof prepareHandoff>[0]["issueInvitation"];
 }
 const defaultDeps: OfferCallableDependencies = {
   firestore: () => admin.firestore(),
   repository: (db) => new FirestoreEventOfferRepository(db),
   checkRateLimit,
-  integrationReady: eventOfferIntegrationReady,
   issueInvitation: async (input) => {
     const invitation = await issueOfferRecipientInvitation({
       db: admin.firestore(), actorUid: input.actorUid,
@@ -89,10 +85,6 @@ async function execute<T>(params: {
   validate: (value: unknown) => boolean;
 }): Promise<T> {
   const {uid, action, deps, run, validate} = params;
-  if (!await deps.integrationReady()) {
-    throw new HttpsError("failed-precondition",
-      "Event offer integration is not ready.");
-  }
   const db = deps.firestore();
   await deps.checkRateLimit(db, uid, action);
   try {
@@ -215,15 +207,10 @@ export async function configureEventOfferPreferencesHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateConfigureEventOfferPreferencesCallablePayload);
-  const integrationReady = await deps.integrationReady();
-  if (!integrationReady) {
-    throw new HttpsError("failed-precondition",
-      "Event offer integration is not ready.");
-  }
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "configureEventOfferPreferences");
   const result = await configurePreferences({actorUid, command, deps: {
-    db, configurationReady: () => integrationReady,
+    db,
     serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   }});
   if (!validateConfigureEventOfferPreferencesCallableResponse(result)) {
@@ -241,16 +228,10 @@ export async function previewEventOfferPreferencesHandler(
   const actorUid = requireAuth(request);
   const command = validateCallableWithAjv(request,
     validateConfigureEventOfferPreferencesCallablePayload);
-  const integrationReady = await deps.integrationReady();
-  if (!integrationReady) {
-    throw new HttpsError("failed-precondition",
-      "Event offer integration is not ready.");
-  }
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "previewEventOfferPreferences");
   const result = await configurePreferences({actorUid, command,
     previewOnly: true, deps: {db,
-      configurationReady: () => integrationReady,
       serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp()}});
   if (!validatePreviewEventOfferPreferencesCallableResponse(result)) {
     throw new HttpsError("internal", "Invalid event preference preview.");

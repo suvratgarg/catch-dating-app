@@ -29,7 +29,6 @@ async function harness() {
   const h = await setup();
   let executions = 0;
   let routes = 0;
-  let enabled = true;
   const db = {runTransaction: h.store.runTransaction.bind(h.store),
     collection: (name: string) => {
       const base = h.store.collection(name);
@@ -49,7 +48,7 @@ async function harness() {
             data: () => h.store.get(`${name}/${id}`)})})};
     }} as unknown as FirebaseFirestore.Firestore;
   const deps = {...recipientCallableDefaults, db: () => db,
-    now: () => now + 20, enabled: () => enabled,
+    now: () => now + 20,
     rateLimit: async () => undefined,
     claim: (input: Parameters<typeof claimOfferRecipientInvitation>[0]) =>
       claimOfferRecipientInvitation({...input, loadCurrentAuthUser: h.auth}),
@@ -85,10 +84,7 @@ async function harness() {
       cancellationQuote: null,
       expiresAtMillis: payment.checkoutExpiresAt.toMillis(), checkout: null}),
   } as unknown as typeof recipientCallableDefaults;
-  return {...h, deps, executions: () => executions, routes: () => routes,
-    disable: () => {
-      enabled = false;
-    }};
+  return {...h, deps, executions: () => executions, routes: () => routes};
 }
 
 test("recipient callable requires authenticated phone claims and strict input",
@@ -130,36 +126,21 @@ test("prepare replays its frozen attempt without selecting another route",
     assert.equal(h.executions(), before);
   });
 
-test("disabled rollout blocks new claims but preserves ended payment history",
+test("a withdrawn offer preserves ended payment history",
   async () => {
     const h = await harness();
     const {paymentId} = await h.reserve();
     await h.expire(paymentId);
-    h.disable();
     h.store.get(`organizerEventOffers/${offerId}`)!.status = "withdrawn";
     const recovered = await manageEventOfferCheckoutHandler(request({
       action: "claim", token: h.invitation.token}), h.deps);
     assert.equal(recovered.grant, null);
     assert.equal(recovered.payment?.paymentId, paymentId);
-    const fresh = await harness();
-    fresh.disable();
-    await assert.rejects(manageEventOfferCheckoutHandler(request({
-      action: "claim", token: fresh.invitation.token}), fresh.deps));
     const result = await manageEventOfferCheckoutHandler(request({
       action: "status", paymentId, callback: null}), h.deps);
     assert.equal(result.payment?.status, "expired");
     assert.equal(h.executions(), 0);
   });
-
-test("async release denial blocks fresh recipient claims", async () => {
-  const h = await harness();
-  h.deps.enabled = async () => false;
-  await assert.rejects(manageEventOfferCheckoutHandler(request({
-    action: "claim", token: h.invitation.token,
-  }), h.deps));
-  assert.equal(h.routes(), 0);
-  assert.equal(h.executions(), 0);
-});
 
 test("invitation links are manager-only and keep secrets in the fragment",
   async () => {
@@ -177,7 +158,7 @@ test("invitation links are manager-only and keep secrets in the fragment",
     assert.match(url.hash, /^#[A-Za-z0-9_-]{43}$/u);
   });
 
-test("owned cancellation survives a disabled checkout gate", async () => {
+test("owned cancellation is limited to the payer", async () => {
   const h = await harness();
   const {paymentId} = await h.reserve();
   Object.assign(h.store.get(`${OFFER_PAYMENT_COLLECTION}/${paymentId}`)!, {
@@ -186,7 +167,6 @@ test("owned cancellation survives a disabled checkout gate", async () => {
   });
   await finalizeCapturedOfferPayment({db: h.store.db(), paymentId,
     nowMillis: now + 20, loadCurrentAuthUser: h.auth});
-  h.disable();
   const command = {action: "cancelAdmission", paymentId,
     expectedRefundAmountPaise: 0};
   await assert.rejects(manageEventOfferCheckoutHandler(

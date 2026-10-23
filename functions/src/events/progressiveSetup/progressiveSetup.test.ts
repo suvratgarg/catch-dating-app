@@ -91,11 +91,9 @@ function setup() {
     locationCityId: mumbai.cityId,
     locationMarketId: mumbai.marketId, hostDefaults: {},
   });
-  let migrationReady = true;
   let editable = true;
   const deps: ProgressiveSetupDependencies = {
     db: store as unknown as FirebaseFirestore.Firestore,
-    privacyMigrationReady: () => migrationReady,
     timestampFromMillis: Timestamp.fromMillis,
     serverTimestamp: () => Timestamp.fromMillis(1000) as unknown as
       FirebaseFirestore.FieldValue,
@@ -106,7 +104,6 @@ function setup() {
     },
   };
   return {store, deps,
-    setReady: (value: boolean) => migrationReady = value,
     setEditable: (value: boolean) => editable = value};
 }
 
@@ -144,13 +141,9 @@ test("defaults distinguish inherit, set and optional clear", () => {
   }), (error) => code(error) === "aborted");
 });
 
-test("private create is gated and idempotent", async () => {
+test("private create is idempotent", async () => {
   const h = setup();
   const command = {organizerId: "org1", requestId: "request-111", basics};
-  h.setReady(false);
-  await assert.rejects(createPrivateEventSetup({actorUid: "host1",
-    command, deps: h.deps}), (error) => code(error) === "failed-precondition");
-  h.setReady(true);
   const first = await createPrivateEventSetup({actorUid: "host1",
     command, deps: h.deps});
   const saved = h.store.read(`events/${first.eventId}`);
