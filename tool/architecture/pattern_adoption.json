@@ -1911,7 +1911,7 @@
         "flutter test --concurrency=1 test/core/catch_primitives_test.dart --plain-name 'CatchTabBar keeps four animated destinations within 390px'",
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "bash tool/test_app_shell_integration.sh --self-test",
-        "bash tool/test_app_shell_integration.sh macos smoke"
+        "(cd apps/consumer && bash ../../tool/test_app_shell_integration.sh macos smoke)"
       ],
       "notes": "Every consumer route is owned by exactly one public-surface matrix class even when guest tab chrome hides it. Consumer integration cases cover consumer-owned routes only. Host creation and attendance remain in host surface/controller tests; Dashboard recommendations remain owned by Explore."
     },

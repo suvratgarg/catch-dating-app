@@ -17,6 +17,11 @@ case "$target_env" in
     ;;
 esac
 
+if [[ -z "${2:-}" ]]; then
+  echo "Pass the app project's xcconfig path, for example apps/consumer/ios/Flutter/GoogleMapsKeys.xcconfig."
+  exit 64
+fi
+
 upper_env="$(printf '%s' "$target_env" | tr '[:lower:]' '[:upper:]')"
 key_var="GOOGLE_MAPS_IOS_API_KEY_${upper_env}"
 maps_key="${!key_var:-}"
@@ -32,7 +37,7 @@ if [[ ! "$maps_key" =~ ^AIza[0-9A-Za-z_-]{20,}$ ]]; then
   exit 1
 fi
 
-output_arg="${2:-ios/Flutter/GoogleMapsKeys.xcconfig}"
+output_arg="$2"
 if [[ "$output_arg" = /* ]]; then
   output_path="$output_arg"
 else

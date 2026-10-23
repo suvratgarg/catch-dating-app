@@ -1,7 +1,7 @@
 ---
 doc_id: project_context
-version: 3.1.1
-updated: 2026-10-22
+version: 3.1.2
+updated: 2026-10-23
 owner: agent_operating_model
 status: active
 ---
@@ -35,7 +35,7 @@ features.
 
 ## Runtime architecture
 
-Flutter feature code is organized by domain. Screens compose feature-owned controllers/providers, repositories own remote access, and shared UI belongs in canonical `Catch*` primitives when the concept repeats. `lib/main.dart` and role-specific entrypoints build the application shell; route, authentication, onboarding, force-update, and role gates determine the visible feature graph.
+Flutter feature code is organized by domain. Screens compose feature-owned controllers/providers, repositories own remote access, and shared UI belongs in canonical `Catch*` primitives when the concept repeats. `apps/<role>/lib/main*.dart` entrypoints build each application shell through `lib/app_bootstrap.dart`; route, authentication, onboarding, force-update, and role gates determine the visible feature graph.
 
 Firebase Auth is phone-first. Profile creation is an onboarding responsibility, not an incidental auth side effect. Firestore is the operational store; callable Functions own privileged mutations and cross-document invariants. Generated schemas/types keep app, Functions, rules, admin, and website boundaries aligned.
 
@@ -103,7 +103,7 @@ The generated inventory and canonical commands are in [TESTS.md](TESTS.md). Do n
 
 ## Sharp edges
 
-- Root platform Firebase files are mutable outputs of environment switching. Use the checked environment wrapper and verify app targets before release.
+- Each app project's platform Firebase files are mutable outputs of environment switching. Use the checked environment wrapper and verify app targets before release. The repository root has no native platform projects; `tool/repository_root_manifest.json` rejects new ones.
 - Firestore indexes are repository-managed; missing-index errors should result in an index change and contract check, not an ad hoc console-only fix.
 - Cross-surface DTOs should come from generated contracts, not parallel handwritten types.
 - Public organizer evidence does not automatically create app-bookable inventory.
