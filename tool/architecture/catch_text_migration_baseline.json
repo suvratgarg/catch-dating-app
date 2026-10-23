@@ -18,8 +18,6 @@
     "lib/core/celebration/celebration_screen.dart": 4,
     "lib/core/widgets/event_card.dart": 1,
     "lib/core/widgets/ordered_photo_picker.dart": 3,
-    "lib/cross_paths/presentation/cross_paths_explore_card.dart": 3,
-    "lib/cross_paths/presentation/cross_paths_invitation_screen.dart": 6,
     "lib/dashboard/presentation/widgets/club_posts_home_section.dart": 1,
     "lib/dashboard/presentation/widgets/empty_hero_card.dart": 2,
     "lib/dashboard/presentation/widgets/event_focus_list.dart": 1,
