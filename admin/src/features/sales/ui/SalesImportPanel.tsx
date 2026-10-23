@@ -1,7 +1,16 @@
+import {CatchField} from "@catch/web-ui";
 import {useRef, useState} from "react";
 import {ClipboardList, Upload} from "lucide-react";
-import {AdminButton, AdminForm, EmptyState, FilePickerButton, Panel,
-  SelectField, StateRow, TextField} from "../../../shared/ui/AdminPrimitives";
+import {
+  AdminButton,
+  AdminForm,
+  EmptyState,
+  FilePickerButton,
+  Panel,
+  selectOptionLabeller,
+  selectOptionValues,
+  StateRow,
+} from "../../../shared/ui/AdminPrimitives";
 import {dataMode} from "../../../shared/api/dataMode";
 import type {SalesWorkspaceController} from "../controllers/useSalesWorkspaceController";
 import type {SalesImportPacket, SalesImportPreview} from "../api/salesTypes";
@@ -104,27 +113,48 @@ export function SalesImportWorkspace({controller, isAdminOwner = false}: {
       {fileName ? <p role="status">{fileName} · {rows.length - 1} rows ·
         {batchCount} batch{batchCount === 1 ? "" : "es"}</p> : null}
       {rows.length ? <>
-        <TextField label="Import name" value={sourceId}
-          disabled={busy}
-          onChange={(value) => {setSourceId(value); clearPreview();}} />
+        <CatchField
+          recipe="input"
+          title="Import name"
+          value={sourceId}
+          inputMode={busy ? "inactive" : "editable"}
+          onChanged={(value) => {setSourceId(value); clearPreview();}}
+        />
         <p>This name keeps batches from the same file together. All columns are
           preserved privately, including columns you do not map below.</p>
         {(["organizerId", "name", "researchStatus", "summary"] as const).map((key) =>
-          <SelectField key={key} label={{organizerId: "Existing Catch host ID (optional)",
+          <CatchField
+            recipe="select"
+            key={key}
+            title={{organizerId: "Existing Catch host ID (optional)",
             name: "Host name", researchStatus: "Previous research status (optional)",
-            summary: "Summary"}[key]} value={String(mapping[key])} disabled={busy}
-          onChange={(value) => mapField(key, value)} options={mappingOptions} />)}
+            summary: "Summary"}[key]}
+            value={String(mapping[key])}
+            inputMode={busy ? "inactive" : "editable"}
+            onChanged={(value) => mapField(key, (value ?? ""))}
+            values={selectOptionValues(mappingOptions)}
+            itemLabelBuilder={selectOptionLabeller(mappingOptions)}
+          />)}
         <p>If the file has Catch host IDs, select that column. Other rows stay in
           identity review. New hosts begin as Needs research; previous statuses
           are retained as history and do not grant qualification.</p>
-        <SelectField label="Batch to review" value={String(batch)}
-          disabled={busy}
-          onChange={(value) => {setBatch(Number(value)); clearPreview();}}
-          options={Array.from({length: batchCount}, (_, index) => ({
+        <CatchField
+          recipe="select"
+          title="Batch to review"
+          value={String(batch)}
+          inputMode={busy ? "inactive" : "editable"}
+          onChanged={(value) => {setBatch(Number((value ?? ""))); clearPreview();}}
+          values={selectOptionValues(Array.from({length: batchCount}, (_, index) => ({
             value: String(index), label: `Batch ${index + 1} · rows ${index * 25 + 1}–${
               Math.min((index + 1) * 25, rows.length - 1)}${
               applied.includes(index) ? " · applied" : ""}`,
-          }))} />
+          })))}
+          itemLabelBuilder={selectOptionLabeller(Array.from({length: batchCount}, (_, index) => ({
+            value: String(index), label: `Batch ${index + 1} · rows ${index * 25 + 1}–${
+              Math.min((index + 1) * 25, rows.length - 1)}${
+              applied.includes(index) ? " · applied" : ""}`,
+          })))}
+        />
         <p>Selected batch: {Math.min(25, rows.length - 1 - batch * 25)} rows ·
           {applied.length} of {batchCount} batches applied in this session.</p>
         {rows.slice(1 + batch * 25, 1 + (batch + 1) * 25).map((cells, index) =>
@@ -147,12 +177,21 @@ export function SalesImportWorkspace({controller, isAdminOwner = false}: {
           label={row.sourceRowId} value={<>{row.organizerId || "Unresolved identity"} ·
             {row.disposition} · {row.reason}</>} />)}
         <AdminForm onSubmit={(event) => {event.preventDefault(); void apply();}}>
-          <SelectField label="Review decision" value={reviewed ? "yes" : "no"}
-            disabled={busy}
-            onChange={(value) => setReviewed(value === "yes")} options={[
+          <CatchField
+            recipe="select"
+            title="Review decision"
+            value={reviewed ? "yes" : "no"}
+            inputMode={busy ? "inactive" : "editable"}
+            onChanged={(value) => setReviewed((value ?? "") === "yes")}
+            values={selectOptionValues([
               {value: "no", label: "Not reviewed"},
               {value: "yes", label: "I reviewed every row above"},
-            ]} />
+            ])}
+            itemLabelBuilder={selectOptionLabeller([
+              {value: "no", label: "Not reviewed"},
+              {value: "yes", label: "I reviewed every row above"},
+            ])}
+          />
           <AdminButton type="submit" variant="primary"
             disabled={!reviewed || controller.isSaving}>Apply reviewed batch</AdminButton>
         </AdminForm>

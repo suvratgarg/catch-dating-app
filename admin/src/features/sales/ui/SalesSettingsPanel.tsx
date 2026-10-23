@@ -1,7 +1,15 @@
+import {CatchField} from "@catch/web-ui";
 import {useState} from "react";
 import {ClipboardList} from "lucide-react";
-import {AdminButton, AdminForm, EmptyState, Panel, SelectField, StateRow,
-  TextareaField, TextField} from "../../../shared/ui/AdminPrimitives";
+import {
+  AdminButton,
+  AdminForm,
+  EmptyState,
+  Panel,
+  selectOptionLabeller,
+  selectOptionValues,
+  StateRow,
+} from "../../../shared/ui/AdminPrimitives";
 import type {SalesWorkspaceController} from
   "../controllers/useSalesWorkspaceController";
 import type {SalesCustomFieldType} from "../api/salesTypes";
@@ -64,20 +72,46 @@ function SettingsView({controller, isAdminOwner}: {
       field.label).join(", ")}. Check these before adding another.</p> : null}
     <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
       <h3>New host field</h3>
-      <TextField label="Field label" value={label} onChange={setLabel}
-        placeholder="For example, preferred demo language" />
-      <SelectField label="Type" value={type}
-        onChange={(value) => setType(value as SalesCustomFieldType)} options={[
+      <CatchField
+        recipe="input"
+        title="Field label"
+        value={label}
+        onChanged={setLabel}
+        inputHint="For example, preferred demo language"
+      />
+      <CatchField
+        recipe="select"
+        title="Type"
+        value={type}
+        onChanged={(value) => setType((value ?? "") as SalesCustomFieldType)}
+        values={selectOptionValues([
           {value: "string", label: "Text"},
           {value: "number", label: "Number"},
           {value: "boolean", label: "Yes or no"},
           {value: "date", label: "Date"},
           {value: "enum", label: "Choice"},
-        ]} />
-      {type === "enum" ? <TextField label="Choices, separated by commas"
-        value={enumText} onChange={setEnumText} /> : null}
-      <TextareaField label="Help text" rows={2} value={helpText}
-        onChange={setHelpText} />
+        ])}
+        itemLabelBuilder={selectOptionLabeller([
+          {value: "string", label: "Text"},
+          {value: "number", label: "Number"},
+          {value: "boolean", label: "Yes or no"},
+          {value: "date", label: "Date"},
+          {value: "enum", label: "Choice"},
+        ])}
+      />
+      {type === "enum" ? <CatchField
+        recipe="input"
+        title="Choices, separated by commas"
+        value={enumText}
+        onChanged={setEnumText}
+      /> : null}
+      <CatchField
+        recipe="input"
+        title="Help text"
+        maxLines={2}
+        value={helpText}
+        onChanged={setHelpText}
+      />
       <p>Preview: {label.trim() || "Field label"} · {typeLabels[type]}
         {helpText.trim() ? ` · ${helpText.trim()}` : ""}</p>
       {localError ? <p role="alert">{localError}</p> : null}

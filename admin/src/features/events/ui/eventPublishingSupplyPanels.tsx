@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {useState} from "react";
 import {CheckCircle2, Clock3, ExternalLink, FileWarning, FolderSearch, Lock} from "lucide-react";
 import type {
@@ -22,7 +23,6 @@ import {
   StateRow,
   StatusChip,
   TableActionButton,
-  TextareaField,
   AdminEyebrow,
   AdminTagList,
   AdminIntakeSourceList,
@@ -437,11 +437,12 @@ function ExternalEventTakedownPanel({
           public projection removed and cancelled.
         </span>
       </QualityRow>
-      <TextareaField
-        label="Takedown review note"
-        onChange={setReviewNote}
-        placeholder="State what changed at the official source and why removal is authorized."
-        rows={4}
+      <CatchField
+        recipe="input"
+        title="Takedown review note"
+        onChanged={setReviewNote}
+        inputHint="State what changed at the official source and why removal is authorized."
+        maxLines={4}
         value={reviewNote}
       />
       <QualityList>

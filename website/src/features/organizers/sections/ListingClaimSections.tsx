@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {websiteCopy} from "@content/generated";
 import {
   AuthStatusRow,
@@ -14,7 +15,6 @@ import {
   PanelShell,
   SelectField,
   TextAreaField,
-  TextField,
   UiLabel,
 } from "../../../shared/ui/primitives";
 import {claimRoleOptions} from "../../claims/claimModel";
@@ -149,12 +149,13 @@ function ClaimListingPanel({
       </AuthStatusRow>
 
       <ClaimRequestForm onSubmit={handleSubmit} pending={isSubmitting}>
-        <TextField
+        <CatchField
+          recipe="input"
           id={`claim-${listing.id}-requester-name`}
-          label={websiteCopy["listingclaimsections_0384"]}
+          title={websiteCopy["listingclaimsections_0384"]}
           name="requesterName"
           autoComplete="name"
-          defaultValue={user?.displayName ?? ""}
+          initialValue={user?.displayName ?? ""}
           required
         />
         <SelectField
@@ -170,20 +171,22 @@ function ClaimListingPanel({
             </option>
           ))}
         </SelectField>
-        <TextField
+        <CatchField
+          recipe="input"
           id={`claim-${listing.id}-business-email`}
-          label={websiteCopy["listingclaimsections_0368"]}
+          title={websiteCopy["listingclaimsections_0368"]}
           name="businessEmail"
-          type="email"
           autoComplete="email"
-          defaultValue={user?.email ?? ""}
+          initialValue={user?.email ?? ""}
+          keyboardType="emailAddress"
         />
-        <TextField
+        <CatchField
+          recipe="input"
           id={`claim-${listing.id}-business-phone`}
-          label={websiteCopy["listingclaimsections_0369"]}
+          title={websiteCopy["listingclaimsections_0369"]}
           name="businessPhone"
-          type="tel"
           autoComplete="tel"
+          keyboardType="phone"
         />
         <TextAreaField
           id={`claim-${listing.id}-proof-urls`}

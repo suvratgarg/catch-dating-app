@@ -1,8 +1,17 @@
+import {CatchField} from "@catch/web-ui";
 import {useEffect, useState, type ReactNode} from "react";
 import {EventGuestActions, EventGuestDialog} from "../../shared/ui/primitives/eventDetail";
 import {guestEventAction} from "./guestEventAction";
-import {Button, ButtonLink, TextField, FormStatus, EventRegistrationForm,
-  EventRegistrationPrivacy, ActionGroup, CheckboxField} from "../../shared/ui/primitives";
+import {
+  Button,
+  ButtonLink,
+  TextField,
+  FormStatus,
+  EventRegistrationForm,
+  EventRegistrationPrivacy,
+  ActionGroup,
+  CheckboxField,
+} from "../../shared/ui/primitives";
 import {guestEventCopy as copy, approvalNotificationCopy as notificationCopy} from "../../content/events";
 import {useGuestEventController} from "./useGuestEventController";
 import {PublicEventRegistration} from "./PublicEventRegistration";
@@ -71,12 +80,26 @@ export function GuestEventEntryView({eventId, controller: c, onBeginRegistration
   if (invitation) return <GuestInvitation eventId={eventId} controller={c} invitation={invitation} notifications={null} />;
   if (c.loading) return <p role="status">{copy.loading}</p>;
   if (!c.user?.phoneNumber) return <EventRegistrationForm onSubmit={c.submit}>
-    <TextField id={`${c.recaptchaId}-phone`} label={copy.phone} autoComplete="tel"
-      type="tel" value={c.phone} disabled={c.pending || c.codeSent}
-      onChange={(event) => c.setPhone(event.target.value)} />
-    {c.codeSent ? <TextField id={`${c.recaptchaId}-code`} label={copy.code}
-      autoComplete="one-time-code" inputMode="numeric" maxLength={6}
-      value={c.code} onChange={(event) => c.setCode(event.target.value.replace(/\D/gu, ""))} /> : null}
+    <CatchField
+      recipe="input"
+      id={`${c.recaptchaId}-phone`}
+      title={copy.phone}
+      autoComplete="tel"
+      value={c.phone}
+      inputMode={c.pending || c.codeSent ? "inactive" : "editable"}
+      onChanged={(value) => c.setPhone(value)}
+      keyboardType="phone"
+    />
+    {c.codeSent ? <CatchField
+      recipe="input"
+      id={`${c.recaptchaId}-code`}
+      title={copy.code}
+      autoComplete="one-time-code"
+      maxLength={6}
+      value={c.code}
+      onChanged={(value) => c.setCode(value.replace(/\D/gu, ""))}
+      keyboardType="number"
+    /> : null}
     <div id={c.recaptchaId} />
     <Button type="submit" loading={c.pending}>{c.codeSent ? copy.verify : copy.continue}</Button>
     {c.codeSent ? <Button type="button" variant="ghost" disabled={c.pending}

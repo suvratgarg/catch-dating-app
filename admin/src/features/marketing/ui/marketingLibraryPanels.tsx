@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   CheckCircle2,
   Clock3,
@@ -18,8 +19,6 @@ import {
   AdminPanel,
   AdminStateRow,
   AdminStatGrid,
-  AdminTextareaField,
-  AdminTextField,
   AlertRow,
   CardHeader,
   EmptyState,
@@ -469,22 +468,25 @@ function MarketingRecommendations({
               const key = `recommendation_item:${item.id}`;
               return (
                 <AdminMarketingRecommendationItem key={item.id}>
-                  <AdminTextField
-                    label="Rank"
+                  <CatchField
+                    recipe="input"
+                    title="Rank"
                     value={String(item.rank)}
-                    onChange={(value) =>
+                    onChanged={(value) =>
                       onItemChange(set.id, item.id, {rank: Number(value) || item.rank})}
                   />
-                  <AdminTextField
-                    label="Title"
+                  <CatchField
+                    recipe="input"
+                    title="Title"
                     value={item.title}
-                    onChange={(value) => onItemChange(set.id, item.id, {title: value})}
+                    onChanged={(value) => onItemChange(set.id, item.id, {title: value})}
                   />
-                  <AdminTextareaField
-                    label="Inclusion reason"
-                    rows={2}
+                  <CatchField
+                    recipe="input"
+                    title="Inclusion reason"
+                    maxLines={2}
                     value={item.inclusionReason}
-                    onChange={(value) =>
+                    onChanged={(value) =>
                       onItemChange(set.id, item.id, {inclusionReason: value})}
                   />
                   <DecisionFooter

@@ -1,7 +1,16 @@
+import {CatchField} from "@catch/web-ui";
 import {useState} from "react";
 import {CheckCircle2, ClipboardList} from "lucide-react";
-import {AdminButton, AdminForm, EmptyState, Panel, SelectField, StateRow,
-  TextareaField, TextField} from "../../../shared/ui/AdminPrimitives";
+import {
+  AdminButton,
+  AdminForm,
+  EmptyState,
+  Panel,
+  selectOptionLabeller,
+  selectOptionValues,
+  StateRow,
+  TextField,
+} from "../../../shared/ui/AdminPrimitives";
 import {toLocalDateTimeInput, type SalesWorkspaceController} from
   "../controllers/useSalesWorkspaceController";
 import type {SalesAccountDetail, SalesContact, SalesEvidence, SalesEvidenceProposal} from "../api/salesTypes";
@@ -82,21 +91,52 @@ function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
       onPrevious={controller.previousContactPage} onNext={controller.nextContactPage} />
     <AdminForm onSubmit={(event) => {event.preventDefault(); void create();}}>
       <h3>Add contact relationship</h3>
-      <TextField label="Name" value={name} onChange={setName} required />
-      <TextField label="Role with host" value={role} onChange={setRole} required />
-      <SelectField label="Decision influence" value={influence}
-        onChange={(value) => setInfluence(value as typeof influence)} options={[
+      <CatchField recipe="input" title="Name" value={name} onChanged={setName} required />
+      <CatchField
+        recipe="input"
+        title="Role with host"
+        value={role}
+        onChanged={setRole}
+        required
+      />
+      <CatchField
+        recipe="select"
+        title="Decision influence"
+        value={influence}
+        onChanged={(value) => setInfluence((value ?? "") as typeof influence)}
+        values={selectOptionValues([
           {value: "unknown", label: "Unknown"},
           {value: "decision_maker", label: "Decision maker"},
           {value: "influencer", label: "Influencer"},
           {value: "operator", label: "Operator"},
-        ]} />
-      <SelectField label="Primary contact" value={primary} onChange={setPrimary}
-        options={[{value: "false", label: "No"}, {value: "true", label: "Yes"}]} />
-      <SelectField label="Contact method (optional)" value={endpointKind}
-        onChange={(value) => setEndpointKind(value as typeof endpointKind)} options={[
+        ])}
+        itemLabelBuilder={selectOptionLabeller([
+          {value: "unknown", label: "Unknown"},
+          {value: "decision_maker", label: "Decision maker"},
+          {value: "influencer", label: "Influencer"},
+          {value: "operator", label: "Operator"},
+        ])}
+      />
+      <CatchField
+        recipe="select"
+        title="Primary contact"
+        value={primary}
+        onChanged={(value) => setPrimary(value ?? "")}
+        values={selectOptionValues([{value: "false", label: "No"}, {value: "true", label: "Yes"}])}
+        itemLabelBuilder={selectOptionLabeller([{value: "false", label: "No"}, {value: "true", label: "Yes"}])}
+      />
+      <CatchField
+        recipe="select"
+        title="Contact method (optional)"
+        value={endpointKind}
+        onChanged={(value) => setEndpointKind((value ?? "") as typeof endpointKind)}
+        values={selectOptionValues([
           {value: "email", label: "Email"}, {value: "phone", label: "Phone"},
-        ]} />
+        ])}
+        itemLabelBuilder={selectOptionLabeller([
+          {value: "email", label: "Email"}, {value: "phone", label: "Phone"},
+        ])}
+      />
       <TextField label={endpointKind === "email" ? "Email address (unverified)" :
         "Phone number (unverified)"} value={endpointValue}
         onChange={setEndpointValue} type={endpointKind === "email" ? "email" : "text"} />
@@ -108,34 +148,69 @@ function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
       authorized reviewer. Adding contact details never grants permission to send.</p> : null}
     {contacts.length && !assignedStaffOnly ? <AdminForm onSubmit={(event) => {event.preventDefault(); void review();}}>
       <h3>Contact restriction or draft review</h3>
-      <SelectField label="Contact on this page" value={selectedContact}
-        onChange={(value) => selectContact(contacts.find((item) =>
-          item.contactId === value))}
-        options={[{value: "", label: "Choose contact"}, ...contacts.map((item) => ({
+      <CatchField
+        recipe="select"
+        title="Contact on this page"
+        value={selectedContact}
+        onChanged={(value) => selectContact(contacts.find((item) =>
+          item.contactId === (value ?? "")))}
+        values={selectOptionValues([{value: "", label: "Choose contact"}, ...contacts.map((item) => ({
           value: item.contactId, label: item.displayName,
-        }))]} />
+        }))])}
+        itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose contact"}, ...contacts.map((item) => ({
+          value: item.contactId, label: item.displayName,
+        }))])}
+      />
       {selected ? <StateRow label="Current status" value={
         selected.relationship.contactabilityStatus.replaceAll("_", " ")} /> : null}
       {contactChanged ? <p role="alert">This contact decision changed since you opened
         it. Compare the current status before recording another decision. <AdminButton
           type="button" onClick={() => selectContact(selected)}>Use latest contact
           decision</AdminButton></p> : null}
-      <SelectField label="New status" value={status}
-        onChange={(value) => setStatus(value as typeof status)} options={[
+      <CatchField
+        recipe="select"
+        title="New status"
+        value={status}
+        onChanged={(value) => setStatus((value ?? "") as typeof status)}
+        values={selectOptionValues([
           {value: "unknown", label: "Unknown"},
           {value: "draft_reviewed", label: "Reviewed for draft consideration"},
           {value: "held", label: "Hold"},
           {value: "suppressed", label: "Suppress"},
-        ]} />
-      {status === "draft_reviewed" ? <SelectField label="Reviewed contact evidence on this page"
-        value={evidenceId} onChange={setEvidenceId} options={[
+        ])}
+        itemLabelBuilder={selectOptionLabeller([
+          {value: "unknown", label: "Unknown"},
+          {value: "draft_reviewed", label: "Reviewed for draft consideration"},
+          {value: "held", label: "Hold"},
+          {value: "suppressed", label: "Suppress"},
+        ])}
+      />
+      {status === "draft_reviewed" ? <CatchField
+        recipe="select"
+        title="Reviewed contact evidence on this page"
+        value={evidenceId}
+        onChanged={(value) => setEvidenceId(value ?? "")}
+        values={selectOptionValues([
           {value: "", label: "Choose evidence"}, ...matchingEvidence.map((item) => ({
             value: item.evidenceId,
             label: `${item.claimKey}: ${item.sourceRef}`,
           })),
-        ]} /> : null}
-      <TextareaField label="Reason for decision" rows={2} value={reason}
-        onChange={setReason} required />
+        ])}
+        itemLabelBuilder={selectOptionLabeller([
+          {value: "", label: "Choose evidence"}, ...matchingEvidence.map((item) => ({
+            value: item.evidenceId,
+            label: `${item.claimKey}: ${item.sourceRef}`,
+          })),
+        ])}
+      /> : null}
+      <CatchField
+        recipe="input"
+        title="Reason for decision"
+        maxLines={2}
+        value={reason}
+        onChanged={setReason}
+        required
+      />
       <p>Draft review is only a private eligibility input. It does not verify an
         endpoint, consent to send, or provider delivery.</p>
       <AdminButton type="submit" disabled={!selected || contactChanged || !reason.trim() ||
@@ -166,8 +241,14 @@ function EvidenceSuggestion({proposal, controller, assignedStaffOnly}: {
     <StateRow label="Submitted by" value={proposal.clientId ? "Assistant" : "Employee"} />
     {proposal.status === "pending" && assignedStaffOnly ?
       <p>Awaiting authorized evidence review.</p> : proposal.status === "pending" ? <>
-      <TextareaField label="Review reason" value={reason} onChange={setReason}
-        maxLength={2000} rows={2} />
+      <CatchField
+        recipe="input"
+        title="Review reason"
+        value={reason}
+        onChanged={setReason}
+        maxLength={2000}
+        maxLines={2}
+      />
       <AdminButton disabled={!reason.trim() || controller.isSaving}
         onClick={() => void review("accept")}>Accept as reviewed evidence</AdminButton>
       <AdminButton disabled={!reason.trim() || controller.isSaving}
@@ -232,36 +313,100 @@ function SalesEvidencePanel({detail, controller, assignedStaffOnly}: {
       onPrevious={controller.previousProposalPage} onNext={controller.nextProposalPage} />
     <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
       <h3>Add reviewed observation</h3>
-      <SelectField label="Related contact on this page (optional)" value={contactId}
-        onChange={setContactId} options={[{value: "", label: "Host account"},
+      <CatchField
+        recipe="select"
+        title="Related contact on this page (optional)"
+        value={contactId}
+        onChanged={(value) => setContactId(value ?? "")}
+        values={selectOptionValues([{value: "", label: "Host account"},
           ...(controller.contacts.data?.rows ?? []).map((item) => ({
             value: item.contactId, label: item.displayName,
-          }))]} />
-      <SelectField label="What this helps establish" value={claimKey}
-        onChange={(next) => setClaimKey(next as typeof claimKey)} options={[
+          }))])}
+        itemLabelBuilder={selectOptionLabeller([{value: "", label: "Host account"},
+          ...(controller.contacts.data?.rows ?? []).map((item) => ({
+            value: item.contactId, label: item.displayName,
+          }))])}
+      />
+      <CatchField
+        recipe="select"
+        title="What this helps establish"
+        value={claimKey}
+        onChanged={(next) => setClaimKey((next ?? "") as typeof claimKey)}
+        values={selectOptionValues([
           "identity", "recurrence", "operation", "stack", "other",
-        ]} />
-      {claimKey === "operation" ? <TextField label="Operating signal (short label)"
-        value={signalId} onChange={setSignalId} required /> : null}
-      <SelectField label="Source type" value={sourceType}
-        onChange={(next) => setSourceType(next as typeof sourceType)} options={[
+        ])}
+        itemLabelBuilder={selectOptionLabeller([
+          "identity", "recurrence", "operation", "stack", "other",
+        ])}
+      />
+      {claimKey === "operation" ? <CatchField
+        recipe="input"
+        title="Operating signal (short label)"
+        value={signalId}
+        onChanged={setSignalId}
+        required
+      /> : null}
+      <CatchField
+        recipe="select"
+        title="Source type"
+        value={sourceType}
+        onChanged={(next) => setSourceType((next ?? "") as typeof sourceType)}
+        values={selectOptionValues([
           {value: "first_party", label: "First party"},
           {value: "public_web", label: "Public web"},
           {value: "human_note", label: "Human note"},
           {value: "import_artifact", label: "Import artifact"},
-        ]} />
-      <TextField label="Source reference" value={sourceRef}
-        onChange={setSourceRef} required maxLength={320} />
-      <TextField label="Observed at" type="datetime-local" value={observedAt}
-        onChange={setObservedAt} required />
-      <SelectField label="Confidence" value={confidence}
-        onChange={(next) => setConfidence(next as typeof confidence)} options={[
+        ])}
+        itemLabelBuilder={selectOptionLabeller([
+          {value: "first_party", label: "First party"},
+          {value: "public_web", label: "Public web"},
+          {value: "human_note", label: "Human note"},
+          {value: "import_artifact", label: "Import artifact"},
+        ])}
+      />
+      <CatchField
+        recipe="input"
+        title="Source reference"
+        value={sourceRef}
+        onChanged={setSourceRef}
+        required
+        maxLength={320}
+      />
+      <CatchField
+        recipe="input"
+        title="Observed at"
+        value={observedAt}
+        onChanged={setObservedAt}
+        required
+        keyboardType="datetime"
+      />
+      <CatchField
+        recipe="select"
+        title="Confidence"
+        value={confidence}
+        onChanged={(next) => setConfidence((next ?? "") as typeof confidence)}
+        values={selectOptionValues([
           "low", "medium", "high",
-        ]} />
-      <TextField label="What you learned (optional)" value={value}
-        onChange={setValue} maxLength={500} />
-      <TextareaField label="Short source excerpt (optional)" rows={2}
-        value={excerpt} onChange={setExcerpt} maxLength={500} />
+        ])}
+        itemLabelBuilder={selectOptionLabeller([
+          "low", "medium", "high",
+        ])}
+      />
+      <CatchField
+        recipe="input"
+        title="What you learned (optional)"
+        value={value}
+        onChanged={setValue}
+        maxLength={500}
+      />
+      <CatchField
+        recipe="input"
+        title="Short source excerpt (optional)"
+        maxLines={2}
+        value={excerpt}
+        onChanged={setExcerpt}
+        maxLength={500}
+      />
       <AdminButton type="submit" disabled={!sourceRef.trim() || !observedAt ||
         (claimKey === "operation" && !signalId.trim()) || controller.isSaving}>
         Record evidence
@@ -307,14 +452,30 @@ function SalesSuppressionPanel({detail, controller}: {
       decision. <AdminButton type="button" onClick={useLatest}>Use latest account
       decision</AdminButton></p> : null}
     <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
-      <SelectField label="New status" value={status}
-        onChange={(value) => setStatus(value as typeof status)} options={[
+      <CatchField
+        recipe="select"
+        title="New status"
+        value={status}
+        onChanged={(value) => setStatus((value ?? "") as typeof status)}
+        values={selectOptionValues([
           {value: "clear", label: "Clear hold"},
           {value: "held", label: "Hold"},
           {value: "suppressed", label: "Suppress"},
-        ]} />
-      <TextareaField label="Reason" rows={2} value={reason} onChange={setReason}
-        required />
+        ])}
+        itemLabelBuilder={selectOptionLabeller([
+          {value: "clear", label: "Clear hold"},
+          {value: "held", label: "Hold"},
+          {value: "suppressed", label: "Suppress"},
+        ])}
+      />
+      <CatchField
+        recipe="input"
+        title="Reason"
+        maxLines={2}
+        value={reason}
+        onChanged={setReason}
+        required
+      />
       <p>Clearing a hold does not grant permission to draft or send outreach.</p>
       <AdminButton type="submit" disabled={!reason.trim() || accountChanged ||
         controller.isSaving}>
@@ -382,17 +543,32 @@ function SalesTasksPanel({detail, controller, currentUserUid, assignedStaffOnly}
     </>} />)}
     {!detail.tasks.length ? <EmptyState>No tasks for this host.</EmptyState> : null}
     <AdminForm onSubmit={(event) => {event.preventDefault(); void add();}}>
-      <TextField label="New task" value={title} onChange={setTitle} />
-      <SelectField label="Task purpose" value={kind}
-        onChange={(value) => {setKind(value as typeof kind); setContactId("");}}
-        options={[{value: "research", label: "Internal research"},
+      <CatchField recipe="input" title="New task" value={title} onChanged={setTitle} />
+      <CatchField
+        recipe="select"
+        title="Task purpose"
+        value={kind}
+        onChanged={(value) => {setKind((value ?? "") as typeof kind); setContactId("");}}
+        values={selectOptionValues([{value: "research", label: "Internal research"},
           {value: "follow_up", label: "Follow up with a contact"},
-          {value: "demo", label: "Arrange a demo with a contact"}]} />
+          {value: "demo", label: "Arrange a demo with a contact"}])}
+        itemLabelBuilder={selectOptionLabeller([{value: "research", label: "Internal research"},
+          {value: "follow_up", label: "Follow up with a contact"},
+          {value: "demo", label: "Arrange a demo with a contact"}])}
+      />
       {outbound ? <>
-        <SelectField label="Reviewed contact on this page" value={contactId}
-          onChange={setContactId} options={[{value: "", label: "Choose contact"},
+        <CatchField
+          recipe="select"
+          title="Reviewed contact on this page"
+          value={contactId}
+          onChanged={(value) => setContactId(value ?? "")}
+          values={selectOptionValues([{value: "", label: "Choose contact"},
             ...reviewedContacts.map((contact) => ({value: contact.contactId,
-              label: contact.displayName}))]} />
+              label: contact.displayName}))])}
+          itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose contact"},
+            ...reviewedContacts.map((contact) => ({value: contact.contactId,
+              label: contact.displayName}))])}
+        />
         <p>A contact review permits draft consideration only. The server checks
           current restrictions before recording this task; it does not send anything.</p>
         {!reviewedContacts.length ? <p role="alert">No reviewed contacts on this page.
@@ -400,8 +576,13 @@ function SalesTasksPanel({detail, controller, currentUserUid, assignedStaffOnly}
             " Review a contact in People, or choose Internal research."}</p> : null}
       </> : null}
       <p>Assigned to you</p>
-      <TextField label="Due" type="datetime-local" value={dueAt}
-        onChange={setDueAt} />
+      <CatchField
+        recipe="input"
+        title="Due"
+        value={dueAt}
+        onChanged={setDueAt}
+        keyboardType="datetime"
+      />
       <AdminButton type="submit" disabled={!title.trim() || !currentUserUid ||
         !dueAt || (outbound && !selectedContact) || controller.isSaving}>Add task</AdminButton>
     </AdminForm>

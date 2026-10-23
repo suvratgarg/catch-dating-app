@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {useState} from "react";
@@ -7,7 +8,6 @@ import {
   AdminButton,
   AdminLinkButton,
   AdminNavButton,
-  AdminTextField,
   AdminWorkspace,
 } from "./ui/AdminPrimitives";
 import {
@@ -70,7 +70,7 @@ function PendingOperationHarness({
         Start conflicting operation
       </AdminButton>
       <AdminWorkspace>
-        <AdminTextField label="Review note" onChange={setNote} value={note} />
+        <CatchField recipe="input" title="Review note" onChanged={setNote} value={note} />
         <AdminButton onClick={() => void submit()}>Submit snapshot</AdminButton>
         <AdminLinkButton href="/other" onClick={onLink}>
           Leave workspace

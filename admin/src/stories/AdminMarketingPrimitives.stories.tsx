@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
   CheckCircle2,
@@ -92,7 +93,6 @@ import {
   AdminStateRow,
   AdminTag,
   AdminTagList,
-  AdminTextareaField,
   AdminWorkspace,
   EmptyState,
   QualityList,
@@ -505,7 +505,13 @@ export const AdminMarketingStepLayoutStory: Story = {
     <AdminWorkspace>
       <AdminMarketingStepLayout>
         <AdminMarketingPanel icon={<Edit3 size={18} />} title="Copy">
-          <AdminTextareaField label="Caption" rows={4} value="Meet better hosts this week." onChange={() => undefined} />
+          <CatchField
+            recipe="input"
+            title="Caption"
+            maxLines={4}
+            value="Meet better hosts this week."
+            onChanged={() => undefined}
+          />
         </AdminMarketingPanel>
         <AdminMarketingPreviewShell>
           <AdminMarketingPreviewCopy>Meet better hosts this week.</AdminMarketingPreviewCopy>
@@ -1157,7 +1163,13 @@ export const AdminMarketingSlideEditorStory: Story = {
           <strong>Slide 1</strong>
           <StatusChip>Draft</StatusChip>
         </AdminMarketingSlideEditorTopline>
-        <AdminTextareaField label="Slide copy" rows={3} value="Invite the right crowd." onChange={() => undefined} />
+        <CatchField
+          recipe="input"
+          title="Slide copy"
+          maxLines={3}
+          value="Invite the right crowd."
+          onChanged={() => undefined}
+        />
       </AdminMarketingSlideEditor>
     </AdminWorkspace>
   ),

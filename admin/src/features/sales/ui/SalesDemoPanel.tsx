@@ -1,11 +1,21 @@
+import {CatchField} from "@catch/web-ui";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {useSalesDemoPartnerReviewController} from "../controllers/useSalesDemoPartnerReviewController";
 import type {SalesDemoPartnerReviewApi} from "../api/salesDemoPartnerReview";
 import type {DemoReviewWording} from "../../../shared/domain/salesDemoReview";
 import {useCallback, useEffect, useState} from "react";
 import {ClipboardList} from "lucide-react";
-import {AdminButton, AdminForm, CheckboxField, EmptyState, Panel, SelectField, StateRow,
-  TextareaField, TextField} from "../../../shared/ui/AdminPrimitives";
+import {
+  AdminButton,
+  AdminForm,
+  CheckboxField,
+  EmptyState,
+  Panel,
+  selectOptionLabeller,
+  selectOptionValues,
+  StateRow,
+  TextField,
+} from "../../../shared/ui/AdminPrimitives";
 import type {DemoBlueprint, DemoCapabilityReview, DemoDisposition,
   DemoFieldMapping, DemoManagementApi, DemoPreviewCopy} from
   "../api/salesDemoManagement";
@@ -255,27 +265,52 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
         <p>An unbound link shows the preview only. Interactive access requires
           an intended email or verified phone.</p>
         <AdminForm onSubmit={(event) => {event.preventDefault(); void issue();}}>
-          <SelectField label="Who may try it?" value={contactKind}
-            onChange={(value) => setContactKind(value as typeof contactKind)}
-            disabled={locked} options={[
+          <CatchField
+            recipe="select"
+            title="Who may try it?"
+            value={contactKind}
+            onChanged={(value) => setContactKind((value ?? "") as typeof contactKind)}
+            inputMode={locked ? "inactive" : "editable"}
+            values={selectOptionValues([
               {value: "preview", label: "Preview only"},
               {value: "email", label: "Verified email"},
               {value: "phone", label: "Verified phone"},
-            ]} />
+            ])}
+            itemLabelBuilder={selectOptionLabeller([
+              {value: "preview", label: "Preview only"},
+              {value: "email", label: "Verified email"},
+              {value: "phone", label: "Verified phone"},
+            ])}
+          />
           {contactKind !== "preview" ? <TextField label={contactKind === "email" ?
             "Intended email" : "Intended phone (+country code)"}
           type={contactKind === "email" ? "email" : "tel"}
           value={contactValue} onChange={setContactValue} disabled={locked} /> : null}
-          <TextField label="Expires (within seven days)" type="datetime-local"
+          <CatchField
+            recipe="input"
+            title="Expires (within seven days)"
             value={expiresAt}
-            onChange={setExpiresAt} disabled={locked} />
+            onChanged={setExpiresAt}
+            inputMode={locked ? "inactive" : "editable"}
+            keyboardType="datetime"
+          />
           {expiresAt && !expiryValid ? <p role="alert">Choose a future expiry
             within seven days.</p> : null}
-          <SelectField label="Maximum trial sessions" value={sessionCap}
-            onChange={setSessionCap} disabled={locked} options={[
+          <CatchField
+            recipe="select"
+            title="Maximum trial sessions"
+            value={sessionCap}
+            onChanged={(value) => setSessionCap(value ?? "")}
+            inputMode={locked ? "inactive" : "editable"}
+            values={selectOptionValues([
               {value: "1", label: "One"}, {value: "2", label: "Two"},
               {value: "3", label: "Three"},
-            ]} />
+            ])}
+            itemLabelBuilder={selectOptionLabeller([
+              {value: "1", label: "One"}, {value: "2", label: "Two"},
+              {value: "3", label: "Three"},
+            ])}
+          />
           <AdminButton type="submit" variant="primary" disabled={locked ||
             !expiryValid || (contactKind !== "preview" && !contactValue.trim())}>
             Issue invitation</AdminButton>
@@ -322,74 +357,155 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
     <h4>After the sample</h4>
     <p>This plan is reviewed separately. It never publishes a form or copies
       sample answers into a real form.</p>
-    <SelectField label="Setup approach" value={form.setupPlan.mode}
-      disabled={disabled} options={[{value: "manual", label: "Manual handoff"},
-        {value: "template", label: "Prepare a reviewed form template"}]}
-      onChange={(value) => edit({...form, setupPlan: value === "template" ?
+    <CatchField
+      recipe="select"
+      title="Setup approach"
+      value={form.setupPlan.mode}
+      inputMode={disabled ? "inactive" : "editable"}
+      values={selectOptionValues([{value: "manual", label: "Manual handoff"},
+        {value: "template", label: "Prepare a reviewed form template"}])}
+      itemLabelBuilder={selectOptionLabeller([{value: "manual", label: "Manual handoff"},
+        {value: "template", label: "Prepare a reviewed form template"}])}
+      onChanged={(value) => edit({...form, setupPlan: (value ?? "") === "template" ?
         {mode: "template", requirements: form.setupPlan.requirements,
           templateId: "", title: ""} :
-        {mode: "manual", requirements: form.setupPlan.requirements}})} />
+        {mode: "manual", requirements: form.setupPlan.requirements}})}
+    />
     {form.setupPlan.mode === "template" ? <>
-      <SelectField label="Reviewed form template" disabled={disabled}
+      <CatchField
+        recipe="select"
+        title="Reviewed form template"
+        inputMode={disabled ? "inactive" : "editable"}
         value={form.setupPlan.templateId}
-        options={[{value: "", label: "Choose a template"},
+        values={selectOptionValues([{value: "", label: "Choose a template"},
           ...templateOptions.map((item) => ({value: item.templateId,
-            label: item.title}))]}
-        onChange={(templateId) => {
+            label: item.title}))])}
+        itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose a template"},
+          ...templateOptions.map((item) => ({value: item.templateId,
+            label: item.title}))])}
+        onChanged={(templateId) => {
           if (form.setupPlan.mode === "template") edit({...form,
-            setupPlan: {...form.setupPlan, templateId}});
-        }} />
-      <TextField label="Draft form title" disabled={disabled}
-        value={form.setupPlan.title} onChange={(title) => {
+            setupPlan: {...form.setupPlan, templateId: templateId ?? ""}});
+        }}
+      />
+      <CatchField
+        recipe="input"
+        title="Draft form title"
+        inputMode={disabled ? "inactive" : "editable"}
+        value={form.setupPlan.title}
+        onChanged={(title) => {
           if (form.setupPlan.mode === "template") edit({...form,
             setupPlan: {...form.setupPlan, title}});
-        }} />
+        }}
+      />
     </> : null}
-    <TextareaField label="Setup steps (one per line)" rows={3}
-      disabled={disabled} value={lines(form.setupPlan.requirements)}
-      onChange={(value) => edit({...form, setupPlan: {...form.setupPlan,
-        requirements: splitLines(value)}})} />
+    <CatchField
+      recipe="input"
+      title="Setup steps (one per line)"
+      maxLines={3}
+      inputMode={disabled ? "inactive" : "editable"}
+      value={lines(form.setupPlan.requirements)}
+      onChanged={(value) => edit({...form, setupPlan: {...form.setupPlan,
+        requirements: splitLines(value)}})}
+    />
     <p>Up to twelve steps, 160 characters each. Manual handoff needs at least one.</p>
-    <TextField label="Host name in preview" value={form.preview.brandName}
-      onChange={(brandName) => setPreview({brandName})} disabled={disabled} />
-    <TextField label="Headline" value={form.preview.headline}
-      onChange={(headline) => setPreview({headline})} disabled={disabled} />
-    <TextareaField label="Scenario" rows={2} value={form.preview.scenario}
-      onChange={(scenario) => setPreview({scenario})} disabled={disabled} />
-    {form.preview.steps.map((step, index) => <TextField
-      key={index} label={`Synthetic step ${index + 1}`} value={step}
-      onChange={(value) => setPreview({steps: form.preview.steps.map(
-        (part, at) => at === index ? value : part)})} disabled={disabled} />)}
-    <TextareaField label="Tools that stay in place (one per line)" rows={3}
-      value={lines(form.preview.retainedTools)} disabled={disabled}
-      onChange={(value) => setPreview({retainedTools: splitLines(value)})} />
-    <TextareaField label="Limits to disclose (one per line)" rows={3}
-      value={lines(form.preview.limitations)} disabled={disabled}
-      onChange={(value) => setPreview({limitations: splitLines(value)})} />
-    <TextField label="Try button text" value={form.preview.cta}
-      onChange={(cta) => setPreview({cta})} disabled={disabled} />
+    <CatchField
+      recipe="input"
+      title="Host name in preview"
+      value={form.preview.brandName}
+      onChanged={(brandName) => setPreview({brandName})}
+      inputMode={disabled ? "inactive" : "editable"}
+    />
+    <CatchField
+      recipe="input"
+      title="Headline"
+      value={form.preview.headline}
+      onChanged={(headline) => setPreview({headline})}
+      inputMode={disabled ? "inactive" : "editable"}
+    />
+    <CatchField
+      recipe="input"
+      title="Scenario"
+      maxLines={2}
+      value={form.preview.scenario}
+      onChanged={(scenario) => setPreview({scenario})}
+      inputMode={disabled ? "inactive" : "editable"}
+    />
+    {form.preview.steps.map((step, index) => <CatchField
+      recipe="input"
+      key={index}
+      title={`Synthetic step ${index + 1}`}
+      value={step}
+      onChanged={(value) => setPreview({steps: form.preview.steps.map(
+        (part, at) => at === index ? value : part)})}
+      inputMode={disabled ? "inactive" : "editable"}
+    />)}
+    <CatchField
+      recipe="input"
+      title="Tools that stay in place (one per line)"
+      maxLines={3}
+      value={lines(form.preview.retainedTools)}
+      inputMode={disabled ? "inactive" : "editable"}
+      onChanged={(value) => setPreview({retainedTools: splitLines(value)})}
+    />
+    <CatchField
+      recipe="input"
+      title="Limits to disclose (one per line)"
+      maxLines={3}
+      value={lines(form.preview.limitations)}
+      inputMode={disabled ? "inactive" : "editable"}
+      onChanged={(value) => setPreview({limitations: splitLines(value)})}
+    />
+    <CatchField
+      recipe="input"
+      title="Try button text"
+      value={form.preview.cta}
+      onChanged={(cta) => setPreview({cta})}
+      inputMode={disabled ? "inactive" : "editable"}
+    />
     <h4>Form capability review</h4>
-    {reviewAreas.map(([area, label]) => <SelectField key={area}
-      label={label} value={form.review[area]} disabled={disabled}
-      options={dispositions} onChange={(value) => edit({...form,
-        review: {...form.review, [area]: value as DemoDisposition}})} />)}
+    {reviewAreas.map(([area, label]) => <CatchField
+      recipe="select"
+      key={area}
+      title={label}
+      value={form.review[area]}
+      inputMode={disabled ? "inactive" : "editable"}
+      values={selectOptionValues(dispositions)}
+      itemLabelBuilder={selectOptionLabeller(dispositions)}
+      onChanged={(value) => edit({...form,
+        review: {...form.review, [area]: (value ?? "") as DemoDisposition}})}
+    />)}
     <h4>Field mapping</h4>
     {form.mappings.map((mapping, index) => <div key={index}>
-      <TextField label={`Source field ${index + 1}`}
-        value={mapping.sourceField} disabled={disabled}
-        onChange={(sourceField) => edit({...form,
+      <CatchField
+        recipe="input"
+        title={`Source field ${index + 1}`}
+        value={mapping.sourceField}
+        inputMode={disabled ? "inactive" : "editable"}
+        onChanged={(sourceField) => edit({...form,
           mappings: form.mappings.map((part, at) => at === index ?
-            {...part, sourceField} : part)})} />
-      <TextField label={`Catch field ${index + 1} (if supported)`}
-        value={mapping.catchField ?? ""} disabled={disabled}
-        onChange={(catchField) => edit({...form,
+            {...part, sourceField} : part)})}
+      />
+      <CatchField
+        recipe="input"
+        title={`Catch field ${index + 1} (if supported)`}
+        value={mapping.catchField ?? ""}
+        inputMode={disabled ? "inactive" : "editable"}
+        onChanged={(catchField) => edit({...form,
           mappings: form.mappings.map((part, at) => at === index ?
-            {...part, catchField: catchField || null} : part)})} />
-      <SelectField label={`Mapping outcome ${index + 1}`}
-        value={mapping.disposition} disabled={disabled}
-        options={dispositions} onChange={(value) => edit({...form,
+            {...part, catchField: catchField || null} : part)})}
+      />
+      <CatchField
+        recipe="select"
+        title={`Mapping outcome ${index + 1}`}
+        value={mapping.disposition}
+        inputMode={disabled ? "inactive" : "editable"}
+        values={selectOptionValues(dispositions)}
+        itemLabelBuilder={selectOptionLabeller(dispositions)}
+        onChanged={(value) => edit({...form,
           mappings: form.mappings.map((part, at) => at === index ?
-            {...part, disposition: value as DemoDisposition} : part)})} />
+            {...part, disposition: (value ?? "") as DemoDisposition} : part)})}
+      />
       <AdminButton disabled={disabled} onClick={() => edit({...form,
         mappings: form.mappings.filter((_, at) => at !== index)})}>
         Remove mapping</AdminButton>
@@ -427,7 +543,14 @@ function SalesDemoPartnerSharePanel(props: {actorUid: string; organizerId: strin
       {value.preview.retainedTools.map((tool, i) => <p key={i}>Keep: {tool}</p>)}
       {value.preview.limitations.map((limit, i) => <p key={i}>{limit}</p>)}<p>{value.preview.cta}</p>
       <StateRow label="Current sharing" value={value.sharingCurrent ? `Active until ${value.expiresAt}` : value.sharingState} />
-      <TextField label="Share until (UTC)" type="datetime-local" value={expires} disabled={blocked} onChange={(v) => {setExpires(v); setReviewKey(null);}} />
+      <CatchField
+        recipe="input"
+        title="Share until (UTC)"
+        value={expires}
+        inputMode={blocked ? "inactive" : "editable"}
+        onChanged={(v) => {setExpires(v); setReviewKey(null);}}
+        keyboardType="datetime"
+      />
       <p>Latest allowed expiry: {value.maximumExpiresAt}. No invitation, send authority or organizer control is granted.</p>
       <CheckboxField label="I approve this exact synthetic preview for this assigned partner" checked={!!key && reviewKey === key}
         disabled={blocked} onChange={(checked) => setReviewKey(checked ? key : null)} />

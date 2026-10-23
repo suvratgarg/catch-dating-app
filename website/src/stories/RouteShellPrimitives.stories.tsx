@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {FormEvent, ReactNode} from "react";
 import {hostListings} from "./fixtures/hostListings";
@@ -82,7 +83,6 @@ import {
   ProductShell,
   SelectedListingCard,
   SelectField,
-  TextField,
   UiLabel,
   VerificationMethodGrid,
 } from "../shared/ui/primitives";
@@ -152,7 +152,13 @@ export const ClaimFlowShellStory: Story = {
         <ClaimFlowPanel>
           <ClaimFlowStage>
             <FieldGrid>
-              <TextField id="storybook-claim-name" label="Requester name" name="requesterName" defaultValue="Taylor Host" />
+              <CatchField
+                recipe="input"
+                id="storybook-claim-name"
+                title="Requester name"
+                name="requesterName"
+                initialValue="Taylor Host"
+              />
               <SelectField id="storybook-claim-role" label="Role" name="requesterRole" defaultValue="owner">
                 <option value="owner">Owner</option>
                 <option value="manager">Manager</option>
@@ -248,8 +254,19 @@ export const ListingClaimShellStory: Story = {
         ]}
       />
       <ClaimRequestForm onSubmit={preventSubmit}>
-        <TextField id="storybook-listing-claim-name" label="Requester name" name="requesterName" />
-        <TextField id="storybook-listing-claim-email" label="Business email" name="businessEmail" type="email" />
+        <CatchField
+          recipe="input"
+          id="storybook-listing-claim-name"
+          title="Requester name"
+          name="requesterName"
+        />
+        <CatchField
+          recipe="input"
+          id="storybook-listing-claim-email"
+          title="Business email"
+          name="businessEmail"
+          keyboardType="emailAddress"
+        />
         <Button type="submit">Send claim request</Button>
         <FormStatus status={{message: "Storybook claim request is ready for review.", tone: "is-success"}} />
       </ClaimRequestForm>
@@ -307,7 +324,13 @@ export const HostApplicationShellStory: Story = {
     <HostApplicationShell onSubmit={preventSubmit} reveal>
       <HostApplicationPanel>
         <HostApplicationStage>
-          <TextField id="storybook-host-application-name" label="Organizer name" name="organizerName" defaultValue="Sunday Table Club" />
+          <CatchField
+            recipe="input"
+            id="storybook-host-application-name"
+            title="Organizer name"
+            name="organizerName"
+            initialValue="Sunday Table Club"
+          />
           <OperationalNote title="Review note" body="Host applications use shared panels and stages for all field groups." />
         </HostApplicationStage>
       </HostApplicationPanel>

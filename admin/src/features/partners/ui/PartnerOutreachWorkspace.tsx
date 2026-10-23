@@ -1,7 +1,17 @@
+import {CatchField} from "@catch/web-ui";
 import {AlertCircle, ClipboardList} from "lucide-react";
 import {useEffect, useState} from "react";
-import {AdminButton, AdminForm, CheckboxField, EmptyState, Panel, SelectField,
-  StateRow, StatusBanner, TextareaField, TextField} from "../../../shared/ui/AdminPrimitives";
+import {
+  AdminButton,
+  AdminForm,
+  CheckboxField,
+  EmptyState,
+  Panel,
+  selectOptionLabeller,
+  selectOptionValues,
+  StateRow,
+  StatusBanner,
+} from "../../../shared/ui/AdminPrimitives";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {usePartnerOutreachController} from "../controllers/usePartnerOutreachController";
 import type {PartnerOutreachApi} from "../api/partnerOutreachTypes";
@@ -54,12 +64,28 @@ function OutreachBody(props: Parameters<typeof PartnerOutreachWorkspace>[0]) {
           observationIds: ids("observation"), capabilityIds: ids("capability"),
           referenceIds: ids("reference"), ctaIds: ids("cta"), channel, purpose: "first_message"});
       }}>
-        <SelectField label="Current contact" value={contactId} onChange={setContactId} disabled={blocked}
-          options={[{value: "", label: "Choose a contact"}, ...prepared.contacts.map((row) =>
-            ({value: row.contactId, label: `${row.displayName} · ${row.role}`}))]} />
-        <SelectField label="Opportunity" value={opportunityId} onChange={setOpportunityId} disabled={blocked}
-          options={[{value: "", label: "Choose an opportunity"}, ...prepared.opportunities.map((row) =>
-            ({value: row.opportunityId, label: `${row.motion} · ${row.stage.replaceAll("_", " ")}`}))]} />
+        <CatchField
+          recipe="select"
+          title="Current contact"
+          value={contactId}
+          onChanged={(value) => setContactId(value ?? "")}
+          inputMode={blocked ? "inactive" : "editable"}
+          values={selectOptionValues([{value: "", label: "Choose a contact"}, ...prepared.contacts.map((row) =>
+            ({value: row.contactId, label: `${row.displayName} · ${row.role}`}))])}
+          itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose a contact"}, ...prepared.contacts.map((row) =>
+            ({value: row.contactId, label: `${row.displayName} · ${row.role}`}))])}
+        />
+        <CatchField
+          recipe="select"
+          title="Opportunity"
+          value={opportunityId}
+          onChanged={(value) => setOpportunityId(value ?? "")}
+          inputMode={blocked ? "inactive" : "editable"}
+          values={selectOptionValues([{value: "", label: "Choose an opportunity"}, ...prepared.opportunities.map((row) =>
+            ({value: row.opportunityId, label: `${row.motion} · ${row.stage.replaceAll("_", " ")}`}))])}
+          itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose an opportunity"}, ...prepared.opportunities.map((row) =>
+            ({value: row.opportunityId, label: `${row.motion} · ${row.stage.replaceAll("_", " ")}`}))])}
+        />
         {prepared.clauses.map((row) => <div key={`${row.clauseId}:${row.revision}`}>
           <CheckboxField label={`${row.kind}: ${row.text}`} checked={chosen[row.clauseId] === row.revision}
             disabled={blocked} onChange={(checked) => setChosen((old) => ({...old, [row.clauseId]: checked ? row.revision : 0}))} />
@@ -72,8 +98,21 @@ function OutreachBody(props: Parameters<typeof PartnerOutreachWorkspace>[0]) {
         <AdminButton type="submit" variant="primary" disabled={blocked || !canGenerate}>Prepare draft from selected wording</AdminButton>
       </AdminForm>
       {draft && <>
-        {draft.draft.subject && <TextField label="Reviewed draft subject" value={draft.draft.subject} onChange={() => {}} readOnly />}
-        <TextareaField label="Exact draft wording" value={draft.draft.text} onChange={() => {}} rows={8} readOnly />
+        {draft.draft.subject && <CatchField
+          recipe="input"
+          title="Reviewed draft subject"
+          value={draft.draft.subject}
+          onChanged={() => {}}
+          inputMode="readOnly"
+        />}
+        <CatchField
+          recipe="input"
+          title="Exact draft wording"
+          value={draft.draft.text}
+          onChanged={() => {}}
+          maxLines={8}
+          inputMode="readOnly"
+        />
         <p>Select different approved wording to prepare another draft.</p>
         {draft.status === "pending_review" && <>
           <CheckboxField label="I verified these facts, the tone and my established contact channel."
@@ -90,8 +129,14 @@ function OutreachBody(props: Parameters<typeof PartnerOutreachWorkspace>[0]) {
             if (!Number.isFinite(date.getTime()) || !["email", "whatsapp", "other"].includes(props.channel ?? "")) return;
             void c.record(props.channel as "email" | "whatsapp" | "other", date.toISOString());
           }}>
-            <TextField label="When you manually sent it (UTC)" type="datetime-local" value={occurredAt}
-              onChange={setOccurredAt} disabled={blocked} />
+            <CatchField
+              recipe="input"
+              title="When you manually sent it (UTC)"
+              value={occurredAt}
+              onChanged={setOccurredAt}
+              inputMode={blocked ? "inactive" : "editable"}
+              keyboardType="datetime"
+            />
             <CheckboxField label="I manually sent this exact reviewed draft."
               checked={sentHash === reviewKey} disabled={blocked}
               onChange={(checked) => setSentHash(checked ? reviewKey : null)} />

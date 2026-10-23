@@ -1,7 +1,14 @@
+import {CatchField} from "@catch/web-ui";
 import {useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import type {ReactNode} from "react";
-import {AdminButton, AdminForm, SelectField, StateRow} from
-  "../../../shared/ui/AdminPrimitives";
+import {
+  AdminButton,
+  AdminForm,
+  SelectField,
+  selectOptionLabeller,
+  selectOptionValues,
+  StateRow,
+} from "../../../shared/ui/AdminPrimitives";
 import type {ApprovedClause, DraftSourceRequest} from
   "../api/salesIntelligenceTypes";
 import type {SalesContact, SalesOpportunity} from "../api/salesTypes";
@@ -155,38 +162,87 @@ function SalesOutreachCompositionReviewBody({organizerId, evaluatedAt,
       qualified Sales record and clear contact restrictions before drafting.</p> : null}
     <AdminForm onSubmit={(event) => {event.preventDefault(); void submit();}}>
       <h3>Review a first-message composition plan</h3>
-      <SelectField label="Reviewed contact" value={contactId}
-        onChange={setContactId} disabled={interactionBlocked}
-        options={[{value: "", label: "Choose contact"},
+      <CatchField
+        recipe="select"
+        title="Reviewed contact"
+        value={contactId}
+        onChanged={(value) => setContactId(value ?? "")}
+        inputMode={interactionBlocked ? "inactive" : "editable"}
+        values={selectOptionValues([{value: "", label: "Choose contact"},
           ...contacts.map((row) => ({value: row.contactId,
-            label: `${row.displayName} · ${row.relationship.role}`}))]} />
+            label: `${row.displayName} · ${row.relationship.role}`}))])}
+        itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose contact"},
+          ...contacts.map((row) => ({value: row.contactId,
+            label: `${row.displayName} · ${row.relationship.role}`}))])}
+      />
       {nextContactCursor ? <AdminButton disabled={interactionBlocked}
         onClick={() => onNextContacts(nextContactCursor)}>More contacts</AdminButton> : null}
       {hasPreviousContacts ? <AdminButton disabled={interactionBlocked}
         onClick={onPreviousContacts}>Previous contacts</AdminButton> : null}
-      <SelectField label="Opportunity ready for contact" value={opportunityId}
-        onChange={setOpportunityId} disabled={interactionBlocked}
-        options={[{value: "", label: "Choose opportunity"},
+      <CatchField
+        recipe="select"
+        title="Opportunity ready for contact"
+        value={opportunityId}
+        onChanged={(value) => setOpportunityId(value ?? "")}
+        inputMode={interactionBlocked ? "inactive" : "editable"}
+        values={selectOptionValues([{value: "", label: "Choose opportunity"},
           ...opportunities.map((row) => ({value: row.opportunityId,
-            label: `${label(row.motion)} · ${label(row.stage)}`}))]} />
-      <SelectField label="Host observation" value={observationId}
-        onChange={setObservationId} disabled={interactionBlocked}
-        options={options("observation")} />
-      <SelectField label="Catch capability" value={capabilityId}
-        onChange={setCapabilityId} disabled={interactionBlocked}
-        options={options("capability")} />
-      <SelectField label="Private reference (optional)" value={referenceId}
-        onChange={setReferenceId} disabled={interactionBlocked}
-        options={options("reference", true)} />
-      <SelectField label="Question or next step" value={ctaId}
-        onChange={setCtaId} disabled={interactionBlocked}
-        options={options("cta")} />
-      <SelectField label="Draft channel" value={channel}
-        onChange={(value) => setChannel(value as typeof channel)}
-        disabled={interactionBlocked} options={[
+            label: `${label(row.motion)} · ${label(row.stage)}`}))])}
+        itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose opportunity"},
+          ...opportunities.map((row) => ({value: row.opportunityId,
+            label: `${label(row.motion)} · ${label(row.stage)}`}))])}
+      />
+      <CatchField
+        recipe="select"
+        title="Host observation"
+        value={observationId}
+        onChanged={(value) => setObservationId(value ?? "")}
+        inputMode={interactionBlocked ? "inactive" : "editable"}
+        values={selectOptionValues(options("observation"))}
+        itemLabelBuilder={selectOptionLabeller(options("observation"))}
+      />
+      <CatchField
+        recipe="select"
+        title="Catch capability"
+        value={capabilityId}
+        onChanged={(value) => setCapabilityId(value ?? "")}
+        inputMode={interactionBlocked ? "inactive" : "editable"}
+        values={selectOptionValues(options("capability"))}
+        itemLabelBuilder={selectOptionLabeller(options("capability"))}
+      />
+      <CatchField
+        recipe="select"
+        title="Private reference (optional)"
+        value={referenceId}
+        onChanged={(value) => setReferenceId(value ?? "")}
+        inputMode={interactionBlocked ? "inactive" : "editable"}
+        values={selectOptionValues(options("reference", true))}
+        itemLabelBuilder={selectOptionLabeller(options("reference", true))}
+      />
+      <CatchField
+        recipe="select"
+        title="Question or next step"
+        value={ctaId}
+        onChanged={(value) => setCtaId(value ?? "")}
+        inputMode={interactionBlocked ? "inactive" : "editable"}
+        values={selectOptionValues(options("cta"))}
+        itemLabelBuilder={selectOptionLabeller(options("cta"))}
+      />
+      <CatchField
+        recipe="select"
+        title="Draft channel"
+        value={channel}
+        onChanged={(value) => setChannel((value ?? "") as typeof channel)}
+        inputMode={interactionBlocked ? "inactive" : "editable"}
+        values={selectOptionValues([
           {value: "email", label: "Email draft"},
           {value: "message", label: "Message draft"},
-        ]} />
+        ])}
+        itemLabelBuilder={selectOptionLabeller([
+          {value: "email", label: "Email draft"},
+          {value: "message", label: "Message draft"},
+        ])}
+      />
       <h3>Composition review</h3>
       <StateRow label="Contact" value={selectedContact?.displayName ?? "Not selected"} />
       <StateRow label="Opportunity" value={selectedOpportunity ?

@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {useWebsiteAccountController} from "../account/useWebsiteAccountController";
 import {renderAccountForm} from "../account/accountForm";
 import {useFreeEventRegistrationController} from "./useFreeEventRegistrationController";
@@ -15,7 +16,6 @@ import {
   EventRegistrationForm,
   EventRegistrationPrivacy,
   FormStatus,
-  TextField,
 } from "../../shared/ui/primitives";
 import {eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
 
@@ -47,25 +47,27 @@ function FreeEventRegistration({
 
   return (
     <EventRegistrationForm onSubmit={handleSubmit}>
-      <TextField
+      <CatchField
+        recipe="input"
         autoComplete="name"
-        disabled={pending || stage !== "details"}
+        inputMode={pending || stage !== "details" ? "inactive" : "editable"}
         id={`${reactId}-event-registration-name`}
-        label={copy.nameLabel}
+        title={copy.nameLabel}
         maxLength={120}
-        onChange={(event) => setDisplayName(event.target.value)}
-        placeholder={copy.namePlaceholder}
+        onChanged={(value) => setDisplayName(value)}
+        inputHint={copy.namePlaceholder}
         value={displayName}
       />
-      <TextField
+      <CatchField
+        recipe="input"
         autoComplete="tel"
-        disabled={verified || pending || stage !== "details"}
+        inputMode={verified || pending || stage !== "details" ? "inactive" : "editable"}
         id={`${reactId}-event-registration-phone`}
-        inputMode="tel"
-        label={copy.phoneLabel}
-        onChange={(event) => setPhoneNumber(event.target.value)}
-        placeholder={copy.phonePlaceholder}
+        title={copy.phoneLabel}
+        onChanged={(value) => setPhoneNumber(value)}
+        inputHint={copy.phonePlaceholder}
         value={phoneNumber}
+        keyboardType="phone"
       />
       <EventRegistrationConsents>
         <EventRegistrationConsent
@@ -85,16 +87,17 @@ function FreeEventRegistration({
         <EventRegistrationPrivacy>{copy.consentDetail}</EventRegistrationPrivacy>
       </EventRegistrationConsents>
       {stage === "code" ? (
-        <TextField
+        <CatchField
+          recipe="input"
           autoComplete="one-time-code"
-          disabled={pending}
+          inputMode={pending ? "inactive" : "editable"}
           id={`${reactId}-event-registration-code`}
-          inputMode="numeric"
-          label={copy.codeLabel}
+          title={copy.codeLabel}
           maxLength={6}
-          onChange={(event) => setCode(event.target.value.replace(/\D/gu, ""))}
-          placeholder={copy.codePlaceholder}
+          onChanged={(value) => setCode(value.replace(/\D/gu, ""))}
+          inputHint={copy.codePlaceholder}
           value={code}
+          keyboardType="number"
         />
       ) : null}
       <div id={recaptchaContainerId} />

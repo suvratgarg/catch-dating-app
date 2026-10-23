@@ -1,4 +1,4 @@
-import {CatchGap} from "@catch/web-ui";
+import {CatchField, CatchGap} from "@catch/web-ui";
 import {useMemo} from "react";
 import {
   Button,
@@ -14,7 +14,6 @@ import {
   Field,
   FormStatus,
   SelectField,
-  TextField,
 } from "../../shared/ui/primitives";
 import {programHouseholdItineraryIcsUrl} from "../../firebase";
 import {householdRsvpCopy as copy} from "../../content/householdRsvp";
@@ -96,30 +95,32 @@ function MemberFunctionCard({
         </ChoiceChipGrid>
       </Field>
       {attending ? (
-        <TextField
+        <CatchField
+          recipe="input"
           id={`${inputId}-party`}
-          label={copy.partySize}
-          type="number" min={1} max={50} inputMode="numeric"
-          placeholder={copy.partySizePlaceholder}
-          disabled={pending}
+          title={copy.partySize}
+          min={1}
+          max={50}
+          inputHint={copy.partySizePlaceholder}
+          inputMode={pending ? "inactive" : "editable"}
           value={partySize === null ? "" : String(partySize)}
-          onChange={(event) => {
-            const value = event.target.value;
+          onChanged={(value) => {
             onChange({
               partySize: value === "" ? null :
                 Math.max(1, Math.min(50, Number.parseInt(value, 10) || 1)),
             });
           }}
+          keyboardType="number"
         />
       ) : null}
-      <TextField
+      <CatchField
+        recipe="input"
         id={`${inputId}-note`}
-        label={copy.note}
-        placeholder={copy.notePlaceholder}
-        disabled={pending}
+        title={copy.note}
+        inputHint={copy.notePlaceholder}
+        inputMode={pending ? "inactive" : "editable"}
         value={responseNote}
-        onChange={(event) =>
-          onChange({responseNote: event.target.value || null})}
+        onChanged={(value) => onChange({responseNote: value || null})}
       />
     </EventRuntimeModule>
   );
@@ -157,47 +158,47 @@ function TravelBlockCard({
   return (
     <EventRuntimeModule
       title={copy.travelBlockTitle(member.displayName, title)}>
-      <TextField
+      <CatchField
+        recipe="input"
         id={`${inputId}-flight`}
-        label={copy.travelFlight}
-        placeholder={copy.travelFlightPlaceholder}
-        disabled={pending}
+        title={copy.travelFlight}
+        inputHint={copy.travelFlightPlaceholder}
+        inputMode={pending ? "inactive" : "editable"}
         value={draft?.flightNumber ?? ""}
-        onChange={(event) =>
-          onChange({flightNumber: event.target.value || null})}
+        onChanged={(value) => onChange({flightNumber: value || null})}
       />
-      <TextField
+      <CatchField
+        recipe="input"
         id={`${inputId}-from`}
-        label={copy.travelFrom}
-        placeholder={copy.travelFromPlaceholder}
+        title={copy.travelFrom}
+        inputHint={copy.travelFromPlaceholder}
         maxLength={3}
-        disabled={pending}
+        inputMode={pending ? "inactive" : "editable"}
         value={draft?.originIata ?? ""}
-        onChange={(event) =>
-          onChange({originIata: event.target.value.toUpperCase() || null})}
+        onChanged={(value) => onChange({originIata: value.toUpperCase() || null})}
       />
-      <TextField
+      <CatchField
+        recipe="input"
         id={`${inputId}-to`}
-        label={copy.travelTo}
-        placeholder={copy.travelToPlaceholder}
+        title={copy.travelTo}
+        inputHint={copy.travelToPlaceholder}
         maxLength={3}
-        disabled={pending}
+        inputMode={pending ? "inactive" : "editable"}
         value={draft?.destinationIata ?? ""}
-        onChange={(event) =>
-          onChange({destinationIata: event.target.value.toUpperCase() || null})}
+        onChanged={(value) => onChange({destinationIata: value.toUpperCase() || null})}
       />
-      <TextField
+      <CatchField
+        recipe="input"
         id={`${inputId}-when`}
-        label={kind === "outbound" ? copy.travelWhenDeparture :
+        title={kind === "outbound" ? copy.travelWhenDeparture :
           copy.travelWhen}
-        type="datetime-local"
-        disabled={pending}
+        inputMode={pending ? "inactive" : "editable"}
         value={toLocalInput(draft?.scheduledArrivalAtMillis)}
-        onChange={(event) => {
-          const value = event.target.value;
+        onChanged={(value) => {
           onChange({scheduledArrivalAtMillis:
             value === "" ? null : new Date(value).getTime()});
         }}
+        keyboardType="datetime"
       />
       <SelectField
         id={`${inputId}-hotel`}
@@ -222,39 +223,43 @@ function TravelBlockCard({
         <option value={OTHER_DESTINATION}>{copy.travelHotelOther}</option>
       </SelectField>
       {destination === OTHER_DESTINATION ? (
-        <TextField
+        <CatchField
+          recipe="input"
           id={`${inputId}-destination`}
-          label={copy.travelDestinationLabel}
-          placeholder={copy.travelDestinationPlaceholder}
-          disabled={pending}
+          title={copy.travelDestinationLabel}
+          inputHint={copy.travelDestinationPlaceholder}
+          inputMode={pending ? "inactive" : "editable"}
           value={draft?.destinationLabel ?? ""}
-          onChange={(event) =>
-            onChange({destinationLabel: event.target.value || null})}
+          onChanged={(value) => onChange({destinationLabel: value || null})}
         />
       ) : null}
-      <TextField
+      <CatchField
+        recipe="input"
         id={`${inputId}-passengers`}
-        label={copy.travelPassengers}
-        type="number" min={1} max={200} inputMode="numeric"
-        disabled={pending}
+        title={copy.travelPassengers}
+        min={1}
+        max={200}
+        inputMode={pending ? "inactive" : "editable"}
         value={draft?.passengers == null ? "" : String(draft.passengers)}
-        onChange={(event) => {
-          const value = event.target.value;
+        onChanged={(value) => {
           onChange({passengers: value === "" ? null :
             Math.max(1, Math.min(200, Number.parseInt(value, 10) || 1))});
         }}
+        keyboardType="number"
       />
-      <TextField
+      <CatchField
+        recipe="input"
         id={`${inputId}-luggage`}
-        label={copy.travelLuggage}
-        type="number" min={0} max={500} inputMode="numeric"
-        disabled={pending}
+        title={copy.travelLuggage}
+        min={0}
+        max={500}
+        inputMode={pending ? "inactive" : "editable"}
         value={draft?.luggageUnits == null ? "" : String(draft.luggageUnits)}
-        onChange={(event) => {
-          const value = event.target.value;
+        onChanged={(value) => {
           onChange({luggageUnits: value === "" ? null :
             Math.max(0, Math.min(500, Number.parseInt(value, 10) || 0))});
         }}
+        keyboardType="number"
       />
       {draft && travelDraftIncomplete(draft) ? (
         <p>{copy.travelIncomplete}</p>

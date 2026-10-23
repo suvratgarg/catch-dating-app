@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {AlertCircle} from "lucide-react";
 import {lazy, Suspense, useEffect, useRef, useState} from "react";
 import {confirmPhoneSignInCode, requestPhoneSignInCode, resetPhoneSignIn,
@@ -5,9 +6,16 @@ import {confirmPhoneSignInCode, requestPhoneSignInCode, resetPhoneSignIn,
 import {useAdminSession} from "./useAdminSession";
 import {AdminQueryProvider} from "../shared/query/queryClient";
 import {AdminPendingOperationProvider} from "../shared/pendingOperation";
-import {AdminButton, AdminFeatureLoadingState, AdminForm, AdminSignInActions,
-  AdminSignInMeta, AdminSignInPanel, AdminSignInScreen, StatusBanner,
-  TextField} from "../shared/ui/AdminPrimitives";
+import {
+  AdminButton,
+  AdminFeatureLoadingState,
+  AdminForm,
+  AdminSignInActions,
+  AdminSignInMeta,
+  AdminSignInPanel,
+  AdminSignInScreen,
+  StatusBanner,
+} from "../shared/ui/AdminPrimitives";
 const PartnerWorkspaceScreen = lazy(() => import("../features/partners/ui/PartnerWorkspaceScreen")
   .then((m) => ({default: m.PartnerWorkspaceScreen})));
 
@@ -70,10 +78,28 @@ function PartnerSignIn({error: sessionError}: {error: string | null}) {
     <AdminForm onSubmit={(event) => {event.preventDefault(); submit();}}>
       {codeSent ? <>
         <AdminSignInMeta>Verification code sent to {phone}.</AdminSignInMeta>
-        <TextField label="Verification code" name="verification-code" autoComplete="one-time-code"
-          inputMode="numeric" maxLength={6} value={code} onChange={setCode} disabled={pending} />
-      </> : <TextField label="Phone number" name="phone" autoComplete="tel" inputMode="tel"
-        placeholder="+91 90000 00000" value={phone} onChange={setPhone} disabled={pending} />}
+        <CatchField
+          recipe="input"
+          title="Verification code"
+          name="verification-code"
+          autoComplete="one-time-code"
+          maxLength={6}
+          value={code}
+          onChanged={setCode}
+          inputMode={pending ? "inactive" : "editable"}
+          keyboardType="number"
+        />
+      </> : <CatchField
+        recipe="input"
+        title="Phone number"
+        name="phone"
+        autoComplete="tel"
+        inputHint="+91 90000 00000"
+        value={phone}
+        onChanged={setPhone}
+        inputMode={pending ? "inactive" : "editable"}
+        keyboardType="phone"
+      />}
       <AdminSignInActions>
         <AdminButton type="submit" variant="primary" disabled={pending}>
           {codeSent ? (pending ? "Verifying" : "Verify and sign in") :

@@ -1,8 +1,16 @@
+import {CatchField} from "@catch/web-ui";
 import {useEffect, useRef, useState} from "react";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {ClipboardList} from "lucide-react";
-import {AdminButton, AdminForm, EmptyState, Panel, SelectField, StateRow,
-  TextareaField, TextField} from "../../../shared/ui/AdminPrimitives";
+import {
+  AdminButton,
+  AdminForm,
+  EmptyState,
+  Panel,
+  selectOptionLabeller,
+  selectOptionValues,
+  StateRow,
+} from "../../../shared/ui/AdminPrimitives";
 import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
 import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {dataMode} from "../../../shared/api/dataMode";
@@ -101,11 +109,20 @@ function SalesCommercialWorkspace({detail, evidence, isAdminOwner}: {
     <Panel title="Pilots and commercial terms" icon={<ClipboardList size={18} />}>
       <p>Record a reviewed pilot and quote for this host. Accepted terms,
         manual host collection and opportunity close are separate reviews.</p>
-      <SelectField label="Opportunity" value={opportunityId}
-        onChange={setOpportunityId} options={selectableOpportunities.map((item) => ({
+      <CatchField
+        recipe="select"
+        title="Opportunity"
+        value={opportunityId}
+        onChanged={(value) => setOpportunityId(value ?? "")}
+        values={selectOptionValues(selectableOpportunities.map((item) => ({
           value: item.opportunityId,
           label: `${item.motion.replaceAll("_", " ")} · ${item.stage.replaceAll("_", " ")}`,
-        }))} />
+        })))}
+        itemLabelBuilder={selectOptionLabeller(selectableOpportunities.map((item) => ({
+          value: item.opportunityId,
+          label: `${item.motion.replaceAll("_", " ")} · ${item.stage.replaceAll("_", " ")}`,
+        })))}
+      />
       {!selectableOpportunities.length ? <EmptyState>Create an opportunity first.</EmptyState> : null}
       {record.isPending && opportunityId ? <EmptyState>Loading commercial record…</EmptyState> : null}
       {record.error ? <EmptyState>Commercial record could not be loaded.
@@ -199,29 +216,77 @@ function PilotEditor({organizerId, opportunityId, record, evidence, saving, save
     <p>Review evidence before starting a pilot; record outcome evidence before
       marking it complete. An active or finished pilot cannot restart.</p>
     <AdminForm onSubmit={(event) => {event.preventDefault(); void submit();}}>
-      <SelectField label="Pilot status" value={status} onChange={(value) => {
-        setStatus(value as CommercialStatus); setDirty(true);
-      }} options={["draft", "reviewed", "active", "completed", "cancelled"].map(
-        (value) => ({value, label: value}))} />
-      <TextField label="Workflow key" value={workflowId} onChange={(value) => {
+      <CatchField
+        recipe="select"
+        title="Pilot status"
+        value={status}
+        onChanged={(value) => {
+        setStatus((value ?? "") as CommercialStatus); setDirty(true);
+      }}
+        values={selectOptionValues(["draft", "reviewed", "active", "completed", "cancelled"].map(
+        (value) => ({value, label: value})))}
+        itemLabelBuilder={selectOptionLabeller(["draft", "reviewed", "active", "completed", "cancelled"].map(
+        (value) => ({value, label: value})))}
+      />
+      <CatchField
+        recipe="input"
+        title="Workflow key"
+        value={workflowId}
+        onChanged={(value) => {
         setWorkflowId(value); setDirty(true);
-      }} required />
-      <TextareaField label="Objective" rows={2} value={objective} onChange={(value) => {
+      }}
+        required
+      />
+      <CatchField
+        recipe="input"
+        title="Objective"
+        maxLines={2}
+        value={objective}
+        onChanged={(value) => {
         setObjective(value); setDirty(true);
-      }} required />
-      <TextareaField label="Success measures, one per line" rows={3}
-        value={measures} onChange={(value) => {setMeasures(value); setDirty(true);}} required />
-      <TextField label="Start" type="datetime-local" value={startsAt}
-        onChange={(value) => {setStartsAt(value); setDirty(true);}} />
-      <TextField label="End" type="datetime-local" value={endsAt}
-        onChange={(value) => {setEndsAt(value); setDirty(true);}} />
-      <SelectField label="Reviewed plan evidence" value={reviewEvidence}
-        onChange={(value) => {setReviewEvidence(value); setDirty(true);}}
-        options={evidenceOptions(evidence)} />
-      {status === "completed" ? <SelectField label="Outcome evidence"
-        value={outcomeEvidence} onChange={(value) => {
-          setOutcomeEvidence(value); setDirty(true);
-        }} options={evidenceOptions(evidence)} /> : null}
+      }}
+        required
+      />
+      <CatchField
+        recipe="input"
+        title="Success measures, one per line"
+        maxLines={3}
+        value={measures}
+        onChanged={(value) => {setMeasures(value); setDirty(true);}}
+        required
+      />
+      <CatchField
+        recipe="input"
+        title="Start"
+        value={startsAt}
+        onChanged={(value) => {setStartsAt(value); setDirty(true);}}
+        keyboardType="datetime"
+      />
+      <CatchField
+        recipe="input"
+        title="End"
+        value={endsAt}
+        onChanged={(value) => {setEndsAt(value); setDirty(true);}}
+        keyboardType="datetime"
+      />
+      <CatchField
+        recipe="select"
+        title="Reviewed plan evidence"
+        value={reviewEvidence}
+        onChanged={(value) => {setReviewEvidence((value ?? "")); setDirty(true);}}
+        values={selectOptionValues(evidenceOptions(evidence))}
+        itemLabelBuilder={selectOptionLabeller(evidenceOptions(evidence))}
+      />
+      {status === "completed" ? <CatchField
+        recipe="select"
+        title="Outcome evidence"
+        value={outcomeEvidence}
+        onChanged={(value) => {
+          setOutcomeEvidence((value ?? "")); setDirty(true);
+        }}
+        values={selectOptionValues(evidenceOptions(evidence))}
+        itemLabelBuilder={selectOptionLabeller(evidenceOptions(evidence))}
+      /> : null}
       {changed ? <p role="alert">Pilot changed since you opened this form.
         Compare it before saving. <AdminButton type="button" onClick={refresh}>
           Use latest pilot</AdminButton></p> : null}
@@ -298,21 +363,60 @@ function QuoteEditor({organizerId, opportunityId, record, evidence, saving, save
       `${terms.currency} ${(terms.amountMinor / 100).toFixed(2)} · ${terms.scope} · ` +
       `valid until ${new Date(terms.validUntil).toLocaleString()}`} /> : null}
     <AdminForm onSubmit={(event) => {event.preventDefault(); void revise();}}>
-      <SelectField label="Currency" value={currency} onChange={(value) => {
-        setCurrency(value); setDirty(true);
-      }} options={[{value: "INR", label: "INR"}, {value: "USD", label: "USD"}]} />
-      <TextField label="Amount in currency units" type="number" value={amount}
-        onChange={(value) => {setAmount(value); setDirty(true);}} required />
-      <SelectField label="Billing cadence" value={cadence} onChange={(value) => {
-        setCadence(value as CommercialTerms["billingCadence"]); setDirty(true);
-      }} options={["one_time", "monthly", "annual", "usage_based"].map(
-        (value) => ({value, label: value.replaceAll("_", " ")}))} />
-      <TextareaField label="Exact scope" rows={3} value={scope}
-        onChange={(value) => {setScope(value); setDirty(true);}} required />
-      <TextField label="Valid until" type="datetime-local" value={validUntil}
-        onChange={(value) => {setValidUntil(value); setDirty(true);}} required />
-      <SelectField label="Recorded source fact" value={factToAdd}
-        onChange={setFactToAdd} options={evidenceOptions(evidence)} />
+      <CatchField
+        recipe="select"
+        title="Currency"
+        value={currency}
+        onChanged={(value) => {
+        setCurrency((value ?? "")); setDirty(true);
+      }}
+        values={selectOptionValues([{value: "INR", label: "INR"}, {value: "USD", label: "USD"}])}
+        itemLabelBuilder={selectOptionLabeller([{value: "INR", label: "INR"}, {value: "USD", label: "USD"}])}
+      />
+      <CatchField
+        recipe="input"
+        title="Amount in currency units"
+        value={amount}
+        onChanged={(value) => {setAmount(value); setDirty(true);}}
+        required
+        keyboardType="number"
+      />
+      <CatchField
+        recipe="select"
+        title="Billing cadence"
+        value={cadence}
+        onChanged={(value) => {
+        setCadence((value ?? "") as CommercialTerms["billingCadence"]); setDirty(true);
+      }}
+        values={selectOptionValues(["one_time", "monthly", "annual", "usage_based"].map(
+        (value) => ({value, label: value.replaceAll("_", " ")})))}
+        itemLabelBuilder={selectOptionLabeller(["one_time", "monthly", "annual", "usage_based"].map(
+        (value) => ({value, label: value.replaceAll("_", " ")})))}
+      />
+      <CatchField
+        recipe="input"
+        title="Exact scope"
+        maxLines={3}
+        value={scope}
+        onChanged={(value) => {setScope(value); setDirty(true);}}
+        required
+      />
+      <CatchField
+        recipe="input"
+        title="Valid until"
+        value={validUntil}
+        onChanged={(value) => {setValidUntil(value); setDirty(true);}}
+        required
+        keyboardType="datetime"
+      />
+      <CatchField
+        recipe="select"
+        title="Recorded source fact"
+        value={factToAdd}
+        onChanged={(value) => setFactToAdd(value ?? "")}
+        values={selectOptionValues(evidenceOptions(evidence))}
+        itemLabelBuilder={selectOptionLabeller(evidenceOptions(evidence))}
+      />
       <AdminButton type="button" disabled={!factToAdd || facts.includes(factToAdd)}
         onClick={() => {setFacts((ids) => [...ids, factToAdd]); setFactToAdd("");
           setDirty(true);}}>Add source fact</AdminButton>
@@ -332,8 +436,14 @@ function QuoteEditor({organizerId, opportunityId, record, evidence, saving, save
       <h3>{quote.status === "draft" ? "Approve quote" : "Review accepted terms"}</h3>
       <p>Choose evidence that supports this exact saved version.
         Acceptance evidence must be separate from approval evidence.</p>
-      <SelectField label="Distinct review evidence" value={decisionEvidence}
-        onChange={setDecisionEvidence} options={evidenceOptions(evidence)} />
+      <CatchField
+        recipe="select"
+        title="Distinct review evidence"
+        value={decisionEvidence}
+        onChanged={(value) => setDecisionEvidence(value ?? "")}
+        values={selectOptionValues(evidenceOptions(evidence))}
+        itemLabelBuilder={selectOptionLabeller(evidenceOptions(evidence))}
+      />
       <AdminButton type="submit" disabled={saving || changed || dirty || !decisionEvidence ||
         quote.status === "accepted_reviewed"}>
         {quote.status === "draft" ? "Approve exact quote" :
@@ -441,27 +551,70 @@ function FinanceCloseEditor({organizerId, opportunityId, record, evidence,
         <p>Exact accepted amount: {terms.currency} {(
           terms.amountMinor / 100).toFixed(2)}. Record a real first-party
           settlement source; a human note alone is not accepted as proof.</p>
-        <TextField label="Received on" type="datetime-local" value={receivedAt}
-          onChange={setReceivedAt} required />
-        <SelectField label="Settlement method" value={method}
-          onChange={(value) => setMethod(value as typeof method)} options={[
+        <CatchField
+          recipe="input"
+          title="Received on"
+          value={receivedAt}
+          onChanged={setReceivedAt}
+          required
+          keyboardType="datetime"
+        />
+        <CatchField
+          recipe="select"
+          title="Settlement method"
+          value={method}
+          onChanged={(value) => setMethod((value ?? "") as typeof method)}
+          values={selectOptionValues([
             {value: "bank_transfer", label: "Bank transfer"},
             {value: "cash", label: "Cash"},
             {value: "other_external", label: "Other external method"},
-          ]} />
-        <TextField label="External settlement reference"
-          value={settlementReference} onChange={setSettlementReference} required />
-        <TextField label="Recipient ledger or account label"
-          value={recipientAccountScope} onChange={setRecipientAccountScope}
-          required />
+          ])}
+          itemLabelBuilder={selectOptionLabeller([
+            {value: "bank_transfer", label: "Bank transfer"},
+            {value: "cash", label: "Cash"},
+            {value: "other_external", label: "Other external method"},
+          ])}
+        />
+        <CatchField
+          recipe="input"
+          title="External settlement reference"
+          value={settlementReference}
+          onChanged={setSettlementReference}
+          required
+        />
+        <CatchField
+          recipe="input"
+          title="Recipient ledger or account label"
+          value={recipientAccountScope}
+          onChanged={setRecipientAccountScope}
+          required
+        />
         {recurring ? <>
-          <TextField label="Service period start" type="datetime-local"
-            value={periodStart} onChange={setPeriodStart} required />
-          <TextField label="Service period end" type="datetime-local"
-            value={periodEnd} onChange={setPeriodEnd} required />
+          <CatchField
+            recipe="input"
+            title="Service period start"
+            value={periodStart}
+            onChanged={setPeriodStart}
+            required
+            keyboardType="datetime"
+          />
+          <CatchField
+            recipe="input"
+            title="Service period end"
+            value={periodEnd}
+            onChanged={setPeriodEnd}
+            required
+            keyboardType="datetime"
+          />
         </> : null}
-        <SelectField label="Reviewed settlement evidence" value={proofId}
-          onChange={setProofId} options={evidenceOptions(eligibleEvidence)} />
+        <CatchField
+          recipe="select"
+          title="Reviewed settlement evidence"
+          value={proofId}
+          onChanged={(value) => setProofId(value ?? "")}
+          values={selectOptionValues(evidenceOptions(eligibleEvidence))}
+          itemLabelBuilder={selectOptionLabeller(evidenceOptions(eligibleEvidence))}
+        />
         {localError ? <p role="alert">{localError}</p> : null}
         <AdminButton type="submit" disabled={saving || !proofId}>
           Record manual host collection</AdminButton>

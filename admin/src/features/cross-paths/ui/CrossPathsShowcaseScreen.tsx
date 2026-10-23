@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {useState} from "react";
 import {
   ChevronRight,
@@ -25,7 +26,6 @@ import {
   SegmentedControl,
   StateRow,
   StatusBanner,
-  TextareaField,
 } from "../../../shared/ui/AdminPrimitives";
 import {
   type CrossPathsShowcaseCandidate,
@@ -315,12 +315,13 @@ function CandidateReviewPanel({
             label="I reviewed the score-free Cross Paths showcase policy."
             onChange={setShowcasePolicyReviewed}
           />
-          <TextareaField
-            disabled={isPending}
-            label="Audited review note"
+          <CatchField
+            recipe="input"
+            inputMode={isPending ? "inactive" : "editable"}
+            title="Audited review note"
             maxLength={1000}
-            onChange={setReviewNote}
-            rows={3}
+            onChanged={setReviewNote}
+            maxLines={3}
             value={reviewNote}
           />
           <AdminToolbar>

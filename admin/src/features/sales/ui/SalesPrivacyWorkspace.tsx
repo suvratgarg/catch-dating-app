@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {useQuery} from "@tanstack/react-query";
 import {useEffect, useRef, useState, type FormEvent} from "react";
 import {LockKeyhole} from "lucide-react";
@@ -72,9 +73,15 @@ function PrivacyEntry({actorUid, organizerId, organizerName, api}: {
       <AdminForm onSubmit={(event) => {
         event.preventDefault(); setSubmitted(searchText.trim());
       }}>
-        <TextField label="Host name" value={searchText}
-          onChange={setSearchText} minLength={2} required
-          disabled={selectionLocked} />
+        <CatchField
+          recipe="input"
+          title="Host name"
+          value={searchText}
+          onChanged={setSearchText}
+          minLength={2}
+          required
+          inputMode={selectionLocked ? "inactive" : "editable"}
+        />
         <AdminButton type="submit" disabled={selectionLocked ||
           searchText.trim().length < 2}>
           Search hosts
@@ -201,11 +208,24 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
       <p>This permanent Sales restriction blocks private Sales reads and writes,
         including retries of older requests. It does not alter the public
         organizer or ownership claim.</p>
-      <TextareaField label="Reason for restriction" rows={3}
-        value={reason} onChange={setReason} required maxLength={500}
-        disabled={!canEdit} />
-      <TextField label={`Type “${organizerName}” to confirm`}
-        value={confirm} onChange={setConfirm} required disabled={!canEdit} />
+      <CatchField
+        recipe="input"
+        title="Reason for restriction"
+        maxLines={3}
+        value={reason}
+        onChanged={setReason}
+        required
+        maxLength={500}
+        inputMode={!canEdit ? "inactive" : "editable"}
+      />
+      <CatchField
+        recipe="input"
+        title={`Type “${organizerName}” to confirm`}
+        value={confirm}
+        onChanged={setConfirm}
+        required
+        inputMode={!canEdit ? "inactive" : "editable"}
+      />
       <AdminButton type="submit" variant="primary" disabled={!canEdit ||
         confirm !== organizerName || !reason.trim()}>
         Restrict private Sales processing
@@ -233,12 +253,18 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
         Discard draft and review current policy
       </AdminButton> : null}
       <AdminForm onSubmit={submitPolicy}>
-        <TextField label="Reviewed policy reference" value={policyReference}
-          onChange={(value) => {
+        <CatchField
+          recipe="input"
+          title="Reviewed policy reference"
+          value={policyReference}
+          onChanged={(value) => {
             touchPolicy(); referenceAutoFilled.current = !value.trim();
             setPolicyReference(value);
           }}
-          required maxLength={240} disabled={!canEdit} />
+          required
+          maxLength={240}
+          inputMode={!canEdit ? "inactive" : "editable"}
+        />
         <FilePickerButton inputLabel="Choose reviewed policy file"
           disabled={!canEdit}
           onChange={(event) => void readPolicyFile(event.target.files?.[0])}>
@@ -247,14 +273,30 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
         <p>{hashingBusy ? "Reading the selected policy file locally…" :
           policyFile ? `${policyFile} · SHA-256 checked locally; file not uploaded.` :
           "Choose the exact reviewed policy file. Only its fingerprint is saved."}</p>
-        <TextareaField label="Why finance records remain held for review"
-          rows={2} value={financeReason} onChange={(value) => {
+        <CatchField
+          recipe="input"
+          title="Why finance records remain held for review"
+          maxLines={2}
+          value={financeReason}
+          onChanged={(value) => {
             touchPolicy(); setFinanceReason(value);
-          }} required maxLength={500} disabled={!canEdit} />
-        <TextareaField label="Why audit records remain held for review"
-          rows={2} value={auditReason} onChange={(value) => {
+          }}
+          required
+          maxLength={500}
+          inputMode={!canEdit ? "inactive" : "editable"}
+        />
+        <CatchField
+          recipe="input"
+          title="Why audit records remain held for review"
+          maxLines={2}
+          value={auditReason}
+          onChanged={(value) => {
             touchPolicy(); setAuditReason(value);
-          }} required maxLength={500} disabled={!canEdit} />
+          }}
+          required
+          maxLength={500}
+          inputMode={!canEdit ? "inactive" : "editable"}
+        />
         <AdminButton type="submit" disabled={!canEdit || hashingBusy ||
           c.policyConflict || !policyHash ||
           !policyReference.trim() || !financeReason.trim() ||

@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {eventDetailCopy} from "../../content/events";
 import {useEffect, useRef, useState} from "react";
 import {useParams} from "react-router";
@@ -233,16 +234,17 @@ function IdentityStage({
           onSubmit={controller.handleCodeSubmit}
           pending={controller.pending}
         >
-          <TextField
+          <CatchField
+            recipe="input"
             autoComplete="one-time-code"
             id="public-form-code"
-            inputMode="numeric"
-            label={publicFormsCopy.codeLabel}
+            title={publicFormsCopy.codeLabel}
             maxLength={6}
-            onChange={(event) => controller.setCode(
-              event.target.value.replace(/\D/gu, "")
+            onChanged={(value) => controller.setCode(
+              value.replace(/\D/gu, "")
             )}
             value={controller.code}
+            keyboardType="number"
           />
           <Button
             loading={controller.pending}
@@ -279,14 +281,14 @@ function IdentityStage({
               onSubmit={controller.handleEmailSubmit}
               pending={controller.pending}
             >
-              <TextField
+              <CatchField
+                recipe="input"
                 autoComplete="email"
                 id="public-form-email"
-                inputMode="email"
-                label={publicFormsCopy.emailLabel}
-                onChange={(event) => controller.setEmail(event.target.value)}
-                type="email"
+                title={publicFormsCopy.emailLabel}
+                onChanged={(value) => controller.setEmail(value)}
                 value={controller.email}
+                keyboardType="emailAddress"
               />
               <Button
                 loading={controller.pending}
@@ -481,14 +483,15 @@ function InlinePhoneVerification({
       </PublicFormFieldError> : null}
     {controller.verificationStep === "code" ? (
       <PublicFormForm onSubmit={controller.handleCodeSubmit} pending={controller.pending}>
-        <TextField
+        <CatchField
+          recipe="input"
           autoComplete="one-time-code"
           id="public-form-inline-code"
-          inputMode="numeric"
-          label={publicFormsCopy.codeLabel}
+          title={publicFormsCopy.codeLabel}
           maxLength={6}
-          onChange={(event) => controller.setCode(event.target.value.replace(/\D/gu, ""))}
+          onChanged={(value) => controller.setCode(value.replace(/\D/gu, ""))}
           value={controller.code}
+          keyboardType="number"
         />
         <Button loading={controller.pending} type="submit">
           {publicFormsCopy.confirmCode}

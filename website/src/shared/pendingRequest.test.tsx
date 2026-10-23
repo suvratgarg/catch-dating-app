@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {
@@ -33,7 +34,7 @@ describe("pending request controls", () => {
   it("disables every native control inside a pending form boundary", () => {
     const {container} = render(
       <Form pending>
-        <TextField id="name" label="Name" />
+        <CatchField recipe="input" id="name" title="Name" />
         <Button type="submit">Submit</Button>
       </Form>
     );
@@ -52,7 +53,7 @@ describe("pending request controls", () => {
       <PendingRequestProvider>
         <PendingLink onClick={onClick} pending />
         <Form>
-          <TextField id="sibling-field" label="Sibling form field" />
+          <CatchField recipe="input" id="sibling-field" title="Sibling form field" />
         </Form>
       </PendingRequestProvider>
     );
@@ -70,7 +71,7 @@ describe("pending request controls", () => {
       <PendingRequestProvider>
         <PendingLink onClick={onClick} pending={false} />
         <Form>
-          <TextField id="sibling-field" label="Sibling form field" />
+          <CatchField recipe="input" id="sibling-field" title="Sibling form field" />
         </Form>
       </PendingRequestProvider>
     );

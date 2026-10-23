@@ -1,9 +1,11 @@
+import {CatchField} from "@catch/web-ui";
 import type {Dispatch, SetStateAction} from "react";
 
 import {
   AdminFieldGrid,
   AdminOrganizerIntakeCheckboxField,
-  SelectField,
+  selectOptionLabeller,
+  selectOptionValues,
 } from "../../../../shared/ui/AdminPrimitives";
 import type * as Intake from "../types/organizerIntakeTypes";
 
@@ -39,56 +41,68 @@ function OrganizerVisibilityControls({
   return (
     <>
       <AdminFieldGrid>
-        <SelectField
-          label="Public web"
-          options={[
+        <CatchField
+          recipe="select"
+          title="Public web"
+          values={selectOptionValues([
             {value: "draft", label: "Off — keep draft"},
             {value: "published", label: "On — publish page"},
-          ]}
+          ])}
+          itemLabelBuilder={selectOptionLabeller([
+            {value: "draft", label: "Off — keep draft"},
+            {value: "published", label: "On — publish page"},
+          ])}
           value={form.publishStatus === "suppressed" ?
             "draft" :
             form.publishStatus}
-          onChange={(publishStatus) =>
-            setForms((current) => ({
+          onChanged={(publishStatus) => setForms((current) => ({
               ...current,
               [entityId]: {
                 ...form,
-                publishStatus: publishStatus as "draft" | "published",
-                indexStatus: publishStatus === "published" ?
+                publishStatus: (publishStatus ?? "") as "draft" | "published",
+                indexStatus: (publishStatus ?? "") === "published" ?
                   form.indexStatus :
                   "noindex",
               },
             }))}
         />
-        <SelectField
-          label="Search indexing"
-          options={[
+        <CatchField
+          recipe="select"
+          title="Search indexing"
+          values={selectOptionValues([
             {value: "noindex", label: "Off — noindex"},
             {value: "indexed", label: "On — index"},
-          ]}
+          ])}
+          itemLabelBuilder={selectOptionLabeller([
+            {value: "noindex", label: "Off — noindex"},
+            {value: "indexed", label: "On — index"},
+          ])}
           value={form.indexStatus}
-          onChange={(indexStatus) =>
-            setForms((current) => ({
+          onChanged={(indexStatus) => setForms((current) => ({
               ...current,
               [entityId]: {
                 ...form,
-                indexStatus: indexStatus as "noindex" | "indexed",
+                indexStatus: (indexStatus ?? "") as "noindex" | "indexed",
               },
             }))}
         />
-        <SelectField
-          label="App discovery"
-          options={[
+        <CatchField
+          recipe="select"
+          title="App discovery"
+          values={selectOptionValues([
             {value: "hidden", label: "Off — hidden"},
             {value: "discoverable", label: "On — discoverable"},
-          ]}
+          ])}
+          itemLabelBuilder={selectOptionLabeller([
+            {value: "hidden", label: "Off — hidden"},
+            {value: "discoverable", label: "On — discoverable"},
+          ])}
           value={form.appVisibility}
-          onChange={(appVisibility) =>
-            setForms((current) => ({
+          onChanged={(appVisibility) => setForms((current) => ({
               ...current,
               [entityId]: {
                 ...form,
-                appVisibility: appVisibility as "hidden" | "discoverable",
+                appVisibility: (appVisibility ?? "") as "hidden" | "discoverable",
               },
             }))}
         />

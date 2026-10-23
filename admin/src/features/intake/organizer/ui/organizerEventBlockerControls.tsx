@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import type {
   OrganizerEventBlockerResolution,
   OrganizerEventImportBlockerCode,
@@ -96,19 +97,25 @@ export function renderOrganizerEventBlockerResolutionFields({
       </AdminIntakeSectionTitle>
       <AdminOrganizerCurationControlGrid>
         {blockerCodes.map((blockerCode) => (
-          <SelectField
-            disabled={disabled}
+          <CatchField
+            recipe="select"
+            inputMode={disabled ? "inactive" : "editable"}
             key={blockerCode}
-            label={blockerCode.replaceAll("_", " ")}
-            onChange={(value) => onChange({
+            title={blockerCode.replaceAll("_", " ")}
+            onChanged={(value) => onChange({
               ...choices,
-              [blockerCode]: value as BlockerResolutionChoice,
+              [blockerCode]: (value ?? "") as BlockerResolutionChoice,
             })}
-            options={[
+            values={selectOptionValues([
               {label: "Unresolved", value: "unresolved"},
               {label: "Resolved for this event", value: "resolved"},
               {label: "Waive with accepted policy", value: "waived"},
-            ]}
+            ])}
+            itemLabelBuilder={selectOptionLabeller([
+              {label: "Unresolved", value: "unresolved"},
+              {label: "Resolved for this event", value: "resolved"},
+              {label: "Waive with accepted policy", value: "waived"},
+            ])}
             value={choices[blockerCode] ?? "unresolved"}
           />
         ))}
@@ -120,5 +127,6 @@ import {
   AdminIntakeSection,
   AdminIntakeSectionTitle,
   AdminOrganizerCurationControlGrid,
-  SelectField,
+  selectOptionLabeller,
+  selectOptionValues,
 } from "../../../../shared/ui/AdminPrimitives";

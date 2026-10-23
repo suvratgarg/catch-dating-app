@@ -1,8 +1,19 @@
+import {CatchField} from "@catch/web-ui";
 import {useEffect, useLayoutEffect, useRef, useState} from "react";
 import {ClipboardList, Sparkles} from "lucide-react";
-import {AdminButton, AdminForm, CheckboxField, EmptyState, Panel,
-  SelectField, StateRow, TextareaField, TextField} from
-  "../../../shared/ui/AdminPrimitives";
+import {
+  AdminButton,
+  AdminForm,
+  CheckboxField,
+  EmptyState,
+  Panel,
+  SelectField,
+  selectOptionLabeller,
+  selectOptionValues,
+  StateRow,
+  TextareaField,
+  TextField,
+} from "../../../shared/ui/AdminPrimitives";
 import type {ApprovedClause, IntelligenceApi,
   IntelligenceFactor, IntelligencePolicy,
   EvidenceClaim} from "../api/salesIntelligenceTypes";
@@ -161,17 +172,33 @@ function PolicyPanel({c}: {c: Controller}) {
       <h3>Seven factors</h3>
       {form.factors.map((row, index) => <div key={index}>
         <h4>Factor {index + 1}</h4>
-        <TextField label={`Factor ${index + 1} name`} value={row.name}
-          onChange={(name) => changeFactor(index, {name})}
-          disabled={c.busy || Boolean(c.pending)} />
-        <TextField label={`Factor ${index + 1} weight out of 100`}
-          type="number" min="1" max="100" value={row.weight}
-          onChange={(weight) => changeFactor(index, {weight})}
-          disabled={c.busy || Boolean(c.pending)} />
-        <TextField label={`Factor ${index + 1} evidence age limit in days`}
-          type="number" min="1" max="365" value={row.maxAgeDays}
-          onChange={(maxAgeDays) => changeFactor(index, {maxAgeDays})}
-          disabled={c.busy || Boolean(c.pending)} />
+        <CatchField
+          recipe="input"
+          title={`Factor ${index + 1} name`}
+          value={row.name}
+          onChanged={(name) => changeFactor(index, {name})}
+          inputMode={c.busy || Boolean(c.pending) ? "inactive" : "editable"}
+        />
+        <CatchField
+          recipe="input"
+          title={`Factor ${index + 1} weight out of 100`}
+          min="1"
+          max="100"
+          value={row.weight}
+          onChanged={(weight) => changeFactor(index, {weight})}
+          inputMode={c.busy || Boolean(c.pending) ? "inactive" : "editable"}
+          keyboardType="number"
+        />
+        <CatchField
+          recipe="input"
+          title={`Factor ${index + 1} evidence age limit in days`}
+          min="1"
+          max="365"
+          value={row.maxAgeDays}
+          onChanged={(maxAgeDays) => changeFactor(index, {maxAgeDays})}
+          inputMode={c.busy || Boolean(c.pending) ? "inactive" : "editable"}
+          keyboardType="number"
+        />
         <p>Evidence kinds for factor {index + 1}</p>
         {claimOptions.map((option) => <CheckboxField
           key={`${index}-${option.value}`} checked={row.claimKeys.includes(option.value)}
@@ -183,18 +210,41 @@ function PolicyPanel({c}: {c: Controller}) {
       </div>)}
       <p>Weights must total 100. Current total: {form.factors.reduce((sum,
         row) => sum + (Number(row.weight) || 0), 0)}.</p>
-      <TextField label="High priority begins at" type="number" min="0" max="100"
-        value={form.high} onChange={(high) => update({high})}
-        disabled={c.busy || Boolean(c.pending)} />
-      <TextField label="Medium priority begins at" type="number" min="0" max="100"
-        value={form.medium} onChange={(medium) => update({medium})}
-        disabled={c.busy || Boolean(c.pending)} />
-      <SelectField label="Policy availability" value={form.status}
-        onChange={(status) => update({status: status as PolicyForm["status"]})}
-        disabled={c.busy || Boolean(c.pending)} options={[
+      <CatchField
+        recipe="input"
+        title="High priority begins at"
+        min="0"
+        max="100"
+        value={form.high}
+        onChanged={(high) => update({high})}
+        inputMode={c.busy || Boolean(c.pending) ? "inactive" : "editable"}
+        keyboardType="number"
+      />
+      <CatchField
+        recipe="input"
+        title="Medium priority begins at"
+        min="0"
+        max="100"
+        value={form.medium}
+        onChanged={(medium) => update({medium})}
+        inputMode={c.busy || Boolean(c.pending) ? "inactive" : "editable"}
+        keyboardType="number"
+      />
+      <CatchField
+        recipe="select"
+        title="Policy availability"
+        value={form.status}
+        onChanged={(status) => update({status: (status ?? "") as PolicyForm["status"]})}
+        inputMode={c.busy || Boolean(c.pending) ? "inactive" : "editable"}
+        values={selectOptionValues([
           {value: "paused", label: "Paused · no scoring or drafting"},
           {value: "active", label: "Active after owner review"},
-        ]} />
+        ])}
+        itemLabelBuilder={selectOptionLabeller([
+          {value: "paused", label: "Paused · no scoring or drafting"},
+          {value: "active", label: "Active after owner review"},
+        ])}
+      />
       {existing && form.factors.some((row, index) => resolvedFactorId(
         row.name, existing.factors[index]?.id) !==
         existing.factors[index]?.id) ? <p role="alert">Changing a factor name
@@ -283,28 +333,67 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
           <AdminButton onClick={() => selectFactor(factorId)}>
             Use current factor review</AdminButton>
         </p> : null}
-        <SelectField label="Factor" value={factorId} onChange={selectFactor}
-          options={[{value: "", label: "Choose factor"},
+        <CatchField
+          recipe="select"
+          title="Factor"
+          value={factorId}
+          onChanged={(value) => selectFactor(value ?? "")}
+          values={selectOptionValues([{value: "", label: "Choose factor"},
             ...policy.factors.map((item) => ({value: item.id,
-              label: label(item.id)}))]} />
+              label: label(item.id)}))])}
+          itemLabelBuilder={selectOptionLabeller([{value: "", label: "Choose factor"},
+            ...policy.factors.map((item) => ({value: item.id,
+              label: label(item.id)}))])}
+        />
         {factor ? <>
-          <SelectField label="What is known?" value={state}
-            onChange={(value) => setState(value as typeof state)} options={[
+          <CatchField
+            recipe="select"
+            title="What is known?"
+            value={state}
+            onChanged={(value) => setState((value ?? "") as typeof state)}
+            values={selectOptionValues([
               {value: "unknown", label: "Not known yet"},
               {value: "known", label: "Supported by evidence"},
               {value: "disputed", label: "Conflicting evidence"},
-            ]} />
+            ])}
+            itemLabelBuilder={selectOptionLabeller([
+              {value: "unknown", label: "Not known yet"},
+              {value: "known", label: "Supported by evidence"},
+              {value: "disputed", label: "Conflicting evidence"},
+            ])}
+          />
           {state === "known" ? <>
-            <SelectField label="Rating" value={rating} onChange={setRating}
-              options={[0, 1, 2, 3, 4, 5].map((value) => ({
-                value: String(value), label: `${value} of 5`}))} />
-            <SelectField label="Reviewed host evidence on this page"
-              value={evidenceId} onChange={setEvidenceId} options={[
+            <CatchField
+              recipe="select"
+              title="Rating"
+              value={rating}
+              onChanged={(value) => setRating(value ?? "")}
+              values={selectOptionValues([0, 1, 2, 3, 4, 5].map((value) => ({
+                value: String(value), label: `${value} of 5`})))}
+              itemLabelBuilder={selectOptionLabeller([0, 1, 2, 3, 4, 5].map((value) => ({
+                value: String(value), label: `${value} of 5`})))}
+            />
+            <CatchField
+              recipe="select"
+              title="Reviewed host evidence on this page"
+              value={evidenceId}
+              onChanged={(value) => setEvidenceId(value ?? "")}
+              values={selectOptionValues([
                 {value: "", label: "Choose evidence"}, ...relevant.map((row) => ({
                   value: row.evidenceId, label: `${label(row.claimKey)} · ${row.sourceRef}`})),
-              ]} />
-          </> : <TextareaField label="Why is this unknown or disputed?"
-            rows={2} value={reason} onChange={setReason} />}
+              ])}
+              itemLabelBuilder={selectOptionLabeller([
+                {value: "", label: "Choose evidence"}, ...relevant.map((row) => ({
+                  value: row.evidenceId, label: `${label(row.claimKey)} · ${row.sourceRef}`})),
+              ])}
+            />
+          </> : <CatchField
+            recipe="input"
+            title="Why is this unknown or disputed?"
+            maxLines={2}
+            value={reason}
+            onChanged={setReason}
+          />}
           <AdminButton type="submit" variant="primary" disabled={c.busy ||
             Boolean(c.pending) || stale || (state === "known" ? !evidenceId :
             !reason.trim())}>Record review</AdminButton>
@@ -366,23 +455,54 @@ function WordingPanel({c, isAdminOwner}: {c: Controller; isAdminOwner: boolean})
       <EmptyState>No reviewed wording is available for this host.</EmptyState>}
     {isAdminOwner ? <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
       <h3>Prepare an exact sentence for review</h3>
-      <SelectField label="Sentence purpose" value={kind}
-        onChange={(value) => setKind(value as typeof kind)} options={[
+      <CatchField
+        recipe="select"
+        title="Sentence purpose"
+        value={kind}
+        onChanged={(value) => setKind((value ?? "") as typeof kind)}
+        values={selectOptionValues([
           {value: "observation", label: "Host observation"},
           {value: "capability", label: "Catch capability"},
           {value: "reference", label: "Private reference"},
           {value: "cta", label: "Question or next step"},
-        ]} />
-      <TextareaField label="Exact wording" rows={3} value={wording}
-        onChange={setWording} />
-      <SelectField label="Reviewed evidence on this page" value={evidenceId}
-        onChange={setEvidenceId} options={[
+        ])}
+        itemLabelBuilder={selectOptionLabeller([
+          {value: "observation", label: "Host observation"},
+          {value: "capability", label: "Catch capability"},
+          {value: "reference", label: "Private reference"},
+          {value: "cta", label: "Question or next step"},
+        ])}
+      />
+      <CatchField
+        recipe="input"
+        title="Exact wording"
+        maxLines={3}
+        value={wording}
+        onChanged={setWording}
+      />
+      <CatchField
+        recipe="select"
+        title="Reviewed evidence on this page"
+        value={evidenceId}
+        onChanged={(value) => setEvidenceId(value ?? "")}
+        values={selectOptionValues([
           {value: "", label: kind === "cta" ? "No evidence needed" :
             "Choose evidence"}, ...(c.evidence.data?.rows ?? []).map((row) => ({
             value: row.evidenceId, label: `${label(row.claimKey)} · ${row.sourceRef}`})),
-        ]} />
-      <TextField label="Valid until" type="datetime-local" value={expires}
-        onChange={setExpires} />
+        ])}
+        itemLabelBuilder={selectOptionLabeller([
+          {value: "", label: kind === "cta" ? "No evidence needed" :
+            "Choose evidence"}, ...(c.evidence.data?.rows ?? []).map((row) => ({
+            value: row.evidenceId, label: `${label(row.claimKey)} · ${row.sourceRef}`})),
+        ])}
+      />
+      <CatchField
+        recipe="input"
+        title="Valid until"
+        value={expires}
+        onChanged={setExpires}
+        keyboardType="datetime"
+      />
       <AdminButton type="submit" disabled={c.busy || Boolean(c.pending) ||
         !wording.trim() || !expires || (kind !== "cta" && !evidenceId)}>
         Save sentence for approval</AdminButton>
@@ -462,8 +582,14 @@ function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
       <h3>Review exact draft</h3>
       {selected.draft.subject ? <StateRow label="Subject"
         value={selected.draft.subject} /> : null}
-      <TextareaField label="Draft text" rows={8} value={selected.draft.text}
-        onChange={() => undefined} readOnly />
+      <CatchField
+        recipe="input"
+        title="Draft text"
+        maxLines={8}
+        value={selected.draft.text}
+        onChanged={() => undefined}
+        inputMode="readOnly"
+      />
       <StateRow label="Source" value="Reviewed evidence and approved wording" />
       <StateRow label="Model use" value="None · deterministic wording" />
       <StateRow label="Status" value={label(selected.status)} />

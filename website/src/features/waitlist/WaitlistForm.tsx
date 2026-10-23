@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {websiteCopy} from "@content/generated";
 import type {FormVariant} from "../../shared/forms/types";
 import {activeWaitlistCityOptions} from "@content/markets";
@@ -29,8 +30,23 @@ export function WaitlistForm({variant}: {variant: FormVariant}) {
       onSubmit={handleSubmit}
       pending={isSubmitting}
     >
-      <TextField id={`${variant}-waitlist-full-name`} label={websiteCopy["waitlistform_0515"]} name="fullName" autoComplete="name" required />
-      <TextField id={`${variant}-waitlist-email`} label={websiteCopy["waitlistform_0514"]} name="email" type="email" autoComplete="email" required />
+      <CatchField
+        recipe="input"
+        id={`${variant}-waitlist-full-name`}
+        title={websiteCopy["waitlistform_0515"]}
+        name="fullName"
+        autoComplete="name"
+        required
+      />
+      <CatchField
+        recipe="input"
+        id={`${variant}-waitlist-email`}
+        title={websiteCopy["waitlistform_0514"]}
+        name="email"
+        autoComplete="email"
+        required
+        keyboardType="emailAddress"
+      />
       <SelectField
         id={`${variant}-waitlist-city`}
         label={websiteCopy["waitlistform_0513"]}
@@ -69,9 +85,10 @@ export function WaitlistForm({variant}: {variant: FormVariant}) {
           </option>
         ))}
       </SelectField>
-      <TextField
+      <CatchField
+        recipe="input"
         id={`${variant}-waitlist-community-link`}
-        label={variant === "host" ? "Community or venue link" : "Instagram or community link"}
+        title={variant === "host" ? "Community or venue link" : "Instagram or community link"}
         name="instagram"
         autoComplete="url"
       />

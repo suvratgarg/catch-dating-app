@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {useState} from "react";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
@@ -60,8 +61,6 @@ import {
   AdminTag,
   AdminTagList,
   AdminTagRow,
-  AdminTextField,
-  AdminTextareaField,
   AdminToolbar,
   AdminTopbar,
   AdminTopbarActions,
@@ -609,10 +608,11 @@ export const AdminSignInScreenStory: Story = {
           </AdminBrandCopy>
         </AdminBrandBlock>
         <AdminSignInMeta>Use an account with approved admin claims.</AdminSignInMeta>
-        <TextField
-          label="Phone number"
-          onChange={() => undefined}
-          placeholder="+91 90000 00000"
+        <CatchField
+          recipe="input"
+          title="Phone number"
+          onChanged={() => undefined}
+          inputHint="+91 90000 00000"
           value=""
         />
         <AdminSignInActions>
@@ -643,13 +643,14 @@ export const AdminPhoneOtpSignInScreenStory: Story = {
         <AdminSignInMeta>
           Verification code sent to +91 90000 00000.
         </AdminSignInMeta>
-        <TextField
-          inputMode="numeric"
-          label="Verification code"
+        <CatchField
+          recipe="input"
+          title="Verification code"
           maxLength={6}
-          onChange={() => undefined}
-          placeholder="000000"
+          onChanged={() => undefined}
+          inputHint="000000"
           value=""
+          keyboardType="number"
         />
         <AdminSignInActions>
           <AdminButton variant="primary">Verify and sign in</AdminButton>
@@ -875,8 +876,19 @@ export const AdminFormStory: Story = {
     <AdminWorkspace>
       <AdminForm onSubmit={(event) => event.preventDefault()}>
         <AdminFieldGrid>
-          <AdminTextField label="Organizer" onChange={() => undefined} value="Afterfly Social" />
-          <AdminTextareaField label="Review note" onChange={() => undefined} rows={3} value="Evidence verified." />
+          <CatchField
+            recipe="input"
+            title="Organizer"
+            onChanged={() => undefined}
+            value="Afterfly Social"
+          />
+          <CatchField
+            recipe="input"
+            title="Review note"
+            onChanged={() => undefined}
+            maxLines={3}
+            value="Evidence verified."
+          />
         </AdminFieldGrid>
       </AdminForm>
       <AdminForm variant="publishing" onSubmit={(event) => event.preventDefault()}>
@@ -897,13 +909,23 @@ export const AdminFieldGridStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminFieldGrid>
-        <AdminTextField label="Name" onChange={() => undefined} value="Afterfly Social" />
-        <AdminTextField label="Market" onChange={() => undefined} value="San Francisco" />
+        <CatchField
+          recipe="input"
+          title="Name"
+          onChanged={() => undefined}
+          value="Afterfly Social"
+        />
+        <CatchField
+          recipe="input"
+          title="Market"
+          onChanged={() => undefined}
+          value="San Francisco"
+        />
       </AdminFieldGrid>
       <AdminFieldGrid columns={3}>
-        <AdminTextField label="Status" onChange={() => undefined} value="Ready" />
-        <AdminTextField label="Owner" onChange={() => undefined} value="Ops" />
-        <AdminTextField label="Source" onChange={() => undefined} value="Bridge" />
+        <CatchField recipe="input" title="Status" onChanged={() => undefined} value="Ready" />
+        <CatchField recipe="input" title="Owner" onChanged={() => undefined} value="Ops" />
+        <CatchField recipe="input" title="Source" onChanged={() => undefined} value="Bridge" />
       </AdminFieldGrid>
     </AdminWorkspace>
   ),
@@ -919,8 +941,19 @@ export const AdminTextFieldStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminTextField label="Canonical path" onChange={() => undefined} value="/organizers/afterfly/" />
-      <AdminTextField disabled label="Generated id" onChange={() => undefined} value="afterfly" />
+      <CatchField
+        recipe="input"
+        title="Canonical path"
+        onChanged={() => undefined}
+        value="/organizers/afterfly/"
+      />
+      <CatchField
+        recipe="input"
+        inputMode="inactive"
+        title="Generated id"
+        onChanged={() => undefined}
+        value="afterfly"
+      />
     </AdminWorkspace>
   ),
 };
@@ -935,8 +968,20 @@ export const AdminTextareaFieldStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminTextareaField label="Reviewer note" onChange={() => undefined} rows={4} value="Source, profile, and claim path all verified." />
-      <AdminTextareaField label="Short note" onChange={() => undefined} rows={2} value="Ready for publish." />
+      <CatchField
+        recipe="input"
+        title="Reviewer note"
+        onChanged={() => undefined}
+        maxLines={4}
+        value="Source, profile, and claim path all verified."
+      />
+      <CatchField
+        recipe="input"
+        title="Short note"
+        onChanged={() => undefined}
+        maxLines={2}
+        value="Ready for publish."
+      />
     </AdminWorkspace>
   ),
 };
@@ -952,7 +997,12 @@ export const TextFieldStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminFieldGrid>
-        <TextField label="Event title" onChange={() => undefined} value="Singles dinner" />
+        <CatchField
+          recipe="input"
+          title="Event title"
+          onChanged={() => undefined}
+          value="Singles dinner"
+        />
         <TextField label="Long description" onChange={() => undefined} span={2} value="Invite-only mixer." />
       </AdminFieldGrid>
     </AdminWorkspace>

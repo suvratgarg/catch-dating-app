@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {act, cleanup, render, screen, waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
@@ -48,10 +49,11 @@ vi.mock("../features/marketing/ui/MarketingOpsScreen", async () => {
       const [caption, setCaption] = useState("Original caption");
       return (
         <section aria-label="Marketing fixture">
-          <AdminTextField
-            label="Draft caption"
+          <CatchField
+            recipe="input"
+            title="Draft caption"
             value={caption}
-            onChange={(value) => {
+            onChanged={(value) => {
               setCaption(value);
               onUnsavedChangesChange(true);
             }}

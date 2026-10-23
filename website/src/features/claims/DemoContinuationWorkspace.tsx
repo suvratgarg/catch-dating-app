@@ -1,11 +1,20 @@
+import {CatchField} from "@catch/web-ui";
 import {continuationCopy} from "../../content/salesDemoContinuation";
 import {claimAccountLinkingErrorMessage} from "../../shared/auth/claimAccountLinking";
 import {useEffect, useRef, useState} from "react";
 import {invokeSalesDemoCallable} from "../../firebase";
 import {PublicSiteFooter, PublicSiteHeader} from "../../shared/site";
-import {Button, ButtonLink, ClaimFlowMain, ClaimRequestForm, FormStatus,
-  SelectField, TextAreaField, TextField, EventRuntimeLoading,
-  EventRuntimeModule, EventRuntimePanel} from "../../shared/ui/primitives";
+import {
+  Button,
+  ButtonLink,
+  ClaimFlowMain,
+  ClaimRequestForm,
+  FormStatus,
+  SelectField,
+  EventRuntimeLoading,
+  EventRuntimeModule,
+  EventRuntimePanel,
+} from "../../shared/ui/primitives";
 import {claimContactValidationMessage, claimRoleOptions, parseProofUrls,
   type ClaimRole} from "./claimModel";
 import {useClaimRequestMutation} from "./useClaimRequestMutation";
@@ -55,13 +64,26 @@ function ContinuationWorkspace({continuationId, api, auth}: {
   const verification = <>
     <Button disabled={signingIn} onClick={() => void signIn()}>
       {c.viewer ? continuationCopy.verifyGoogle : continuationCopy.continueGoogle}</Button>
-    <TextField id="continuation-login-phone" label={continuationCopy.invitedPhone}
-      type="tel" value={phone} disabled={signingIn || Boolean(challenge)}
-      onChange={(event) => setPhone(event.target.value)} />
+    <CatchField
+      recipe="input"
+      id="continuation-login-phone"
+      title={continuationCopy.invitedPhone}
+      value={phone}
+      inputMode={signingIn || Boolean(challenge) ? "inactive" : "editable"}
+      onChanged={(value) => setPhone(value)}
+      keyboardType="phone"
+    />
     <div id="continuation-recaptcha" />
-    {challenge ? <TextField id="continuation-login-code" label={continuationCopy.verificationCode} value={code}
-      inputMode="numeric" autoComplete="one-time-code" disabled={signingIn}
-      onChange={(event) => setCode(event.target.value)} /> : null}
+    {challenge ? <CatchField
+      recipe="input"
+      id="continuation-login-code"
+      title={continuationCopy.verificationCode}
+      value={code}
+      autoComplete="one-time-code"
+      inputMode={signingIn ? "inactive" : "editable"}
+      onChanged={(value) => setCode(value)}
+      keyboardType="number"
+    /> : null}
     <Button disabled={signingIn || (challenge ? !code.trim() : !/^\+[1-9][0-9]{7,14}$/u.test(phone.trim()))}
       onClick={() => void verifyPhone()}>{challenge ? continuationCopy.verifyPhone : continuationCopy.sendCode}</Button>
     {challenge ? <Button disabled={signingIn} onClick={() => {setChallenge(null); setCode("");}}>
@@ -146,20 +168,58 @@ function ContinuationClaim({view, email, phone}: {
         } catch (error) {setNotice(error instanceof Error ? error.message : continuationCopy.retryRequest);}
         finally {locked.current = false;}
       }}>
-        <TextField id="continuation-name" label={continuationCopy.yourName} value={name} maxLength={120}
-          disabled={claim.isPending} onChange={(e) => setName(e.target.value)} />
+        <CatchField
+          recipe="input"
+          id="continuation-name"
+          title={continuationCopy.yourName}
+          value={name}
+          maxLength={120}
+          inputMode={claim.isPending ? "inactive" : "editable"}
+          onChanged={(value) => setName(value)}
+        />
         <SelectField id="continuation-role" label={continuationCopy.yourRole} value={role} disabled={claim.isPending}
           onChange={(e) => setRole(e.target.value as ClaimRole)}>
           {claimRoleOptions.filter((item) => ["owner", "founder"].includes(item.value)).map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
         </SelectField>
-        <TextField id="continuation-email" label={continuationCopy.businessEmail} type="email" value={businessEmail}
-          maxLength={320} disabled={claim.isPending} onChange={(e) => setEmail(e.target.value)} />
-        <TextField id="continuation-phone" label={continuationCopy.businessPhone} type="tel" value={businessPhone}
-          maxLength={32} disabled={claim.isPending} onChange={(e) => setPhone(e.target.value)} />
-        <TextAreaField id="continuation-proof" label={continuationCopy.proofLinks} value={proof}
-          disabled={claim.isPending} onChange={(e) => setProof(e.target.value)} />
-        <TextAreaField id="continuation-context" label={continuationCopy.ownershipContext} value={message}
-          maxLength={1000} disabled={claim.isPending} onChange={(e) => setMessage(e.target.value)} />
+        <CatchField
+          recipe="input"
+          id="continuation-email"
+          title={continuationCopy.businessEmail}
+          value={businessEmail}
+          maxLength={320}
+          inputMode={claim.isPending ? "inactive" : "editable"}
+          onChanged={(value) => setEmail(value)}
+          keyboardType="emailAddress"
+        />
+        <CatchField
+          recipe="input"
+          id="continuation-phone"
+          title={continuationCopy.businessPhone}
+          value={businessPhone}
+          maxLength={32}
+          inputMode={claim.isPending ? "inactive" : "editable"}
+          onChanged={(value) => setPhone(value)}
+          keyboardType="phone"
+        />
+        <CatchField
+          recipe="input"
+          id="continuation-proof"
+          title={continuationCopy.proofLinks}
+          value={proof}
+          inputMode={claim.isPending ? "inactive" : "editable"}
+          onChanged={(value) => setProof(value)}
+          maxLines={null}
+        />
+        <CatchField
+          recipe="input"
+          id="continuation-context"
+          title={continuationCopy.ownershipContext}
+          value={message}
+          maxLength={1000}
+          inputMode={claim.isPending ? "inactive" : "editable"}
+          onChanged={(value) => setMessage(value)}
+          maxLines={null}
+        />
         <Button type="submit" disabled={claim.isPending}>{continuationCopy.submitClaim}</Button>
       </ClaimRequestForm>}
     {notice ? <FormStatus status={{tone: "is-error", message: notice}} /> : null}

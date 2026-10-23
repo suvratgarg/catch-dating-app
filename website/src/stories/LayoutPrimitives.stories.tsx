@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {FormEvent} from "react";
 import {useState} from "react";
@@ -145,7 +146,13 @@ export const FieldGridStory: Story = {
   },
   render: () => (
     <FieldGrid>
-      <TextField id="storybook-field-name" label="Organizer name" name="organizerName" defaultValue="Sunday Table Club" />
+      <CatchField
+        recipe="input"
+        id="storybook-field-name"
+        title="Organizer name"
+        name="organizerName"
+        initialValue="Sunday Table Club"
+      />
       <SelectField id="storybook-field-format" label="Format" name="format" defaultValue="dinner">
         <option value="dinner">Dinner club</option>
         <option value="run">Run club</option>
@@ -214,8 +221,21 @@ export const WaitlistSectionStory: Story = {
       body="Waitlist sections own the intro and form slot while route sections configure copy."
     >
       <WaitlistFormShell onSubmit={preventSubmit}>
-        <TextField id="storybook-waitlist-name" label="Full name" name="fullName" required />
-        <TextField id="storybook-waitlist-email" label="Email" name="email" type="email" required />
+        <CatchField
+          recipe="input"
+          id="storybook-waitlist-name"
+          title="Full name"
+          name="fullName"
+          required
+        />
+        <CatchField
+          recipe="input"
+          id="storybook-waitlist-email"
+          title="Email"
+          name="email"
+          required
+          keyboardType="emailAddress"
+        />
         <Button type="submit">Join the list</Button>
       </WaitlistFormShell>
     </WaitlistSection>
@@ -233,8 +253,23 @@ export const WaitlistFormShellStory: Story = {
   },
   render: () => (
     <WaitlistFormShell onSubmit={preventSubmit}>
-      <TextField id="storybook-form-name" label="Full name" name="fullName" autoComplete="name" required />
-      <TextField id="storybook-form-email" label="Email" name="email" type="email" autoComplete="email" required />
+      <CatchField
+        recipe="input"
+        id="storybook-form-name"
+        title="Full name"
+        name="fullName"
+        autoComplete="name"
+        required
+      />
+      <CatchField
+        recipe="input"
+        id="storybook-form-email"
+        title="Email"
+        name="email"
+        autoComplete="email"
+        required
+        keyboardType="emailAddress"
+      />
       <SelectField id="storybook-form-city" label="City" name="city" defaultValue="Mumbai">
         <option>Mumbai</option>
         <option>Indore</option>

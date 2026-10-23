@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {useEffect, useMemo, useState} from "react";
 import {
   ArrowLeft,
@@ -35,7 +36,6 @@ import {
   StateRow,
   StatusChip,
   TableActionButton,
-  TextareaField,
   AdminCommandRow,
   AdminCommandStack,
   AdminEyebrow,
@@ -383,11 +383,12 @@ function EventReadinessDetail({
           <span>{error.message}</span>
         </QualityRow>
       ))}
-      <TextareaField
-        label="External publish review note"
-        onChange={setPublishReviewNote}
-        placeholder="Why this event can be published as read-only external supply"
-        rows={3}
+      <CatchField
+        recipe="input"
+        title="External publish review note"
+        onChanged={setPublishReviewNote}
+        inputHint="Why this event can be published as read-only external supply"
+        maxLines={3}
         value={publishReviewNote}
       />
       <QualityList>

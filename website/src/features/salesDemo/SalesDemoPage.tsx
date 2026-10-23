@@ -1,12 +1,18 @@
-import {CatchGap} from "@catch/web-ui";
+import {CatchField, CatchGap} from "@catch/web-ui";
 import {claimAccountLinkingErrorMessage} from "../../shared/auth/claimAccountLinking";
 import {salesDemoCopy} from "../../content/salesDemo";
 import {useEffect, useLayoutEffect, useState} from "react";
 import {useParams} from "react-router";
-import {Button, ButtonLink, EventRuntimeFrame,
-  EventRuntimeLoading, EventRuntimeModule, EventRuntimePanel,
-  EventRuntimePracticeBanner, FormStatus,
-  TextField} from "../../shared/ui/primitives";
+import {
+  Button,
+  ButtonLink,
+  EventRuntimeFrame,
+  EventRuntimeLoading,
+  EventRuntimeModule,
+  EventRuntimePanel,
+  EventRuntimePracticeBanner,
+  FormStatus,
+} from "../../shared/ui/primitives";
 import {websiteSalesDemoAuth, type SalesDemoAuth,
   type SalesDemoPhoneChallenge} from "./salesDemoAuth";
 import {grantFromSalesDemoFragment, salesDemoActionTitle,
@@ -150,18 +156,30 @@ function DemoAccessView({controller, auth, hasGrant, cta, interactiveAvailable}:
             setChallenge(null); setCode(""); setAuthError(""); await auth.signOut?.();
           }}>{salesDemoCopy.signOut}</Button> : null}
         </CatchGap>
-        <TextField id="sales-demo-phone" label={salesDemoCopy.orVerifyPhoneInternationalFormat}
-          type="tel" autoComplete="tel" value={phone}
-          disabled={authPending || controller.pending || Boolean(challenge)}
-          onChange={(event) => setPhone(event.target.value)}
-          placeholder={salesDemoCopy.phonePlaceholder} />
+        <CatchField
+          recipe="input"
+          id="sales-demo-phone"
+          title={salesDemoCopy.orVerifyPhoneInternationalFormat}
+          autoComplete="tel"
+          value={phone}
+          inputMode={authPending || controller.pending || Boolean(challenge) ? "inactive" : "editable"}
+          onChanged={(value) => setPhone(value)}
+          inputHint={salesDemoCopy.phonePlaceholder}
+          keyboardType="phone"
+        />
         <div id="sales-demo-recaptcha" />
         {!challenge ? <Button type="button" variant="ghost"
           disabled={authPending || controller.pending || !/^\+[1-9][0-9]{7,14}$/u.test(phone.trim())}
           onClick={() => void sendCode()}>{salesDemoCopy.sendVerificationCode}</Button> : <>
-          <TextField id="sales-demo-code" label={salesDemoCopy.verificationCode} value={code}
-            onChange={(event) => setCode(event.target.value)}
-            inputMode="numeric" autoComplete="one-time-code" />
+          <CatchField
+            recipe="input"
+            id="sales-demo-code"
+            title={salesDemoCopy.verificationCode}
+            value={code}
+            onChanged={(value) => setCode(value)}
+            autoComplete="one-time-code"
+            keyboardType="number"
+          />
           <Button type="button" variant="ghost" disabled={authPending || controller.pending || !code.trim()}
             onClick={() => void verifyCode()}>{salesDemoCopy.verifyPhone}</Button>
           <Button type="button" variant="ghost"

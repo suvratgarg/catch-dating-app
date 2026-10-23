@@ -1,10 +1,11 @@
+import {CatchField} from "@catch/web-ui";
 import {useState} from "react";
 import {ArrowRight, CalendarDays, MapPin, Search, Sparkles, Users} from "lucide-react";
 import {exploreCopy as copy} from "@content/explore";
 import {consumerHomeCopy} from "@content/consumerHome";
 import {activeMarket} from "@content/markets";
 import {interpolateContent as fill} from "@content/interpolate";
-import {Button, ButtonLink, PlainButton, PlainLink, TextField, SelectField} from "../../../shared/ui/primitives";
+import {Button, ButtonLink, PlainButton, PlainLink, SelectField} from "../../../shared/ui/primitives";
 import {ConsumerFilters, ConsumerEmpty, ConsumerEventGrid, ConsumerEventLink, ConsumerEventMedia, ConsumerPhotoNote, ConsumerCategory, ConsumerAvailability} from "../../../shared/ui/primitives/consumerHome";
 import {ExploreIntro, ExploreSearchForm, ExploreToolbar, ExploreExperience, ExploreResults, ExploreResultsHeading, ExploreBadge, ExploreExperienceFilter, ExploreFooterInvite} from "../../../shared/ui/primitives/explore";
 import type {useExploreController} from "../useExploreController";
@@ -12,7 +13,15 @@ type Controller = ReturnType<typeof useExploreController>;
 function ExploreSearch({explore}: {explore: Controller}) {
   const [query, setQuery] = useState(explore.filters.query);
   return <ExploreSearchForm role="search" onSubmit={event => {event.preventDefault();explore.update({query:query.trim().slice(0,120)});}}>
-    <TextField id="explore-query" label={copy.search} placeholder={copy.placeholder} value={query} maxLength={120} onChange={event => setQuery(event.target.value)} />
+    <CatchField
+      recipe="input"
+      id="explore-query"
+      title={copy.search}
+      inputHint={copy.placeholder}
+      value={query}
+      maxLength={120}
+      onChanged={(value) => setQuery(value)}
+    />
     <Button type="submit"><Search size={18} aria-hidden="true" />{copy.searchAction}</Button>
   </ExploreSearchForm>;
 }

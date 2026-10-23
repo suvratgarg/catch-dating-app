@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {websiteCopy} from "@content/generated";
 import {hostApplicationCopy} from "@content/host";
 import {websiteTemplates} from "@content/templates";
@@ -77,22 +78,24 @@ export function HostApplicationFlow() {
         {!submitted && step === "profile" ? (
           <HostApplicationStage>
             <FieldGrid>
-              <TextField
+              <CatchField
+                recipe="input"
                 id="host-full-name"
-                label={websiteCopy["hostapplicationflow_0230"]}
+                title={websiteCopy["hostapplicationflow_0230"]}
                 value={draft.fullName}
                 autoComplete="name"
-                onChange={(event) => updateDraft("fullName", event.currentTarget.value)}
+                onChanged={(value) => updateDraft("fullName", value)}
                 required
               />
-              <TextField
+              <CatchField
+                recipe="input"
                 id="host-email"
-                label={websiteCopy["hostapplicationflow_0221"]}
+                title={websiteCopy["hostapplicationflow_0221"]}
                 value={draft.email}
-                type="email"
                 autoComplete="email"
-                onChange={(event) => updateDraft("email", event.currentTarget.value)}
+                onChanged={(value) => updateDraft("email", value)}
                 required
+                keyboardType="emailAddress"
               />
               <SelectField
                 id="host-city"
@@ -106,20 +109,22 @@ export function HostApplicationFlow() {
                 ))}
               </SelectField>
               {draft.city === "Other" ? (
-                <TextField
+                <CatchField
+                  recipe="input"
                   id="host-custom-city"
-                  label={websiteCopy["hostapplicationflow_0265"]}
+                  title={websiteCopy["hostapplicationflow_0265"]}
                   value={draft.customCity}
                   autoComplete="address-level2"
-                  onChange={(event) => updateDraft("customCity", event.currentTarget.value)}
+                  onChanged={(value) => updateDraft("customCity", value)}
                   required
                 />
               ) : null}
-              <TextField
+              <CatchField
+                recipe="input"
                 id="host-org-name"
-                label={websiteCopy["hostapplicationflow_0248"]}
+                title={websiteCopy["hostapplicationflow_0248"]}
                 value={draft.organizationName}
-                onChange={(event) => updateDraft("organizationName", event.currentTarget.value)}
+                onChanged={(value) => updateDraft("organizationName", value)}
                 required
               />
               <SelectField
@@ -176,12 +181,13 @@ export function HostApplicationFlow() {
                 <option>{websiteCopy["hostapplicationflow_0252"]}</option>
                 <option>{websiteCopy["hostapplicationflow_0243"]}</option>
               </SelectField>
-              <TextField
+              <CatchField
+                recipe="input"
                 id="host-event-name"
-                label={websiteCopy["hostapplicationflow_0226"]}
+                title={websiteCopy["hostapplicationflow_0226"]}
                 value={draft.nextEventName}
-                placeholder={websiteCopy["hostapplicationflow_0237"]}
-                onChange={(event) => updateDraft("nextEventName", event.currentTarget.value)}
+                inputHint={websiteCopy["hostapplicationflow_0237"]}
+                onChanged={(value) => updateDraft("nextEventName", value)}
                 required
               />
               <SelectField
@@ -200,18 +206,20 @@ export function HostApplicationFlow() {
                   <option key={option.value} value={option.value}>{option.label}</option>
                 ))}
               </SelectField>
-              <TextField
+              <CatchField
+                recipe="input"
                 id="host-event-date"
-                label={websiteCopy["hostapplicationflow_0257"]}
+                title={websiteCopy["hostapplicationflow_0257"]}
                 value={draft.nextEventDate}
-                type="date"
-                onChange={(event) => updateDraft("nextEventDate", event.currentTarget.value)}
+                onChanged={(value) => updateDraft("nextEventDate", value)}
+                keyboardType="date"
               />
-              <TextField
+              <CatchField
+                recipe="input"
                 id="host-event-location"
-                label={websiteCopy["hostapplicationflow_0260"]}
+                title={websiteCopy["hostapplicationflow_0260"]}
                 value={draft.eventLocation}
-                onChange={(event) => updateDraft("eventLocation", event.currentTarget.value)}
+                onChanged={(value) => updateDraft("eventLocation", value)}
                 required
               />
             </FieldGrid>
@@ -221,13 +229,14 @@ export function HostApplicationFlow() {
         {!submitted && step === "setup" ? (
           <HostApplicationStage>
             <FieldGrid>
-              <TextField
+              <CatchField
+                recipe="input"
                 id="host-capacity"
-                label={hostApplicationCopy.setup.guestCountLabel}
+                title={hostApplicationCopy.setup.guestCountLabel}
                 value={draft.expectedCapacity}
-                inputMode="numeric"
-                onChange={(event) => updateDraft("expectedCapacity", event.currentTarget.value)}
+                onChanged={(value) => updateDraft("expectedCapacity", value)}
                 required
+                keyboardType="number"
               />
               <SelectField
                 id="host-booking-platform"

@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {CheckCircle2, FileWarning, Lock} from "lucide-react";
 import {
   AdminButton,
@@ -5,7 +6,6 @@ import {
   QualityRow,
   StateRow,
   StatusChip,
-  TextareaField,
   AdminCommandRow,
   AdminCommandStack,
   AdminEyebrow,
@@ -285,10 +285,11 @@ function OrganizerPolicyGapRegisterView({
                 </AdminIntakeDecisionState>
               ) : (
                 <AdminIntakeDecisionBox>
-                  <TextareaField
-                    label="Policy review note"
-                    onChange={(note) => onNoteChange(gap.gapId, note)}
-                    rows={3}
+                  <CatchField
+                    recipe="input"
+                    title="Policy review note"
+                    onChanged={(note) => onNoteChange(gap.gapId, note)}
+                    maxLines={3}
                     value={notes[gap.gapId] ?? ""}
                   />
                   <AdminIntakeDecisionActions>

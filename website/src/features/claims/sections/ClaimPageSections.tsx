@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {websiteCopy} from "@content/generated";
 import {websiteTemplates} from "@content/templates";
 import {trackMarketingEvent} from "../../../analytics";
@@ -25,7 +26,6 @@ import {
   StepRail,
   TextActionButton,
   TextAreaField,
-  TextField,
   UiLabel,
   VerificationMethodGrid,
 } from "../../../shared/ui/primitives";
@@ -120,12 +120,13 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
       <ClaimFlowPanel aria-live="polite">
         {step === "listing" ? (
           <ClaimFlowStage>
-            <TextField
+            <CatchField
+              recipe="input"
               id="claim-search"
-              label={websiteCopy["claimpagesections_0085"]}
+              title={websiteCopy["claimpagesections_0085"]}
               value={query}
-              placeholder={websiteCopy["claimpagesections_0071"]}
-              onChange={(event) => setQuery(event.currentTarget.value)}
+              inputHint={websiteCopy["claimpagesections_0071"]}
+              onChanged={(value) => setQuery(value)}
             />
             <ClaimListingResults>
               {searchResults.map((item) => (
@@ -179,12 +180,13 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
             </SelectedListingCard>
 
             <FieldGrid>
-              <TextField
+              <CatchField
+                recipe="input"
                 id="claim-name"
-                label={websiteCopy["claimpagesections_0101"]}
+                title={websiteCopy["claimpagesections_0101"]}
                 value={requesterName}
                 autoComplete="name"
-                onChange={(event) => setRequesterName(event.currentTarget.value)}
+                onChanged={(value) => setRequesterName(value)}
                 required
               />
               <SelectField
@@ -200,21 +202,23 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
                   </option>
                 ))}
               </SelectField>
-              <TextField
+              <CatchField
+                recipe="input"
                 id="claim-email"
-                label={websiteCopy["claimpagesections_0038"]}
-                type="email"
+                title={websiteCopy["claimpagesections_0038"]}
                 value={businessEmail}
                 autoComplete="email"
-                onChange={(event) => setBusinessEmail(event.currentTarget.value)}
+                onChanged={(value) => setBusinessEmail(value)}
+                keyboardType="emailAddress"
               />
-              <TextField
+              <CatchField
+                recipe="input"
                 id="claim-phone"
-                label={websiteCopy["claimpagesections_0039"]}
-                type="tel"
+                title={websiteCopy["claimpagesections_0039"]}
                 value={businessPhone}
                 autoComplete="tel"
-                onChange={(event) => setBusinessPhone(event.currentTarget.value)}
+                onChanged={(value) => setBusinessPhone(value)}
+                keyboardType="phone"
               />
               <TextAreaField
                 id="claim-proof"
@@ -278,14 +282,15 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
               </div>
             </ContentGrid>
 
-            <TextAreaField
+            <CatchField
+              recipe="input"
               id="claim-message"
-              label={websiteCopy["claimpagesections_0068"]}
-              rows={3}
+              title={websiteCopy["claimpagesections_0068"]}
+              maxLines={3}
               value={message}
               maxLength={1000}
-              placeholder={websiteCopy["claimpagesections_0033"]}
-              onChange={(event) => setMessage(event.currentTarget.value)}
+              inputHint={websiteCopy["claimpagesections_0033"]}
+              onChanged={(value) => setMessage(value)}
             />
 
             <AuthStatusRow

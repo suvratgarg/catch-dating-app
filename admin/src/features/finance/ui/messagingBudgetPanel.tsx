@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   CheckCircle2,
   CircleDollarSign,
@@ -13,10 +14,9 @@ import {
   AlertRow,
   Panel,
   QualityList,
-  SelectField,
+  selectOptionLabeller,
+  selectOptionValues,
   StateRow,
-  TextareaField,
-  TextField,
 } from "../../../shared/ui/AdminPrimitives";
 import type {
   MessagingBudgetController,
@@ -68,37 +68,44 @@ export function renderMessagingBudgetPanel(controller: MessagingBudgetController
           cannot spend, send a message, contact a provider, or activate a worker.
         </AlertRow>
         <AdminToolbar>
-          <TextField
-            label="Organizer ID"
-            onChange={(value) => controller.setScope("organizerId", value)}
+          <CatchField
+            recipe="input"
+            title="Organizer ID"
+            onChanged={(value) => controller.setScope("organizerId", value)}
             value={controller.scope.organizerId}
           />
-          <TextField
-            label="Event ID"
-            onChange={(value) => controller.setScope("eventId", value)}
+          <CatchField
+            recipe="input"
+            title="Event ID"
+            onChanged={(value) => controller.setScope("eventId", value)}
             value={controller.scope.eventId}
           />
-          <SelectField
-            label="Route"
-            onChange={(value) => controller.setScope(
+          <CatchField
+            recipe="select"
+            title="Route"
+            onChanged={(value) => controller.setScope(
               "routeId",
-              value as MessagingBudgetRoute
+              (value ?? "") as MessagingBudgetRoute
             )}
-            options={routeOptions}
+            values={selectOptionValues(routeOptions)}
+            itemLabelBuilder={selectOptionLabeller(routeOptions)}
             value={controller.scope.routeId}
           />
-          <TextField
-            label="Sender ID"
-            onChange={(value) => controller.setScope("senderId", value)}
+          <CatchField
+            recipe="input"
+            title="Sender ID"
+            onChanged={(value) => controller.setScope("senderId", value)}
             value={controller.scope.senderId}
           />
-          <SelectField
-            label="Message purpose"
-            onChange={(value) => controller.setScope(
+          <CatchField
+            recipe="select"
+            title="Message purpose"
+            onChanged={(value) => controller.setScope(
               "purpose",
-              value as MessagingBudgetPurpose
+              (value ?? "") as MessagingBudgetPurpose
             )}
-            options={purposeOptions}
+            values={selectOptionValues(purposeOptions)}
+            itemLabelBuilder={selectOptionLabeller(purposeOptions)}
             value={controller.scope.purpose}
           />
           <AdminButton
@@ -141,43 +148,49 @@ export function renderMessagingBudgetPanel(controller: MessagingBudgetController
               <AdminTag tone="neutral">Revision-fenced</AdminTag>
             </AdminTagList>
             <AdminToolbar>
-              <SelectField
-                label="Finance decision"
-                onChange={(value) => controller.setDecisionKind(
-                  value as MessagingBudgetController["decisionKind"]
+              <CatchField
+                recipe="select"
+                title="Finance decision"
+                onChanged={(value) => controller.setDecisionKind(
+                  (value ?? "") as MessagingBudgetController["decisionKind"]
                 )}
-                options={decisionOptions}
+                values={selectOptionValues(decisionOptions)}
+                itemLabelBuilder={selectOptionLabeller(decisionOptions)}
                 value={controller.decisionKind}
               />
               {controller.decisionKind === "approve" ? (
                 <>
-                  <TextField
-                    inputMode="decimal"
-                    label={`Event ceiling (${review.budgets.kind === "reviewed" ? review.budgets.currency : "currency"})`}
-                    onChange={controller.setEventLimit}
-                    placeholder="250.00"
+                  <CatchField
+                    recipe="input"
+                    title={`Event ceiling (${review.budgets.kind === "reviewed" ? review.budgets.currency : "currency"})`}
+                    onChanged={controller.setEventLimit}
+                    inputHint="250.00"
                     value={controller.eventLimit}
+                    keyboardType="decimal"
                   />
-                  <TextField
-                    inputMode="decimal"
-                    label={`Sender-day ceiling (${review.budgets.kind === "reviewed" ? review.budgets.currency : "currency"})`}
-                    onChange={controller.setSenderDayLimit}
-                    placeholder="500.00"
+                  <CatchField
+                    recipe="input"
+                    title={`Sender-day ceiling (${review.budgets.kind === "reviewed" ? review.budgets.currency : "currency"})`}
+                    onChanged={controller.setSenderDayLimit}
+                    inputHint="500.00"
                     value={controller.senderDayLimit}
+                    keyboardType="decimal"
                   />
-                  <TextField
-                    label="Approval expires"
-                    onChange={controller.setValidUntil}
-                    type="datetime-local"
+                  <CatchField
+                    recipe="input"
+                    title="Approval expires"
+                    onChanged={controller.setValidUntil}
                     value={controller.validUntil}
+                    keyboardType="datetime"
                   />
                 </>
               ) : null}
             </AdminToolbar>
-            <TextareaField
-              label="Finance review note"
-              onChange={controller.setDecisionNote}
-              rows={3}
+            <CatchField
+              recipe="input"
+              title="Finance review note"
+              onChanged={controller.setDecisionNote}
+              maxLines={3}
               value={controller.decisionNote}
             />
             {controller.decisionDisabledReason ? (
@@ -208,10 +221,11 @@ export function renderMessagingBudgetPanel(controller: MessagingBudgetController
             action={`Revision ${decision.revision}`}
           >
             <AdminWorkbenchStack compact>
-              <TextareaField
-                label="Staging note"
-                onChange={controller.setStagingNote}
-                rows={2}
+              <CatchField
+                recipe="input"
+                title="Staging note"
+                onChanged={controller.setStagingNote}
+                maxLines={2}
                 value={controller.stagingNote}
               />
               {controller.stageDisabledReason ? (

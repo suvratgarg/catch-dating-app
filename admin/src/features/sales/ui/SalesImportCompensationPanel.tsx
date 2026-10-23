@@ -1,8 +1,18 @@
+import {CatchField} from "@catch/web-ui";
 import {useRef, useState} from "react";
 import {RotateCcw} from "lucide-react";
-import {AdminButton, AdminForm, EmptyState, Panel, SelectField,
-  StateRow, TextareaField, TextField} from
-  "../../../shared/ui/AdminPrimitives";
+import {
+  AdminButton,
+  AdminForm,
+  EmptyState,
+  Panel,
+  SelectField,
+  selectOptionLabeller,
+  selectOptionValues,
+  StateRow,
+  TextareaField,
+  TextField,
+} from "../../../shared/ui/AdminPrimitives";
 import {dataMode} from "../../../shared/api/dataMode";
 import type {SalesWorkspaceController} from
   "../controllers/useSalesWorkspaceController";
@@ -44,11 +54,20 @@ function CompensationPanel({controller}: {controller: SalesWorkspaceController})
       original import receipt and source lineage stay in place.</p>
     {dataMode() === "sample" ? <EmptyState>Compensation requires a live Admin
       Owner workspace. No sample correction is applied.</EmptyState> : <>
-      <TextField label="Applied import ID" value={importId} disabled={busy}
-        onChange={(value) => {setImportId(value); clearPlan();}} />
-      <TextField label="Canonical organizer ID" value={organizerId}
-        disabled={busy}
-        onChange={(value) => {setOrganizerId(value); clearPlan();}} />
+      <CatchField
+        recipe="input"
+        title="Applied import ID"
+        value={importId}
+        inputMode={busy ? "inactive" : "editable"}
+        onChanged={(value) => {setImportId(value); clearPlan();}}
+      />
+      <CatchField
+        recipe="input"
+        title="Canonical organizer ID"
+        value={organizerId}
+        inputMode={busy ? "inactive" : "editable"}
+        onChanged={(value) => {setOrganizerId(value); clearPlan();}}
+      />
       <AdminButton onClick={() => void preview()}
         disabled={busy || controller.compensationPreviewPending ||
           !id.test(importId) || !id.test(organizerId)}>
@@ -70,16 +89,31 @@ function CompensationPanel({controller}: {controller: SalesWorkspaceController})
         {plan.mode !== "blocked" && !plan.blockers.length &&
           !plan.alreadyCompensated ?
           <AdminForm onSubmit={(event) => {event.preventDefault(); void apply();}}>
-            <TextareaField label="Reason for correction" rows={2} value={reason}
-              disabled={busy} onChange={(value) => {
+            <CatchField
+              recipe="input"
+              title="Reason for correction"
+              maxLines={2}
+              value={reason}
+              inputMode={busy ? "inactive" : "editable"}
+              onChanged={(value) => {
                 setReason(value); setReviewed(false);
-              }} />
-            <SelectField label="Review decision" value={reviewed ? "yes" : "no"}
-              disabled={busy}
-              onChange={(value) => setReviewed(value === "yes")} options={[
+              }}
+            />
+            <CatchField
+              recipe="select"
+              title="Review decision"
+              value={reviewed ? "yes" : "no"}
+              inputMode={busy ? "inactive" : "editable"}
+              onChanged={(value) => setReviewed((value ?? "") === "yes")}
+              values={selectOptionValues([
                 {value: "no", label: "Not reviewed"},
                 {value: "yes", label: "I reviewed this exact server plan"},
-              ]} />
+              ])}
+              itemLabelBuilder={selectOptionLabeller([
+                {value: "no", label: "Not reviewed"},
+                {value: "yes", label: "I reviewed this exact server plan"},
+              ])}
+            />
             <AdminButton type="submit" variant="primary"
               disabled={busy || controller.compensationPreviewPending ||
                 !reviewed || !reason.trim() ||

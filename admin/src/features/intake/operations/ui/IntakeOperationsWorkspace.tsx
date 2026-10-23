@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {AlertTriangle, ListPlus, RefreshCw, Search} from "lucide-react";
 import {useEffect, useMemo, useState} from "react";
 
@@ -27,7 +28,8 @@ import {
   AdminWorkbenchNote,
   Panel,
   SearchField,
-  SelectField,
+  selectOptionLabeller,
+  selectOptionValues,
 } from "../../../../shared/ui/AdminPrimitives";
 import {
   type IntakeOperationsController,
@@ -140,18 +142,26 @@ export function IntakeOperationsPreviewWorkspace({
             setSelectedId(null);
           }}
         />
-        <SelectField
-          label="Entity"
-          options={[
+        <CatchField
+          recipe="select"
+          title="Entity"
+          values={selectOptionValues([
             {value: "all", label: "All entities"},
             {value: "event", label: "Events"},
             {value: "organizer", label: "Organizers"},
             {value: "source_result", label: "Source results"},
             {value: "source_profile", label: "Source profiles"},
-          ]}
+          ])}
+          itemLabelBuilder={selectOptionLabeller([
+            {value: "all", label: "All entities"},
+            {value: "event", label: "Events"},
+            {value: "organizer", label: "Organizers"},
+            {value: "source_result", label: "Source results"},
+            {value: "source_profile", label: "Source profiles"},
+          ])}
           value={entityFilter}
-          onChange={(value) => {
-            setEntityFilter(value as OperationEntityFilter);
+          onChanged={(value) => {
+            setEntityFilter((value ?? "") as OperationEntityFilter);
             setSelectedId(null);
           }}
         />

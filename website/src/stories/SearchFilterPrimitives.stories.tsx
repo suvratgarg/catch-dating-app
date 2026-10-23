@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {FormEvent} from "react";
 import {
@@ -6,7 +7,6 @@ import {
   PublicSearchBar,
   SearchFormShell,
   SelectField,
-  TextField,
   ToggleChipButton,
   type PublicSearchSuggestion,
 } from "../shared/ui/primitives";
@@ -85,11 +85,12 @@ export const OrganizerSearchFormShellStory: Story = {
   },
   render: () => (
     <SearchFormShell variant="organizer" onSubmit={preventSubmit}>
-      <TextField
+      <CatchField
+        recipe="input"
         id="storybook-organizer-search-query"
-        label="Search organizers"
+        title="Search organizers"
         name="q"
-        placeholder="Try Sunday Table, Indore, run club, dinner"
+        inputHint="Try Sunday Table, Indore, run club, dinner"
       />
       <Button type="submit">Search</Button>
     </SearchFormShell>

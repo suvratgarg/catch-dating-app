@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {Clock3, Database, FileWarning, FolderSearch, MapPin, Save, Smartphone} from "lucide-react";
 import type {
   AdminEventActivityKind,
@@ -13,27 +14,26 @@ import {
   AdminDiffRow,
   AdminEditorGrid,
   AdminEditorPanel,
+  AdminEditorSection,
   AdminFieldGrid,
   AdminForm,
+  AdminMutedCell,
+  AdminPublishingLoadbar,
   AdminRoadmapList,
   AdminRoadmapListItem,
+  AdminSecondaryDisclosure,
+  AdminSurfacePreview,
   AdminTag,
+  AdminTagRow,
+  AdminWorkbenchNote,
   AdminWorkbenchStack,
   CheckboxField,
   EmptyState,
   Panel,
   QualityList,
-  SelectField,
+  selectOptionLabeller,
+  selectOptionValues,
   StateRow,
-  TextareaField,
-  TextField,
-  AdminEditorSection,
-  AdminMutedCell,
-  AdminPublishingLoadbar,
-  AdminSecondaryDisclosure,
-  AdminSurfacePreview,
-  AdminTagRow,
-  AdminWorkbenchNote,
 } from "../../../shared/ui/AdminPrimitives";
 import {
   countBlockingEventIssues,
@@ -127,9 +127,10 @@ function EventEditor({
         action={event?.status ?? "No event"}
       >
         <AdminPublishingLoadbar>
-          <TextField
-            label="Event ID"
-            onChange={onEventIdChange}
+          <CatchField
+            recipe="input"
+            title="Event ID"
+            onChanged={onEventIdChange}
             value={eventId}
           />
           <AdminButton
@@ -157,15 +158,17 @@ function EventEditor({
           }}>
             <AdminEditorSection>
               <legend>App-Facing Copy</legend>
-              <TextareaField
-                label="Description"
-                onChange={(value) => update("description", value)}
-                rows={5}
+              <CatchField
+                recipe="input"
+                title="Description"
+                onChanged={(value) => update("description", value)}
+                maxLines={5}
                 value={form.description}
               />
-              <TextField
-                label="Photo URL"
-                onChange={(value) => update("photoUrl", value)}
+              <CatchField
+                recipe="input"
+                title="Photo URL"
+                onChanged={(value) => update("photoUrl", value)}
                 value={form.photoUrl}
               />
             </AdminEditorSection>
@@ -206,50 +209,65 @@ function EventEditor({
             <AdminEditorSection>
               <legend>Format</legend>
               <AdminFieldGrid columns={3}>
-                <SelectField
-                  label="Activity kind"
-                  onChange={(value) =>
-                    update("activityKind", value as AdminEventActivityKind)}
-                  options={eventActivityKindOptions.map((value) => ({
+                <CatchField
+                  recipe="select"
+                  title="Activity kind"
+                  onChanged={(value) => update("activityKind", (value ?? "") as AdminEventActivityKind)}
+                  values={selectOptionValues(eventActivityKindOptions.map((value) => ({
                     value,
                     label: formatEventLabel(value),
-                  }))}
+                  })))}
+                  itemLabelBuilder={selectOptionLabeller(eventActivityKindOptions.map((value) => ({
+                    value,
+                    label: formatEventLabel(value),
+                  })))}
                   value={form.activityKind}
                 />
-                <SelectField
-                  label="Interaction model"
-                  onChange={(value) =>
-                    update("interactionModel", value as AdminEventInteractionModel)}
-                  options={eventInteractionModelOptions.map((value) => ({
+                <CatchField
+                  recipe="select"
+                  title="Interaction model"
+                  onChanged={(value) => update("interactionModel", (value ?? "") as AdminEventInteractionModel)}
+                  values={selectOptionValues(eventInteractionModelOptions.map((value) => ({
                     value,
                     label: formatEventLabel(value),
-                  }))}
+                  })))}
+                  itemLabelBuilder={selectOptionLabeller(eventInteractionModelOptions.map((value) => ({
+                    value,
+                    label: formatEventLabel(value),
+                  })))}
                   value={form.interactionModel}
                 />
-                <TextField
-                  label="Custom label"
-                  onChange={(value) => update("customActivityLabel", value)}
+                <CatchField
+                  recipe="input"
+                  title="Custom label"
+                  onChanged={(value) => update("customActivityLabel", value)}
                   value={form.customActivityLabel}
                 />
-                <TextField
-                  inputMode="decimal"
-                  label="Distance km"
-                  onChange={(value) => update("distanceKm", value)}
-                  type="number"
+                <CatchField
+                  recipe="input"
+                  title="Distance km"
+                  onChanged={(value) => update("distanceKm", value)}
                   value={form.distanceKm}
+                  keyboardType="decimal"
                 />
-                <SelectField
-                  label="Pace"
-                  onChange={(value) => update("pace", value as AdminEventPace)}
-                  options={eventPaceOptions.map((value) => ({
+                <CatchField
+                  recipe="select"
+                  title="Pace"
+                  onChanged={(value) => update("pace", (value ?? "") as AdminEventPace)}
+                  values={selectOptionValues(eventPaceOptions.map((value) => ({
                     value,
                     label: formatEventLabel(value),
-                  }))}
+                  })))}
+                  itemLabelBuilder={selectOptionLabeller(eventPaceOptions.map((value) => ({
+                    value,
+                    label: formatEventLabel(value),
+                  })))}
                   value={form.pace}
                 />
-                <TextField
-                  label="Review note"
-                  onChange={(value) => update("reviewNote", value)}
+                <CatchField
+                  recipe="input"
+                  title="Review note"
+                  onChanged={(value) => update("reviewNote", value)}
                   value={form.reviewNote}
                 />
               </AdminFieldGrid>

@@ -1,10 +1,11 @@
+import {CatchField} from "@catch/web-ui";
 import {organiserDirectoryCopy as copy} from "@content/organiserDirectory";
 import {interpolateContent as fill} from "@content/interpolate";
 import {websiteCopy} from "@content/generated";
 import {websiteTemplates} from "@content/templates";
 import {useEffect} from "react";
 import {ArrowRight, MapPin, Search, Users} from "lucide-react";
-import {BadgeRow, Button, DirectoryClaimPressureCopy, DirectoryClaimPressureCta, DirectoryClaimPressureList, DirectoryClaimPressureStats, ListingFormatRow, OrganizerEventHighlights, OrganizerResultCardBody, OrganizerResultCardFooter, OrganizerResultCardShell, OrganizerResultCardTopline, OrganizerSearchSection, PlainLink, SearchFormShell, SelectField, TextActionButton, TextField, ToggleChipButton, UiLabel} from "../../../shared/ui/primitives";
+import {BadgeRow, Button, DirectoryClaimPressureCopy, DirectoryClaimPressureCta, DirectoryClaimPressureList, DirectoryClaimPressureStats, ListingFormatRow, OrganizerEventHighlights, OrganizerResultCardBody, OrganizerResultCardFooter, OrganizerResultCardShell, OrganizerResultCardTopline, OrganizerSearchSection, PlainLink, SearchFormShell, SelectField, TextActionButton, ToggleChipButton, UiLabel} from "../../../shared/ui/primitives";
 import {ConsumerEmpty} from "../../../shared/ui/primitives/consumerHome";
 import {DirectoryIntro, DirectoryFilters, DirectoryMoreFilters, DirectoryResults, DirectoryResultsGrid, DirectoryResultsHeading, DirectoryTrust} from "../../../shared/ui/primitives/organiserDirectory";
 import {trackOrganizerSearchAppearance} from "../analytics";
@@ -21,7 +22,16 @@ export function OrganizerSearchHeroSection({controller: c}: {controller: Organiz
   return <DirectoryIntro aria-labelledby="organizer-search-title">
     <h1 id="organizer-search-title">{copy.title}</h1><p>{copy.body}</p>
     <SearchFormShell variant="organizer" role="search" onSubmit={c.handleSearch}>
-      <TextField id="organizer-search-query" label={copy.search} name="q" value={c.query} maxLength={120} onChange={event => c.setQuery(event.target.value)} placeholder={copy.placeholder} />
+      <CatchField
+        recipe="input"
+        id="organizer-search-query"
+        title={copy.search}
+        name="q"
+        value={c.query}
+        maxLength={120}
+        onChanged={(value) => c.setQuery(value)}
+        inputHint={copy.placeholder}
+      />
       <Button type="submit"><Search size={18} aria-hidden="true" />{copy.searchAction}</Button>
     </SearchFormShell>
     <DirectoryFilters>
