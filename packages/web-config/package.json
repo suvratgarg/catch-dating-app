@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     "./firebase": "./firebase.ts",
-    "./query": "./query.ts"
+    "./query": "./query.ts",
+    "./stylelint": "./lint/stylelint.mjs"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.104.1"
