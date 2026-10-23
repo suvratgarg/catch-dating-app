@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.82.0
+version: 1.84.0
 updated: 2026-10-24
 owner: app_architecture
 status: active
@@ -1452,6 +1452,23 @@ layout numbers or Material/Cupertino controls. `catch_no_raw_stroke_width`
 covers all handwritten app code, including shared widgets and 1 px literals;
 zero remains the explicit no-border value, while decorative `CustomPainter`
 artwork is outside this UI-boundary diagnostic.
+
+`catch_text_requires_style` also steers direct, resolved `Text` calls onto
+`CatchText` when its current variant and argument set preserve the call.
+Existing calls are counted per file and role in
+`tool/architecture/catch_text_migration_baseline.json`; new calls fail and name
+the matching `CatchTextVariant`. The existing lint-drift zero gate checks that
+this baseline matches the resolved source and cannot grow from its merge base.
+After a migration, regenerate it with
+`bash tool/check_catch_ui_lint_drift.sh --update-text-baseline`.
+The initial adoption also records pre-existing uncovered roles whose arguments
+already fit the text API. These reservations remain dormant until their variant
+exists, then activate without increasing another role's allowance. Uncovered
+calls added later cannot enlarge a reservation, and no diagnostic requires a
+variant that does not exist. Both enabled and dormant allowances only shrink.
+Modified styles, uncovered roles and unsupported text APIs remain review inputs;
+the steer does not invent replacement props or change typography to fit a role.
+The missing-style diagnostic continues to apply independently.
 
 Closed Field layouts and secondary actions render only inside their owning
 Field library. The inventory's exact source/library/owner/method/return-type
