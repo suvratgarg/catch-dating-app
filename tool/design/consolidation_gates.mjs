@@ -127,6 +127,21 @@ function bareMarkup(root, surface) {
   return sumOver(root, listFiles(root, `${surface}/src`, ".tsx", reactSkip), countBareMarkup);
 }
 
+const unusedCodeBaseline = "tool/audit/unused_code_baseline.json";
+const webWorkspaces = {website: "website/", admin: "admin/", "web-ui": "packages/web-ui/"};
+
+/** Unused exports and whole unused files per web workspace, from knip's shrink-only baseline. */
+export function knipUnusedByWorkspace(baseline) {
+  const counts = Object.fromEntries(Object.keys(webWorkspaces).map((name) => [name, 0]));
+  for (const key of baseline.findings ?? []) {
+    const [kind, file] = key.split(" ");
+    if (kind !== "export" && kind !== "file") continue;
+    const workspace = Object.entries(webWorkspaces).find(([, prefix]) => file?.startsWith(prefix))?.[0];
+    if (workspace) counts[workspace] += 1;
+  }
+  return counts;
+}
+
 function bySurface(values) {
   return {value: Object.values(values).reduce((total, value) => total + value, 0), bySurface: values};
 }
@@ -168,7 +183,9 @@ export function measureAll({root = repoRoot, priorityIds = [], similarity = fals
     headlessControls: {value: registry.headlessControls.length, ids: registry.headlessControls},
     t1WithoutCatalogParity: {value: registry.t1WithoutCatalogParity.length, ids: registry.t1WithoutCatalogParity},
     webAdapters: inventoryCount("adapter"),
-    webDeadExports: inventoryCount("delete"),
+    webDeadExports: fs.existsSync(path.join(root, unusedCodeBaseline))
+      ? {...bySurface(knipUnusedByWorkspace(JSON.parse(read(unusedCodeBaseline)))), source: "knip"}
+      : {...inventoryCount("delete"), source: "react-inventory"},
     webSingleUseShared: inventoryCount("t4-move"),
     webBareMarkup: bySurface({website: bareMarkup(root, "website"), admin: bareMarkup(root, "admin")}),
     webPageCssLines: bySurface({

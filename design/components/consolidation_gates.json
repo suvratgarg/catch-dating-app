@@ -139,7 +139,7 @@
     {
       "id": "screens.web_dead_exports",
       "layer": "screens",
-      "title": "Unused React exports",
+      "title": "Unused React exports and files",
       "measure": "webDeadExports",
       "target": 0,
       "baseline": {
@@ -151,7 +151,7 @@
         "CAT-218",
         "CAT-219"
       ],
-      "enforcement": "None yet: the knip unused-code ratchet (tool/audit/check_unused_code.mjs) is in progress and replaces this measure. The React inventory behind today's count does not read website/app/, so it also counts PublicPage and PublicProviders, which the Next routes import; 61 of the website's other 82 survive only in Storybook stories."
+      "enforcement": "Once tool/audit/unused_code_baseline.json exists, this gate counts its unused exports and files per web workspace, and knip's shrink-only baseline blocks regressions. Until then it counts the React inventory's delete verdicts, which miss website/app/ consumers (PublicPage, PublicProviders; the inventory fix follows the 7e field PR)."
     },
     {
       "id": "screens.web_single_use_shared",

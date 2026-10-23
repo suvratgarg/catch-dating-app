@@ -7,6 +7,7 @@ import {
   countInlineTextStyles,
   countRawChrome,
   evaluate,
+  knipUnusedByWorkspace,
   measureAll,
   parseRawColorDebt,
   registryMeasures,
@@ -38,6 +39,18 @@ test("suppressions sum every rule count, or one rule's", () => {
   const suppressions = {"a.css": {"rule-a": {count: 2}, "rule-b": {count: 3}}, "b.css": {"rule-a": {count: 1}}};
   assert.equal(sumSuppressions(suppressions), 6);
   assert.equal(sumSuppressions(suppressions, "rule-a"), 3);
+});
+
+test("knip findings count unused exports and files per web workspace", () => {
+  assert.deepEqual(knipUnusedByWorkspace({findings: [
+    "export website/src/x.ts Foo",
+    "file website/src/old.tsx",
+    "type website/src/x.ts FooProps",
+    "export admin/src/y.ts Bar",
+    "export packages/web-ui/src/z.ts Baz",
+    "export functions/src/q.ts Qux",
+    "dependency website/package.json left-pad",
+  ]}), {website: 2, admin: 1, "web-ui": 1});
 });
 
 test("raw colour debt reads the exported list and fails closed without it", () => {
