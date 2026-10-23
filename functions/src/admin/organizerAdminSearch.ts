@@ -144,8 +144,6 @@ function organizerSearchSourceText(
     ...stringArray(club.tags),
     ...stringArray(club.entitySubtypes),
     ...stringArray(club.publicProfile?.formats),
-    ...stringArray(club.publicProfile?.fitNotes),
-    ...stringArray(club.publicProfile?.missingEvidence),
     ...factStrings(club.publicProfile?.facts),
   ]);
 }

@@ -44,8 +44,6 @@ export interface OrganizerPublishingFormState {
   summary: string;
   sourceSummary: string;
   formatsText: string;
-  fitNotesText: string;
-  missingEvidenceText: string;
   reviewNote: string;
 }
 
@@ -243,8 +241,6 @@ export function formFromOrganizerProfile(
     summary: club.publicProfile.summary ?? "",
     sourceSummary: club.publicProfile.sourceSummary ?? "",
     formatsText: listToText(club.publicProfile.formats),
-    fitNotesText: listToText(club.publicProfile.fitNotes),
-    missingEvidenceText: listToText(club.publicProfile.missingEvidence),
     reviewNote: "",
   };
 }
@@ -358,13 +354,6 @@ export function buildOrganizerSavePayload(
     nullableText(form.sourceSummary)
   );
   addChangedArray(publicProfile, "formats", original.formatsText, form.formatsText);
-  addChangedArray(publicProfile, "fitNotes", original.fitNotesText, form.fitNotesText);
-  addChangedArray(
-    publicProfile,
-    "missingEvidence",
-    original.missingEvidenceText,
-    form.missingEvidenceText
-  );
   if (Object.keys(publicProfile).length > 0) {
     fields.publicProfile = publicProfile;
   }

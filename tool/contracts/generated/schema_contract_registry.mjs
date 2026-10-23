@@ -149517,24 +149517,6 @@ export const clubDocumentSchema = {
             }
           }
         },
-        "fitNotes": {
-          "type": "array",
-          "maxItems": 8,
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 400
-          }
-        },
-        "missingEvidence": {
-          "type": "array",
-          "maxItems": 12,
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200
-          }
-        },
         "eventEvidence": {
           "type": "array",
           "maxItems": 12,
@@ -152189,7 +152171,7 @@ export const organizerDocumentSchema = {
     "publicProfile": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.",
+      "description": "Visitor-facing organizer listing content derived from sources or owner edits. Operator evidence (fit rationale, evidence checklists, intake requests, claim and index state) and raw scrape snapshots belong in private intake and evidence collections; operator writes are checked by functions/src/organizers/organizerPublicContent.ts.",
       "properties": {
         "headline": {
           "type": [
@@ -152243,24 +152225,6 @@ export const organizerDocumentSchema = {
                 "maxLength": 240
               }
             }
-          }
-        },
-        "fitNotes": {
-          "type": "array",
-          "maxItems": 8,
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 400
-          }
-        },
-        "missingEvidence": {
-          "type": "array",
-          "maxItems": 12,
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200
           }
         },
         "eventEvidence": {
@@ -247091,24 +247055,6 @@ export const adminUpdateClubDetailsCallablePayloadSchema = {
                 "minLength": 1,
                 "maxLength": 80
               }
-            },
-            "fitNotes": {
-              "type": "array",
-              "maxItems": 8,
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 400
-              }
-            },
-            "missingEvidence": {
-              "type": "array",
-              "maxItems": 12,
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 200
-              }
             }
           }
         }
@@ -247512,24 +247458,6 @@ export const adminUpdateOrganizerDetailsCallablePayloadSchema = {
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 80
-              }
-            },
-            "fitNotes": {
-              "type": "array",
-              "maxItems": 8,
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 400
-              }
-            },
-            "missingEvidence": {
-              "type": "array",
-              "maxItems": 12,
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 200
               }
             }
           }

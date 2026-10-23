@@ -83,12 +83,15 @@ test("approved review decisions create public projections and claim targets", ()
     claimTargets.targets[0].clubDocument.publicPage.canonicalPath,
     "/organizers/afterfly/"
   );
-  assert.equal(
-    claimTargets.targets[0].clubDocument.publicProfile.missingEvidence.includes(
-      "Manual admin approval for public publication"
-    ),
-    false
+  const claimTargetProfile = claimTargets.targets[0].clubDocument.publicProfile;
+  assert.equal("fitNotes" in claimTargetProfile, false);
+  assert.equal("missingEvidence" in claimTargetProfile, false);
+  assert.deepEqual(
+    claimTargetProfile.facts.map((fact) => fact.label),
+    ["Market", "Organizer type"]
   );
+  assert.ok(claimTargets.targets[0].clubDocument.publicSources.every((source) =>
+    typeof source.href === "string" && source.href.startsWith("http")));
   assert.equal(claimTargets.targets[0].clubDocument.claim.state, "unclaimed");
   assert.equal(
     claimTargets.targets[0].clubDocument.ownership.state,

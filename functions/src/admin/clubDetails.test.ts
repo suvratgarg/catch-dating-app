@@ -340,8 +340,6 @@ function clubDoc(overrides: FakeData = {}): FakeData {
       summary: "A public event source connects AFTER FLY to Indore.",
       sourceSummary: "Luma event page confirmed.",
       formats: ["Run and rave"],
-      fitNotes: ["Social event format"],
-      missingEvidence: ["Owner contact"],
       facts: [],
       eventEvidence: [],
     },
@@ -384,9 +382,8 @@ test("adminGetClubDetailsHandler returns a review-safe club snapshot",
     assert.equal(result.club.name, "AFTER FLY");
     assert.equal(result.club.publicPage.indexStatus, "noindex");
     assert.equal(result.club.provenance.sourceConfidence, "high");
-    assert.deepEqual(result.club.publicProfile.missingEvidence, [
-      "Owner contact",
-    ]);
+    assert.deepEqual(result.club.publicProfile.formats, ["Run and rave"]);
+    assert.equal("missingEvidence" in result.club.publicProfile, false);
   }
 );
 
@@ -523,7 +520,6 @@ test("adminUpdateClubDetailsHandler saves allowed cleanup fields", async () => {
         },
         publicProfile: {
           headline: "Afterfly Run Club in Indore",
-          missingEvidence: ["Owner contact", "Media permission"],
         },
       },
       reviewNote: "Cleaned up naming and owner contact.",
@@ -532,7 +528,7 @@ test("adminUpdateClubDetailsHandler saves allowed cleanup fields", async () => {
   );
 
   assert.equal(result.clubId, "afterfly-run-club-indore");
-  assert.equal(result.updatedFieldCount, 9);
+  assert.equal(result.updatedFieldCount, 8);
   const club = h.firestore.get("organizers/afterfly-run-club-indore");
   assert.equal(club?.name, "Afterfly Run Club");
   assert.deepEqual(club?.tags, ["social run"]);
@@ -544,10 +540,6 @@ test("adminUpdateClubDetailsHandler saves allowed cleanup fields", async () => {
   assert.equal(
     (club?.provenance as FakeData).lastVerifiedAt,
     "SERVER_TIMESTAMP"
-  );
-  assert.deepEqual(
-    (club?.publicProfile as FakeData).missingEvidence,
-    ["Owner contact", "Media permission"]
   );
   assert.equal((club?.adminSearch as FakeData).updatedBySource,
     "adminUpdateClubDetails");
@@ -820,6 +812,111 @@ test("adminUpdateClubDetailsHandler rejects protected index fields",
     );
   }
 );
+
+test("adminUpdateClubDetailsHandler keeps operator text out of public fields",
+  async () => {
+    const before = clubDoc();
+    const h = harness({"organizers/afterfly-run-club-indore": before});
+
+    for (const fields of [
+      {publicProfile: {
+        summary: "This unclaimed profile summarizes verified public facts " +
+          "for owner review and stays out of search until confirmed.",
+      }},
+      {description: "Source-backed seed listing pending admin review."},
+      {publicPage: {seoDescription: "Noindex until verified."}},
+    ]) {
+      await assert.rejects(
+        () => adminUpdateClubDetailsHandler(
+          callableRequest("admin-1", {
+            clubId: "afterfly-run-club-indore",
+            fields,
+            reviewNote: "Recorded intake findings.",
+          }, {admin: true}),
+          h.deps
+        ),
+        (error) => assertHttpsCode(error, "failed-precondition"),
+        JSON.stringify(fields)
+      );
+    }
+    // Operator-only lists left the contract, so the payload schema rejects
+    // them before any policy check.
+    for (const field of ["fitNotes", "missingEvidence"]) {
+      await assert.rejects(
+        () => adminUpdateClubDetailsHandler(
+          callableRequest("admin-1", {
+            clubId: "afterfly-run-club-indore",
+            fields: {publicProfile: {[field]: ["Owner contact"]}},
+            reviewNote: "Recorded intake findings.",
+          }, {admin: true}),
+          h.deps
+        ),
+        (error) => assertHttpsCode(error, "invalid-argument"),
+        field
+      );
+    }
+    assert.deepEqual(h.firestore.get("organizers/afterfly-run-club-indore"),
+      before);
+    assert.equal(h.firestore.auditLogs().length, 0);
+  });
+
+test("adminUpdateClubDetailsHandler refuses to publish operator content",
+  async () => {
+    const leaked = clubDoc({
+      publicProfile: {
+        ...(clubDoc().publicProfile as FakeData),
+        facts: [{label: "Claim state", value: "Unclaimed"}],
+      },
+      publicSources: [{
+        type: "user_supplied",
+        label: "Request",
+        detail: "Requested by a teammate.",
+        href: null,
+        confidence: "medium",
+        lastCheckedAt: null,
+      }],
+    });
+    const h = harness({"organizers/afterfly-run-club-indore": leaked});
+
+    await assert.rejects(
+      () => adminUpdateClubDetailsHandler(
+        callableRequest("admin-1", {
+          clubId: "afterfly-run-club-indore",
+          fields: {publicPage: {publishStatus: "published"}},
+          reviewNote: "Publishing after review.",
+        }, {admin: true}),
+        h.deps
+      ),
+      (error) => {
+        assertHttpsCode(error, "failed-precondition");
+        assert.match((error as Error).message,
+          /publicProfile\.facts\[0\].*publicSources\[0\]\.href/u);
+        return true;
+      }
+    );
+    assert.equal(
+      ((h.firestore.get("organizers/afterfly-run-club-indore")
+        ?.publicPage) as FakeData).publishStatus,
+      "qa"
+    );
+
+    const clean = harness({
+      "organizers/afterfly-run-club-indore": clubDoc(),
+    });
+    await adminUpdateClubDetailsHandler(
+      callableRequest("admin-1", {
+        clubId: "afterfly-run-club-indore",
+        fields: {publicPage: {publishStatus: "published"}},
+        reviewNote: "Publishing after review.",
+      }, {admin: true}),
+      clean.deps
+    );
+    assert.equal(
+      ((clean.firestore.get("organizers/afterfly-run-club-indore")
+        ?.publicPage) as FakeData).publishStatus,
+      "published"
+    );
+  });
 
 test("adminUpdateClubDetailsHandler requires review notes", async () => {
   const h = harness({

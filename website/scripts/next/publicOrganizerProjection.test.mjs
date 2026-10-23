@@ -39,7 +39,6 @@ test("imported listings stay out of search and never render intake prose", () =>
     sourceSummary: "A public page confirms the organizer.",
     facts: [{label: "Location", value: "Indore"}, {label: "Claim state", value: "Unclaimed seed listing"},
       {label: "Indexing", value: "Noindex until verified"}],
-    fitNotes: ["Internal market rationale."],
   };
   data.publicSources = [
     {type: "user_supplied", label: "User seed input", detail: "Operator asked for this listing.", confidence: "medium",
@@ -53,7 +52,7 @@ test("imported listings stay out of search and never render intake prose", () =>
   assert.equal(listing.authority.indexStatus, "indexReady", "reviews still follow the stored index status");
   const serialized = JSON.stringify(listing);
   for (const operatorText of ["Operator summary", "stays out of search", "A public page confirms",
-    "Unclaimed seed listing", "Noindex until verified", "Internal market rationale", "Operator asked"]) {
+    "Unclaimed seed listing", "Noindex until verified", "Operator asked"]) {
     assert(!serialized.includes(operatorText), operatorText);
   }
   assert.match(listing.description, /^Next proof organizer is an event producer in /u);

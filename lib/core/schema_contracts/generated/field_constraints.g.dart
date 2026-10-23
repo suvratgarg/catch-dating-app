@@ -13726,21 +13726,6 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-z0-9-]+\$',
   );
 
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicProfileFitNotes = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicProfile.fitNotes',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 8,
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicProfileFitNotesItems = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicProfile.fitNotes.items',
-    maxLength: 400,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const adminUpdateClubDetailsCallablePayloadFieldsPublicProfileFormats = CatchContractFieldConstraints(
     path: 'adminUpdateClubDetailsCallablePayload.fields.publicProfile.formats',
     valueTypes: <String>['array'],
@@ -13759,21 +13744,6 @@ abstract final class CatchContractConstraints {
   static const adminUpdateClubDetailsCallablePayloadFieldsPublicProfileHeadline = CatchContractFieldConstraints(
     path: 'adminUpdateClubDetailsCallablePayload.fields.publicProfile.headline',
     maxLength: 160,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicProfileMissingEvidence = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicProfile.missingEvidence',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 12,
-  );
-
-  static const adminUpdateClubDetailsCallablePayloadFieldsPublicProfileMissingEvidenceItems = CatchContractFieldConstraints(
-    path: 'adminUpdateClubDetailsCallablePayload.fields.publicProfile.missingEvidence.items',
-    maxLength: 200,
-    minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -14333,21 +14303,6 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-z0-9-]+\$',
   );
 
-  static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileFitNotes = CatchContractFieldConstraints(
-    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.fitNotes',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 8,
-  );
-
-  static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileFitNotesItems = CatchContractFieldConstraints(
-    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.fitNotes.items',
-    maxLength: 400,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileFormats = CatchContractFieldConstraints(
     path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.formats',
     valueTypes: <String>['array'],
@@ -14366,21 +14321,6 @@ abstract final class CatchContractConstraints {
   static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileHeadline = CatchContractFieldConstraints(
     path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.headline',
     maxLength: 160,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileMissingEvidence = CatchContractFieldConstraints(
-    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.missingEvidence',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 12,
-  );
-
-  static const adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileMissingEvidenceItems = CatchContractFieldConstraints(
-    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.missingEvidence.items',
-    maxLength: 200,
-    minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -22142,21 +22082,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const clubDocumentPublicProfileFitNotes = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.fitNotes',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 8,
-  );
-
-  static const clubDocumentPublicProfileFitNotesItems = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.fitNotes.items',
-    maxLength: 400,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const clubDocumentPublicProfileFormats = CatchContractFieldConstraints(
     path: 'clubDocument.publicProfile.formats',
     valueTypes: <String>['array'],
@@ -22175,21 +22100,6 @@ abstract final class CatchContractConstraints {
   static const clubDocumentPublicProfileHeadline = CatchContractFieldConstraints(
     path: 'clubDocument.publicProfile.headline',
     maxLength: 160,
-    valueTypes: <String>['string'],
-  );
-
-  static const clubDocumentPublicProfileMissingEvidence = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.missingEvidence',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 12,
-  );
-
-  static const clubDocumentPublicProfileMissingEvidenceItems = CatchContractFieldConstraints(
-    path: 'clubDocument.publicProfile.missingEvidence.items',
-    maxLength: 200,
-    minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -111229,21 +111139,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const organizerDocumentPublicProfileFitNotes = CatchContractFieldConstraints(
-    path: 'organizerDocument.publicProfile.fitNotes',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 8,
-  );
-
-  static const organizerDocumentPublicProfileFitNotesItems = CatchContractFieldConstraints(
-    path: 'organizerDocument.publicProfile.fitNotes.items',
-    maxLength: 400,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const organizerDocumentPublicProfileFormats = CatchContractFieldConstraints(
     path: 'organizerDocument.publicProfile.formats',
     valueTypes: <String>['array'],
@@ -111262,21 +111157,6 @@ abstract final class CatchContractConstraints {
   static const organizerDocumentPublicProfileHeadline = CatchContractFieldConstraints(
     path: 'organizerDocument.publicProfile.headline',
     maxLength: 160,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerDocumentPublicProfileMissingEvidence = CatchContractFieldConstraints(
-    path: 'organizerDocument.publicProfile.missingEvidence',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['string'],
-    maxItems: 12,
-  );
-
-  static const organizerDocumentPublicProfileMissingEvidenceItems = CatchContractFieldConstraints(
-    path: 'organizerDocument.publicProfile.missingEvidence.items',
-    maxLength: 200,
-    minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -172293,13 +172173,9 @@ abstract final class CatchContractConstraints {
     'adminUpdateClubDetailsCallablePayload.fields.publicPage.seoDescription': adminUpdateClubDetailsCallablePayloadFieldsPublicPageSeoDescription,
     'adminUpdateClubDetailsCallablePayload.fields.publicPage.seoTitle': adminUpdateClubDetailsCallablePayloadFieldsPublicPageSeoTitle,
     'adminUpdateClubDetailsCallablePayload.fields.publicPage.slug': adminUpdateClubDetailsCallablePayloadFieldsPublicPageSlug,
-    'adminUpdateClubDetailsCallablePayload.fields.publicProfile.fitNotes': adminUpdateClubDetailsCallablePayloadFieldsPublicProfileFitNotes,
-    'adminUpdateClubDetailsCallablePayload.fields.publicProfile.fitNotes.items': adminUpdateClubDetailsCallablePayloadFieldsPublicProfileFitNotesItems,
     'adminUpdateClubDetailsCallablePayload.fields.publicProfile.formats': adminUpdateClubDetailsCallablePayloadFieldsPublicProfileFormats,
     'adminUpdateClubDetailsCallablePayload.fields.publicProfile.formats.items': adminUpdateClubDetailsCallablePayloadFieldsPublicProfileFormatsItems,
     'adminUpdateClubDetailsCallablePayload.fields.publicProfile.headline': adminUpdateClubDetailsCallablePayloadFieldsPublicProfileHeadline,
-    'adminUpdateClubDetailsCallablePayload.fields.publicProfile.missingEvidence': adminUpdateClubDetailsCallablePayloadFieldsPublicProfileMissingEvidence,
-    'adminUpdateClubDetailsCallablePayload.fields.publicProfile.missingEvidence.items': adminUpdateClubDetailsCallablePayloadFieldsPublicProfileMissingEvidenceItems,
     'adminUpdateClubDetailsCallablePayload.fields.publicProfile.sourceSummary': adminUpdateClubDetailsCallablePayloadFieldsPublicProfileSourceSummary,
     'adminUpdateClubDetailsCallablePayload.fields.publicProfile.summary': adminUpdateClubDetailsCallablePayloadFieldsPublicProfileSummary,
     'adminUpdateClubDetailsCallablePayload.fields.regionName': adminUpdateClubDetailsCallablePayloadFieldsRegionName,
@@ -172380,13 +172256,9 @@ abstract final class CatchContractConstraints {
     'adminUpdateOrganizerDetailsCallablePayload.fields.publicPage.seoDescription': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicPageSeoDescription,
     'adminUpdateOrganizerDetailsCallablePayload.fields.publicPage.seoTitle': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicPageSeoTitle,
     'adminUpdateOrganizerDetailsCallablePayload.fields.publicPage.slug': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicPageSlug,
-    'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.fitNotes': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileFitNotes,
-    'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.fitNotes.items': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileFitNotesItems,
     'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.formats': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileFormats,
     'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.formats.items': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileFormatsItems,
     'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.headline': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileHeadline,
-    'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.missingEvidence': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileMissingEvidence,
-    'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.missingEvidence.items': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileMissingEvidenceItems,
     'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.sourceSummary': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileSourceSummary,
     'adminUpdateOrganizerDetailsCallablePayload.fields.publicProfile.summary': adminUpdateOrganizerDetailsCallablePayloadFieldsPublicProfileSummary,
     'adminUpdateOrganizerDetailsCallablePayload.fields.regionName': adminUpdateOrganizerDetailsCallablePayloadFieldsRegionName,
@@ -173434,13 +173306,9 @@ abstract final class CatchContractConstraints {
     'clubDocument.publicProfile.facts': clubDocumentPublicProfileFacts,
     'clubDocument.publicProfile.facts.items.label': clubDocumentPublicProfileFactsItemsLabel,
     'clubDocument.publicProfile.facts.items.value': clubDocumentPublicProfileFactsItemsValue,
-    'clubDocument.publicProfile.fitNotes': clubDocumentPublicProfileFitNotes,
-    'clubDocument.publicProfile.fitNotes.items': clubDocumentPublicProfileFitNotesItems,
     'clubDocument.publicProfile.formats': clubDocumentPublicProfileFormats,
     'clubDocument.publicProfile.formats.items': clubDocumentPublicProfileFormatsItems,
     'clubDocument.publicProfile.headline': clubDocumentPublicProfileHeadline,
-    'clubDocument.publicProfile.missingEvidence': clubDocumentPublicProfileMissingEvidence,
-    'clubDocument.publicProfile.missingEvidence.items': clubDocumentPublicProfileMissingEvidenceItems,
     'clubDocument.publicProfile.sourceSummary': clubDocumentPublicProfileSourceSummary,
     'clubDocument.publicProfile.summary': clubDocumentPublicProfileSummary,
     'clubDocument.publicSources': clubDocumentPublicSources,
@@ -185479,13 +185347,9 @@ abstract final class CatchContractConstraints {
     'organizerDocument.publicProfile.facts': organizerDocumentPublicProfileFacts,
     'organizerDocument.publicProfile.facts.items.label': organizerDocumentPublicProfileFactsItemsLabel,
     'organizerDocument.publicProfile.facts.items.value': organizerDocumentPublicProfileFactsItemsValue,
-    'organizerDocument.publicProfile.fitNotes': organizerDocumentPublicProfileFitNotes,
-    'organizerDocument.publicProfile.fitNotes.items': organizerDocumentPublicProfileFitNotesItems,
     'organizerDocument.publicProfile.formats': organizerDocumentPublicProfileFormats,
     'organizerDocument.publicProfile.formats.items': organizerDocumentPublicProfileFormatsItems,
     'organizerDocument.publicProfile.headline': organizerDocumentPublicProfileHeadline,
-    'organizerDocument.publicProfile.missingEvidence': organizerDocumentPublicProfileMissingEvidence,
-    'organizerDocument.publicProfile.missingEvidence.items': organizerDocumentPublicProfileMissingEvidenceItems,
     'organizerDocument.publicProfile.sourceSummary': organizerDocumentPublicProfileSourceSummary,
     'organizerDocument.publicProfile.summary': organizerDocumentPublicProfileSummary,
     'organizerDocument.publicSources': organizerDocumentPublicSources,

@@ -3149,16 +3149,12 @@ function clubDocumentForClaimTarget(entity, entry) {
       summary: listing.description,
       sourceSummary: listing.sourceSummary,
       formats,
+      // Claim state renders from the claim authority; intake gaps and review
+      // rationale stay in the intake batch and its review packets.
       facts: [
         {label: markets.length > 1 ? "Markets" : "Market", value: markets.map((market) => market.displayName).join(", ") || cityName},
         {label: "Organizer type", value: displayEntityKind(entity.entityKind)},
-        {label: "Claim state", value: "Unclaimed"},
       ],
-      fitNotes: [
-        "This organizer profile was promoted from public source evidence after manual admin review.",
-        "Claiming unlocks owner-managed copy, official media, Catch events, and review tools.",
-      ],
-      missingEvidence: listing.missingEvidence ?? [],
       eventEvidence: [],
     },
     publicSources,

@@ -8332,14 +8332,6 @@ export interface ClubDocument {
       value: string;
     }[];
     /**
-     * @maxItems 8
-     */
-    fitNotes?: string[];
-    /**
-     * @maxItems 12
-     */
-    missingEvidence?: string[];
-    /**
      * @maxItems 12
      */
     eventEvidence?: {
@@ -8725,7 +8717,7 @@ export interface OrganizerDocument {
       | "adminOrganizerSearchBackfill";
   };
   /**
-   * Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.
+   * Visitor-facing organizer listing content derived from sources or owner edits. Operator evidence (fit rationale, evidence checklists, intake requests, claim and index state) and raw scrape snapshots belong in private intake and evidence collections; operator writes are checked by functions/src/organizers/organizerPublicContent.ts.
    */
   publicProfile?: {
     headline?: string | null;
@@ -8742,14 +8734,6 @@ export interface OrganizerDocument {
       label: string;
       value: string;
     }[];
-    /**
-     * @maxItems 8
-     */
-    fitNotes?: string[];
-    /**
-     * @maxItems 12
-     */
-    missingEvidence?: string[];
     /**
      * @maxItems 12
      */

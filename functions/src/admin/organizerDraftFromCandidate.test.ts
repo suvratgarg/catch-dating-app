@@ -11,6 +11,10 @@ import {
   schemaErrorMessages,
 } from "../shared/generated/schemaValidators";
 import {RATE_LIMITS} from "../shared/rateLimit";
+import {
+  organizerPublicContentIssues,
+  type OrganizerPublicContent,
+} from "../organizers/organizerPublicContent";
 
 type FakeData = Record<string, unknown>;
 
@@ -329,6 +333,12 @@ test("creates a fail-closed organizer draft and curation receipt", async () => {
     ((organizer?.publicProfile as FakeData).sourceSummary),
     "Sports and social community in Mumbai."
   );
+  assert.equal("missingEvidence" in (organizer?.publicProfile as FakeData),
+    false);
+  assert.deepEqual(
+    organizerPublicContentIssues(organizer as OrganizerPublicContent),
+    []
+  );
   assert.deepEqual(
     ((organizer?.publicSources as FakeData[])[0] as FakeData).lastCheckedAt,
     {_seconds: 1784851200, _nanoseconds: 0}
@@ -381,6 +391,44 @@ test("creates a fail-closed organizer draft and curation receipt", async () => {
   assert.equal(h.reservedRoutes[0].canonicalPath, "/organizers/courtside/");
   assert.equal(h.firestore.auditLogs().length, 1);
 });
+
+test("refuses a draft whose seeded public copy carries intake wording",
+  async () => {
+    const candidate = ((workItem().normalizedPayload as FakeData)
+      .intake as FakeData).candidate as FakeData;
+    const h = harness({
+      "operationWorkItems/work-courtside": workItem({
+        normalizedPayload: {
+          intake: {
+            recordType: "organizer_search_candidate",
+            candidate: {
+              ...candidate,
+              snippet: "Unclaimed seed listing kept out of search.",
+            },
+          },
+        },
+      }),
+    });
+
+    await assert.rejects(
+      adminCreateOrganizerDraftFromCandidateHandler(
+        callableRequest(payload()),
+        h.deps
+      ),
+      (error) => {
+        assertHttpsCode(error, "failed-precondition");
+        assert.match(
+          (error as Error).message,
+          /publicProfile\.sourceSummary .*publicSources\[0\]\.detail/u
+        );
+        return true;
+      }
+    );
+    assert.equal(h.firestore.get("organizers/autoId00000000000001"),
+      undefined);
+    assert.equal(h.reservedRoutes.length, 0);
+    assert.equal(h.firestore.auditLogs().length, 0);
+  });
 
 test("uses an explicit low-volume admin mutation rate limit", () => {
   assert.deepEqual(
