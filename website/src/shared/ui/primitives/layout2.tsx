@@ -22,20 +22,6 @@ export function CardGrid({
   );
 }
 
-export function PublicSearchResultsPanel({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("public-search__results", className)}>
-      {children}
-    </div>
-  );
-}
-
 export function ChoiceChip({
   children,
   selected,

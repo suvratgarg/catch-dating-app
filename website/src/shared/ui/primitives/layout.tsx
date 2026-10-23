@@ -1,7 +1,7 @@
 import type {HTMLAttributes, ReactNode} from "react";
 import {ToggleGroupControl, UiLabel as WebUiLabel} from "@catch/web-ui";
 import type {HostPreviewSectionVariant} from "./host";
-import type {MarketingSectionCopyVariant, MarketingSectionVariant} from "./media";
+
 import type {ListingGridVariant, ListingSectionVariant} from "./organizer";
 import {classNames} from "@catch/web-ui";
 
@@ -67,23 +67,6 @@ export const contentGridClassNames: Record<ContentGridVariant, string> = {
   "public-event": "public-event-grid",
   surface: "surface-grid",
   trust: "trust-grid",
-};
-
-export const marketingSectionClassNames: Record<MarketingSectionVariant, string> = {
-  captures: "captures-section",
-  download: "download-section",
-  "featured-organizers": "featured-organizers",
-  format: "format-band",
-  "home-discovery": "home-discovery",
-  proof: "proof-section",
-  "proof-host": "proof-section proof-section--host",
-  story: "story-section",
-  trust: "trust-section",
-};
-
-export const marketingSectionCopyClassNames: Record<MarketingSectionCopyVariant, string> = {
-  download: "download-section__copy",
-  proof: "proof-section__copy",
 };
 
 export const listingGridClassNames: Record<ListingGridVariant, string> = {

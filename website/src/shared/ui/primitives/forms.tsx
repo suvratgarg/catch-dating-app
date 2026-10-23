@@ -79,21 +79,6 @@ export function SelectedListingCard({
   );
 }
 
-export function InlineInputField({
-  className,
-  label,
-  ...props
-}: InputHTMLAttributes<HTMLInputElement> & {
-  label: ReactNode;
-}) {
-  return (
-    <label className={className}>
-      <span>{label}</span>
-      <input {...props} />
-    </label>
-  );
-}
-
 export function CheckboxField({
   children,
   className,
@@ -114,22 +99,6 @@ export function ListingReviewCheckbox({
   ...props
 }: Parameters<typeof CheckboxField>[0]) {
   return <CheckboxField {...props} className={classNames("listing-review-checkbox", className)} />;
-}
-
-export function HoneypotField({
-  name = "website",
-}: {
-  name?: string;
-}) {
-  return (
-    <input
-      aria-hidden="true"
-      autoComplete="off"
-      className="honeypot"
-      name={name}
-      tabIndex={-1}
-    />
-  );
 }
 
 export function FormStatus({
@@ -170,22 +139,6 @@ export const Form = forwardRef<
         </fieldset>
       )}
     </form>
-  );
-});
-
-export const WaitlistFormShell = forwardRef<
-  HTMLFormElement,
-  FormHTMLAttributes<HTMLFormElement> & {pending?: boolean; reveal?: boolean}
->(function WaitlistFormShell({
-  className,
-  ...props
-}, ref) {
-  return (
-    <Form
-      {...props}
-      className={classNames("waitlist-form", className)}
-      ref={ref}
-    />
   );
 });
 

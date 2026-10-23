@@ -112,10 +112,6 @@ export function MarketingConsentBannerShell({
   );
 }
 
-export function defaultAppDownloadPendingStatus(item: AppDownloadCtaItem) {
-  return `${item.label} is not live yet. Join the waitlist and we will send the link when it opens.`;
-}
-
 export function EmptyState({
   children,
   className,

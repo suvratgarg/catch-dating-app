@@ -3,7 +3,7 @@ import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {FormEvent} from "react";
 import {useState} from "react";
 import {SectionHeader} from "../shared/site/SectionHeader";
-import {ActionGroup, Button, ButtonLink, ChoiceCard, ChoiceChip, ChoiceChipGrid, ContentGrid, FormStatus, ListingSuccessMetricGrid, PanelShell, StepRail, UiLabel, VerificationMethodGrid, WaitlistFormShell, WaitlistSection} from "../shared/ui/primitives";
+import {ActionGroup, Button, ButtonLink, Form, ChoiceCard, ChoiceChip, ChoiceChipGrid, ContentGrid, ListingSuccessMetricGrid, PanelShell, StepRail, UiLabel, VerificationMethodGrid, WaitlistSection} from "../shared/ui/primitives";
 
 const meta = {
   title: "Marketing Website/Shared/Layout And Form Primitives",
@@ -152,7 +152,7 @@ export const WaitlistSectionStory: Story = {
       titleId="storybook-waitlist-section-title"
       body="Waitlist sections own the intro and form slot while route sections configure copy."
     >
-      <WaitlistFormShell onSubmit={preventSubmit}>
+      <Form onSubmit={preventSubmit}>
         <CatchField
           recipe="input"
           id="storybook-waitlist-name"
@@ -169,44 +169,8 @@ export const WaitlistSectionStory: Story = {
           keyboardType="emailAddress"
         />
         <Button type="submit">Join the list</Button>
-      </WaitlistFormShell>
+      </Form>
     </WaitlistSection>
-  ),
-};
-
-export const WaitlistFormShellStory: Story = {
-  name: "Waitlist form shell",
-  parameters: {
-    catchComponent: {
-      id: "shared_waitlist_form_shell",
-      routeIds: ["home"],
-      states: ["member-fields", "status"],
-    },
-  },
-  render: () => (
-    <WaitlistFormShell onSubmit={preventSubmit}>
-      <CatchField
-        recipe="input"
-        id="storybook-form-name"
-        title="Full name"
-        name="fullName"
-        autoComplete="name"
-        required
-      />
-      <CatchField
-        recipe="input"
-        id="storybook-form-email"
-        title="Email"
-        name="email"
-        autoComplete="email"
-        required
-        keyboardType="emailAddress"
-      />
-      <CatchField recipe="select" id="storybook-form-city" title="City" name="city"
-        values={["Mumbai", "Indore", "Bengaluru"]} itemLabelBuilder={(city) => city} initialValue="Mumbai" />
-      <Button type="submit">Join the list</Button>
-      <FormStatus status={{message: "Saved locally for Storybook review.", tone: "is-success"}} />
-    </WaitlistFormShell>
   ),
 };
 

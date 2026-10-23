@@ -1,6 +1,6 @@
 import {expect, userEvent, waitFor, within} from "storybook/test";
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {MarketingSection} from "../shared/ui/primitives";
+
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../shared/site";
 
 const publicRouteIds = ["home", "visitor_discovery", "host", "claim", "claim_lookup", "privacy", "terms", "help", "not_found", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy", "event_detail_canonical", "host_apply"];
@@ -17,7 +17,7 @@ export const PublicSiteHeaderStory: Story = {
       {href: "#about", label: "About"}, {href: "#reviews", label: "Reviews"}]}
       localActions={[{href: "/claim/example/", label: "Claim listing"}]} />
     <WebsitePageMain>
-      <MarketingSection variant="story" id="events"><h1>Organiser profile</h1><p>Browse this organiser's events.</p></MarketingSection>
+      <section id="events"><h1>Organiser profile</h1><p>Browse this organiser&apos;s events.</p></section>
       <section id="about"><h2>About</h2><p>Public organiser information.</p></section>
       <section id="reviews"><h2>Reviews</h2><p>Published public reviews.</p></section>
     </WebsitePageMain>
