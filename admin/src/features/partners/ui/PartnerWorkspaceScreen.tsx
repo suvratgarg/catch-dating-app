@@ -8,12 +8,9 @@ import {
   EmptyState,
   PageHeader,
   Panel,
-  SelectField,
   selectOptions,
   StateRow,
   StatusBanner,
-  TextareaField,
-  TextField,
 } from "../../../shared/ui/AdminPrimitives";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {usePartnerWorkspaceController} from "../controllers/usePartnerWorkspaceController";

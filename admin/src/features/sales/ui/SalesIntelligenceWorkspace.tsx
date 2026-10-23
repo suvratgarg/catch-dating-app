@@ -7,11 +7,8 @@ import {
   CheckboxField,
   EmptyState,
   Panel,
-  SelectField,
   selectOptions,
   StateRow,
-  TextareaField,
-  TextField,
 } from "../../../shared/ui/AdminPrimitives";
 import type {ApprovedClause, IntelligenceApi,
   IntelligenceFactor, IntelligencePolicy,

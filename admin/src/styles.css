@@ -2257,44 +2257,29 @@ select {
   margin-bottom: var(--catch-space-micro14);
 }
 
-.publishing-loadbar label,
+/* The segmented control's narrow-screen select; catch.chip.field replaces it. */
 .field-control {
   display: grid;
   gap: var(--catch-space-micro6);
 }
 
-.publishing-loadbar span,
+.publishing-loadbar > span,
 .field-control span {
   color: var(--muted);
   font-size: 12px;
   font-weight: 750;
 }
 
-.publishing-loadbar input,
-.field-control input,
-.field-control select,
-.field-control textarea {
+.field-control select {
   width: 100%;
   min-width: 0;
+  height: 36px;
+  padding: 0 var(--catch-space-micro10);
   border: 1px solid var(--line);
   border-radius: var(--catch-radius-sm);
   background: var(--surface);
   color: var(--ink);
   font-size: 13px;
-}
-
-.publishing-loadbar input,
-.field-control input,
-.field-control select {
-  height: 36px;
-  padding: 0 var(--catch-space-micro10);
-}
-
-.field-control textarea {
-  min-height: 82px;
-  padding: var(--catch-space-s2) var(--catch-space-micro10);
-  resize: vertical;
-  line-height: 1.35;
 }
 
 .publishing-form {
@@ -2331,7 +2316,6 @@ select {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.editor-section > .field-control,
 .editor-section > .form-grid {
   margin-top: var(--catch-space-micro10);
 }

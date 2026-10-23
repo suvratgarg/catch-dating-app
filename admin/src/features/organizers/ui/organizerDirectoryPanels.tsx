@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -21,6 +22,7 @@ import {
   AdminDirectoryScreenStack,
   AdminEditorPanel,
   AdminEditorSection,
+  AdminFieldGrid,
   AdminForm,
   AdminLinkButton,
   AdminMetricCard,
@@ -38,7 +40,6 @@ import {
   SearchField,
   StateRow,
   TableActionButton,
-  TextareaField,
   AdminRowTitle,
   AdminTagRow,
 } from "../../../shared/ui/AdminPrimitives";
@@ -335,12 +336,15 @@ function OrganizerClaimDecisionPanel({
         <AdminForm variant="publishing" onSubmit={(event) => event.preventDefault()}>
           <AdminEditorSection>
             <legend>Audited review note</legend>
-            <TextareaField
-              label="Decision reason"
-              onChange={controller.setNote}
-              rows={5}
-              value={controller.note}
-            />
+            <AdminFieldGrid columns={1}>
+              <CatchField
+                recipe="input"
+                title="Decision reason"
+                onChanged={controller.setNote}
+                maxLines={5}
+                value={controller.note}
+              />
+            </AdminFieldGrid>
             {displayedIssue ? (
               <AdminRoadmapListItem>
                 <FileWarning size={15} strokeWidth={1.9} />

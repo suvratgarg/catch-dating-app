@@ -1,13 +1,10 @@
-// Slightly above the family target because the generic decision footer and field controls share form-state types.
-import type {InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes} from "react";
-import {CatchField, CheckboxControl, SelectControl} from "@catch/web-ui";
+// Slightly above the family target because the generic decision footer shares the review form-state types.
+import type {InputHTMLAttributes, ReactNode} from "react";
+import {CatchField, CheckboxControl} from "@catch/web-ui";
 import {CheckCircle2, FileWarning} from "lucide-react";
 
 import {
   classNames,
-  layoutSpanClass,
-  type SelectOption,
-  type AdminLayoutSpan,
   type ReviewDecisionHandler,
   type ReviewDecisionResponse,
   type PanelProps,
@@ -20,11 +17,6 @@ import {AdminButton} from "./overview";
 export {selectOptions} from "./shared";
 
 export {StateRow} from "./data";
-
-type FieldValidationProps = {
-  descriptionId?: string;
-  invalid?: boolean;
-};
 
 export function AdminEditorPanel({
   className = "",
@@ -50,45 +42,6 @@ export function AdminStateRow({
       <span>{label}</span>
       <strong>{value}</strong>
     </div>
-  );
-}
-
-/**
- * Interim: the last callers are organizer panels in a file another task
- * holds; they flag invalid fields without a message, which CatchField does
- * not take. Delete TextField, TextareaField and SelectField with those call
- * sites' move to CatchField.
- */
-export function TextField({
-  className = "field-control",
-  descriptionId,
-  invalid,
-  label,
-  onChange,
-  span,
-  value,
-  ...props
-}: {
-  className?: string;
-  label: string;
-  onChange: (value: string) => void;
-  span?: AdminLayoutSpan;
-  value: string;
-} & Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "aria-describedby" | "aria-invalid" | "className" | "onChange" | "value"
-> & FieldValidationProps) {
-  return (
-    <label className={classNames(className, layoutSpanClass(span))}>
-      <span>{label}</span>
-      <input
-        {...props}
-        aria-describedby={descriptionId}
-        aria-invalid={invalid || undefined}
-        onChange={(event) => onChange(event.target.value)}
-        value={value}
-      />
-    </label>
   );
 }
 
@@ -256,84 +209,5 @@ export function DecisionFooter<TTargetType extends string = string>({
         </>
       )}
     </AdminDecisionFooterShell>
-  );
-}
-
-export function TextareaField({
-  className = "field-control",
-  descriptionId,
-  invalid,
-  label,
-  onChange,
-  rows,
-  span,
-  value,
-  ...props
-}: {
-  className?: string;
-  label: string;
-  onChange: (value: string) => void;
-  rows: number;
-  span?: AdminLayoutSpan;
-  value: string;
-} & Omit<
-  TextareaHTMLAttributes<HTMLTextAreaElement>,
-  "aria-describedby" | "aria-invalid" | "className" | "onChange" | "rows" | "value"
-> & FieldValidationProps) {
-  return (
-    <label className={classNames(className, layoutSpanClass(span))}>
-      <span>{label}</span>
-      <textarea
-        {...props}
-        aria-describedby={descriptionId}
-        aria-invalid={invalid || undefined}
-        onChange={(event) => onChange(event.target.value)}
-        rows={rows}
-        value={value}
-      />
-    </label>
-  );
-}
-
-type SelectFieldProps = {
-  className?: string;
-  descriptionId?: string;
-  invalid?: boolean;
-  label: string;
-  onChange: (value: string) => void;
-  options: SelectOption[];
-  value: string;
-} & Omit<
-  SelectHTMLAttributes<HTMLSelectElement>,
-  "aria-describedby" | "aria-invalid" | "className" | "onChange" | "value"
->;
-
-export function SelectField({
-  className = "field-control",
-  descriptionId,
-  invalid,
-  label,
-  onChange,
-  options,
-  value,
-  ...props
-}: SelectFieldProps) {
-  return (
-    <label className={className}>
-      <span>{label}</span>
-      <SelectControl
-        descriptionId={descriptionId}
-        invalid={invalid}
-        onChange={(event) => onChange(event.target.value)}
-        value={value}
-        {...props}
-      >
-        {options.map((option) => {
-          const value = typeof option === "string" ? option : option.value;
-          const label = typeof option === "string" ? option : option.label;
-          return <option key={value} value={value}>{label}</option>;
-        })}
-      </SelectControl>
-    </label>
   );
 }

@@ -1,6 +1,6 @@
 import {CatchField} from "@catch/web-ui";
 import {MessageCircle} from "lucide-react";
-import {AdminButton, CheckboxField, Panel, TextareaField, TextField} from
+import {AdminButton, CheckboxField, Panel} from
   "../../../shared/ui/AdminPrimitives";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {useCatchWhatsappTrialController} from

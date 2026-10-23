@@ -6,11 +6,8 @@ import {
   AdminForm,
   EmptyState,
   Panel,
-  SelectField,
   selectOptions,
   StateRow,
-  TextareaField,
-  TextField,
 } from "../../../shared/ui/AdminPrimitives";
 import {dataMode} from "../../../shared/api/dataMode";
 import type {SalesWorkspaceController} from

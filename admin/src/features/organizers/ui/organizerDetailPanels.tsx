@@ -1,3 +1,4 @@
+import {CatchField} from "@catch/web-ui";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -58,11 +59,9 @@ import {
   QualityList,
   SearchField,
   SegmentedControl,
-  SelectField,
+  selectOptions,
   StateRow,
   TableActionButton,
-  TextareaField,
-  TextField,
   AdminRowTitle,
   AdminTagRow,
 } from "../../../shared/ui/AdminPrimitives";
@@ -439,9 +438,9 @@ function OrganizerEditor({
     if (!form) return;
     onFormChange(updateOrganizerLaunchMarket(form, marketId));
   };
-  const hasTargetIssue = (targetId: string) =>
-    publishingIssues.some((issue) =>
-      issue.severity === "blocker" && issue.targetId === targetId);
+  const targetIssue = (targetId: string) =>
+    publishingIssues.find((issue) =>
+      issue.severity === "blocker" && issue.targetId === targetId)?.detail;
   const publishBlockerCount = countBlockingIssues(publishingIssues);
   const checklistTaskCount = countIncompletePublishChecklist(checklist);
   const remainingPublishTaskCount =
@@ -472,10 +471,10 @@ function OrganizerEditor({
         action={club?.clubId ?? "No organizer loaded"}
       >
         <AdminPublishingLoadbar>
-          <TextField
-            aria-label="Organizer document id"
-            label="Document ID"
-            onChange={onClubIdChange}
+          <CatchField
+            recipe="input"
+            title="Document ID"
+            onChanged={onClubIdChange}
             value={clubId}
           />
           <AdminButton
@@ -492,30 +491,33 @@ function OrganizerEditor({
             <AdminEditorSection>
               <legend>Identity</legend>
               <AdminFieldGrid columns={2}>
-                <TextField
+                <CatchField
+                  recipe="input"
                   id={organizerPublishingFieldIds.name}
-                  invalid={hasTargetIssue(organizerPublishingFieldIds.name)}
-                  label="Name"
-                  onChange={(value) => update("name", value)}
+                  errorText={targetIssue(organizerPublishingFieldIds.name)}
+                  title="Name"
+                  onChanged={(value) => update("name", value)}
                   value={form.name}
                 />
-                <SelectField
-                  label="Organizer type"
-                  onChange={(value) =>
-                    update("organizerType", value as OrganizerType)}
-                  options={[...organizerTypeOptions]}
+                <CatchField
+                  recipe="select"
+                  title="Organizer type"
+                  onChanged={(value) => update("organizerType", (value ?? "") as OrganizerType)}
+                  {...selectOptions([...organizerTypeOptions])}
                   value={form.organizerType}
                 />
-                <TextField
-                  label="Public listing descriptor (optional)"
-                  onChange={(value) => update("publicCategoryLabel", value)}
+                <CatchField
+                  recipe="input"
+                  title="Public listing descriptor (optional)"
+                  onChanged={(value) => update("publicCategoryLabel", value)}
                   value={form.publicCategoryLabel}
                 />
-                <TextField
+                <CatchField
+                  recipe="input"
                   id={organizerPublishingFieldIds.area}
-                  invalid={hasTargetIssue(organizerPublishingFieldIds.area)}
-                  label="Verified area / locality"
-                  onChange={(value) => update("area", value)}
+                  errorText={targetIssue(organizerPublishingFieldIds.area)}
+                  title="Verified area / locality"
+                  onChanged={(value) => update("area", value)}
                   value={form.area}
                 />
               </AdminFieldGrid>
@@ -525,22 +527,26 @@ function OrganizerEditor({
                 grouping category. Leave locality blank until a source
                 establishes an area within the launch market.
               </AdminWorkbenchNote>
-              <TextareaField
-                id={organizerPublishingFieldIds.description}
-                invalid={hasTargetIssue(
-                  organizerPublishingFieldIds.description
-                )}
-                label="Description"
-                onChange={(value) => update("description", value)}
-                rows={4}
-                value={form.description}
-              />
-              <TextareaField
-                label="Tags"
-                onChange={(value) => update("tagsText", value)}
-                rows={4}
-                value={form.tagsText}
-              />
+              <AdminFieldGrid columns={1}>
+                <CatchField
+                  recipe="input"
+                  id={organizerPublishingFieldIds.description}
+                  errorText={targetIssue(
+                    organizerPublishingFieldIds.description
+                  )}
+                  title="Description"
+                  onChanged={(value) => update("description", value)}
+                  maxLines={4}
+                  value={form.description}
+                />
+                <CatchField
+                  recipe="input"
+                  title="Tags"
+                  onChanged={(value) => update("tagsText", value)}
+                  maxLines={4}
+                  value={form.tagsText}
+                />
+              </AdminFieldGrid>
             </AdminEditorSection>
 
             <AdminEditorSection>
@@ -549,26 +555,29 @@ function OrganizerEditor({
                 <StateRow label="Claim state" value={club?.claimState ?? "Unavailable"} />
                 <StateRow label="Ownership state" value={club?.ownershipState ?? "Unavailable"} />
               </QualityList>
-              <SelectField
-                id={organizerPublishingFieldIds.launchMarket}
-                invalid={hasTargetIssue(
-                  organizerPublishingFieldIds.launchMarket
-                )}
-                label="Launch market"
-                onChange={updateLaunchMarket}
-                options={[
-                  ...(!organizerLaunchMarketOptions.some(
-                    (option) => option.value === form.location
-                  ) && form.location ?
-                    [{
-                      value: form.location,
-                      label: `Current unsupported market · ${form.location}`,
-                    }] :
-                    []),
-                  ...organizerLaunchMarketOptions,
-                ]}
-                value={form.location}
-              />
+              <AdminFieldGrid columns={1}>
+                <CatchField
+                  recipe="select"
+                  id={organizerPublishingFieldIds.launchMarket}
+                  errorText={targetIssue(
+                    organizerPublishingFieldIds.launchMarket
+                  )}
+                  title="Launch market"
+                  onChanged={(value) => updateLaunchMarket(value ?? "")}
+                  {...selectOptions([
+                    ...(!organizerLaunchMarketOptions.some(
+                      (option) => option.value === form.location
+                    ) && form.location ?
+                      [{
+                        value: form.location,
+                        label: `Current unsupported market · ${form.location}`,
+                      }] :
+                      []),
+                    ...organizerLaunchMarketOptions,
+                  ])}
+                  value={form.location}
+                />
+              </AdminFieldGrid>
               <AdminWorkbenchNote>
                 This governed choice sets the canonical market, city, region,
                 country, and public page city slug together.
@@ -588,24 +597,27 @@ function OrganizerEditor({
                 />
               </AdminStatusGrid>
               <AdminFieldGrid columns={3}>
-                <TextField
-                  label="Instagram"
-                  onChange={(value) => update("instagramHandle", value)}
+                <CatchField
+                  recipe="input"
+                  title="Instagram"
+                  onChanged={(value) => update("instagramHandle", value)}
                   value={form.instagramHandle}
                 />
-                <TextField
+                <CatchField
+                  recipe="input"
                   id={organizerPublishingFieldIds.email}
-                  invalid={hasTargetIssue(organizerPublishingFieldIds.email)}
-                  label="Email"
-                  onChange={(value) => update("email", value)}
-                  type="email"
+                  errorText={targetIssue(organizerPublishingFieldIds.email)}
+                  title="Email"
+                  onChanged={(value) => update("email", value)}
                   value={form.email}
+                  keyboardType="emailAddress"
                 />
-                <TextField
-                  label="Phone"
-                  onChange={(value) => update("phoneNumber", value)}
-                  type="tel"
+                <CatchField
+                  recipe="input"
+                  title="Phone"
+                  onChanged={(value) => update("phoneNumber", value)}
                   value={form.phoneNumber}
+                  keyboardType="phone"
                 />
               </AdminFieldGrid>
             </AdminEditorSection>
@@ -622,73 +634,79 @@ function OrganizerEditor({
                 Save + publish.
               </AlertRow>
               <AdminFieldGrid columns={2}>
-                <SelectField
-                  label="App visibility"
-                  onChange={(value) =>
-                    update("appVisibility", value as OrganizerAppVisibility)}
-                  options={[...organizerAppVisibilityOptions]}
+                <CatchField
+                  recipe="select"
+                  title="App visibility"
+                  onChanged={(value) => update("appVisibility", (value ?? "") as OrganizerAppVisibility)}
+                  {...selectOptions([...organizerAppVisibilityOptions])}
                   value={form.appVisibility}
                 />
-                <TextField
+                <CatchField
+                  recipe="input"
                   id={organizerPublishingFieldIds.publicPageSlug}
-                  invalid={hasTargetIssue(
+                  errorText={targetIssue(
                     organizerPublishingFieldIds.publicPageSlug
                   )}
-                  label="Slug"
-                  onChange={(value) => update("publicPageSlug", value)}
+                  title="Slug"
+                  onChanged={(value) => update("publicPageSlug", value)}
                   pattern="[a-z0-9-]+"
                   value={form.publicPageSlug}
                 />
-                <TextField
-                  label="Page city slug"
-                  onChange={() => undefined}
-                  readOnly
+                <CatchField
+                  recipe="input"
+                  title="Page city slug"
+                  inputMode="readOnly"
                   value={form.publicPageCitySlug}
                 />
-                <TextField
+                <CatchField
+                  recipe="input"
                   id={organizerPublishingFieldIds.canonicalPath}
-                  invalid={hasTargetIssue(
+                  errorText={targetIssue(
                     organizerPublishingFieldIds.canonicalPath
                   )}
-                  label="Canonical path"
-                  onChange={(value) => update("canonicalPath", value)}
+                  title="Canonical path"
+                  onChanged={(value) => update("canonicalPath", value)}
                   value={form.canonicalPath}
                 />
-                <SelectField
-                  label="Public-web publication"
-                  onChange={(value) =>
-                    update("publishStatus", value as OrganizerPublishStatus)}
-                  options={[...organizerPublishStatusOptions]}
+                <CatchField
+                  recipe="select"
+                  title="Public-web publication"
+                  onChanged={(value) => update("publishStatus", (value ?? "") as OrganizerPublishStatus)}
+                  {...selectOptions([...organizerPublishStatusOptions])}
                   value={form.publishStatus}
                 />
                 <StateRow
                   label="Search indexing"
                   value={`${club?.publicPage.indexStatus ?? "Unavailable"} · changed only by Save + publish`}
                 />
-                <TextField
+                <CatchField
+                  recipe="input"
                   id={organizerPublishingFieldIds.imageUrl}
-                  invalid={hasTargetIssue(organizerPublishingFieldIds.imageUrl)}
-                  label="Image URL"
-                  onChange={(value) => update("imageUrl", value)}
-                  type="url"
+                  errorText={targetIssue(organizerPublishingFieldIds.imageUrl)}
+                  title="Image URL"
+                  onChanged={(value) => update("imageUrl", value)}
                   value={form.imageUrl}
+                  keyboardType="url"
                 />
-                <TextField
+                <CatchField
+                  recipe="input"
                   id={organizerPublishingFieldIds.logoUrl}
-                  invalid={hasTargetIssue(organizerPublishingFieldIds.logoUrl)}
-                  label="Logo URL"
-                  onChange={(value) => update("profileImageUrl", value)}
-                  type="url"
+                  errorText={targetIssue(organizerPublishingFieldIds.logoUrl)}
+                  title="Logo URL"
+                  onChanged={(value) => update("profileImageUrl", value)}
                   value={form.profileImageUrl}
+                  keyboardType="url"
                 />
-                <TextField
-                  label="SEO title"
-                  onChange={(value) => update("seoTitle", value)}
+                <CatchField
+                  recipe="input"
+                  title="SEO title"
+                  onChanged={(value) => update("seoTitle", value)}
                   value={form.seoTitle}
                 />
-                <TextField
-                  label="SEO description"
-                  onChange={(value) => update("seoDescription", value)}
+                <CatchField
+                  recipe="input"
+                  title="SEO description"
+                  onChanged={(value) => update("seoDescription", value)}
                   value={form.seoDescription}
                 />
               </AdminFieldGrid>
@@ -696,44 +714,52 @@ function OrganizerEditor({
 
             <AdminEditorSection>
               <legend>Member-facing fields</legend>
-              <TextField
-                id={organizerPublishingFieldIds.headline}
-                invalid={hasTargetIssue(organizerPublishingFieldIds.headline)}
-                label="Headline"
-                onChange={(value) => update("headline", value)}
-                value={form.headline}
-              />
-              <TextareaField
-                id={organizerPublishingFieldIds.summary}
-                invalid={hasTargetIssue(organizerPublishingFieldIds.summary)}
-                label="Summary"
-                onChange={(value) => update("summary", value)}
-                rows={5}
-                value={form.summary}
-              />
-              <TextareaField
-                label="Source summary"
-                onChange={(value) => update("sourceSummary", value)}
-                rows={4}
-                value={form.sourceSummary}
-              />
+              <AdminFieldGrid columns={1}>
+                <CatchField
+                  recipe="input"
+                  id={organizerPublishingFieldIds.headline}
+                  errorText={targetIssue(organizerPublishingFieldIds.headline)}
+                  title="Headline"
+                  onChanged={(value) => update("headline", value)}
+                  value={form.headline}
+                />
+                <CatchField
+                  recipe="input"
+                  id={organizerPublishingFieldIds.summary}
+                  errorText={targetIssue(organizerPublishingFieldIds.summary)}
+                  title="Summary"
+                  onChanged={(value) => update("summary", value)}
+                  maxLines={5}
+                  value={form.summary}
+                />
+                <CatchField
+                  recipe="input"
+                  title="Source summary"
+                  onChanged={(value) => update("sourceSummary", value)}
+                  maxLines={4}
+                  value={form.sourceSummary}
+                />
+              </AdminFieldGrid>
               <AdminFieldGrid columns={3}>
-                <TextareaField
-                  label="Formats"
-                  onChange={(value) => update("formatsText", value)}
-                  rows={5}
+                <CatchField
+                  recipe="input"
+                  title="Formats"
+                  onChanged={(value) => update("formatsText", value)}
+                  maxLines={5}
                   value={form.formatsText}
                 />
-                <TextareaField
-                  label="Fit notes"
-                  onChange={(value) => update("fitNotesText", value)}
-                  rows={5}
+                <CatchField
+                  recipe="input"
+                  title="Fit notes"
+                  onChanged={(value) => update("fitNotesText", value)}
+                  maxLines={5}
                   value={form.fitNotesText}
                 />
-                <TextareaField
-                  label="Missing evidence"
-                  onChange={(value) => update("missingEvidenceText", value)}
-                  rows={5}
+                <CatchField
+                  recipe="input"
+                  title="Missing evidence"
+                  onChanged={(value) => update("missingEvidenceText", value)}
+                  maxLines={5}
                   value={form.missingEvidenceText}
                 />
               </AdminFieldGrid>
@@ -742,36 +768,37 @@ function OrganizerEditor({
             <AdminEditorSection>
               <legend>Evidence and review note</legend>
               <AdminFieldGrid columns={3}>
-                <SelectField
+                <CatchField
+                  recipe="select"
                   id={organizerPublishingFieldIds.sourceConfidence}
-                  invalid={hasTargetIssue(
+                  errorText={targetIssue(
                     organizerPublishingFieldIds.sourceConfidence
                   )}
-                  label="Source confidence"
-                  onChange={(value) =>
-                    update("sourceConfidence", value as OrganizerSourceConfidence)}
-                  options={[...organizerSourceConfidenceOptions]}
+                  title="Source confidence"
+                  onChanged={(value) => update("sourceConfidence", (value ?? "") as OrganizerSourceConfidence)}
+                  {...selectOptions([...organizerSourceConfidenceOptions])}
                   value={form.sourceConfidence}
                 />
-                <SelectField
+                <CatchField
+                  recipe="select"
                   id={organizerPublishingFieldIds.verificationStatus}
-                  invalid={hasTargetIssue(
+                  errorText={targetIssue(
                     organizerPublishingFieldIds.verificationStatus
                   )}
-                  label="Verification"
-                  onChange={(value) =>
-                    update("verificationStatus", value as OrganizerVerificationStatus)}
-                  options={[...organizerVerificationStatusOptions]}
+                  title="Verification"
+                  onChanged={(value) => update("verificationStatus", (value ?? "") as OrganizerVerificationStatus)}
+                  {...selectOptions([...organizerVerificationStatusOptions])}
                   value={form.verificationStatus}
                 />
-                <TextareaField
+                <CatchField
+                  recipe="input"
                   id={organizerPublishingFieldIds.reviewNote}
-                  invalid={hasTargetIssue(
+                  errorText={targetIssue(
                     organizerPublishingFieldIds.reviewNote
                   )}
-                  label="Review note"
-                  onChange={(value) => update("reviewNote", value)}
-                  rows={3}
+                  title="Review note"
+                  onChanged={(value) => update("reviewNote", value)}
+                  maxLines={3}
                   value={form.reviewNote}
                 />
               </AdminFieldGrid>

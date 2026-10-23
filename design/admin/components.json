@@ -61,9 +61,6 @@
       "concept": "field_row",
       "source": "admin/src/features/organizers/ui/organizerDetailPanels.tsx",
       "components": [
-        "TextField",
-        "TextareaField",
-        "SelectField",
         "CheckboxField"
       ]
     }
@@ -5320,30 +5317,6 @@
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
     },
     {
-      "id": "shared_select_field",
-      "kind": "feature-component",
-      "owner": "features/organizers",
-      "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
-      "exportName": "SelectField",
-      "interactionContract": {
-        "concept": "field_row",
-        "mode": "select"
-      },
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "SelectFieldStory",
-        "states": [
-          "default"
-        ]
-      },
-      "notes": "Interim: only the organizer detail and directory panels, held by another task, still render SelectField; they flag invalid fields without a message, which CatchField does not take. Delete it with those call sites' move to CatchField.",
-      "componentId": "catch.field"
-    },
-    {
       "id": "shared_state_row",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -5445,56 +5418,6 @@
         ]
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_textarea_field",
-      "kind": "feature-component",
-      "owner": "features/organizers",
-      "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
-      "exportName": "TextareaField",
-      "interactionContract": {
-        "concept": "field_row",
-        "mode": "input"
-      },
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "TextareaFieldStory",
-        "states": [
-          "default",
-          "wide"
-        ]
-      },
-      "notes": "Interim: only the organizer detail and directory panels, held by another task, still render TextareaField; they flag invalid fields without a message, which CatchField does not take. Delete it with those call sites' move to CatchField.",
-      "componentId": "catch.field"
-    },
-    {
-      "id": "shared_text_field",
-      "kind": "feature-component",
-      "owner": "features/organizers",
-      "source": "admin/src/shared/ui/AdminPrimitives/forms.tsx",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "TextFieldStory",
-        "states": [
-          "default",
-          "wide"
-        ]
-      },
-      "notes": "Interim: only the organizer detail and directory panels, held by another task, still render TextField; they flag invalid fields without a message, which CatchField does not take. Delete it with those call sites' move to CatchField.",
-      "exportName": "TextField",
-      "interactionContract": {
-        "concept": "field_row",
-        "mode": "input"
-      },
-      "componentId": "catch.field"
     },
     {
       "id": "workspace_event_intake",
