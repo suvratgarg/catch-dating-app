@@ -387,7 +387,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CrossPathsEventConsentSection</code> | <code>lib/cross_paths/presentation/cross_paths_event_consent_section.dart:8</code> | — | — | Provider-free Event Detail renderer for hidden, loading, enabled, disabled, pending, and unavailable event-consent states resolved by the route. |
 | <code>CrossPathsEventContextCard</code> | <code>lib/cross_paths/presentation/cross_paths_explore_card.dart:132</code> | — | — | No class documentation or registry summary. |
 | <code>CrossPathsExploreCard</code> | <code>lib/cross_paths/presentation/cross_paths_explore_card.dart:26</code> | — | — | No class documentation or registry summary. |
-| <code>CrossPathsProfilePreviewSheet</code> | <code>lib/cross_paths/presentation/cross_paths_explore_card.dart:237</code> | — | — | No class documentation or registry summary. |
+| <code>CrossPathsProfilePreviewSheet</code> | <code>lib/cross_paths/presentation/cross_paths_explore_card.dart:234</code> | — | — | No class documentation or registry summary. |
 | <code>ActivityScreenBody</code> | <code>lib/dashboard/presentation/activity_screen.dart:183</code> | — | — | No class documentation or registry summary. |
 | <code>ActivityScreenSkeleton</code> | <code>lib/dashboard/presentation/activity_screen.dart:171</code> | — | — | No class documentation or registry summary. |
 | <code>DashboardFocusLoadingCard</code> | <code>lib/dashboard/presentation/dashboard_screen.dart:238</code> | — | — | No class documentation or registry summary. |

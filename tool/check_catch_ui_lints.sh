@@ -431,6 +431,34 @@ expect_code_count \
   "catch_no_shell_local_measurement" \
   1
 
+probe_path="$probe_root/lib/core/widgets/text_migration_lint_probe.dart"
+stage_probe "CatchText steer rejects covered direct roles" <<'DART'
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as fw;
+
+Widget textMigrationProbe(BuildContext context) => Column(children: [
+  Text('Covered role', style: CatchTextStyles.supporting(context)),
+  fw.Text('Clamped role', maxLines: 1, overflow: TextOverflow.ellipsis,
+    style: CatchTextStyles.sectionTitle(context)),
+]);
+DART
+expect_probe exact catch_text_requires_style 2
+
+stage_probe "CatchText steer leaves unsupported APIs and library text legal" <<'DART'
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+
+Widget textMigrationCleanProbe(BuildContext context) => Column(children: [
+  const CatchText('Library text', variant: CatchTextVariant.supporting),
+  Text('Uncovered role', style: CatchTextStyles.mono(context)),
+  Text('Extra API', semanticsLabel: 'Details', style: CatchTextStyles.supporting(context)),
+  Text('Clipped text', maxLines: 1, style: CatchTextStyles.supporting(context)),
+  Text('Modified role', style: CatchTextStyles.supporting(context).copyWith(color: null)),
+]);
+DART
+expect_probe exact catch_text_requires_style 0
+
 probe_path="$probe_root/lib/hosts/presentation/error_recovery_lint_probe.dart"
 stage_probe "canonical error recovery rejects empty actions" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
@@ -655,16 +683,16 @@ class CatchUiMutationProbe extends ConsumerWidget {
         EventDetailMutationProbeController.deleteMutation;
     final deleteMutation = ref.watch(deleteMutationHandle);
     if (saveMutation.hasError) {
-      return Text('Failed', style: CatchTextStyles.supporting(context));
+      return const CatchText('Failed', variant: CatchTextVariant.supporting);
     }
     listenToCatchMutationErrors(
       context,
       ref,
       mutations: [deleteMutationHandle],
     );
-    return Text(
+    return CatchText(
       deleteMutation.isPending ? 'Deleting' : 'Ready',
-      style: CatchTextStyles.supporting(context),
+      variant: CatchTextVariant.supporting,
     );
   }
 }
