@@ -3,6 +3,7 @@ import {useEffect, useLayoutEffect, useRef, useState} from "react";
 import {ClipboardList, Sparkles} from "lucide-react";
 import {
   AdminButton,
+  AdminEditorSection,
   AdminForm,
   CheckboxField,
   EmptyState,
@@ -166,8 +167,8 @@ function PolicyPanel({c}: {c: Controller}) {
         "Set up private fit policy"}</AdminButton> : null}
     {editing ? <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
       <h3>Seven factors</h3>
-      {form.factors.map((row, index) => <div key={index}>
-        <h4>Factor {index + 1}</h4>
+      {form.factors.map((row, index) => <AdminEditorSection key={index}>
+        <legend>Factor {index + 1}</legend>
         <CatchField
           recipe="input"
           title={`Factor ${index + 1} name`}
@@ -203,7 +204,7 @@ function PolicyPanel({c}: {c: Controller}) {
           onChange={(checked) => changeFactor(index, {claimKeys: checked ?
             [...row.claimKeys, option.value] : row.claimKeys.filter((key) =>
               key !== option.value)})} />)}
-      </div>)}
+      </AdminEditorSection>)}
       <p>Weights must total 100. Current total: {form.factors.reduce((sum,
         row) => sum + (Number(row.weight) || 0), 0)}.</p>
       <CatchField
