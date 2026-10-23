@@ -255,8 +255,6 @@
     "unlisted functions/src/waitlist/joinWaitlist.ts express",
     "unlisted packages/web-config/lint/check-stylelint-suppressions.mjs stylelint",
     "unlisted packages/web-config/lint/stylelint.test.mjs stylelint",
-    "unlisted packages/web-ui/src/components/foundations.stories.tsx @storybook/react-vite",
-    "unlisted packages/web-ui/src/primitives.stories.tsx @storybook/react-vite",
     "unlisted tool/demo/rsvp_escape/vite.config.mjs @vitejs/plugin-react",
     "unlisted tool/demo/rsvp_escape/vite.config.mjs vite",
     "unlisted website/scripts/next/browserAudit.mjs axe-core",
