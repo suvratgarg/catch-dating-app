@@ -151,7 +151,7 @@
         "CAT-218",
         "CAT-219"
       ],
-      "enforcement": "None yet: the knip unused-code ratchet (tool/audit/check_unused_code.mjs) is in progress."
+      "enforcement": "None yet: the knip unused-code ratchet (tool/audit/check_unused_code.mjs) is in progress and replaces this measure. The React inventory behind today's count does not read website/app/, so it also counts PublicPage and PublicProviders, which the Next routes import; 61 of the website's other 82 survive only in Storybook stories."
     },
     {
       "id": "screens.web_single_use_shared",
