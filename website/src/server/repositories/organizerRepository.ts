@@ -1,4 +1,4 @@
-import {isVerifiedListing} from "../../features/organizers/selectors";
+import {isPubliclyReadableListing, isVerifiedListing} from "../../features/organizers/selectors";
 import type {HostListing} from "../../features/organizers/types";
 import {projectPublicOrganizer} from "../publicOrganizerProjection";
 import {readBounded, type PublicDocument, type PublicQuery, type PublicReader} from "./publicReader";
@@ -77,7 +77,8 @@ export async function findPublishedOrganizerById(
 
 /**
  * Verified organizers for a recommendation rail, in document-id order like the
- * full catalog read. Each trust signal is one bounded equality read.
+ * full catalog read, filtered exactly as `RecommendedOrganizersSection` filters
+ * the full catalog. Each trust signal is one bounded equality read.
  */
 export async function listRecommendedOrganizers(
   db: PublicReader,
@@ -95,7 +96,7 @@ export async function listRecommendedOrganizers(
     byId.set(listing.id, listing);
   }
   const candidates = [...byId.values()]
-    .filter((listing) => listing.id !== excludeId && isVerifiedListing(listing))
+    .filter((listing) => listing.id !== excludeId && isPubliclyReadableListing(listing) && isVerifiedListing(listing))
     .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
   const recommended: HostListing[] = [];
   for (const listing of candidates) {

@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.34.0
-updated: 2026-10-22
+version: 0.35.0
+updated: 2026-10-23
 owner: web_platform
 status: active
 ---
@@ -436,12 +436,20 @@ The public website reads Firestore only on the server, through these layers:
 | `/organizers/<slug>/` and legacy aliases | `assembleOrganizerDetailCatalog` | One to three path reads, that organizer's events (at most 200 per kind, Catch events also by legacy `clubId`), three trust reads for recommendations, bounded reviews |
 | `/events/<id>/` | `assembleEventDetailCatalog` | Two document gets, the organizer plus a path-uniqueness read, bounded reviews |
 
-The detail assemblers are tested but not yet wired. Today every live route
-uses `assemblePublicCatalog`, and `proxy.ts` and the page each run it, so one
-page view performs two full catalog reads. Wiring changes `publicRoute.ts`,
-`PublicPage.tsx`, `proxy.ts` and `publicCatalogResponse.ts` together, so the
-proxy's status and redirect decision and the rendered page use the same
-assembler.
+`assembleRouteCatalog` chooses the assembler from the path, and
+`resolvePublicRoute` is its only caller, so the proxy's status and redirect
+decision, the rendered page and the `/api/public-catalog` refresh all use the
+same reads. A detail path that names nothing published, or an event id that
+is not a valid document id, reads nothing further and returns 404.
+
+`proxy.ts` and the page each resolve the route once; React `cache` does not
+deduplicate between them. An organizer page view therefore makes two sets of
+bounded queries scoped to that organizer (eight each for the acceptance
+fixture), and a discovery page view still makes two full catalog reads. Because detail routes no longer read whole
+collections, a crossed catalog bound returns 503 only on `/`, `/explore/`,
+`/organizers/`, `/claim/` and the sitemap; organizer and event pages keep
+serving. `website/scripts/next/lifecycleAcceptance.mjs` and
+`failureAcceptance.mjs` exercise both behaviors against the isolated emulator.
 
 Freshness is unchanged by this layer: there is no cross-request or process
 cache. Unpublishing takes effect on the next server request, and open tabs

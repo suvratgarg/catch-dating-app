@@ -13,9 +13,10 @@ const gateway = http2.createServer();
 const sessions = new Set();
 gateway.on("session", session => {sessions.add(session); session.on("close", () => sessions.delete(session));});
 let queries = 0;
+let faultAfter = Infinity;
 gateway.on("stream", (stream, headers) => {
   stream.on("error", () => {});
-  if (headers[":path"]?.endsWith("/RunQuery") && ++queries > 3) {
+  if (headers[":path"]?.endsWith("/RunQuery") && ++queries > faultAfter) {
     stream.respond({":status": 200, "content-type": "application/grpc"}, {waitForTrailers: true});
     stream.on("wantTrailers", () => stream.sendTrailers({"grpc-status": "14", "grpc-message": "fixture-unavailable"}));
     stream.resume(); stream.end(); return;
@@ -46,15 +47,22 @@ try {
     await new Promise(resolve => setTimeout(resolve, 100));
   }
   assert(ready);
-  const response = await fetch("http://127.0.0.1:3122/organizers/next-proof/");
+  // The proxy and the page each resolve the route once, with the same reads.
+  // Measure them unfaulted, then fail every query after the proxy's share.
+  const route = "http://127.0.0.1:3122/organizers/next-proof/";
+  queries = 0;
+  assert.equal((await fetch(route)).status, 200);
+  assert(queries > 0 && queries % 2 === 0, `Proxy and page must make the same reads, saw ${queries} queries`);
+  faultAfter = queries / 2; queries = 0;
+  const response = await fetch(route);
   const body = await response.text();
-  assert(queries > 3, "Fault must occur after all three preflight reads");
+  assert(queries > faultAfter, "Fault must occur after the proxy's preflight reads");
   assert.equal(response.status, 500, "Next render failure must not become stale success or false 404");
   assert.match(response.headers.get("cache-control"), /no-store/);
   assert(!body.includes("Next proof organizer"));
   assert(!output.join("").includes("private-owner-runtime-sentinel"));
-  console.log(JSON.stringify({passed: true, status: response.status, preflightQueriesAllowed: 3,
-    faultedQueries: queries - 3, staleContent: false}, null, 2));
+  console.log(JSON.stringify({passed: true, status: response.status, preflightQueriesAllowed: faultAfter,
+    faultedQueries: queries - faultAfter, staleContent: false}, null, 2));
 } finally {
   if (server.exitCode === null && server.signalCode === null) {
     const closed = once(server, "exit"); server.kill("SIGTERM"); await closed;

@@ -27,6 +27,7 @@ import {
   type PublicExternalEventRow,
 } from "./repositories/externalEventRepository";
 import {withPublicReviews} from "./repositories/reviewRepository";
+import {organizerPath, publicDocumentId} from "./publicReadPolicy";
 
 const markets = new Set(activeEventLiveCities.map(city => city.slug));
 export function publicFirestore() {
@@ -108,20 +109,38 @@ export async function assembleEventDetailCatalog(
   })());
 }
 
-/** React cache deduplicates within one render only. No cross-request or offline cache. */
-async function loadPublicCatalog(): Promise<PublicCatalog> {
-  return assemblePublicCatalog(publicFirestore(), Date.now());
-}
-export const readPublicCatalog = cache(loadPublicCatalog);
-
-/** Two bounded reads at most, only for a resolved detail route. Never fan out across discovery. */
-export async function readPublicListingReviews(listing: HostListing, eventId?: string): Promise<HostListing> {
-  if (listing.capabilities.publicReviews.readState !== "enabled") return listing;
-  let db: PublicReader;
+function eventIdForPath(path: string): string | null {
+  const match = /^\/events\/([^/]+)\/$/u.exec(path);
+  if (!match) return null;
   try {
-    db = publicFirestore();
+    const eventId = decodeURIComponent(match[1]);
+    return publicDocumentId(eventId) ? eventId : null;
   } catch {
-    return {...listing, reviews: [], reviewReadState: "unavailable"};
+    return null;
   }
-  return withPublicReviews(db, listing, eventId);
 }
+
+/**
+ * The smallest catalog that renders a public route, per the read plan in
+ * docs/web_surface_architecture.md. A detail path that names nothing published
+ * reads nothing further and renders as not found.
+ */
+export async function assembleRouteCatalog(
+  db: PublicReader, pathname: string, readAt: number
+): Promise<PublicCatalog> {
+  const path = pathname.endsWith("/") ? pathname : `${pathname}/`;
+  const none: PublicCatalog = {listings: [], readAt};
+  if (path.startsWith("/organizers/") && path !== "/organizers/") {
+    return organizerPath(path) ? (await assembleOrganizerDetailCatalog(db, path, readAt))?.catalog ?? none : none;
+  }
+  if (path.startsWith("/events/")) {
+    const eventId = eventIdForPath(path);
+    return eventId ? await assembleEventDetailCatalog(db, eventId, readAt) ?? none : none;
+  }
+  return assemblePublicCatalog(db, readAt);
+}
+
+/** React cache deduplicates within one render only. No cross-request or offline cache. */
+export const readRouteCatalog = cache((pathname: string) =>
+  assembleRouteCatalog(publicFirestore(), pathname, Date.now()));
+export const readPublicCatalog = cache(() => assemblePublicCatalog(publicFirestore(), Date.now()));

@@ -1,6 +1,6 @@
 import {productionIndexing} from "./publicEnvironment";
 import {cache} from "react";
-import {readPublicCatalog, readPublicListingReviews} from "./publicCatalog";
+import {readRouteCatalog} from "./publicCatalog";
 import {readPublicContact} from "./publicContact";
 import {isLegalPageKey, pageMeta, pageMetaForHostPath, pageMetaForListing, pageMetaForEvent, type PageKey} from "../app/pageMeta";
 import {getHostListingRouteForPath} from "../features/organizers/routing";
@@ -9,16 +9,10 @@ import type {Metadata} from "next";
 export const resolvePublicRoute = cache(async (pathname: string) => {
   const key = pathname.replace(/\/+$/, "") || "/";
   const live = key === "/" || key === "/explore" || /^\/(organizers|events|claim)(\/|$)/.test(key);
-  let catalog = live ? await readPublicCatalog() : {listings: [], readAt: 0};
-  let listingRoute = getHostListingRouteForPath(pathname, catalog.listings);
-  let event = getEventDetailForPath(pathname, buildPublicEventDetailRecords(catalog.listings, catalog.readAt));
-  const target = event?.listing ?? listingRoute?.listing;
-  if (target) {
-    const enriched = await readPublicListingReviews(target, event?.eventId);
-    catalog = {...catalog, listings: catalog.listings.map(listing => listing.id === target.id ? enriched : listing)};
-    listingRoute = getHostListingRouteForPath(pathname, catalog.listings);
-    event = getEventDetailForPath(pathname, buildPublicEventDetailRecords(catalog.listings, catalog.readAt));
-  }
+  // Detail routes read only their organizer or event, reviews included.
+  const catalog = live ? await readRouteCatalog(pathname) : {listings: [], readAt: 0};
+  const listingRoute = getHostListingRouteForPath(pathname, catalog.listings);
+  const event = getEventDetailForPath(pathname, buildPublicEventDetailRecords(catalog.listings, catalog.readAt));
   const routes: Record<string, PageKey> = {"/": "home", "/explore": "visitor_discovery", "/host": "host",
     "/host/apply": "host", "/organizers": "organizers", "/privacy": "privacy", "/terms": "terms", "/help": "help",
     "/delete-account": "account_deletion", "/claim": "claim"};

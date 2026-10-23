@@ -7,6 +7,7 @@ import {
   assembleEventDetailCatalog,
   assembleOrganizerDetailCatalog,
   assemblePublicCatalog,
+  assembleRouteCatalog,
 } from "./publicCatalog";
 import type {PublicCollection, PublicReader} from "./repositories/publicReader";
 import {withPublicReviews} from "./repositories/reviewRepository";
@@ -192,5 +193,42 @@ describe("per-route reads", () => {
     for (let index = 0; index < 201; index += 1) world.events[`alpha-bulk-${index}`] = catchEvent("alpha");
     await expect(assembleOrganizerDetailCatalog(fakeReader(world).reader, "/organizers/alpha/", readAt))
       .rejects.toThrow("PUBLIC_CATALOG_READ_BOUND_EXCEEDED");
+  });
+});
+
+describe("route catalog", () => {
+  const ids = (listings: readonly {id: string}[]) => listings.map((listing) => listing.id);
+
+  it.each(["/", "/explore/", "/organizers/", "/claim/", "/claim/alpha/"])("reads the full catalog for %s", async (path) => {
+    const world = catalogWorld();
+    const full = await assemblePublicCatalog(fakeReader(world).reader, readAt);
+    expect(await assembleRouteCatalog(fakeReader(world).reader, path, readAt)).toEqual(full);
+  });
+
+  it("reads one organizer for its page and its legacy alias", async () => {
+    const {reader, reads} = fakeReader(catalogWorld());
+    expect(ids((await assembleRouteCatalog(reader, "/organizers/alpha", readAt)).listings)).toEqual(["alpha", "delta", "gamma"]);
+    expect(reads.some((read) => read.collection === "events" && !read.filters.some((filter) => filter.value === "alpha"))).toBe(false);
+    expect(ids((await assembleRouteCatalog(fakeReader(catalogWorld()).reader, "/organizers/indore/beta-run-club/", readAt)).listings)[0])
+      .toBe("beta");
+  });
+
+  it("reads one event for its page", async () => {
+    const {reader, reads} = fakeReader(catalogWorld());
+    const catalog = await assembleRouteCatalog(reader, "/events/beta-dinner/", readAt);
+    expect(catalog.listings.map((listing) => [listing.id, listing.catchEvents?.map((event) => event.id)]))
+      .toEqual([["beta", ["beta-dinner"]]]);
+    expect(reads.filter((read) => read.doc !== undefined).map((read) => [read.collection, read.doc])).toEqual([
+      ["events", "beta-dinner"], ["externalEvents", "beta-dinner"], ["organizers", "beta"],
+    ]);
+  });
+
+  it.each([
+    "/events/", "/events/missing/", "/events/a/b/", "/events/%2Fusers%2Fx/", "/events/%E0%A4%A/",
+    "/organizers/drafted/", "/organizers/a/b/c/", "/organizers/Not_A_Path/",
+  ])("renders %s as not found from at most the detail reads", async (path) => {
+    const {reader, reads} = fakeReader(catalogWorld());
+    expect(await assembleRouteCatalog(reader, path, readAt)).toEqual({listings: [], readAt});
+    expect(reads.some((read) => read.doc === undefined && read.filters.length < 2)).toBe(false);
   });
 });
