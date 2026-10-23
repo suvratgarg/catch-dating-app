@@ -49,6 +49,7 @@ export function buildReactComponentGraph({repoRoot, surfaces = reactComponentSur
     const files = sourceFiles.filter((file) => isWithin(realPath(file.fileName), surfaceRoot));
     const consumerFiles = sourceFiles.filter((file) =>
       consumerRoots.some((consumerRoot) => isWithin(realPath(file.fileName), consumerRoot)));
+    assertWorkspaceImportsWithinRoot(root, [...files, ...consumerFiles], checker);
     for (const file of files) {
       const relative = repoRelative(root, file.fileName);
       scannedFiles.add(relative);
@@ -80,6 +81,50 @@ function createProgram(root, surface, consumerRoots) {
     rootNames: [...parsed.fileNames, ...consumerFiles],
     options: {...parsed.options, noEmit: true},
   });
+}
+
+/**
+ * A checkout without node_modules of its own, such as a task worktree under
+ * .claude/worktrees, resolves @catch/* through an enclosing checkout's
+ * install, whose workspace links point at that checkout's packages. Their
+ * components would fall outside the scanned roots and lose every consumer,
+ * so the graph refuses to describe this checkout from another one's source.
+ */
+function assertWorkspaceImportsWithinRoot(root, files, checker) {
+  const outside = new Map();
+  for (const file of files) {
+    for (const specifier of moduleSpecifiers(file)) {
+      if (!specifier.text.startsWith("@catch/")) continue;
+      const module = checker.getSymbolAtLocation(specifier)?.declarations?.find(ts.isSourceFile);
+      const resolved = module ? realPath(module.fileName) : null;
+      if (resolved && !isWithin(resolved, root)) outside.set(specifier.text, resolved);
+    }
+  }
+  if (outside.size === 0) return;
+  const resolutions = [...outside].sort(([left], [right]) => compare(left, right))
+    .map(([name, resolved]) => `${name} resolved to ${resolved}, outside ${root}.`);
+  throw new Error([
+    ...resolutions,
+    "This checkout is using another checkout's node_modules. Install its own with " +
+      "`bash tool/git/bootstrap_worktree.sh --target root` (npm ci) and rerun.",
+  ].join("\n"));
+}
+
+// Static import/export specifiers and import("...") arguments.
+function moduleSpecifiers(file) {
+  const specifiers = [];
+  const visit = (node) => {
+    if ((ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&
+        node.moduleSpecifier && ts.isStringLiteral(node.moduleSpecifier)) {
+      specifiers.push(node.moduleSpecifier);
+    } else if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword &&
+        node.arguments[0] && ts.isStringLiteralLike(node.arguments[0])) {
+      specifiers.push(node.arguments[0]);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(file);
+  return specifiers;
 }
 
 function declaredComponents(file, checker, relative, surface) {

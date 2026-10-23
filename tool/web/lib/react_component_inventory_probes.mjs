@@ -53,9 +53,72 @@ export function graphProbeProblems() {
     if (deadUses.length !== 1 || deadUses[0].file !== "src/shared/Dead.stories.tsx") {
       failures.push("story uses must stay visible as the only, non-production use of an export");
     }
-    return [...failures, ...aliasProbeProblems()];
+    return [...failures, ...aliasProbeProblems(), ...workspaceResolutionProbeProblems()];
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
+  }
+}
+
+const workspaceFixture = {
+  "tsconfig.json": JSON.stringify({
+    compilerOptions: {jsx: "preserve", module: "esnext", moduleResolution: "bundler", target: "es2022", noEmit: true},
+    include: ["website", "packages"],
+  }),
+  "packages/web-ui/package.json": JSON.stringify({
+    name: "@catch/web-ui",
+    exports: {".": {types: "./src/index.ts", import: "./src/index.ts"}},
+  }),
+  "packages/web-ui/src/index.ts": "export * from './Button';\n",
+  "packages/web-ui/src/Button.tsx": "export function Button() { return <button />; }\n",
+  "website/src/Page.tsx": "import {Button} from '@catch/web-ui';\nexport function Page() { return <Button />; }\n",
+};
+
+/**
+ * A task worktree nested in another checkout, with no node_modules of its
+ * own, resolves @catch/web-ui into that checkout's packages. The graph must
+ * refuse it instead of dropping the worktree's own web-ui consumers, and
+ * accept the worktree once it has its own workspace link.
+ */
+function workspaceResolutionProbeProblems() {
+  const outer = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "react-component-graph-workspace-")));
+  const root = path.join(outer, ".claude/worktrees/task");
+  const linkWebUi = (checkout) => {
+    fs.mkdirSync(path.join(checkout, "node_modules/@catch"), {recursive: true});
+    fs.symlinkSync("../../packages/web-ui", path.join(checkout, "node_modules/@catch/web-ui"), "dir");
+  };
+  const surfaces = [
+    {id: "website", root: "website/src", tsconfig: "tsconfig.json"},
+    {id: "web-ui", root: "packages/web-ui/src", tsconfig: "tsconfig.json"},
+  ];
+  try {
+    for (const checkout of [outer, root]) {
+      for (const [file, source] of Object.entries(workspaceFixture)) {
+        fs.mkdirSync(path.dirname(path.join(checkout, file)), {recursive: true});
+        fs.writeFileSync(path.join(checkout, file), source);
+      }
+    }
+    linkWebUi(outer);
+    const failures = [];
+    const borrowed = `@catch/web-ui resolved to ${path.join(outer, "packages/web-ui/src/index.ts")}, outside ${root}.`;
+    try {
+      buildReactComponentGraph({repoRoot: root, surfaces});
+      failures.push("an @catch/* import resolved through another checkout's node_modules was accepted");
+    } catch (error) {
+      if (!error.message.includes(borrowed) || !error.message.includes("bootstrap_worktree.sh --target root")) {
+        failures.push(`a borrowed @catch/* install should name its resolution and the install command, got: ${error.message}`);
+      }
+    }
+    linkWebUi(root);
+    const graph = buildReactComponentGraph({repoRoot: root, surfaces});
+    if (!graph.references.some((reference) =>
+      reference.from === "website/src/Page.tsx::Page" && reference.to === "packages/web-ui/src/Button.tsx::Button")) {
+      failures.push("a worktree's own @catch/web-ui link did not resolve to its own packages");
+    }
+    return failures;
+  } catch (error) {
+    return [`workspace resolution: ${error.message}`];
+  } finally {
+    fs.rmSync(outer, {recursive: true, force: true});
   }
 }
 
