@@ -1347,8 +1347,7 @@
     width: 128px;
   }
 
-  .organizer-filter-rail label,
-  .organizer-filter-rail select,
+  .organizer-filter-rail > :has(select),
   .filter-chip-button {
     width: 100%;
   }

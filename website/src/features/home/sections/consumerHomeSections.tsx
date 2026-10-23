@@ -12,8 +12,9 @@ import {categoryForActivity, homeEditorialImage} from "../homeDiscovery";
 type Controller = ReturnType<typeof useConsumerHomeController>;
 const icons = [MessageCircle, Users, Shuffle];
 function CityChoice({home, id}: {home: Controller; id: string}) {
- return <ConsumerCity ><MapPin size={19} aria-hidden="true" />
+ return <ConsumerCity >
   <CatchField recipe="select" id={id} title={copy.cityLabel} labelMode="hidden"
+   leading={<MapPin size={19} aria-hidden="true" />}
    values={activeMarket.cities} itemLabelBuilder={city => city.label} itemValueBuilder={city => city.slug}
    value={home.city} onChanged={city => {if (city) home.selectCity(city.slug);}} />
  </ConsumerCity>;

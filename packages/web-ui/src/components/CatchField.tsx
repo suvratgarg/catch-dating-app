@@ -53,6 +53,8 @@ interface CatchFieldCommonProps extends CatchFieldNativeProps {
   helperTone?: CatchFieldSupportRowTone;
   inputMode?: CatchTextInputMode;
   labelMode?: CatchFieldLabelTextMode;
+  /** A leading glyph in the row's icon lane, as Flutter's `leading`. */
+  leading?: ReactNode;
   /** The field label. */
   title: string;
 }
@@ -252,9 +254,11 @@ export function CatchField<T = string>(props: CatchFieldProps<T>) {
       className={styles.field}
       data-focused={focused || undefined}
       data-input-mode={inputMode}
+      data-leading={props.leading ? "" : undefined}
       data-recipe={props.recipe}
       data-status={error ? "error" : undefined}
     >
+      {props.leading ? <span aria-hidden="true" className={styles.leading}>{props.leading}</span> : null}
       <label className={labelHidden ? styles.hiddenLabel : styles.caption} htmlFor={id}>
         {props.title}
       </label>

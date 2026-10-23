@@ -171,34 +171,6 @@
   text-transform: uppercase;
 }
 
-.public-form__question .field-block > label {
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
-}
-
-.public-form input:not([type="checkbox"]),
-.public-form textarea {
-  background: #f7f3ed;
-  border: 1px solid var(--form-border);
-  border-radius: 14px;
-  color: inherit;
-  font: inherit;
-  padding: 14px 16px;
-  width: 100%;
-}
-
-.public-form input:focus,
-.public-form textarea:focus {
-  border-color: var(--form-accent);
-  box-shadow: 0 0 0 3px rgba(244, 95, 58, 0.13);
-  outline: none;
-}
-
 .public-form label:has(> input[type="checkbox"]) {
   align-items: flex-start;
   cursor: pointer;
@@ -299,6 +271,7 @@
 }
 
 .public-form__signature > label input {
+  width: 100%;
   background: transparent;
   border: 0;
   border-bottom: 1px solid color-mix(in srgb, #171513 30%, transparent);

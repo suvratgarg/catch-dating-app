@@ -3,12 +3,9 @@
 .directory-intro h1 { max-width: 850px; font-size: clamp(44px,4.5vw,66px); line-height: 1.04; }
 .directory-intro>p { max-width: 720px; margin: 20px 0 28px; color: var(--website-text-muted); font-size: 18px; }
 .organiser-directory .organizer-search-form { display: flex; align-items: end; gap: 12px; max-width: 920px; margin: 0 0 24px; padding: 0; background: transparent; border: 0; }
-.organiser-directory .organizer-search-form>.field-block { flex: 1; min-width: 0; }
-.organiser-directory .field-block { margin: 0; gap: 8px; }
-.organiser-directory .field-block>label { font-family: inherit; font-size: 12px; text-transform: none; letter-spacing: 0; color: var(--website-text-muted); }
-.organiser-directory :is(input,select) { background: var(--website-surface); color: var(--website-text); border: 1px solid var(--website-input-border); border-radius: 4px; min-height: 48px; font-family: inherit; font-size: 15px; }
+.organiser-directory .organizer-search-form>:has(input) { flex: 1; min-width: 0; }
 .directory-filters { display: flex; flex-wrap: wrap; align-items: end; gap: 16px; }
-.directory-filters>.field-block { flex: 0 1 230px; min-width: 170px; }
+.directory-filters>:has(select) { flex: 0 1 230px; min-width: 170px; }
 .organiser-directory .filter-chip-button { min-height: 48px; border: 1px solid var(--website-input-border); border-radius: 4px; background: var(--website-bg); color: var(--website-text); padding: 10px 16px; font-family: inherit; font-size: 14px; }
 .organiser-directory .filter-chip-button[aria-pressed="true"] { background: var(--website-accent); color: var(--catch-color-light-primary-ink); }
 .directory-filters .see-all-button { min-height: 48px; font-size: 13px; }
@@ -50,7 +47,7 @@
  .organiser-directory .organizer-search-form { gap: 8px; }
  .organiser-directory .organizer-search-form .button { padding: 12px; }
  .directory-filters { gap: 12px; }
- .directory-filters>.field-block { flex: 1 1 130px; min-width: 0; }
+ .directory-filters>:has(select) { flex: 1 1 130px; min-width: 0; }
  .directory-results-heading { flex-wrap: wrap; gap: 8px; }
  .directory-results-heading p { margin: 0; }
  .directory-results-grid { grid-template-columns: 1fr; }

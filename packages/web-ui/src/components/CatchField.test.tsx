@@ -98,6 +98,14 @@ describe("CatchField input recipe", () => {
     expect(onBlur).toHaveBeenCalledWith("run");
   });
 
+  it("places a leading glyph in the icon lane without naming it", () => {
+    render(<CatchField recipe="input" title="City" leading={<svg data-testid="pin" />} value="" />);
+
+    const field = screen.getByLabelText("City").closest("[data-recipe]")!;
+    expect(field.hasAttribute("data-leading")).toBe(true);
+    expect(screen.getByTestId("pin").parentElement?.getAttribute("aria-hidden")).toBe("true");
+  });
+
   it("keeps a hidden label as the accessible name", () => {
     render(<CatchField recipe="input" title="Filter" labelMode="hidden" value="" />);
 

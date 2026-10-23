@@ -472,7 +472,8 @@ function InlinePhoneVerification({
   }
   return <PublicFormVerification>
     <p>{publicFormsCopy.phoneVerificationHelp}</p>
-    {question && controller.errors[question.questionId] ?
+    {question && controller.errors[question.questionId] &&
+      controller.verificationStep === "code" ?
       <PublicFormFieldError>
         {controller.errors[question.questionId]}
       </PublicFormFieldError> : null}

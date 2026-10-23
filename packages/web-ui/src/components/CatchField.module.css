@@ -17,6 +17,7 @@
   --catch-elevation-field-active: 0 6px 18px rgb(22 20 15 / 0.08);
   --catch-field-motion-fast: 150ms;
   --catch-field-motion-curve: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --catch-field-leading-extent: 18px;
 
   display: flex;
   flex-direction: column;
@@ -59,8 +60,30 @@
   opacity: var(--catch-field-disabled-opacity);
 }
 
-.field .caption {
+.field[data-leading] {
+  display: grid;
+  grid-template-columns: var(--catch-field-leading-extent) minmax(0, 1fr);
+  column-gap: var(--catch-space-micro14);
+  align-items: center;
+}
+
+.field[data-leading] > :not(.leading) {
+  grid-column: 2;
+}
+
+.field .leading {
+  display: flex;
+  grid-row: 1 / span 3;
+  align-items: center;
+  justify-content: center;
+  width: var(--catch-field-leading-extent);
   color: var(--catch-theme-ink2);
+}
+
+.field .caption {
+  margin: 0;
+  color: var(--catch-theme-ink2);
+  text-transform: none;
   font-family: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
   font-size: var(--catch-typography-web-field-label-size);
@@ -83,13 +106,18 @@
 }
 
 .field .control {
+  /* Resets every box property a surface's legacy element rule could set. */
   width: 100%;
   min-width: 0;
+  height: auto;
+  min-height: 0;
   margin: 0;
   padding: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
+  box-shadow: none;
+  text-transform: none;
   color: var(--catch-theme-ink);
   font-family: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
@@ -120,7 +148,7 @@
 
 .field select.control {
   appearance: none;
-  padding-inline-end: calc(var(--catch-space-s4) + var(--catch-space-s2));
+  padding: 0 calc(var(--catch-space-s4) + var(--catch-space-s2)) 0 0;
   cursor: pointer;
 }
 

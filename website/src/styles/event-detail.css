@@ -84,24 +84,6 @@
   gap: var(--catch-space-s3);
 }
 
-.event-registration .field-block {
-  display: grid;
-  gap: var(--catch-space-s2);
-}
-
-.event-registration label {
-  color: var(--website-copy-label);
-  font-family: var(--catch-font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.event-registration input {
-  width: 100%;
-}
-
 .event-registration__consents {
   display: grid;
   gap: var(--catch-space-s2);

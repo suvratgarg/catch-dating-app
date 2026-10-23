@@ -38,6 +38,15 @@ describe("CatchField parity", () => {
     expect(fieldCss).toContain(`margin-top: var(--catch-space-${supportTop});`);
     const counterGap = spacingStep(dartConstant(fieldTokensDart, "supportingCounterGap"));
     expect(fieldCss).toContain(`gap: var(--catch-space-${counterGap});`);
+    const leadingGap = spacingStep(dartConstant(fieldTokensDart, "leadingGap"));
+    expect(fieldCss).toContain(`column-gap: var(--catch-space-${leadingGap});`);
+  });
+
+  it("sizes the leading lane as CatchFieldTokens.leadingIconExtent", () => {
+    expect(dartConstant(fieldTokensDart, "leadingIconExtent")).toBe("CatchIcon.md");
+    const iconDart = read("../../../catch_tokens/lib/src/primitives/catch_icon.dart");
+    const extent = Number(dartConstant(iconDart, "md"));
+    expect(cssValue("--catch-field-leading-extent")).toBe(`${extent}px`);
   });
 
   it("uses the Flutter tile radius, tints, opacity and motion", () => {
