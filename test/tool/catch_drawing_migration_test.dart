@@ -11,6 +11,95 @@ import '../../tool/architecture/check_ui_composition_contracts.dart'
 
 void main() {
   test(
+    'drawing budgets belong to each part and family, with fresh cache',
+    () async {
+      final fixture = Directory.systemTemp.createTempSync(
+        'catch-drawing-budget-',
+      );
+      addTearDown(() => fixture.deleteSync(recursive: true));
+      Directory('${fixture.path}/.git').createSync();
+      final original = File('.dart_tool/package_config.json');
+      final config =
+          jsonDecode(original.readAsStringSync()) as Map<String, dynamic>;
+      for (final row
+          in (config['packages'] as List).cast<Map<String, Object?>>()) {
+        row['rootUri'] = original.absolute.uri
+            .resolve(row['rootUri'] as String)
+            .toString();
+      }
+      final packageConfig = File(
+        '${fixture.path}/.dart_tool/package_config.json',
+      );
+      packageConfig.createSync(recursive: true);
+      packageConfig.writeAsStringSync(jsonEncode(config));
+      final host = File('${fixture.path}/lib/host.dart');
+      host.createSync(recursive: true);
+      host.writeAsStringSync(
+        "import 'package:flutter/material.dart';\npart 'part.dart';\n",
+      );
+      final part = File('${fixture.path}/lib/part.dart');
+      part.writeAsStringSync(
+        "part of 'host.dart';\nWidget probe() => Column(children: [Container(), Container(), const ColoredBox(color: Colors.transparent), const Icon(Icons.close), const Icon(Icons.close)]);\n",
+      );
+      final baseline = File('${fixture.path}/$drawingMigrationBaseline');
+      baseline.createSync(recursive: true);
+      void record(int containers) => baseline.writeAsStringSync(
+        jsonEncode({
+          'version': 2,
+          'files': {
+            'lib/host.dart': {'Container': 100, 'ColoredBox': 100, 'Icon': 100},
+            'lib/part.dart': {'Container': containers, 'Icon': 1},
+          },
+        }),
+      );
+      record(1);
+      final collection = AnalysisContextCollection(
+        includedPaths: [fixture.path],
+        sdkPath: analysisDartSdkPath(),
+      );
+      addTearDown(collection.dispose);
+      final result =
+          await collection
+                  .contextFor(part.path)
+                  .currentSession
+                  .getResolvedUnit(part.path)
+              as ResolvedUnitResult;
+      expect(result.diagnostics, isEmpty);
+      expect(
+        newDrawingMigrationSites(
+          result.unit,
+          part.path,
+        ).map((site) => site.kind),
+        ['Container', 'ColoredBox'],
+      );
+      // Publishing Icon activates only its original allowance, never host quotas.
+      expect(
+        newDrawingMigrationSites(
+          result.unit,
+          part.path,
+          activeKinds: {...activeDrawingKinds, 'Icon'},
+        ).map((site) => site.kind),
+        ['Container', 'ColoredBox', 'Icon'],
+      );
+      record(2);
+      baseline.setLastModifiedSync(
+        DateTime.now().add(const Duration(seconds: 2)),
+      );
+      expect(
+        newDrawingMigrationSites(result.unit, part.path).single.kind,
+        'ColoredBox',
+      );
+      expect(
+        newDrawingMigrationSites(
+          result.unit,
+          '${fixture.path}/packages/catch_ui/lib/a.dart',
+        ),
+        isEmpty,
+      );
+    },
+  );
+
+  test(
     'resolved drawing inventory distinguishes SDK identities and layout',
     () async {
       final fixture = Directory.systemTemp.createTempSync(
@@ -44,6 +133,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart' as fw;
 import 'fake.dart' as app;
 typedef Round = fw.BorderRadius;
+class FeatureShell extends fw.ColoredBox { const FeatureShell():super(color:const fw.Color(0)); }
+class IndirectShell extends FeatureShell { const IndirectShell(); }
 List<Object> probe() => [
   fw.Container(decoration: const fw.BoxDecoration()),
   const fw.ColoredBox(color: fw.Color(0)),
@@ -78,6 +169,7 @@ List<Object> probe() => [
           'Container',
           'BoxDecoration',
           'ColoredBox',
+          'ColoredBox',
           'Opacity',
           'CustomPaint',
           'Image',
@@ -90,7 +182,7 @@ List<Object> probe() => [
         ]),
       );
       final active = drawingMigrationSites(result.unit, activeDrawingKinds);
-      expect(active, hasLength(10));
+      expect(active, hasLength(11));
       expect(
         active.any((site) => unavailableDrawingKinds.contains(site.kind)),
         isFalse,
