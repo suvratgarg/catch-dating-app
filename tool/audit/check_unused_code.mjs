@@ -73,11 +73,12 @@ export function main(argv = process.argv.slice(2), {baselinePath = defaultBaseli
   assert.ok(values.check !== values.update, "Pass exactly one of --check or --update.");
   const scope = values.workspace?.length ? values.workspace : [...workspaces];
   for (const name of scope) assert.ok(workspaces.includes(name), `Unknown workspace: ${name}`);
-  const baseline = JSON.parse(fs.readFileSync(baselinePath, "utf8")).findings;
+  const document = JSON.parse(fs.readFileSync(baselinePath, "utf8"));
+  const baseline = document.findings;
   const {added, fixed} = compare({found: findingKeys(knip(scope)), baseline, scope});
   if (values.update) {
     const findings = shrinkBaseline({baseline, added, fixed});
-    fs.writeFileSync(baselinePath, `${JSON.stringify({version: 1, findings}, null, 2)}\n`);
+    fs.writeFileSync(baselinePath, `${JSON.stringify({...document, findings}, null, 2)}\n`);
     console.log(`Removed ${fixed.length} fixed findings from the baseline.`);
     return 0;
   }

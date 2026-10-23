@@ -1,5 +1,8 @@
 {
+  "owner": "repository_tooling",
+  "targetPhase": "docs/plans/test_impact_and_tooling_trim_plan.md#phase-4-reorganize-and-consolidate-tool",
   "version": 1,
+  "description": "Knip findings on main when the ratchet started (2026-10-23). New findings fail; fixed ones must be removed with --update in the same change.",
   "findings": [
     "devDependency package.json react-dom",
     "duplicate functions/src/search/exploreSearch.ts clubsIndexName|organizersIndexName",

@@ -16,7 +16,7 @@ function withBaseline(t, findings) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "unused-code-"));
   t.after(() => fs.rmSync(dir, {recursive: true, force: true}));
   const baselinePath = path.join(dir, "baseline.json");
-  fs.writeFileSync(baselinePath, JSON.stringify({version: 1, findings}));
+  fs.writeFileSync(baselinePath, JSON.stringify({owner: "repository_tooling", version: 1, findings}));
   return baselinePath;
 }
 
@@ -54,7 +54,8 @@ test("a fixed finding still in the baseline fails until --update removes it", (t
   const empty = () => ({issues: []});
   assert.equal(main(["--check", "--workspace", "website"], {baselinePath, knip: empty}), 1);
   assert.equal(main(["--update", "--workspace", "website"], {baselinePath, knip: empty}), 0);
-  assert.deepEqual(JSON.parse(fs.readFileSync(baselinePath, "utf8")).findings, ["file tool/y.mjs"]);
+  assert.deepEqual(JSON.parse(fs.readFileSync(baselinePath, "utf8")),
+    {owner: "repository_tooling", version: 1, findings: ["file tool/y.mjs"]});
   assert.equal(main(["--check", "--workspace", "website"], {baselinePath, knip: empty}), 0);
 });
 
