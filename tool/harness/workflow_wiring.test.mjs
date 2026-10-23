@@ -1269,8 +1269,8 @@ test("every ready PR validates in parallel and the merge queue guards main", () 
   const ci = workflow("ci.yml");
   assert.match(ci, /^  merge_group:$/mu);
   assert.match(ci, /github\.event_name == 'pull_request' && github\.event\.pull_request\.number/u);
-  assert.match(ci, /github\.event_name == 'push' && github\.run_id/u);
-  assert.match(ci, /^  cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}$/mu);
+  assert.match(ci, /github\.event_name == 'push' && github\.ref/u);
+  assert.match(ci, /^  cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \|\| github\.event_name == 'push' \}\}$/mu);
   assert.doesNotMatch(ci, /admission|admitted|queue: max|Ignored PR metadata/iu);
   assert.match(ci, /plan:\n    # .*\n    if: \$\{\{ !cancelled\(\) && \(github\.event_name != 'pull_request' \|\| !github\.event\.pull_request\.draft\) \}\}\n    name: Plan affected targets/u);
   assert.match(ci, /required:\n    name: Required CI\n/u);

@@ -49,9 +49,11 @@ test("main CI starts validation immediately and serializes only proven publicati
   const ci = workflow("ci.yml");
   const plan = ciJob(ci, "plan");
   const finalizer = ciJob(ci, "finalize-plan");
-  assert.match(ci, /group: ci-\$\{\{ github\.event_name \}\}-\$\{\{[\s\S]*github\.event_name == 'push'[\s\S]*github\.run_id/);
-  // Only a newer run of the same PR cancels; main pushes keep unique groups and finish.
-  assert.match(ci, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/);
+  assert.match(ci, /group: ci-\$\{\{ github\.event_name \}\}-\$\{\{[\s\S]*github\.event_name == 'push' && github\.ref/);
+  assert.doesNotMatch(ci, /github\.event_name == 'push' && github\.run_id/);
+  // A newer run of the same PR, or a newer merge to main, cancels the older run.
+  // Merge-queue groups key on their exact head and are never cancelled here.
+  assert.match(ci, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \|\| github\.event_name == 'push' \}\}/);
   assert.match(ci, /github\.event_name == 'pull_request' && github\.event\.pull_request\.number/);
   assert.match(plan, /main_ci_baseline\.mjs/);
   assert.doesNotMatch(plan, /--wait|while true|sleep 20/);

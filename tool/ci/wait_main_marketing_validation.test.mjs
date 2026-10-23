@@ -50,6 +50,11 @@ for (const conclusion of ["failure", "cancelled", "timed_out", "neutral", "skipp
   });
 }
 
+test("a main CI run cancelled by a newer merge cannot authorize packaging and says why", async () => {
+  await assert.rejects(() => waitMainMarketingValidation(fixture({runs: [{...run, status: "completed", conclusion: "cancelled"}]})),
+    /newer merge to main superseded it/);
+});
+
 test("missing jobs and a completed run without evidence fail closed", async () => {
   await assert.rejects(() => waitMainMarketingValidation(fixture({results: []})), /Timed out/);
   await assert.rejects(() => waitMainMarketingValidation(fixture({runs: [{...run, status: "completed", conclusion: "success"}], results: [jobs[0]]})), /no usable Marketing/);
