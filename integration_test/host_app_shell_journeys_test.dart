@@ -1,7 +1,9 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_live_workspace_tab_bar.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
@@ -180,7 +182,12 @@ void main() {
     await openHostTab(tester, 'Events');
     await pumpAppShellFrames(tester, frames: 20);
     await tapCatchButton(tester, 'Create event');
-    await tester.tap(find.text('Create event').last);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(HostEventEntrySheet),
+        matching: find.text('Create event'),
+      ),
+    );
     await pumpAppShellFrames(tester, frames: 30);
     await tester.enterText(
       find.descendant(
@@ -214,7 +221,7 @@ void main() {
       initialRoute: '/host/events',
     );
     final reopenFrom = backend.functions.calls.length;
-    await tester.tap(find.text('Rooftop supper club').first);
+    await tester.tap(find.byKey(ValueKey('host-event-row-$eventId')));
     await pumpAppShellFrames(tester, frames: 30);
 
     expect(find.byType(PrivateEventSetupScreen), findsOneWidget);
@@ -266,15 +273,25 @@ void main() {
       initialRoute: '/host/events',
     );
 
-    await tester.tap(find.text('Sunset social run').first);
+    await tester.tap(find.byKey(ValueKey('host-event-row-${event.id}')));
     await pumpAppShellFrames(tester, frames: 30);
-    await tester.tap(find.text('Guests').first);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(EventSuccessLiveWorkspaceTabBar),
+        matching: find.text('Guests'),
+      ),
+    );
     await pumpAppShellFrames(tester, frames: 30);
     expect(find.text('Asha Rao'), findsOneWidget);
     expect(find.text('Dev Mehta'), findsOneWidget);
     expect(find.widgetWithText(CatchButton, 'Check in'), findsNWidgets(2));
 
-    await tester.tap(find.widgetWithText(CatchButton, 'Check in').first);
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const ValueKey('guest-asha')),
+        matching: find.widgetWithText(CatchButton, 'Check in'),
+      ),
+    );
     await pumpAppShellFrames(tester, frames: 30);
 
     final checkIn = backend.functions.calls.singleWhere(

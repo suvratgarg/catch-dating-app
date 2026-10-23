@@ -30,6 +30,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../test/clubs/clubs_test_helpers.dart' show buildClub;
 import '../../test/hosts/support/host_crm_response_fixtures.dart';
+import '../../test/test_pump_helpers.dart';
 import 'app_shell_test_harness.dart';
 
 /// Answers one callable from a Host journey before the backend's own
@@ -450,11 +451,15 @@ Future<void> pumpHostAppShell(
   );
 }
 
-/// Unmounts the app and lets self-refreshing reads (the live venue QR session
-/// waits up to four minutes) observe disposal before the test ends.
+/// `eventVenueSession` waits at most four minutes between live venue QR
+/// refreshes; advancing past that lets its loop observe disposal.
+const _venueSessionRefreshCeiling = Duration(minutes: 5);
+
+/// Unmounts the app and lets self-refreshing reads observe disposal before
+/// the test ends.
 Future<void> unmountHostAppShell(WidgetTester tester) async {
   await tester.pumpWidget(const SizedBox.shrink());
-  await tester.pump(const Duration(minutes: 5));
+  await pumpFeatureUiFor(tester, _venueSessionRefreshCeiling);
 }
 
 /// Opens a Host bottom-navigation destination by its visible label.
