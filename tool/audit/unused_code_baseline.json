@@ -61,7 +61,6 @@
     "file website/scripts/next/emulatorFixture.mjs",
     "file website/scripts/next/homepageFixture.mjs",
     "file website/scripts/next/publicContactAcceptance.mjs",
-    "file website/src/content/marketingOrganization.ts",
     "type admin/src/features/intake/organizer/types/organizerIntakeTypes.ts OrganizerExternalEventImportAction",
     "type admin/src/features/intake/organizer/types/organizerIntakeTypes.ts OrganizerExternalEventImportExecutionAction",
     "type functions/src/acquisition/metaPayload.ts HostMetaBrowserContext",
