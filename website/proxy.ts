@@ -4,10 +4,14 @@ import {resolvePublicRoute} from "./src/server/publicRoute";
 import {availabilityCopy} from "./src/content/availability";
 import {NextRequest, NextResponse} from "next/server";
 import {retiredMarketingDestination} from "./src/app/retiredMarketingRoutes";
-import {privateShellFamily} from "./src/server/privateShellMetadata";
+import {isPrivateShellPath, privateShellFamily} from "./src/server/privateShellMetadata";
 
 async function handleRequest(request: NextRequest) {
   const url = request.nextUrl;
+  // Behind Hosting, Next can replay the shell rewrite as a fresh request that
+  // lacks the forwarded public host; re-applying the host policy would drop
+  // its family and serve generic metadata on every private page.
+  if (isPrivateShellPath(url.pathname)) return NextResponse.next();
   const privateFamily = privateShellFamily(url.pathname);
   const asset = /^\/(_next\/|_legacy\/|assets\/|fonts\/|\.well-known\/)/.test(url.pathname) ||
     ["/favicon.png", "/form-embed-resize.js", "/organizer-tracking-runtime.js", "/organizer-tracking-runtime.html"].includes(url.pathname);

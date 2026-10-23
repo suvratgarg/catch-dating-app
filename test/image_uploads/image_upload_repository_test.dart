@@ -28,6 +28,14 @@ class TestReference extends Fake implements Reference {
 
   final String path;
   final putDataCalls = <TestPutDataCall>[];
+  Object? deleteFailure;
+  int deleteCalls = 0;
+
+  @override
+  Future<void> delete() async {
+    deleteCalls++;
+    if (deleteFailure case final error?) throw error;
+  }
 
   @override
   UploadTask putData(Uint8List data, [SettableMetadata? metadata]) {
@@ -136,6 +144,82 @@ class UploadCase {
 }
 
 void main() {
+  test(
+    'recovery rejects PNG decoder fallback before any Storage upload',
+    () async {
+      final storage = TestFirebaseStorage();
+      final repository = ImageUploadRepository(storage);
+      final directory = await Directory.systemTemp.createTemp('cat58-png-');
+      addTearDown(() => directory.delete(recursive: true));
+      final file = await File(
+        '${directory.path}/undecodable.png',
+      ).writeAsBytes([137, 80, 78, 71]);
+      await expectLater(
+        repository.uploadEventPhotoForRecovery(
+          eventId: 'saved-event',
+          position: 0,
+          mediaId: 'photo-0001',
+          image: XFile(file.path, mimeType: 'image/png'),
+        ),
+        throwsA(
+          isA<ValidationException>().having(
+            (error) => error.code,
+            'code',
+            'event-photo-preparation-failed',
+          ),
+        ),
+      );
+      expect(storage.putDataCallCount, 0);
+      expect(storage.refs, isEmpty);
+    },
+  );
+
+  group('observable compensation', () {
+    test('checked deletion confirms success and skips an empty path', () async {
+      final storage = TestFirebaseStorage();
+      final repository = ImageUploadRepository(storage);
+      await repository.deleteByPathChecked(
+        'events/event-1/media/photo-0001/original.jpg',
+      );
+      expect(storage.refs.values.single.deleteCalls, 1);
+      await repository.deleteByPathChecked('');
+      expect(storage.refs, hasLength(1));
+    });
+
+    test('checked deletion treats confirmed absence as success', () async {
+      final storage = TestFirebaseStorage();
+      (storage.ref('already-deleted') as TestReference).deleteFailure =
+          FirebaseException(
+            plugin: 'firebase_storage',
+            code: 'object-not-found',
+          );
+      await ImageUploadRepository(
+        storage,
+      ).deleteByPathChecked('already-deleted');
+      expect(storage.refs.values.single.deleteCalls, 1);
+    });
+
+    for (final failure in [
+      FirebaseException(plugin: 'firebase_storage', code: 'unauthorized'),
+      StateError('transport failed'),
+    ]) {
+      test(
+        'checked deletion exposes ${failure.runtimeType} while best-effort deletion retains its behavior',
+        () async {
+          final storage = TestFirebaseStorage();
+          (storage.ref('unattached') as TestReference).deleteFailure = failure;
+          final repository = ImageUploadRepository(storage);
+          await expectLater(
+            repository.deleteByPathChecked('unattached'),
+            throwsA(isA<AppException>()),
+          );
+          await repository.deleteByPath('unattached');
+          expect(storage.refs.values.single.deleteCalls, 2);
+        },
+      );
+    }
+  });
+
   test('pickImages applies purpose policy and requested limit', () async {
     final picker = RecordingImagePicker()
       ..result = [

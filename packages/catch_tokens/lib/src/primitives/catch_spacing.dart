@@ -30,5 +30,5 @@ abstract final class CatchSpacing {
   /// App-wide page gutter and body padding from the design handoff.
   static const double screenPx = GeneratedCatchLayoutTokens.pageGutter;
   static const double screenPt = GeneratedCatchLayoutTokens.pageBodyStart;
-  static const double screenPb = CatchSpacing.s5;
+  static const double screenPb = GeneratedCatchLayoutTokens.pageBodyEnd;
 }

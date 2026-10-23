@@ -4,6 +4,7 @@ import fs from "node:fs";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_validation.mjs";
+import {canonicalRepository} from "../../../tool/lib/canonical_repository.mjs";
 
 export const preview = Object.freeze({
   project: "catch-dating-app-64e51", region: "asia-south1",
@@ -24,7 +25,7 @@ function github(endpoint) {
 export function assertPreviewInvocation(env) {
   assert.equal(env.GITHUB_EVENT_NAME, "workflow_dispatch", "Preview is manual only");
   assert.equal(env.GITHUB_REF, "refs/heads/main", "Preview must use accepted main");
-  assert.equal(env.GITHUB_REPOSITORY, "suvratgarg/catch-dating-app");
+  canonicalRepository(env);
   assert.equal(env.GITHUB_WORKFLOW_REF, `${env.GITHUB_REPOSITORY}/${preview.workflow}@refs/heads/main`);
   sha(env.GITHUB_SHA);
 }
@@ -42,7 +43,7 @@ export function assertSuccessfulSource({run, sourceSha, repository, mainSha}) {
 }
 async function authorize() {
   assertPreviewInvocation(process.env);
-  const repository = process.env.GITHUB_REPOSITORY, sourceSha = process.env.GITHUB_SHA;
+  const repository = canonicalRepository(process.env), sourceSha = process.env.GITHUB_SHA;
   const result = await waitMainMarketingValidation({repository, sourceSha, maxWaitMs: 0});
   assert.equal(result.validated, true, "Preview requires actual same-source marketing validation");
   assert.ok(result.captureBinding, "Preview requires exact-source captures");

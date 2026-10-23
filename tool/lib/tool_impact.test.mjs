@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
 import {planAffected} from "../harness/lib/component_graph.mjs";
+import {matchesGlobPath} from "./path_glob.mjs";
 import {
   canonicalHarnessFullPaths,
   duplicateCanonicalFullPathOverrides,
@@ -52,7 +53,10 @@ test("Admin pending inputs select the registered scanner without a full Tools fa
   const scanner = productionManifest.tools.find((entry) => entry.id === "web:admin-pending-operations");
   // The graph suite derives and reconciles this scope from frozen feature cases.
   const inputs = productionGraph.classifications.find((entry) => entry.id === "admin-pending-input").paths.include;
-  assert.deepEqual([...scanner.impactPaths].sort(), [...inputs].sort());
+  // The frozen feature cases are already Tools-lane design inputs, so only the
+  // controller closure needs the graph classification.
+  const featureCases = "design/features/admin_*.feature.json";
+  assert.deepEqual([...scanner.impactPaths].sort(), [...inputs, featureCases].sort());
   assert.ok(scanner.checks.includes("node tool/web/check_admin_pending_operations.mjs --self-test"));
   assert.ok(scanner.checks.includes("node tool/web/check_admin_pending_operations.mjs --check --summary"));
   const cat50Paths = [
@@ -131,12 +135,17 @@ test("widget variants stay narrow while their comparison consumer closes safely"
   });
   assert.equal(widgetbookPlan.mode, "affected");
   assert.equal(widgetbookPlan.repositoryView, "full");
+  // Feature contracts validate their Widgetbook bindings with root-installed Ajv.
   assert.deepEqual(widgetbookPlan.setupRequirements, [
     "node",
     "flutter",
     "flutter-pub",
+    "root-npm",
   ]);
-  assert.ok(widgetbookPlan.toolIds.includes("design:widget-variant-inventory"));
+  for (const id of ["design:widget-variant-inventory", "design:feature-contracts",
+    "design:widgetbook-contract-refs", "design:section-headers"]) {
+    assert.ok(widgetbookPlan.toolIds.includes(id), id);
+  }
 
   const finderPlan = planAffectedToolChecks({
     changedPaths: ["tool/design/generate_widget_variant_inventory.mjs"],
@@ -279,6 +288,80 @@ test("feature coverage and context manifests select executable owners without fu
     changedPaths: mixedPaths, manifest: productionManifest,
     componentGraph: productionGraph, mode: "nightly", full: true,
   }).mode, "full");
+});
+
+// Each input was an unmapped Tools-lane path in main CI history, so any change
+// fell back to the full matrix. The listed checks are the ones that read it.
+const consumedInputs = new Map([
+  ["design/visual_baselines/website/linux/marketing-website-claims-sections--claim-hero.desktop.png",
+    ["web:storybook-visuals"]],
+  ["design/visual_baselines/website/darwin/marketing-website-claims-sections--claim-hero.desktop.png",
+    ["web:storybook-visuals"]],
+  ["artifacts/marketing/app-screenshots/host-live-console.png", ["marketing:app-media-sync",
+    "marketing:app-screenshot-export", "marketing:hosted-capture-export"]],
+  ["design/features/event_detail.feature.json", ["design:feature-contracts",
+    "design:feature-coverage", "design:host-feature-responsibilities", "design:screen-contracts"]],
+  ["design/features/admin_finance_ops.feature.json", ["agent:harness-v2", "design:feature-contracts",
+    "design:feature-coverage", "web:admin-pending-operations"]],
+  ["design/features/generated/event_detail.feature_contract.json", ["design:feature-contracts",
+    "design:parity-matrix", "design:screen-contracts"]],
+  ["tool/architecture/pattern_adoption.json", ["audit:adopted-architecture-boundaries",
+    "audit:app-architecture-exhibits", "audit:dependency-direction", "design:screen-top-bar-contracts"]],
+  ["tool/design/generated/enforcement_expectations.json", ["design:component-enforcement-coverage",
+    "design:lint-enforcement-generate", "lint:catch-ui-plugin-smoke"]],
+  ["tool/policy/rules.json", ["agent:context-pack", "agent:harness-v2"]],
+  ["tool/data/lib/recompute_cli_test_support.mjs", ["data:repair-club-hosts",
+    "data:repair-club-member-counts", "data:repair-event-aggregates", "data:repair-review-authors"]],
+  ["packages/web-config/firebase.ts", ["web:react-controller-test-targets",
+    "web:react-dependency-graph", "web:shared-ui-adoption"]],
+]);
+// Tool code must not name the Operations runtime tree (operations:boundaries
+// enforces that), so sample a file under the owners' declared source glob.
+const operationsSource = productionManifest.tools.find((tool) => tool.id === "operations:cli")
+  .impactPaths.find((pattern) => pattern.endsWith("/**"));
+consumedInputs.set(operationsSource.replace("**", "example.mjs"), ["operations:admin-action-catalog",
+  "operations:admin-cli", "operations:cli", "operations:workflow-manifest"]);
+
+test("formerly unmapped inputs select every check that reads them without full fanout", () => {
+  const added = new Set([...consumedInputs.values()].flat());
+  for (const mode of ["pr", "merge_group", "main"]) {
+    for (const [changedPath, readers] of consumedInputs) {
+      const plan = planAffectedToolChecks({changedPaths: [changedPath], manifest: productionManifest,
+        componentGraph: productionGraph, mode});
+      assert.equal(plan.mode, "affected", `${mode}: ${changedPath}`);
+      for (const id of [...readers, "operations:boundaries"]) {
+        assert.ok(plan.toolIds.includes(id), `${changedPath} must select ${id}`);
+      }
+    }
+  }
+  // Reproduce the former fallback: without these declarations every input is unowned.
+  const previousManifest = structuredClone(productionManifest);
+  for (const tool of previousManifest.tools) {
+    if (!added.has(tool.id)) continue;
+    tool.impactPaths = (tool.impactPaths ?? []).filter((pattern) =>
+      ![...consumedInputs.keys()].some((changedPath) => matchesGlobPath(changedPath, pattern)));
+  }
+  for (const changedPath of consumedInputs.keys()) {
+    const plan = planAffectedToolChecks({changedPaths: [changedPath], manifest: previousManifest,
+      componentGraph: productionGraph});
+    assert.equal(plan.mode, "full", changedPath);
+    assert.deepEqual(plan.unmappedPaths, [changedPath]);
+  }
+});
+
+test("Tools-lane inputs that no registered check reads still fail closed", () => {
+  // Only React-lane visual checks, Flutter tests or Operations tests read these.
+  for (const changedPath of [
+    "design/visual_baselines/admin/linux/admin-shared-primitives--metric-card-story.mobile.png",
+    "design/visual_baselines/webui/linux/catch-web-ui--button.desktop.png",
+    "widgetbook/test/primitive_goldens_test.dart",
+    "operations/test/test-runner.test.mjs",
+  ]) {
+    const plan = planAffectedToolChecks({changedPaths: [changedPath], manifest: productionManifest,
+      componentGraph: productionGraph});
+    assert.equal(plan.mode, "full", changedPath);
+    assert.deepEqual(plan.unmappedPaths, [changedPath]);
+  }
 });
 
 const layoutOwners = new Map([

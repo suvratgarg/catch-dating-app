@@ -3,13 +3,21 @@ import test from "node:test";
 import {assertPreviewInvocation, assertSuccessfulSource, safeArchiveMembers, assertRuntimePolicy, preview} from "./previewRelease.mjs";
 const sourceSha = "a".repeat(40), repository = "suvratgarg/catch-dating-app";
 const invocation = {GITHUB_EVENT_NAME: "workflow_dispatch", GITHUB_REF: "refs/heads/main", GITHUB_REPOSITORY: repository,
+  GITHUB_REPOSITORY_ID: "1170579691",
   GITHUB_SHA: sourceSha, GITHUB_WORKFLOW_REF: `${repository}/.github/workflows/website-next-preview.yml@refs/heads/main`};
 test("preview refuses branch, automatic, foreign and different workflow invocations", () => {
   assert.doesNotThrow(() => assertPreviewInvocation(invocation));
+  // The immutable repository ID survives an organization transfer or rename.
+  const moved = "torana-labs/catch-dating-app";
+  assert.doesNotThrow(() => assertPreviewInvocation({...invocation, GITHUB_REPOSITORY: moved,
+    GITHUB_WORKFLOW_REF: `${moved}/.github/workflows/website-next-preview.yml@refs/heads/main`}));
   for (const [key, value] of Object.entries({GITHUB_EVENT_NAME: "push", GITHUB_REF: "refs/heads/feature", GITHUB_REPOSITORY: "other/repo",
+    GITHUB_REPOSITORY_ID: "1",
     GITHUB_SHA: "short", GITHUB_WORKFLOW_REF: `${repository}/.github/workflows/ci.yml@refs/heads/main`})) {
     assert.throws(() => assertPreviewInvocation({...invocation, [key]: value}));
   }
+  const {GITHUB_REPOSITORY_ID: _id, ...withoutId} = invocation;
+  assert.throws(() => assertPreviewInvocation(withoutId), /canonical repository/u);
 });
 test("preview requires current-main successful push CI from this repository", () => {
   const run = {head_sha: sourceSha, head_branch: "main", event: "push", path: ".github/workflows/ci.yml", repository: {full_name: repository},

@@ -101,6 +101,15 @@ test("actual fanout cannot suppress obligations found by independent comparison"
   assert.throws(() => requireComparedTargets(comparison, {...plan, baseSha: "c".repeat(40)}), /Planned base differs/);
 });
 
+test("harness test edits are not selector-control changes", t => {
+  const f = fixture(t);
+  f.write("tool/harness/example_selector.test.mjs", "// assertion-only edit\n");
+  const head = f.commit();
+  assert.equal(compareSelectors({...f, head}).status, "no-selector-control-change");
+  f.write("tool/harness/example_selector.mjs", "// selector source edit\n");
+  assert.equal(compareSelectors({...f, head: f.commit()}).status, "full-validation-required");
+});
+
 for (const file of ["tool/lib/path_glob.mjs", "tool/lib/tool_impact.mjs",
   "tool/lib/repository_snapshot.mjs", "tool/run.mjs", "tool/tools_manifest.json"]) {
   test(`selector comparison and graph agree for ${file}`, t => {
@@ -110,3 +119,17 @@ for (const file of ["tool/lib/path_glob.mjs", "tool/lib/tool_impact.mjs",
     assert.equal(compareSelectors(f).status, "full-validation-required");
   });
 }
+
+test("only a pull request plan may defer queue-only lanes found by comparison", () => {
+  const comparison = {baseSha: "a".repeat(40), headSha: "b".repeat(40), mode: "pr",
+    status: "full-validation-required", requiredTargets: ["flutter", "visual_integration"]};
+  const plan = {baseSha: comparison.baseSha, sourceSha: comparison.headSha, mode: "pr",
+    operations: {ciTargets: ["flutter"]}, queueDeferredCiTargets: ["visual_integration"]};
+  requireComparedTargets(comparison, plan, "flutter=true\n");
+  assert.throws(() => requireComparedTargets({...comparison, mode: "merge_group"}, {...plan, mode: "merge_group"},
+    "flutter=true\n"), /suppressed compared obligations: visual_integration/);
+  assert.throws(() => requireComparedTargets(comparison, {...plan, queueDeferredCiTargets: []},
+    "flutter=true\n"), /suppressed compared obligations: visual_integration/);
+  assert.throws(() => requireComparedTargets(comparison, {...plan, operations: {ciTargets: ["visual_integration"]},
+    queueDeferredCiTargets: ["flutter"]}, "visual_integration=true\n"), /Only queue-only lanes may be deferred/);
+});

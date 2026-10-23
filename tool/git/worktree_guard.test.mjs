@@ -906,3 +906,45 @@ function gitResult(cwd, args) {
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 }
+
+test("retire accepts the pull request head ref GitHub keeps after a merge queue deletes the branch", (context) => {
+  const fixture = createRepository(context);
+  const task = start(fixture, "retire-queue-merged", ["owned"]);
+  const worktree = task.result.worktreePath;
+  fs.appendFileSync(path.join(worktree, "owned/allowed.txt"), "queued change\n");
+  commitAll(worktree, "first");
+  fs.writeFileSync(path.join(worktree, "owned/new.txt"), "new\n");
+  commitAll(worktree, "second");
+  const head = gitText(worktree, ["rev-parse", "HEAD"]);
+  git(worktree, ["push", "--set-upstream", "origin", task.result.branch]);
+  git(fixture.root, ["merge", "--squash", task.result.branch]);
+  commitAll(fixture.root, "queue squash");
+  git(fixture.root, ["push", "origin", "main"]);
+  const accepted = gitText(fixture.root, ["rev-parse", "HEAD"]);
+  // The merge queue deleted the branch; only a mismatched pull ref remains.
+  git(worktree, ["push", "origin", "--delete", task.result.branch]);
+  git(fixture.remote, ["update-ref", "refs/pull/12/head", fixture.baseSha]);
+  const args = retirementArgs(task, head, accepted);
+  assertRetained(fixture, task, args, "unique_history_not_remotely_preserved");
+  git(fixture.remote, ["update-ref", "refs/pull/12/head", head]);
+  const applied = guard(fixture.root, [...args, "--apply"]);
+  assert.equal(applied.status, 0, JSON.stringify(applied.result));
+  assert.equal(applied.result.equivalence, "exact_task_paths");
+  assert.equal(applied.result.retainedRemoteRef, "refs/pull/12/head");
+  assert.equal(applied.result.retired, true);
+  assert.equal(gitText(fixture.root, ["rev-parse", `refs/heads/${task.result.branch}`]), head);
+});
+
+test("retire accepts claude/ task branches and still retains backup branches", (context) => {
+  const fixture = createRepository(context);
+  for (const [taskId, branch, retained] of [
+    ["retire-claude-branch", "claude/retire-claude-branch", false],
+    ["retire-claude-backup", "claude/backup/retire-claude-backup", true],
+  ]) {
+    const task = guard(fixture.root, ["start", "--task-id", taskId, "--base-sha", fixture.baseSha,
+      "--paths", `owned/${taskId}.txt`, "--branch", branch]);
+    assert.equal(task.status, 0, JSON.stringify(task.result));
+    const execution = guard(fixture.root, [...retirementArgs(task, fixture.baseSha, fixture.baseSha), "--apply"]);
+    assert.equal(execution.result.blockers.includes("protected_branch"), retained, JSON.stringify(execution.result));
+  }
+});

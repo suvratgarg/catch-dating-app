@@ -1,0 +1,17 @@
+/* Section rhythm mirrors CatchSectionList; gaps read the CatchGaps tokens. */
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list[data-gap="headerTitleToSubtitle"] { gap: var(--catch-gap-header-title-to-subtitle); }
+.list[data-gap="inline"] { gap: var(--catch-gap-inline); }
+.list[data-gap="related"] { gap: var(--catch-gap-related); }
+.list[data-gap="formField"] { gap: var(--catch-gap-form-field); }
+.list[data-gap="section"] { gap: var(--catch-gap-section); }
+.list[data-gap="majorSection"] { gap: var(--catch-gap-major-section); }

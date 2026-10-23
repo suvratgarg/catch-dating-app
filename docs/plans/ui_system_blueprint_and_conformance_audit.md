@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.24.0
-updated: 2026-10-18
+version: 1.25.0
+updated: 2026-10-22
 owner: app_architecture
 status: active
 ---
@@ -1727,17 +1727,27 @@ TypeScript fixture for the graph and a known-bad inventory for every rule.
   against `catch.section_stack` and the row contracts, and `StoreButton`.
   Store badges follow Apple's and Google's artwork rules, so `StoreButton`
   cannot be a `CatchButton` recipe.
-- **Owner decision (2026-10-19): one shared step list.** Website `StepRail`
-  and admin `AdminIntakeStageRail` are two web ports of Flutter's
-  `CatchFormStepList` (`catch.screen_body.form_step_overview`, T3). The owner
-  decided to promote it to its own T2 contract, `catch.form_step_list`, which
-  the app, website and admin all share, and to replace both ports with it in
-  7e. A top-level concept needs its own Widgetbook contract preview, which is
-  Flutter code, so registration is a small follow-up rather than part of this
-  PR. Until it lands, both entries record the decision in their
-  `comparisonReason`. When the contract is registered, the inventory flags the
-  eight shared `*List` and `*Group` exports that match its role noun, and each
-  needs its comparison extended.
+- **Owner decision (2026-10-19): one shared step list. Registered
+  2026-10-22.** Website `StepRail` and admin `AdminIntakeStageRail` were two
+  web ports of Flutter's `CatchFormStepList`, then the T3 member
+  `catch.screen_body.form_step_overview`. The owner promoted it to its own T2
+  contract, `catch.form_step_list` (L4 pattern, role noun `List`), which the
+  app, website and admin share; 7e replaces both ports with it. The contract
+  owns the spec, status and review-item data members and declares
+  cross-framework props (`items`, `statusLabelBuilder`, `onStepSelected`,
+  `fieldCopy`). Its formal preview in
+  `widgetbook/lib/primitives/contracts/form_step_list.dart` replaces the old
+  delegating Widgetbook case. Both rails are now `componentId` adapters of the
+  contract, so a fifth T2 contract has a web adapter. The inventory then
+  matched seven shared `*List` and `*Group` exports by role noun:
+  `AdminDiffList`, `AdminRoadmapList`, `AdminTagList`, `QualityList`,
+  `AdminIntakeSourceList`, `ActionGroup` and `HostPreviewFaqList`. Each
+  rejection is recorded: none selects a form section or reports completion
+  status. Both web rails mark a current step (`aria-current="step"`), and
+  `StepRail` also has done and disabled steps and optional body copy. The
+  Flutter list has none of these; it reports per-step completion with status
+  badges instead. 7e reconciles the contract before building the React
+  implementation.
 
 Retired: `design/web-ui/shared_primitive_adoption.json`. The inventory now
 covers each of its gates: package exports, exact-name overlaps, and family

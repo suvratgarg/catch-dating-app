@@ -1,13 +1,6 @@
 {
   "flutter": {
     "platforms": {
-      "android": {
-        "default": {
-          "projectId": "catch-dating-app-64e51",
-          "appId": "1:574779808785:android:81edbfa0d4aba7c48ea5b0",
-          "fileOutput": "android/app/google-services.json"
-        }
-      },
       "ios": {
         "default": {
           "projectId": "catch-dating-app-64e51",
@@ -297,11 +290,14 @@
     },
     {
       "target": "app",
-      "public": "build/web",
+      "public": "apps/consumer/build/web",
       "ignore": [
         "firebase.json",
         "**/.git/**",
         "**/.DS_Store"
+      ],
+      "predeploy": [
+        "./tool/flutter_with_env.sh prod --role consumer build web --release"
       ],
       "rewrites": [
         {

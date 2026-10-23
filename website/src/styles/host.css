@@ -275,9 +275,9 @@
   font-family: var(--catch-font-sans), system-ui, sans-serif;
   text-align: left;
   transition:
-    background-color var(--catch-motion-fast) var(--catch-ease-standard),
-    color var(--catch-motion-fast) var(--catch-ease-standard),
-    border-color var(--catch-motion-fast) var(--catch-ease-standard);
+    background-color var(--catch-motion-fast) var(--catch-motion-standard-curve),
+    color var(--catch-motion-fast) var(--catch-motion-standard-curve),
+    border-color var(--catch-motion-fast) var(--catch-motion-standard-curve);
 }
 
 .host-create-flow__rail button.is-active {
@@ -314,7 +314,7 @@
   border: 1px solid var(--website-line);
   border-radius: var(--catch-radius-md);
   background: var(--website-surface);
-  box-shadow: var(--catch-shadow-card);
+  box-shadow: var(--catch-elevation-card);
 }
 
 .mock-window__bar {
@@ -488,9 +488,9 @@
   cursor: pointer;
   text-align: left;
   transition:
-    background-color var(--catch-motion-fast) var(--catch-ease-standard),
-    color var(--catch-motion-fast) var(--catch-ease-standard),
-    box-shadow var(--catch-motion-fast) var(--catch-ease-standard);
+    background-color var(--catch-motion-fast) var(--catch-motion-standard-curve),
+    color var(--catch-motion-fast) var(--catch-motion-standard-curve),
+    box-shadow var(--catch-motion-fast) var(--catch-motion-standard-curve);
 }
 
 .event-success-stage-rail button.is-active {
@@ -891,7 +891,7 @@
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--catch-activity-singles-mixer-accent) 16%, transparent), transparent 54%),
     var(--website-surface);
-  box-shadow: var(--catch-shadow-card);
+  box-shadow: var(--catch-elevation-card);
 }
 
 .host-preview-offer__card h2,

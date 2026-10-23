@@ -6,6 +6,7 @@ import {createHash} from "node:crypto";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {normalizeRulesContent} from "../firebase/check_rules_deployment_drift.mjs";
+import {CANONICAL_REPOSITORY_ID} from "../lib/canonical_repository.mjs";
 
 export const RELEASE = Object.freeze({
   sourceSha: "28703b2c6dfa7a2408b8d5789a2b46c6ebedcf9e",
@@ -34,7 +35,7 @@ export function verifyAuthority(run, artifact) {
   assert.equal(run.event, "push");
   assert.equal(run.head_branch, "main");
   assert.equal(run.head_sha, RELEASE.sourceSha);
-  assert.equal(run.head_repository.full_name, "suvratgarg/catch-dating-app");
+  assert.equal(run.head_repository.id, CANONICAL_REPOSITORY_ID);
   assert.equal(run.status, "completed");
   assert.equal(run.conclusion, "success");
   assert.equal(artifact.id, RELEASE.artifactId);

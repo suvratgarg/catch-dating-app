@@ -13,6 +13,11 @@ export function privateShellFamily(pathname: string): keyof typeof families | nu
   return first as keyof typeof families;
 }
 
+/** The shell is the terminal rewrite target and holds no credential. */
+export function isPrivateShellPath(pathname: string): boolean {
+  return pathname.replace(/\/+$/, "") === "/private-shell";
+}
+
 export function privateShellHead(family: string | null): string {
   if (!family || !Object.hasOwn(families, family)) return "<title>Catch</title>";
   const meta = pageMeta[families[family as keyof typeof families]];

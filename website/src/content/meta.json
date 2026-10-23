@@ -73,6 +73,12 @@
       "canonicalPath": "/help/",
       "twitterDescription": "Get account, listing, event, privacy, website, and safety help from Catch."
     },
+    "account_deletion": {
+      "title": "Delete your account | Catch",
+      "description": "Delete your Catch or Catch Host account in the app, or request account and data deletion by email without the app. See what is deleted and what is kept.",
+      "canonicalPath": "/delete-account/",
+      "twitterDescription": "How to delete a Catch or Catch Host account and associated data, with or without the app."
+    },
     "not_found": {
       "title": "Page not found | Catch",
       "description": "This Catch page does not exist. Search organizer profiles, browse the member site, or explore host tools.",

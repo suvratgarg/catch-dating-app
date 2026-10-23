@@ -56,7 +56,8 @@ flutter test test/primitive_goldens_test.dart # consecutive determinism check
 These tests reuse `matchCatchGolden`, `loadCatchTestFonts`, and
 `CatchGoldenFileComparator` with the reviewed Widgetbook-only 0.60% tolerance.
 Run the same command with `--update-goldens` to regenerate and review the
-images. CI runs the corpus twice sequentially as a determinism check.
+images. Every CI run renders the corpus once; the nightly full validation
+renders it a second time in sequence as a determinism check.
 
 From the repository root, `node tool/run.mjs check design:golden-coverage`
 compares public `Catch*` classes with designated golden ids and validates the

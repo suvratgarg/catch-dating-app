@@ -1,3 +1,4 @@
+import 'package:catch_tokens/generated/catch_design_tokens.g.dart';
 import 'package:catch_tokens/src/primitives/catch_spacing.dart';
 import 'package:catch_tokens/src/semantic/catch_opacity.dart';
 import 'package:catch_tokens/src/semantic/catch_tokens.dart';
@@ -45,46 +46,13 @@ abstract final class CatchElevation {
   /// Subtle lift for content cards that should read as "above the page" while
   /// keeping the hairline border style. Use for hero event cards, editorial
   /// picks, and selected map peek tiles.
-  static const List<BoxShadow> card = <BoxShadow>[
-    BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.06),
-      blurRadius: 14,
-      offset: Offset(0, 4),
-    ),
-    BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.04),
-      blurRadius: 2,
-      offset: Offset(0, 1),
-    ),
-  ];
+  static const List<BoxShadow> card = GeneratedCatchElevationTokens.card;
 
   /// Bottom sheets, floating action buttons, popovers.
-  static const List<BoxShadow> raised = <BoxShadow>[
-    BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.10),
-      blurRadius: 24,
-      offset: Offset(0, 8),
-    ),
-    BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.06),
-      blurRadius: 2,
-      offset: Offset(0, 1),
-    ),
-  ];
+  static const List<BoxShadow> raised = GeneratedCatchElevationTokens.raised;
 
   /// Toasts, snackbars, dropdown overlays.
-  static const List<BoxShadow> overlay = <BoxShadow>[
-    BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.18),
-      blurRadius: 40,
-      offset: Offset(0, 16),
-    ),
-    BoxShadow(
-      color: Color.fromRGBO(26, 20, 16, 0.08),
-      blurRadius: 8,
-      offset: Offset(0, 4),
-    ),
-  ];
+  static const List<BoxShadow> overlay = GeneratedCatchElevationTokens.overlay;
 
   static List<BoxShadow> focusRing(CatchTokens t) => <BoxShadow>[
     BoxShadow(color: t.primarySoft, spreadRadius: CatchSpacing.micro3),

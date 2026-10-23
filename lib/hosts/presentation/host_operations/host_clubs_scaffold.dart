@@ -92,6 +92,10 @@ class HostClubsScaffold extends ConsumerStatefulWidget {
 class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
     with SingleTickerProviderStateMixin {
   static const _editorRevealAlignment = 0.08;
+  static const _privacyPolicyAction = 'privacy-policy';
+  static const _termsAction = 'terms';
+  static const _helpAction = 'help';
+  static const _deleteAction = 'delete';
 
   late HostClubTab _selectedTab;
   late final TabController _tabController;
@@ -105,6 +109,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
   final HostClubInsightsRefreshController _insightsRefreshController =
       HostClubInsightsRefreshController();
   bool _didRevealInitialEditor = false;
+  bool _legalLinkPending = false;
 
   @override
   void initState() {
@@ -149,26 +154,55 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
       SettingsController.requestAccountDeletionMutation,
     );
     final accountOperationPending =
-        signOutMutation.isPending || deletionMutation.isPending;
+        signOutMutation.isPending ||
+        deletionMutation.isPending ||
+        _legalLinkPending;
     final signOutAction = CatchIconAction.toolbar(
       key: const ValueKey<String>('host-organizer-sign-out'),
       tooltip: context.l10n.hostsHostClubTeamScreenTitleSignOut,
       icon: CatchIcons.logoutRounded,
       onPressed: accountOperationPending ? null : () => unawaited(_signOut()),
     );
+    final privacyPolicyUrl = AppConfig.privacyPolicyUrl;
+    final termsUrl = AppConfig.termsUrl;
+    final helpUrl = AppConfig.helpUrl;
     final accountMenu = CatchActionMenu<String>(
       key: const ValueKey<String>('host-account-menu'),
       tooltip: context.l10n.safetySettingsScreenTitleAccount,
       enabled: !accountOperationPending,
       items: [
+        if (privacyPolicyUrl != null)
+          CatchActionMenuItem(
+            value: _privacyPolicyAction,
+            label: context.l10n.safetySettingsScreenTitlePrivacyPolicy,
+            icon: CatchIcons.lockOutline,
+          ),
+        if (termsUrl != null)
+          CatchActionMenuItem(
+            value: _termsAction,
+            label: context.l10n.safetySettingsScreenTitleTerms,
+            icon: CatchIcons.descriptionOutlined,
+          ),
+        if (helpUrl != null)
+          CatchActionMenuItem(
+            value: _helpAction,
+            label: context.l10n.safetySettingsScreenTitleHelpSupport,
+            icon: CatchIcons.helpOutline,
+          ),
         CatchActionMenuItem(
-          value: 'delete',
+          value: _deleteAction,
           label: context.l10n.safetySettingsScreenTitleDeleteAccount658588,
           icon: CatchIcons.deleteOutline,
           isDestructive: true,
         ),
       ],
-      onSelected: (_) => unawaited(_deleteAccount()),
+      onSelected: (action) => unawaited(switch (action) {
+        _privacyPolicyAction => _openLegalLink(privacyPolicyUrl),
+        _termsAction => _openLegalLink(termsUrl),
+        _helpAction => _openLegalLink(helpUrl),
+        _deleteAction => _deleteAccount(),
+        _ => Future<void>.value(),
+      }),
     );
     final selectedOrganizerId = ref.watch(
       hostOrganizerSelectionProvider(widget.currentUid),
@@ -342,6 +376,28 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
       return;
     }
     if (mounted) context.go(Routes.startScreen.path);
+  }
+
+  /// Opens a public legal/support page through the same external launcher as
+  /// consumer Settings. The launch joins the account actions' exclusive
+  /// pending state, and false and thrown outcomes are both reported.
+  Future<void> _openLegalLink(Uri? uri) async {
+    if (uri == null || _legalLinkPending) return;
+    setState(() => _legalLinkPending = true);
+    var opened = false;
+    try {
+      opened = await ref.read(externalLinkControllerProvider).openExternal(uri);
+    } catch (_) {
+      // ExternalLinkController retains the backend context; the account menu
+      // owns the visible result.
+    } finally {
+      if (mounted) setState(() => _legalLinkPending = false);
+    }
+    if (!mounted || opened) return;
+    showCatchNotice(
+      context,
+      context.l10n.safetySettingsScreenExternalLinkOpenFailed,
+    );
   }
 
   Future<void> _deleteAccount() async {

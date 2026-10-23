@@ -1,4 +1,4 @@
-import {normalizeSymbol} from "../../design/component_concepts.mjs";
+import {normalizeSymbol, reactSymbolFiles} from "../../design/component_concepts.mjs";
 import {roleNouns} from "../../design/lib/component_naming.mjs";
 import {isNonProductionSource} from "./react_component_graph.mjs";
 
@@ -67,8 +67,8 @@ export function buildReactComponentInventory({graph, registry, surfaceRegistries
   for (const contract of registry.components) {
     const react = contract.react;
     if (!react) continue;
-    for (const symbol of [react.symbol, ...(react.additionalSymbols ?? [])]) {
-      const id = declarationId(`${react.file}::${symbol}`);
+    for (const [symbol, file] of reactSymbolFiles(react)) {
+      const id = declarationId(`${file}::${symbol}`);
       reactImplementations.set(id, contract.id);
       push(implementationsOf, contract.id, id);
     }
