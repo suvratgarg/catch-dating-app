@@ -212,14 +212,20 @@ void main() {
     expect(find.text('Rooftop supper club'), findsWidgets);
     expect(find.text('Private'), findsOneWidget);
 
-    // Reopen from a fresh launch. The Events list kept mounted across the
-    // create flow does not re-read the private inventory yet.
-    await _pumpHost(
-      tester,
-      backend,
-      organizers: [_saketRunClub],
-      initialRoute: '/host/events',
+    // Back returns to the Events list kept mounted across the create flow. It
+    // re-reads the private inventory, so the new event is listed at once.
+    final backFrom = backend.functions.calls.length;
+    await tester.tap(find.byTooltip('Back'));
+    await pumpAppShellFrames(tester, frames: 30);
+    expect(find.byType(PrivateEventSetupScreen), findsNothing);
+    expect(
+      backend.functions.calls
+          .skip(backFrom)
+          .where((call) => call.name == 'listPrivateEventSetups')
+          .map((call) => (call.input! as Map)['scope']),
+      contains('upcoming'),
     );
+    expect(find.text('Rooftop supper club'), findsWidgets);
     final reopenFrom = backend.functions.calls.length;
     await tester.tap(find.byKey(ValueKey('host-event-row-$eventId')));
     await pumpAppShellFrames(tester, frames: 30);
