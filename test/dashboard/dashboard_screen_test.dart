@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
@@ -15,8 +14,9 @@ import 'package:catch_dating_app/dashboard/presentation/notifications_list_state
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/club_posts_home_section.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty_sliver_body.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
@@ -47,28 +47,13 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../clubs/clubs_test_helpers.dart' as club_test;
 import '../events/events_test_helpers.dart';
+import '../support/analytics_test_helpers.dart';
 import '../support/dashboard_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 part 'dashboard_full_home_shell_tests.dart';
 
 final _l10n = AppLocalizationsEn();
-
-dynamic membershipsOverride(UserProfile user, List<String> clubIds) =>
-    watchActiveClubMembershipsForUserProvider(user.uid).overrideWith(
-      (ref) => Stream.value(
-        clubIds
-            .map((clubId) => membership(clubId: clubId, uid: user.uid))
-            .toList(),
-      ),
-    );
-
-dynamic _activityNotificationsOverride(
-  UserProfile user, [
-  List<ActivityNotification> notifications = const [],
-]) => watchActivityNotificationsProvider(
-  user.uid,
-).overrideWithValue(AsyncData<List<ActivityNotification>>(notifications));
 
 void main() {
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
@@ -147,7 +132,7 @@ void main() {
 
         await tester.pumpWidget(
           ProviderScope(
-            overrides: [_activityNotificationsOverride(user, notifications)],
+            overrides: [activityNotificationsOverride(user, notifications)],
             child: MaterialApp(
               theme: AppTheme.light,
               home: Scaffold(body: NotificationsAction(uid: user.uid)),
@@ -181,7 +166,7 @@ void main() {
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             membershipsOverride(user, const []),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-            _activityNotificationsOverride(user),
+            activityNotificationsOverride(user),
             watchSignedUpEventsProvider(
               user.uid,
             ).overrideWith((ref) => signedUpEventsController.stream),
@@ -211,7 +196,7 @@ void main() {
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             membershipsOverride(user, const []),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-            _activityNotificationsOverride(user),
+            activityNotificationsOverride(user),
             watchSignedUpEventsProvider(user.uid).overrideWithValue(
               AsyncError<List<Event>>(Exception('boom'), StackTrace.empty),
             ),
@@ -282,7 +267,7 @@ void main() {
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             membershipsOverride(user, const []),
-            _activityNotificationsOverride(user),
+            activityNotificationsOverride(user),
             watchSignedUpEventsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
@@ -311,6 +296,7 @@ void main() {
         find.text('Your catches unlock\nafter your first event.'),
         findsOneWidget,
       );
+      expect(find.byType(HowCatchWorksSection), findsOneWidget);
       expect(find.byType(DashboardFullSliverBody), findsOneWidget);
     });
 
@@ -318,7 +304,7 @@ void main() {
       tester,
     ) async {
       final user = buildUser();
-      final reporter = _FakeAnalyticsReporter();
+      final reporter = RecordingAnalyticsReporter();
       final router = GoRouter(
         initialLocation: Routes.dashboardScreen.path,
         routes: [
@@ -341,7 +327,7 @@ void main() {
             ),
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             membershipsOverride(user, const []),
-            _activityNotificationsOverride(user),
+            activityNotificationsOverride(user),
             watchSignedUpEventsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
@@ -365,7 +351,7 @@ void main() {
       expect(
         reporter.events,
         contains(
-          const _AnalyticsEventCall(AnalyticsEvents.homeOpened, {
+          const AnalyticsEventCall(AnalyticsEvents.homeOpened, {
             AnalyticsParameters.homeState: 'idle',
           }),
         ),
@@ -373,7 +359,7 @@ void main() {
       expect(
         reporter.events,
         contains(
-          const _AnalyticsEventCall(AnalyticsEvents.homeModuleImpression, {
+          const AnalyticsEventCall(AnalyticsEvents.homeModuleImpression, {
             AnalyticsParameters.homeModule: 'idle_cta',
           }),
         ),
@@ -386,7 +372,7 @@ void main() {
       expect(
         reporter.events,
         contains(
-          const _AnalyticsEventCall(AnalyticsEvents.homeActionTap, {
+          const AnalyticsEventCall(AnalyticsEvents.homeActionTap, {
             AnalyticsParameters.homeModule: 'idle_cta',
             AnalyticsParameters.homeAction: 'find_event',
           }),
@@ -411,7 +397,7 @@ void main() {
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             membershipsOverride(user, const []),
-            _activityNotificationsOverride(user),
+            activityNotificationsOverride(user),
             watchSignedUpEventsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
@@ -478,7 +464,7 @@ void main() {
               ClubsByIdQuery(joinedClubIds),
             ).overrideWith((ref) => Stream.value([joinedClub])),
             membershipsOverride(user, joinedClubIds),
-            _activityNotificationsOverride(user),
+            activityNotificationsOverride(user),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
             eventCheckInLocationServiceProvider.overrideWithValue(
@@ -629,7 +615,7 @@ void main() {
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             membershipsOverride(user, const []),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-            _activityNotificationsOverride(user, [
+            activityNotificationsOverride(user, [
               _activityNotification(id: 'unread-1', uid: user.uid),
               _activityNotification(id: 'unread-2', uid: user.uid),
               _activityNotification(
@@ -959,59 +945,6 @@ class _DashboardFullTestShell extends ConsumerWidget {
       ),
     );
   }
-}
-
-final class _AnalyticsEventCall {
-  const _AnalyticsEventCall(this.name, this.parameters);
-
-  final String name;
-  final Map<String, Object>? parameters;
-
-  @override
-  bool operator ==(Object other) {
-    if (other is! _AnalyticsEventCall) return false;
-    if (other.name != name) return false;
-    final otherParameters = other.parameters;
-    final theseParameters = parameters;
-    if (identical(otherParameters, theseParameters)) return true;
-    if (otherParameters == null || theseParameters == null) return false;
-    if (otherParameters.length != theseParameters.length) return false;
-    for (final entry in theseParameters.entries) {
-      if (otherParameters[entry.key] != entry.value) return false;
-    }
-    return true;
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    name,
-    Object.hashAllUnordered([
-      for (final entry
-          in parameters?.entries ?? const <MapEntry<String, Object>>[])
-        Object.hash(entry.key, entry.value),
-    ]),
-  );
-}
-
-final class _FakeAnalyticsReporter implements AnalyticsReporter {
-  final events = <_AnalyticsEventCall>[];
-
-  @override
-  Future<void> setCollectionEnabled(bool enabled) async {}
-
-  @override
-  Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {
-    events.add(_AnalyticsEventCall(name, parameters));
-  }
-
-  @override
-  Future<void> logScreenView({
-    required String screenName,
-    String? screenClass,
-  }) async {}
-
-  @override
-  Future<void> setUserId(String? userId) async {}
 }
 
 class _FakeEventCheckInLocationService implements EventCheckInLocationService {

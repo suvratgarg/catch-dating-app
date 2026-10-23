@@ -18,12 +18,19 @@ const laneJobs = {
   flutter_build_ios: "app-builds", flutter_build_web: "app-builds", flutter_web_smoke: "app-builds",
 };
 const shaPattern = /^[0-9a-f]{40}$/;
+// Pure-validation lanes a successful merge-queue run of the exact same source
+// already proved. Lanes whose jobs produce delivery evidence never qualify.
+export const queueReusableLanes = Object.freeze(
+  ["admin", "docs", "flutter", "operations", "policy_docs", "tools", "visual_integration"]);
 
-export function requireValidationLanes(plan, needs) {
+export function requireValidationLanes(plan, needs, {queueVerifiedRun = ""} = {}) {
   assert.equal(needs?.plan?.result, "success", "The initial planner must succeed.");
+  assert.match(String(queueVerifiedRun), /^(?:[1-9][0-9]*)?$/, "Invalid merge-queue run identity.");
   for (const lane of plan.operations.ciTargets) {
     assert.ok(laneJobs[lane], `No validation job owns ${lane}.`);
-    assert.equal(needs[laneJobs[lane]]?.result, "success", `Selected lane ${lane} did not succeed.`);
+    const result = needs[laneJobs[lane]]?.result;
+    if (queueVerifiedRun && queueReusableLanes.includes(lane) && result === "skipped") continue;
+    assert.equal(result, "success", `Selected lane ${lane} did not succeed.`);
   }
   for (const [job, value] of Object.entries(needs)) {
     assert.ok(["success", "skipped"].includes(value.result), `${job} did not pass.`);
@@ -60,23 +67,24 @@ export function requireCoveredPlan({validation, finalPlan, graph, manifest}) {
   }
 }
 
-export function verifyValidationPlan({validationPlan, sourceSha, runId, runAttempt, needs, graph, cwd = repoRoot}) {
+export function verifyValidationPlan(options) {
+  const {validationPlan, sourceSha, runId, runAttempt, graph, cwd = repoRoot} = options;
   for (const sha of [sourceSha, validationPlan.baseSha]) assert.match(sha ?? "", shaPattern);
   for (const id of [runId, runAttempt]) assert.match(String(id), /^[1-9][0-9]*$/);
   assert.equal(git(cwd, ["rev-parse", "HEAD"]), sourceSha, "Checkout is not the validated source.");
   assert.equal(validationPlan.sourceSha, sourceSha, "Validation source mismatch.");
   assert.equal(validationPlan.sourceCiRunId, String(runId), "Validation run mismatch.");
   assert.equal(validationPlan.sourceCiRunAttempt, String(runAttempt), "Validation attempt mismatch; rerun all jobs.");
-  const options = {base: validationPlan.baseSha, head: sourceSha, cwd};
+  const window = {base: validationPlan.baseSha, head: sourceSha, cwd};
   const expected = planCommittedWindow({
-    graph, windowPaths: changedPathsSince({...options, commitWindow: true}),
-    endpointPaths: changedPathsSince({...options, committedOnly: true}),
+    graph, windowPaths: changedPathsSince({...window, commitWindow: true}),
+    endpointPaths: changedPathsSince({...window, committedOnly: true}),
   });
   assert.deepEqual(validationPlan, {...expected, baseSha: validationPlan.baseSha,
     sourceSha, sourceCiRunId: String(runId), sourceCiRunAttempt: String(runAttempt)},
   "Validation artifact differs from the exact committed window.");
   assert.equal(validationPlan.complete, true, "Validation plan is incomplete.");
-  requireValidationLanes(validationPlan, needs);
+  requireValidationLanes(validationPlan, options.needs, {queueVerifiedRun: options.queueVerifiedRun});
 }
 
 export function finalizeCiPlan(options) {
@@ -91,7 +99,8 @@ export function finalizeCiPlan(options) {
   });
   requireCoveredPlan({validation: validationPlan, finalPlan, graph, manifest});
   return {...finalPlan, baseSha, sourceSha,
-    sourceCiRunId: String(options.runId), sourceCiRunAttempt: String(options.runAttempt)};
+    sourceCiRunId: String(options.runId), sourceCiRunAttempt: String(options.runAttempt),
+    ...(options.queueVerifiedRun ? {queueVerifiedRun: String(options.queueVerifiedRun)} : {})};
 }
 
 function git(cwd, args) {
@@ -104,11 +113,11 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   try {
     const [command, ...args] = process.argv.slice(2);
     if (command === "--help") {
-      console.log("Usage: finalize_ci_plan.mjs validate|finalize --validation-plan file --needs-json file --source-sha sha --run-id id --run-attempt attempt [--base-sha sha --output file --github-output file]");
+      console.log("Usage: finalize_ci_plan.mjs validate|finalize --validation-plan file --needs-json file --source-sha sha --run-id id --run-attempt attempt [--base-sha sha --output file --github-output file --queue-verified-run id]");
     } else {
       assert.ok(["validate", "finalize"].includes(command), "Expected validate or finalize.");
       const values = {};
-      const allowed = ["--validation-plan", "--needs-json", "--source-sha", "--run-id", "--run-attempt", "--base-sha", "--output", "--github-output"];
+      const allowed = ["--validation-plan", "--needs-json", "--source-sha", "--run-id", "--run-attempt", "--base-sha", "--output", "--github-output", "--queue-verified-run"];
       for (let index = 0; index < args.length; index += 2) {
         const flag = args[index];
         assert.ok(allowed.includes(flag) && !Object.hasOwn(values, flag) && args[index + 1] &&
@@ -119,7 +128,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       const graph = read(path.join(repoRoot, "tool/harness/component_graph.json"));
       const options = {validationPlan: read(values["--validation-plan"]), needs: read(values["--needs-json"]),
         sourceSha: values["--source-sha"], runId: values["--run-id"], runAttempt: values["--run-attempt"],
-        baseSha: values["--base-sha"], graph, manifest: read(path.join(repoRoot, "tool/tools_manifest.json"))};
+        baseSha: values["--base-sha"], graph, manifest: read(path.join(repoRoot, "tool/tools_manifest.json")),
+        queueVerifiedRun: values["--queue-verified-run"] ?? ""};
       if (command === "validate") {
         verifyValidationPlan(options);
         console.log("Every selected lane passed for this exact committed validation window.");

@@ -110,6 +110,12 @@ and T3 and T4 contracts never declare one. Catch-owned types keep their name
 | `Size`, `Offset`, `RangeValues`, `TimeOfDay` | `{width; height}`, `{x; y}`, `{start; end}`, `{hour; minute}` of `number` |
 | SDK enums (`BoxFit`) and constructor recipes | the union of the contract's `values` |
 
+A spacing prop whose Flutter callers pass a token constant declares `token`:
+`gap` (`CatchGaps`), `inset` (`CatchInsets`) or `space` (`CatchSpacing`). Its
+tsType is that token's name union (`CatchGapSize`, `CatchInsetPadding`,
+`CatchSpacingStep`), so a React call site writes `gap="section"`, never a
+length.
+
 `null` marks a Flutter framework mechanism with no React prop: `Key`,
 `FocusNode`, the `TextEditingController`, `TabController` and `MenuController`
 controllers, `MaterialTapTargetSize`, `Set<WidgetState>` and `OutlinedBorder`.

@@ -1,6 +1,22 @@
 part of 'create_event_screen.dart';
 
 extension _CreateEventActions on _CreateEventScreenState {
+  Future<void> _restorePhotoRecovery() async {
+    if (!mounted || _sessionReplaced) return;
+    await ref
+        .read(
+          createEventPhotoRecoveryControllerProvider(widget.club.id).notifier,
+        )
+        .restore();
+    if (!mounted || _sessionReplaced) return;
+    final recovery = ref.read(
+      createEventPhotoRecoveryControllerProvider(widget.club.id),
+    );
+    if (recovery.restored is AsyncData<void> && recovery.event == null) {
+      await _checkForDrafts();
+    }
+  }
+
   Future<void> _pickDate() async {
     final today = DateUtils.dateOnly(widget.now());
     final picked = await showCatchDatePicker(
@@ -230,10 +246,33 @@ extension _CreateEventActions on _CreateEventScreenState {
     }
   }
 
-  void _handleSuccessNavigationIntent(
+  Future<void> _handleSuccessNavigationIntent(
     CreateEventSuccessNavigationIntent intent,
     CreateEventSuccessNavigationState state,
-  ) {
+  ) async {
+    if (_sessionReplaced) return;
+    final controller = ref.read(
+      createEventPhotoRecoveryControllerProvider(widget.club.id).notifier,
+    );
+    final recovery = ref.read(
+      createEventPhotoRecoveryControllerProvider(widget.club.id),
+    );
+    if (recovery.hasPhotoRecovery && !recovery.isDurable) {
+      final leave = await showCatchConfirmDialog(
+        copy: catchDialogCopy(context.l10n),
+        context: context,
+        title: context.l10n.hostsEventPhotoRecoveryLeaveTitle,
+        message: context.l10n.hostsEventPhotoRecoveryLeaveMessage,
+        confirmLabel: context.l10n.hostsEventPhotoRecoveryLeave,
+      );
+      if (leave != true || !mounted || _sessionReplaced) return;
+    }
+    if (!await controller.acknowledgeDeparture() ||
+        !mounted ||
+        _sessionReplaced) {
+      return;
+    }
+    _setLocalState(() => _allowRoutePop = true);
     final effect = CreateEventSuccessNavigationEffect.resolve(
       intent: intent,
       state: state,
@@ -334,6 +373,7 @@ extension _CreateEventActions on _CreateEventScreenState {
             endTime: endTime,
             meetingLocation: meetingLocation,
             sourceVenueId: _locationState.sourceVenueId,
+            sourceDraftId: _activeDraftId,
             itinerary: _itinerary,
             eventFormat: _selectedEventFormat,
             distanceKm: _distanceKmForSelectedActivity(),
@@ -376,17 +416,9 @@ extension _CreateEventActions on _CreateEventScreenState {
       }
       if (mounted) {
         _setLocalState(() {
-          _createdEvent = createdEvent;
           _rosterImportResult = rosterResult;
           _rosterImportFailed = rosterFailed;
         });
-      }
-
-      // Delete the restored-from draft after successful submission.
-      final deleteIntent =
-          _draftSideEffectState.deleteAfterSuccessfulSubmitIntent;
-      if (deleteIntent != null) {
-        await _deleteDraft(deleteIntent);
       }
 
       return createdEvent;
@@ -394,7 +426,13 @@ extension _CreateEventActions on _CreateEventScreenState {
   }
 
   bool get _hasUnsavedChanges {
-    return _draftActionState.hasUnsavedChanges;
+    return ref
+                .read(
+                  createEventPhotoRecoveryControllerProvider(widget.club.id),
+                )
+                .event ==
+            null &&
+        _draftActionState.hasUnsavedChanges;
   }
 
   bool get _requestPending =>

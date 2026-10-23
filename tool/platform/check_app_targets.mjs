@@ -615,13 +615,11 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
       `${role}.projectRoot`,
       findings,
     );
-    for (const field of [
-      "entrypoint",
-      "appRoot",
-      "iosEntitlements",
-      "androidManifestOverlay",
-    ]) {
+    for (const field of ["entrypoint", "appRoot"]) {
       checkRepoFile(root, roleConfig[field], `${role}.${field}`, findings);
+    }
+    for (const field of ["iosEntitlements", "androidManifestOverlay"]) {
+      checkRepoFile(root, roleProjectPath(roleConfig, field), `${role}.${field}`, findings);
     }
     const entrypointPath = resolveRepoPath(root, roleConfig.entrypoint, findings);
     if (fs.existsSync(entrypointPath)) {
@@ -1011,11 +1009,19 @@ function validateAppleTargetConfigurations({
 function validateRoleCapabilities({root, manifest, findings}) {
   for (const role of expectedRoles) {
     const roleConfig = manifest.roles[role];
-    const entitlementsPath = resolveRepoPath(root, roleConfig.iosEntitlements, findings);
+    const entitlementsPath = resolveRepoPath(
+      root,
+      roleProjectPath(roleConfig, "iosEntitlements"),
+      findings,
+    );
     const entitlements = fs.existsSync(entitlementsPath)
       ? fs.readFileSync(entitlementsPath, "utf8")
       : "";
-    const androidManifestPath = resolveRepoPath(root, roleConfig.androidManifestOverlay, findings);
+    const androidManifestPath = resolveRepoPath(
+      root,
+      roleProjectPath(roleConfig, "androidManifestOverlay"),
+      findings,
+    );
     const androidManifest = fs.existsSync(androidManifestPath)
       ? fs.readFileSync(androidManifestPath, "utf8")
       : "";
@@ -1121,6 +1127,12 @@ export function validateHostReleaseVisibility({accessSource, routeSource,
     }
   }
   return findings;
+}
+
+// Role-owned native files are named relative to that role's app project, the
+// same way configure_apple_flavors.rb binds iosEntitlements.
+function roleProjectPath(roleConfig, field) {
+  return roleConfig[field] ? `${roleConfig.projectRoot}/${roleConfig[field]}` : undefined;
 }
 
 function checkRepoFile(root, relativePath, label, findings) {

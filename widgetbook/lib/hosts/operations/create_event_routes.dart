@@ -5,6 +5,8 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
+import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -585,6 +587,12 @@ class _HostCreateEventScope extends StatelessWidget {
               null => widgetbookClub,
             },
           ),
+          // Photo recovery restores before the wizard renders; previews start
+          // from an empty in-memory journal instead of device storage.
+          commandJournalStorageProvider.overrideWith((ref) {
+            final storage = MemoryCommandJournalStorage();
+            return () async => storage;
+          }),
         ],
         child: WidgetbookThemedHostPreview(themeMode: themeMode, child: child),
       ),

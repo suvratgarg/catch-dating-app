@@ -25,7 +25,8 @@ export const eventSetupReceiptDocumentSchema: Record<string, unknown> = {
         "preferences",
         "details",
         "publish",
-        "unpublish"
+        "unpublish",
+        "media"
       ]
     },
     "actorUid": {
@@ -75,6 +76,14 @@ export const eventSetupReceiptDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "const": "discarded"
     },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,119}$"
+    },
+    "mediaPayloadHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
     "expectedSetupRevision": {
       "type": "integer",
       "minimum": 1,
@@ -101,6 +110,18 @@ export const eventSetupReceiptDocumentSchema: Record<string, unknown> = {
             "required": [
               "expectedSetupRevision"
             ]
+          },
+          {
+            "required": [
+              "mediaPayloadHash"
+            ]
+          },
+          {
+            "properties": {
+              "operation": {
+                "const": "media"
+              }
+            }
           }
         ]
       }
@@ -118,6 +139,36 @@ export const eventSetupReceiptDocumentSchema: Record<string, unknown> = {
       "not": {
         "required": [
           "appliedRevision"
+        ]
+      }
+    },
+    {
+      "required": [
+        "requestId",
+        "mediaPayloadHash"
+      ],
+      "properties": {
+        "operation": {
+          "const": "media"
+        }
+      },
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "appliedRevision"
+            ]
+          },
+          {
+            "required": [
+              "outcome"
+            ]
+          },
+          {
+            "required": [
+              "expectedSetupRevision"
+            ]
+          }
         ]
       }
     }

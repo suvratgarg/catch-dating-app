@@ -128,7 +128,7 @@ export function verifyAndroidReleaseBundle({
     throw new Error("Pass --bundletool or set BUNDLETOOL_JAR to a pinned bundletool jar");
   }
   if (!fs.existsSync(bundletool)) throw new Error(`bundletool jar does not exist: ${bundletool}`);
-  const resolvedMapsKey = resolveExpectedMapsKey(root, expectedMapsKey);
+  const resolvedMapsKey = resolveExpectedMapsKey(root, target, expectedMapsKey);
   if (!resolvedMapsKey) {
     throw new Error("GOOGLE_MAPS_ANDROID_API_KEY_PROD is required for compiled Maps verification");
   }
@@ -267,9 +267,9 @@ function normalizeFingerprint(value) {
   return String(value ?? "").replaceAll(":", "").replaceAll(/\s/gu, "").toUpperCase();
 }
 
-function resolveExpectedMapsKey(root, provided) {
+function resolveExpectedMapsKey(root, target, provided) {
   if (provided?.trim()) return provided.trim();
-  const localPropertiesPath = path.join(root, "android", "local.properties");
+  const localPropertiesPath = path.join(root, target.projectRoot, "android", "local.properties");
   if (!fs.existsSync(localPropertiesPath)) return "";
   const match = fs
     .readFileSync(localPropertiesPath, "utf8")

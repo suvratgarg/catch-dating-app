@@ -80,4 +80,73 @@ export type SalesInboundIntentsDocument = {
     eventId: string;
     isNew: boolean;
   };
+  /**
+   * Optional first-party campaign snapshot captured with the new Host receipt under current analytics permission. Erased on withdrawal or original-choice expiry; never used without a current consent/privacy check.
+   */
+  acquisitionAttribution?: {
+    version: 1;
+    consentId: string;
+    acceptedAt: number;
+    expiresAt: number;
+    firstTouch: {
+      capturedAt: number;
+      landingPath:
+        | "/host/"
+        | "/host/overview/"
+        | "/host/platform/"
+        | "/host/planners/"
+        | "/host/clubs/"
+        | "/host/directory/"
+        | "/claim/"
+        | "/host/claim/"
+        | "/host/apply/"
+        | "/host/stack/"
+        | "/host/workflows/";
+      values: {
+        utm_source?: "google" | "meta" | "newsletter" | "catch" | "partner";
+        utm_medium?: "cpc" | "paid_social" | "email" | "organic" | "referral";
+        utm_campaign?:
+          | "launch"
+          | "launch_2026"
+          | "planner_launch"
+          | "host_acquisition_2026"
+          | "synthetic_launch";
+        utm_content?:
+          | "host_hero"
+          | "host_footer"
+          | "claim_cta"
+          | "application_cta";
+      };
+    } | null;
+    lastTouch: {
+      capturedAt: number;
+      landingPath:
+        | "/host/"
+        | "/host/overview/"
+        | "/host/platform/"
+        | "/host/planners/"
+        | "/host/clubs/"
+        | "/host/directory/"
+        | "/claim/"
+        | "/host/claim/"
+        | "/host/apply/"
+        | "/host/stack/"
+        | "/host/workflows/";
+      values: {
+        utm_source?: "google" | "meta" | "newsletter" | "catch" | "partner";
+        utm_medium?: "cpc" | "paid_social" | "email" | "organic" | "referral";
+        utm_campaign?:
+          | "launch"
+          | "launch_2026"
+          | "planner_launch"
+          | "host_acquisition_2026"
+          | "synthetic_launch";
+        utm_content?:
+          | "host_hero"
+          | "host_footer"
+          | "claim_cta"
+          | "application_cta";
+      };
+    } | null;
+  };
 };

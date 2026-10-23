@@ -9,8 +9,9 @@ import 'package:catch_dating_app/dashboard/presentation/dashboard_event_focus_co
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/club_posts_home_section.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty_sliver_body.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show showEventVenueSessionScanner;
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
@@ -49,8 +50,7 @@ class _DashboardFullSliverBodyState
   @override
   Widget build(BuildContext context) {
     final focusEvents = [
-      if (widget.viewModel.activeSwipeEvent != null)
-        widget.viewModel.activeSwipeEvent!,
+      ...widget.viewModel.windowedEvents.map((window) => window.event),
       ...widget.viewModel.upcomingEvents,
       if (widget.viewModel.pendingReviewEvent != null)
         widget.viewModel.pendingReviewEvent!,
@@ -70,14 +70,17 @@ class _DashboardFullSliverBodyState
         emptyStateOmitted: true,
         gap: CatchSpacing.micro18,
         children: [
-          if (focusEvents.isEmpty)
-            EmptyHeroCard(onFindEvent: () => _openExplore(context))
-          else
-            EventFocusRail(
+          if (focusEvents.isEmpty) ...[
+            EmptyHeroCard(onFindEvent: () => _openExplore(context)),
+            const HowCatchWorksSection(),
+          ] else
+            EventFocusList(
               upcomingEvents: widget.viewModel.upcomingEvents,
               arrivalAction: widget.viewModel.arrivalAction,
-              activeSwipeEvent: widget.viewModel.activeSwipeEvent,
+              windowedEvents: widget.viewModel.windowedEvents,
               pendingReviewEvent: widget.viewModel.pendingReviewEvent,
+              now: ref.watch(dashboardNowProvider),
+              onWindowImpression: _logWindowImpression,
               clubNameBuilder: (event) => clubNames?[event.clubId],
               checkInState: EventFocusCheckInState(
                 isPending: checkInMutation.isPending,
@@ -96,6 +99,18 @@ class _DashboardFullSliverBodyState
         ],
       ),
     );
+  }
+
+  void _logWindowImpression(Event event) {
+    ref
+        .read(appAnalyticsProvider)
+        .logEvent(
+          AnalyticsEvents.catchWindowImpression,
+          parameters: {
+            AnalyticsParameters.surface: 'home',
+            AnalyticsParameters.eventId: event.id,
+          },
+        );
   }
 
   EventFocusActions _buildEventFocusActions(BuildContext context) {
@@ -124,7 +139,9 @@ class _DashboardFullSliverBodyState
   }
 
   String _moduleForEvent(Event event) {
-    return widget.viewModel.activeSwipeEvent?.id == event.id
+    return widget.viewModel.windowedEvents.any(
+          (window) => window.event.id == event.id,
+        )
         ? context.l10n.dashboardDashboardFullVisiblecopyCatchWindow
         : context.l10n.dashboardDashboardFullVisiblecopyFocusRail;
   }
@@ -202,6 +219,15 @@ class _DashboardFullSliverBodyState
       _moduleForEvent(event),
       context.l10n.dashboardDashboardFullVisiblecopyOpenCatchWindow,
     );
+    ref
+        .read(appAnalyticsProvider)
+        .logEvent(
+          AnalyticsEvents.catchWindowOpen,
+          parameters: {
+            AnalyticsParameters.surface: 'home',
+            AnalyticsParameters.eventId: event.id,
+          },
+        );
     context.pushNamed(
       Routes.swipeEventScreen.name,
       pathParameters: {'eventId': event.id},
@@ -274,7 +300,7 @@ class _DashboardFullSliverBodyState
         );
       });
     } catch (_) {
-      // Mutation state owns the inline error display in EventFocusRail.
+      // Mutation state owns the inline error display in EventFocusList.
     }
   }
 }

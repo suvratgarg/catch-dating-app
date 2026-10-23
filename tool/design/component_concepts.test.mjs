@@ -12,6 +12,7 @@ import {
   newWidgetPolicyIssues,
   normalizeSymbol,
   publicWidgetNamingProblems,
+  reactSymbolFiles,
 } from "./component_concepts.mjs";
 
 const primary = (id, symbol) => ({
@@ -367,6 +368,23 @@ test("parity tiers are required, keep React implementations off Flutter-only ent
   assert.deepEqual(componentTierProblems([entry("catch.badge", "T1"), {...member, tier: "T3"}]), []);
 });
 
+test("styled React records find each additional symbol in its own file", () => {
+  assert.deepEqual(reactSymbolFiles({
+    symbol: "CatchPageBody", file: "packages/web-ui/src/components/CatchPageBody.tsx",
+    api: "styled", additionalSymbols: ["CatchGap"],
+  }), [
+    ["CatchPageBody", "packages/web-ui/src/components/CatchPageBody.tsx"],
+    ["CatchGap", "packages/web-ui/src/components/CatchGap.tsx"],
+  ]);
+  assert.deepEqual(reactSymbolFiles({
+    symbol: "TextInputControl", file: "packages/web-ui/src/primitives.tsx",
+    api: "headless-control", additionalSymbols: ["SelectControl"],
+  }), [
+    ["TextInputControl", "packages/web-ui/src/primitives.tsx"],
+    ["SelectControl", "packages/web-ui/src/primitives.tsx"],
+  ]);
+});
+
 test("T1 and T2 design-system props declare a React type beside the Dart one", () => {
   const contract = (tier, level, props) => ({
     id: "catch.thing", tier, level, dart: {symbol: "CatchThing"},
@@ -380,6 +398,9 @@ test("T1 and T2 design-system props declare a React type beside the Dart one", (
     {name: "leading", type: "widget", required: false, dartType: "Widget?", tsType: "ReactNode"},
     {name: "focusNode", type: "object", required: false, dartType: "FocusNode?", tsType: null},
     {name: "itemKeyBuilder", type: "callback", required: false, dartType: "Key? Function(T value)?", tsType: null},
+    {name: "gap", type: "number", required: false, dartType: "double", token: "gap", tsType: "CatchGapSize"},
+    {name: "padding", type: "object", required: false, dartType: "EdgeInsetsGeometry", token: "inset", tsType: "CatchInsetPadding"},
+    {name: "pt", type: "number", required: false, dartType: "double?", token: "space", tsType: "CatchSpacingStep"},
   ];
   assert.deepEqual(componentTierProblems([contract("T1", "L3", valid)]), []);
   assert.deepEqual(componentTierProblems([contract("T1", "L3", [
@@ -389,12 +410,16 @@ test("T1 and T2 design-system props declare a React type beside the Dart one", (
     {name: "leading", type: "widget", required: false, dartType: "Widget?", tsType: "JSX.Element"},
     {name: "color", type: "color", required: false, dartType: "Color?", tsType: null},
     {name: "focusNode", type: "object", required: false, dartType: "FocusNode?", tsType: "HTMLElement"},
+    {name: "gap", type: "number", required: false, dartType: "double", token: "gap", tsType: "number"},
+    {name: "radius", type: "number", required: false, dartType: "double", token: "radius", tsType: "number"},
   ])]), [
     "catch.thing.color: tsType null is reserved for Flutter mechanisms, not Color?",
     "catch.thing.focusNode: FocusNode? is a Flutter mechanism; its tsType must be null",
+    "catch.thing.gap: gap token tsType must be CatchGapSize",
     "catch.thing.label: T1/T2 prop needs a tsType beside dartType String",
     "catch.thing.leading: widget tsType must render ReactNode",
     "catch.thing.onPressed: callback tsType must be a function type",
+    "catch.thing.radius: token must be one of gap, inset, space",
     "catch.thing.tone: enum tsType must be CatchThingTone",
   ]);
   const flutterOnly = [{name: "label", type: "string", required: true, dartType: "String", tsType: "string"}];

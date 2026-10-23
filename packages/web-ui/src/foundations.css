@@ -1,0 +1,52 @@
+/*
+ * Theme roles for @catch/web-ui components, resolved from the generated
+ * light and dark token sets. A subtree opts into the dark set with
+ * data-catch-theme="dark"; components read only these roles, never a
+ * light- or dark-prefixed token, so one component renders in both themes.
+ */
+:root,
+[data-catch-theme="light"] {
+  --catch-theme-bg: var(--catch-color-light-bg);
+  --catch-theme-surface: var(--catch-color-light-surface);
+  --catch-theme-raised: var(--catch-color-light-raised);
+  --catch-theme-ink: var(--catch-color-light-ink);
+  --catch-theme-ink2: var(--catch-color-light-ink2);
+  --catch-theme-ink3: var(--catch-color-light-ink3);
+  --catch-theme-line: var(--catch-color-light-line);
+  --catch-theme-line2: var(--catch-color-light-line2);
+  --catch-theme-primary: var(--catch-color-light-primary);
+  --catch-theme-primary-ink: var(--catch-color-light-primary-ink);
+  --catch-theme-danger: var(--catch-color-light-danger);
+  --catch-theme-positive-text: var(--catch-color-light-positive-text);
+  --catch-theme-attention-text: var(--catch-color-light-attention-text);
+}
+
+[data-catch-theme="dark"] {
+  --catch-theme-bg: var(--catch-color-dark-bg);
+  --catch-theme-surface: var(--catch-color-dark-surface);
+  --catch-theme-raised: var(--catch-color-dark-raised);
+  --catch-theme-ink: var(--catch-color-dark-ink);
+  --catch-theme-ink2: var(--catch-color-dark-ink2);
+  --catch-theme-ink3: var(--catch-color-dark-ink3);
+  --catch-theme-line: var(--catch-color-dark-line);
+  --catch-theme-line2: var(--catch-color-dark-line2);
+  --catch-theme-primary: var(--catch-color-dark-primary);
+  --catch-theme-primary-ink: var(--catch-color-dark-primary-ink);
+  --catch-theme-danger: var(--catch-color-dark-danger);
+  --catch-theme-positive-text: var(--catch-color-dark-positive-text);
+  --catch-theme-attention-text: var(--catch-color-dark-attention-text);
+}
+
+/*
+ * Semantic gap roles, mirroring CatchGaps in packages/catch_tokens
+ * (semantic/catch_gaps.dart). The names match the gap token family the web
+ * token generator will emit; these declarations retire when it does.
+ */
+:root {
+  --catch-gap-header-title-to-subtitle: var(--catch-space-s1);
+  --catch-gap-inline: var(--catch-space-s2);
+  --catch-gap-related: var(--catch-space-s3);
+  --catch-gap-form-field: var(--catch-space-s4);
+  --catch-gap-section: var(--catch-space-s6);
+  --catch-gap-major-section: var(--catch-space-s8);
+}

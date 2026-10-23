@@ -63,8 +63,8 @@ jobs:
           fi
 
           for role in $roles; do
-            ./tool/use_firebase_environment.sh "${{ inputs.environment }}" "$role"
-            ./tool/validate_firebase_environment.sh "${{ inputs.environment }}" "$role"
+            ./tool/use_firebase_environment.sh "${{ inputs.environment }}" "$role" "apps/$role"
+            ./tool/validate_firebase_environment.sh "${{ inputs.environment }}" "$role" "apps/$role"
           done
 
       - name: Flutter analysis

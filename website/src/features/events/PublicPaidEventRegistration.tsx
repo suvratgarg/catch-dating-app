@@ -1,3 +1,4 @@
+import {CatchGap} from "@catch/web-ui";
 import { usePublicCheckoutController } from "./usePublicCheckoutController";
 import {
   eventDetailCopy,
@@ -19,8 +20,6 @@ import {
   EventRuntimeLoading,
   EventRuntimeForm,
   EventRuntimeModule,
-  EventRuntimeSectionStack,
-  EventRuntimeActionGrid,
 } from "../../shared/ui/primitives";
 import { EventSmsPreferencePanel } from "../eventMessaging/EventSmsPreferencePanel";
 import { EventRcsPreferencesPanel } from "../eventMessaging/EventRcsPreferencesPanel";
@@ -89,7 +88,7 @@ export function PublicPaidRegistrationView(
             ? { title: copy.noBookingTitle, body: copy.noBooking }
             : { title: copy.reviewTitle, body: copy.reviewBody };
   return (
-    <EventRuntimeSectionStack>
+    <CatchGap size="section">
       {!c.allowNewBookings && (phase === "phone" || phase === "otp") ? (
         <p>{copy.closedRecovery}</p>
       ) : null}
@@ -219,7 +218,7 @@ export function PublicPaidRegistrationView(
               <p>{copy.signedIn(c.user?.phoneNumber ?? c.phone)}</p>
             </>
           ) : null}
-          <EventRuntimeActionGrid
+          <CatchGap direction="horizontal" size="related" wrap
             key={cancellationReview ? "cancel" : "checkout"}
           >
             {cancellationReview ? (
@@ -322,7 +321,7 @@ export function PublicPaidRegistrationView(
                 ) : null}
               </>
             )}
-          </EventRuntimeActionGrid>
+          </CatchGap>
           {admission && !cancellationReview ? (
             <>
               <EventSmsPreferencePanel
@@ -342,6 +341,6 @@ export function PublicPaidRegistrationView(
         </>
       )}
       <FormStatus status={c.status} />
-    </EventRuntimeSectionStack>
+    </CatchGap>
   );
 }

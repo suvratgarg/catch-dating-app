@@ -240,7 +240,7 @@ void main() {
       expect(viewModel.upcomingEvents.map((event) => event.id), ['upcoming']);
     });
 
-    test('surfaces attended section errors and clears the swipe event', () {
+    test('surfaces attended section errors and clears open windows', () {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
         attendedEventsAsync: AsyncError<List<Event>>(
@@ -254,10 +254,10 @@ void main() {
         viewModel.attendedEventsSection.message,
         'Unable to load your recent events.',
       );
-      expect(viewModel.activeSwipeEvent, isNull);
+      expect(viewModel.windowedEvents, isEmpty);
     });
 
-    test('selects the most recent event with an open swipe window', () {
+    test('carries all open windows, ordered by soonest expiry', () {
       final now = DateTime(2026, 4, 23, 20);
       final older = buildEvent(
         id: 'older',
@@ -278,7 +278,14 @@ void main() {
         now: now,
       );
 
-      expect(viewModel.activeSwipeEvent?.id, latest.id);
+      expect(viewModel.windowedEvents.map((window) => window.event.id), [
+        older.id,
+        latest.id,
+      ]);
+      expect(
+        viewModel.windowedEvents.first.windowClosesAt,
+        older.endTime.add(const Duration(hours: 24)),
+      );
     });
 
     test('selects the latest attended event that has not been reviewed', () {

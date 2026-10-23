@@ -5,6 +5,7 @@ import {fileURLToPath} from "node:url";
 import {readSnapshot} from "../ci/host_deletion_release.mjs";
 import {selectSameSourceRun} from "../ci/wait_main_marketing_validation.mjs";
 import {assertSuccessfulSource} from "../../website/scripts/next/previewRelease.mjs";
+import {canonicalRepository} from "../lib/canonical_repository.mjs";
 
 // Fixed additive repair for the two collection-group queries in accountDeletion.
 // No Functions, rules, TTL, IAM, provider, application-data or cursor writes.
@@ -15,7 +16,6 @@ export const indexes = [
   {arrayConfig: "CONTAINS", queryScope: "COLLECTION"},
   {order: "ASCENDING", queryScope: "COLLECTION_GROUP"},
 ];
-const repository = "suvratgarg/catch-dating-app";
 const projects = {dev: "catchdates-dev", prod: "catch-dating-app-64e51"};
 const directory = "build/host-deletion-indexes";
 const sorted = rows => rows.map(row => JSON.stringify(row)).sort();
@@ -86,7 +86,7 @@ export function authorize(environment, env = process.env) {
   assert.equal(env.GITHUB_EVENT_NAME, "workflow_dispatch");
   assert.equal(env.GITHUB_REF, "refs/heads/main");
   assert.equal(env.GITHUB_RUN_ATTEMPT, "1");
-  assert.equal(env.GITHUB_REPOSITORY, repository);
+  const repository = canonicalRepository(env);
   assert.equal(env.GITHUB_WORKFLOW_REF, `${repository}/.github/workflows/host-deletion-indexes.yml@refs/heads/main`);
   assert.equal(command("git", ["rev-parse", "HEAD"]), env.GITHUB_SHA);
   assertSource(JSON.parse(fs.readFileSync("firestore.indexes.json", "utf8")));

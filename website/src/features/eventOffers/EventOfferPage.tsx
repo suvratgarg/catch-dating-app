@@ -1,10 +1,11 @@
+import {CatchGap} from "@catch/web-ui";
 import {eventOfferCopy as text, offerCodeSent, offerHoldEnds, offerRefundDeadline, offerCancellationRefund} from "../../content/eventOffer";
 import type {OfferCredential} from "./offerCredential";
 import {useOfferCheckoutController} from "./useOfferCheckoutController";
 import {formatOfferAmount, paymentCopy} from "./offerCheckoutModel";
 import {Button, ButtonLink, TextField, FormStatus, EventRuntimeFrame,
   EventRuntimePanel, EventRuntimeLoading, EventRuntimeForm,
-  EventRuntimeModule, EventRuntimeSectionStack, EventRuntimeActionGrid} from
+  EventRuntimeModule} from
   "../../shared/ui/primitives";
 
 export function EventOfferPage({credential}: {credential: OfferCredential | null}) {
@@ -45,17 +46,17 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
         </EventRuntimeForm>
       </EventRuntimePanel> : phase === "unavailable" ? <EventRuntimePanel kicker={text.privateKicker}
         title={text.unavailableTitle} body={text.unavailableBody}>
-        <EventRuntimeSectionStack>
+        <CatchGap size="section">
           <FormStatus status={controller.status} />
-          <EventRuntimeActionGrid>
+          <CatchGap direction="horizontal" size="related" wrap>
             {controller.hasInvitation ? <Button type="button" onClick={() => void controller.load()} loading={pending} loadingLabel={text.checking}>{text.retry}</Button> : null}
             {controller.hasInvitation ? <Button type="button" variant="ghost" disabled={pending} onClick={controller.changePhone}>{text.verifyAnother}</Button> : null}
             <ButtonLink href="/help" variant="ghost">{text.help}</ButtonLink>
-          </EventRuntimeActionGrid>
-        </EventRuntimeSectionStack>
+          </CatchGap>
+        </CatchGap>
       </EventRuntimePanel> : <EventRuntimePanel kicker={cancellationReview ? text.cancellation : payment?.status === "admitted" ? text.confirmed : text.admission}
         title={copy.title} body={copy.body}>
-        <EventRuntimeSectionStack>
+        <CatchGap size="section">
           <EventRuntimeModule title={payment?.status === "refunded" ? text.refund : admission || grant?.freeAdmission ? text.invitationTitle : text.bookingAmount}>
             {admission || grant?.amountPaise === 0 ? <p>{text.freeAmount}</p> :
               <p>{formatOfferAmount(payment?.amountPaise ?? grant!.amountPaise)}</p>}
@@ -66,12 +67,12 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
           {policy && !cancellationReview ? <EventRuntimeModule title={text.cancellationTerms}>
             <p>{offerRefundDeadline(new Intl.DateTimeFormat("en-IN", {dateStyle: "medium", timeStyle: "short"}).format(policy.refundDeadlineMillis))}</p>
           </EventRuntimeModule> : null}
-          {cancellationReview ? <EventRuntimeActionGrid>
+          {cancellationReview ? <CatchGap direction="horizontal" size="related" wrap>
               <Button type="button" onClick={() => void controller.cancelAdmission()} loading={pending} loadingLabel={text.cancelling}>{text.confirmCancellation}</Button>
               <Button type="button" variant="ghost" onClick={controller.dismissCancellation} disabled={pending} autoFocus>{text.keepAdmission}</Button>
-          </EventRuntimeActionGrid> : null}
+          </CatchGap> : null}
           <FormStatus status={controller.status} />
-          <EventRuntimeActionGrid>
+          <CatchGap direction="horizontal" size="related" wrap>
             {(admission?.eventId || payment?.status === "admitted" && (payment.eventId || grant?.eventId)) ?
               <ButtonLink href={`/booking/${encodeURIComponent(admission?.eventId ?? payment?.eventId ?? grant!.eventId)}/`}>{text.eventAccess}</ButtonLink> : null}
             {payment?.cancellationQuote && !cancellationReview ? <Button type="button" variant="ghost"
@@ -82,8 +83,8 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
               variant="ghost" onClick={() => void controller.check()} disabled={pending}>{text.refresh}</Button> : null}
             {payment?.status === "admitted" || payment?.status === "refunded" || payment?.status === "cancelled" || payment?.status === "reviewRequired" ?
               <ButtonLink href="/help" variant="ghost">{text.help}</ButtonLink> : null}
-          </EventRuntimeActionGrid>
-        </EventRuntimeSectionStack>
+          </CatchGap>
+        </CatchGap>
       </EventRuntimePanel>}
   </EventRuntimeFrame>;
 }

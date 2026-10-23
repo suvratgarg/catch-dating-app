@@ -1181,9 +1181,10 @@
       },
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
       "comparedWith": [
-        "catch.journey_steps"
+        "catch.journey_steps",
+        "catch.form_step_list"
       ],
-      "comparisonReason": "Unordered container of field diff rows; CatchStepList is a numbered journey."
+      "comparisonReason": "Unordered container of field diff rows; CatchStepList is a numbered journey and CatchFormStepList navigates form sections with completion status."
     },
     {
       "id": "shared_admin_diff_row",
@@ -1968,9 +1969,10 @@
       },
       "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx.",
       "comparedWith": [
-        "catch.journey_steps"
+        "catch.journey_steps",
+        "catch.form_step_list"
       ],
-      "comparisonReason": "Unordered container of intake source cards; not a numbered journey."
+      "comparisonReason": "Unordered container of intake source cards; not a numbered journey, and it neither selects a form section nor shows completion status like CatchFormStepList."
     },
     {
       "id": "shared_admin_intake_stage_rail",
@@ -1992,11 +1994,8 @@
           "ready"
         ]
       },
-      "notes": "Keyboard-accessible, count-backed stage lens used by organizer and event intake workspaces.",
-      "comparedWith": [
-        "catch.button"
-      ],
-      "comparisonReason": "Numbered step navigation rail that renders one button per step. It is a web port of Flutter's CatchFormStepList. The owner decided on 2026-10-19 to promote that list to a T2 contract; the follow-up that registers catch.form_step_list points this entry at it, and Phase 7e replaces both rails."
+      "notes": "Keyboard-accessible, count-backed stage lens used by organizer and event intake workspaces. Adapter of catch.form_step_list until Phase 7e replaces it with the @catch/web-ui implementation.",
+      "componentId": "catch.form_step_list"
     },
     {
       "id": "shared_admin_intake_state_grid",
@@ -4351,9 +4350,10 @@
       },
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench.",
       "comparedWith": [
-        "catch.journey_steps"
+        "catch.journey_steps",
+        "catch.form_step_list"
       ],
-      "comparisonReason": "Container of readiness checklist items with arbitrary content; not a numbered, line-traced journey."
+      "comparisonReason": "Container of readiness checklist items with arbitrary content; not a numbered, line-traced journey, and it has no section selection or per-step completion status like CatchFormStepList."
     },
     {
       "id": "shared_admin_roadmap_list_item",
@@ -4785,9 +4785,10 @@
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "comparedWith": [
-        "catch.journey_steps"
+        "catch.journey_steps",
+        "catch.form_step_list"
       ],
-      "comparisonReason": "Wrap container for badges; not a step sequence."
+      "comparisonReason": "Wrap container for badges; not a step sequence, and it has no step selection or completion status like CatchFormStepList."
     },
     {
       "id": "shared_admin_tag_row",
@@ -5257,9 +5258,10 @@
       },
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "comparedWith": [
-        "catch.journey_steps"
+        "catch.journey_steps",
+        "catch.form_step_list"
       ],
-      "comparisonReason": "Unordered container of quality and alert rows; not a numbered journey."
+      "comparisonReason": "Unordered container of quality and alert rows; not a numbered journey, and it neither navigates form sections nor reports their completion like CatchFormStepList."
     },
     {
       "id": "shared_quality_row",

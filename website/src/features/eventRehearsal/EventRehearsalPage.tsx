@@ -1,3 +1,4 @@
+import {CatchGap} from "@catch/web-ui";
 import {useParams} from "react-router";
 import {eventRehearsalCopy} from "../../content/eventRehearsal";
 import type {
@@ -6,7 +7,6 @@ import type {
 } from "../../firebase";
 import {
   Button,
-  EventRuntimeActionGrid,
   EventRuntimeAssignments,
   EventRuntimeFrame,
   EventRuntimeKicker,
@@ -188,7 +188,7 @@ export function EventRehearsalPreview({
         ) : (
           <EventRuntimeModule title={eventRehearsalCopy.actionsTitle}>
             <p>{eventRehearsalCopy.actionsBody}</p>
-            <EventRuntimeActionGrid>
+            <CatchGap direction="horizontal" size="related" wrap>
               {actions.map((action) => (
                 <Button
                   disabled={pending || !replyState.fresh ||
@@ -203,7 +203,7 @@ export function EventRehearsalPreview({
                   {eventRehearsalActionLabel(action)}
                 </Button>
               ))}
-            </EventRuntimeActionGrid>
+            </CatchGap>
             <FormStatus status={status} />
             {!replyState.fresh && !bootstrap.actor.assistanceMessage ? (
               <Button type="button" variant="ghost" disabled={pending} onClick={onRefresh}>
@@ -298,7 +298,7 @@ function EventRehearsalJoiningInstruction({bootstrap, pending, state, onReply,
       {saved ? <p role="status">{eventRehearsalCopy.replySaved(saved.label)}</p> :
         canRespond ? <>
           <p>{eventRehearsalCopy.joiningBody}</p>
-          <EventRuntimeActionGrid>
+          <CatchGap direction="horizontal" size="related" wrap>
             {message.choices.map((choice) => (
               <Button key={choice.choiceId} type="button" variant="ghost"
                 disabled={pending || blocked || !state.fresh ||
@@ -310,7 +310,7 @@ function EventRehearsalJoiningInstruction({bootstrap, pending, state, onReply,
                 {choice.label}
               </Button>
             ))}
-          </EventRuntimeActionGrid>
+          </CatchGap>
         </> : <p role="status">{eventRehearsalCopy.replyClosed}</p>}
       {!state.fresh ? <p role="status">{eventRehearsalCopy.replyStale}</p> : null}
       {state.notice ? <FormStatus status={{message: state.notice, tone: "is-error"}} /> : null}
