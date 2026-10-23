@@ -4200,33 +4200,6 @@
       "notes": "Shared SMS/WhatsApp/RCS message-link withdrawal with independent channel authority. Retains revocation after instruction expiry; no recipient identity, auth session or consent grant action is exposed."
     },
     {
-      "id": "event_runtime_section_stack",
-      "kind": "supporting-component",
-      "routeIds": [
-        "event_assistance"
-      ],
-      "owner": "shared/ui/primitives",
-      "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
-      "exportName": "EventRuntimeSectionStack",
-      "css": [
-        "website/src/styles/event-runtime.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/EventMessaging.stories.tsx",
-        "exportName": "EventSectionStack",
-        "states": [
-          "sections",
-          "closed-instructions"
-        ]
-      },
-      "notes": "Neutral vertical spacing between event sections without notice-specific paragraph styling.",
-      "comparedWith": [
-        "catch.section_stack"
-      ],
-      "comparisonReason": "Vertical stack of mixed runtime modules, buttons and banners, not of complete sections."
-    },
-    {
       "id": "event_rcs_preferences_panel",
       "kind": "supporting-component",
       "routeIds": [

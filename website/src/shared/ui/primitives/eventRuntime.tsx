@@ -67,10 +67,6 @@ export function EventRuntimeForm(
   return <Form {...props} className="event-runtime__form" />;
 }
 
-export function EventRuntimeProfileQuestions({children}: {children: ReactNode}) {
-  return <div className="event-runtime__profile-questions">{children}</div>;
-}
-
 export function EventRuntimeFieldset({children}: {children: ReactNode}) {
   return <fieldset className="event-runtime__fieldset">{children}</fieldset>;
 }
@@ -118,14 +114,6 @@ export function EventRuntimeLive({
 
 export function EventRuntimePracticeBanner({children}: {children: ReactNode}) {
   return <aside className="event-runtime__practice-banner">{children}</aside>;
-}
-
-export function EventRuntimeActionGrid({children}: {children: ReactNode}) {
-  return <div className="event-runtime__action-grid">{children}</div>;
-}
-
-export function EventRuntimeSectionStack({children}: {children: ReactNode}) {
-  return <div className="event-runtime__section-stack">{children}</div>;
 }
 
 export function EventRuntimeNoticeStack({children}: {children: ReactNode}) {
@@ -418,10 +406,6 @@ export function EventRuntimeRouteMap({
       <figcaption>{help}</figcaption>
     </figure>
   );
-}
-
-export function EventRuntimeQuestionnaire({children}: {children: ReactNode}) {
-  return <div className="event-runtime__questionnaire">{children}</div>;
 }
 
 export function EventRuntimePrivacy({children}: {children: ReactNode}) {

@@ -1,3 +1,4 @@
+import {CatchGap} from "@catch/web-ui";
 import {EventWhatsappPreferencesPanel} from "../eventMessaging/EventWhatsappPreferencesPanel";
 import {EventRcsPreferencesPanel} from "../eventMessaging/EventRcsPreferencesPanel";
 import {EventSmsPreferencePanel} from "../eventMessaging/EventSmsPreferencePanel";
@@ -28,8 +29,6 @@ import {
   EventRuntimeModule,
   EventRuntimePanel,
   EventRuntimePrivacy,
-  EventRuntimeProfileQuestions,
-  EventRuntimeQuestionnaire,
   EventRuntimeRoomMap,
   EventRuntimeRouteMap,
   EventRuntimeStageMarquee,
@@ -321,10 +320,10 @@ function PreEventProfileField({
       );
     case "questionnaireAnswerIds":
       return (
-        <EventRuntimeProfileQuestions>
+        <CatchGap size="section">
           <h3>{controller.questionnaire.title}</h3>
           <p>{eventRuntimeCopy.preEventBody}</p>
-          <EventRuntimeQuestionnaire>
+          <CatchGap size="section">
             {controller.questionnaire.questions.map((question) => (
               <EventRuntimeFieldset key={question.id}>
                 <legend>{question.prompt}</legend>
@@ -345,8 +344,8 @@ function PreEventProfileField({
                 </ChoiceChipGrid>
               </EventRuntimeFieldset>
             ))}
-          </EventRuntimeQuestionnaire>
-        </EventRuntimeProfileQuestions>
+          </CatchGap>
+        </CatchGap>
       );
     case "teamName":
       return (
@@ -370,7 +369,7 @@ function CompatibilityProfileFields({
   controller: ReturnType<typeof useEventRuntimeController>;
 }) {
   return (
-    <EventRuntimeProfileQuestions>
+    <CatchGap size="section">
       <EventRuntimeFieldset>
         <legend>{eventRuntimeCopy.genderLabel}</legend>
         <ChoiceChipGrid aria-label={eventRuntimeCopy.genderLabel}>
@@ -405,7 +404,7 @@ function CompatibilityProfileFields({
       >
         {eventRuntimeCopy.sensitiveConsent}
       </EventRuntimeConsent>
-    </EventRuntimeProfileQuestions>
+    </CatchGap>
   );
 }
 
@@ -584,7 +583,7 @@ function LiveEventRuntime({
       {modules.has("compatibility_questionnaire") ? (
         <EventRuntimeModule title={controller.questionnaire.title}>
           <p>{eventRuntimeCopy.compatibilityBody}</p>
-          <EventRuntimeQuestionnaire>
+          <CatchGap size="section">
             {controller.questionnaire.questions.map((question) => (
               <EventRuntimeFieldset key={question.id}>
                 <legend>{question.prompt}</legend>
@@ -601,7 +600,7 @@ function LiveEventRuntime({
                 </ChoiceChipGrid>
               </EventRuntimeFieldset>
             ))}
-          </EventRuntimeQuestionnaire>
+          </CatchGap>
           <Button onClick={() => void controller.saveCompatibilityAnswers()} type="button">
             {eventRuntimeCopy.compatibilitySave}
           </Button>

@@ -465,6 +465,8 @@ import 'package:widgetbook_workspace/primitives/contracts/table.dart'
     as _widgetbook_workspace_primitives_contracts_table;
 import 'package:widgetbook_workspace/primitives/contracts/tabs.dart'
     as _widgetbook_workspace_primitives_contracts_tabs;
+import 'package:widgetbook_workspace/primitives/contracts/text.dart'
+    as _widgetbook_workspace_primitives_contracts_text;
 import 'package:widgetbook_workspace/primitives/contracts/toolbar.dart'
     as _widgetbook_workspace_primitives_contracts_toolbar;
 import 'package:widgetbook_workspace/primitives/contracts/typography.dart'
@@ -4252,6 +4254,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Contract states',
                 builder: _widgetbook_workspace_primitives_contracts_typography
                     .catchTypographyContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchText',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_text
+                    .catchTextContractStates,
               ),
             ],
           ),
