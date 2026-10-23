@@ -144,14 +144,15 @@
       "target": 0,
       "baseline": {
         "date": "2026-10-23",
-        "value": 109
+        "value": 99,
+        "source": "knip (tool/audit/unused_code_baseline.json); the React inventory counted 109 before #783 fixed its Next route roots"
       },
       "owner": "Website Phase 4 and Admin (Phase 7 'screens become assemblies')",
       "linear": [
         "CAT-218",
         "CAT-219"
       ],
-      "enforcement": "Once tool/audit/unused_code_baseline.json exists, this gate counts its unused exports and files per web workspace, and knip's shrink-only baseline blocks regressions. Until then it counts the React inventory's delete verdicts, which miss website/app/ consumers (PublicPage, PublicProviders; the inventory fix follows the 7e field PR)."
+      "enforcement": "audit:unused-code (knip) keeps tool/audit/unused_code_baseline.json shrink-only; this gate counts its unused exports and files per web workspace, and falls back to the React inventory only if that file is missing."
     },
     {
       "id": "screens.web_single_use_shared",
