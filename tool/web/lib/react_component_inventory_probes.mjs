@@ -18,9 +18,15 @@ const graphFixture = {
   "src/app.tsx": "import {Page} from './features/a/Page';\nexport const routes = [() => import('./features/b/LazyRoute')];\nexport function App() { return <Page />; }\n",
   "src/shared/Dead.tsx": "export function Dead() { return <span />; }\n",
   "src/shared/Dead.stories.tsx": "import {Dead} from './Dead';\nexport const Story = () => <Dead />;\n",
+  // A consumer root (the Next App Router tree) renders src components in production.
+  "src/routed/Shell.tsx": "export function Shell() { return <main />; }\n",
+  "app/page.tsx": "import {Shell} from '../src/routed/Shell';\nexport default function RoutePage() { return <Shell />; }\n",
 };
 
-/** The graph follows barrels, private helpers and dynamic imports, and ignores stories. */
+/**
+ * The graph follows barrels, private helpers and dynamic imports, ignores
+ * stories, and counts consumer-root files as consumers without listing them.
+ */
 export function graphProbeProblems() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "react-component-graph-probe-"));
   try {
@@ -30,11 +36,11 @@ export function graphProbeProblems() {
     }
     const graph = buildReactComponentGraph({
       repoRoot: root,
-      surfaces: [{id: "website", root: "src", tsconfig: "tsconfig.json"}],
+      surfaces: [{id: "website", root: "src", tsconfig: "tsconfig.json", consumerRoots: ["app"]}],
     });
     const failures = [];
     const names = graph.components.map((component) => component.name).sort();
-    if (JSON.stringify(names) !== JSON.stringify(["App", "Button", "Dead", "LazyRoute", "Page", "Panel"])) {
+    if (JSON.stringify(names) !== JSON.stringify(["App", "Button", "Dead", "LazyRoute", "Page", "Panel", "Shell"])) {
       failures.push(`components should be the JSX-rendering exports, found ${names.join(", ")}`);
     }
     const has = (from, to) => graph.references.some((reference) => reference.from === from && reference.to === to);
@@ -42,6 +48,7 @@ export function graphProbeProblems() {
     if (!has("src/shared/Panel.tsx::Panel", "src/shared/Panel.tsx::Inner")) failures.push("a use of a private helper was dropped");
     if (!has("src/features/a/Page.tsx::Page", "src/shared/Panel.tsx::Panel")) failures.push("a barrel re-export was not resolved");
     if (!has("src/app.tsx::routes", "src/features/b/LazyRoute.tsx::LazyRoute")) failures.push("a dynamic import of a default export was missed");
+    if (!has("app/page.tsx::RoutePage", "src/routed/Shell.tsx::Shell")) failures.push("a consumer-root route's use was missed");
     const deadUses = graph.references.filter((reference) => reference.to === "src/shared/Dead.tsx::Dead");
     if (deadUses.length !== 1 || deadUses[0].file !== "src/shared/Dead.stories.tsx") {
       failures.push("story uses must stay visible as the only, non-production use of an export");

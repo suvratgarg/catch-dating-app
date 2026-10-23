@@ -65,6 +65,7 @@
     "@vitest/coverage-v8": "^4.1.11",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
+    "knip": "6.42.1",
     "picomatch": "^4.0.7",
     "pngjs": "^7.0.0",
     "react": "^19.3.0",
