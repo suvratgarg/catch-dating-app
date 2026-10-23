@@ -3,33 +3,6 @@ import type {FormHTMLAttributes, HTMLAttributes, ReactNode} from "react";
 import {Form} from "./forms";
 import {classNames} from "./foundation";
 
-export interface HostPreviewTrustItem {
-  key?: string;
-  title: ReactNode;
-  body: ReactNode;
-}
-
-export function HostPreviewTrustGrid({
-  className,
-  items,
-  reveal = false,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  items: readonly HostPreviewTrustItem[];
-  reveal?: boolean;
-}) {
-  return (
-    <div {...props} className={classNames("host-preview-trust__grid", className)}>
-      {items.map((item, index) => (
-        <article data-reveal={reveal || undefined} key={item.key ?? String(item.title) ?? index}>
-          <h3>{item.title}</h3>
-          <p>{item.body}</p>
-        </article>
-      ))}
-    </div>
-  );
-}
-
 export interface HostPreviewFaqItem {
   answer: ReactNode;
   key?: string;

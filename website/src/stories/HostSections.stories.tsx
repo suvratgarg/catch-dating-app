@@ -1,26 +1,8 @@
 import {expect, userEvent, within} from "storybook/test";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {HostApplicationFlow} from "../features/host/application/HostApplicationFlow";
-import {CreateEventWalkthrough as CreateEventWalkthroughComponent} from "../features/host/sections/CreateEventWalkthrough";
-import {PlaybookShowcase as PlaybookShowcaseComponent} from "../features/host/sections/PlaybookShowcase";
-import {HostComparisonSection as HostComparisonSectionComponent} from "../features/host/sections/HostComparisonSection";
-import {
-  HostApplySection as HostApplySectionComponent,
-  HostCapturesSection as HostCapturesSectionComponent,
-  HostFillRoomSection as HostFillRoomSectionComponent,
-  HostHeroSection as HostHeroSectionComponent,
-  HostLiveModulesSection as HostLiveModulesSectionComponent,
-  HostProofLedgerSection as HostProofLedgerSectionComponent,
-  HostSurfaceSection as HostSurfaceSectionComponent,
-  HostWorkflowSection as HostWorkflowSectionComponent,
-} from "../features/host/sections/HostPageSections";
-import {
-  HostFaqSection as HostFaqSectionComponent,
-  HostFoundingOfferSection as HostFoundingOfferSectionComponent,
-  HostTrustSection as HostTrustSectionComponent,
-} from "../features/host/sections/HostSupportingSections";
+import {HostApplySection as HostApplySectionComponent} from "../features/host/sections/HostPageSections";
 import {WaitlistSection} from "../shared/ui/primitives";
-import {captures, placeholderCaptures} from "./fixtures/marketingCaptures";
 
 const meta = {
   title: "Marketing Website/Host/Sections",
@@ -38,152 +20,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const CreateEventWalkthroughSection: Story = {
-  name: "Create event walkthrough",
-  parameters: {
-    catchComponent: {
-      id: "host_create_event_walkthrough",
-      routeIds: ["host"],
-      states: ["default", "interactive-steps", "capture-fallback"],
-    },
-  },
-  play: ({canvasElement}) => exerciseRailContrast(canvasElement, ".host-create-flow__rail"),
-  render: () => <CreateEventWalkthroughComponent captures={captures} />,
-};
-
-export const CreateEventWalkthroughFallback: Story = {
-  name: "Create event walkthrough · fallback captures",
-  parameters: {
-    catchComponent: {
-      id: "host_create_event_walkthrough",
-      routeIds: ["host"],
-      states: ["capture-fallback"],
-    },
-  },
-  render: () => <CreateEventWalkthroughComponent captures={placeholderCaptures} />,
-};
-
-export const PlaybookShowcaseSection: Story = {
-  name: "Playbook showcase",
-  parameters: {
-    catchComponent: {
-      id: "host_playbook_showcase",
-      routeIds: ["host"],
-      states: ["default", "activity", "after", "debrief", "module-expanded", "deep-link"],
-    },
-  },
-  play: ({canvasElement}) => exerciseRailContrast(canvasElement, ".event-success-stage-rail"),
-  render: () => <PlaybookShowcaseComponent captures={captures} />,
-};
-
-export const HostComparisonSectionStory: Story = {
-  name: "Host comparison",
-  parameters: {
-    catchComponent: {
-      id: "host_comparison_section",
-      routeIds: ["host"],
-      states: ["collapsed", "expanded-interaction"],
-    },
-  },
-  render: () => <HostComparisonSectionComponent />,
-};
-
-export const HostHeroSectionStory: Story = {
-  name: "Host hero",
-  parameters: {
-    catchComponent: {
-      id: "host_hero_section",
-      routeIds: ["host"],
-      states: ["default", "capture-stage"],
-    },
-  },
-  render: () => <HostHeroSectionComponent captures={captures} />,
-};
-
-export const HostWorkflowSectionStory: Story = {
-  name: "Host workflow",
-  parameters: {
-    catchComponent: {
-      id: "host_workflow_section",
-      routeIds: ["host"],
-      states: ["default"],
-    },
-  },
-  render: () => <HostWorkflowSectionComponent />,
-};
-
-export const HostSurfaceSectionStory: Story = {
-  name: "Host surface",
-  parameters: {
-    catchComponent: {
-      id: "host_surface_section",
-      routeIds: ["host"],
-      states: ["default"],
-    },
-  },
-  render: () => <HostSurfaceSectionComponent />,
-};
-
-export const HostFillRoomSectionStory: Story = {
-  name: "Host fill room",
-  parameters: {
-    catchComponent: {
-      id: "host_fill_room_section",
-      routeIds: ["host"],
-      states: ["checkout", "waitlist", "cohorts"],
-    },
-  },
-  render: () => <HostFillRoomSectionComponent />,
-};
-
-export const HostLiveModulesSectionStory: Story = {
-  name: "Host live modules",
-  parameters: {
-    catchComponent: {
-      id: "host_live_modules_section",
-      routeIds: ["host"],
-      states: ["default", "module-stack"],
-    },
-  },
-  render: () => <HostLiveModulesSectionComponent />,
-};
-
-export const HostProofLedgerSectionStory: Story = {
-  name: "Host proof ledger",
-  parameters: {
-    catchComponent: {
-      id: "host_proof_ledger_section",
-      routeIds: ["host"],
-      states: ["default"],
-    },
-  },
-  render: () => <HostProofLedgerSectionComponent />,
-};
-
-export const HostCapturesSectionStory: Story = {
-  name: "Host captures",
-  parameters: {
-    catchComponent: {
-      id: "host_captures_section",
-      routeIds: ["host"],
-      states: ["default", "capture-grid"],
-    },
-  },
-  render: () => <HostCapturesSectionComponent captures={captures} />,
-};
-
-export const HostCapturesFallback: Story = {
-  name: "Host captures · fallback captures",
-  parameters: {
-    catchComponent: {
-      id: "host_captures_section",
-      routeIds: ["host"],
-      states: ["capture-fallback"],
-    },
-  },
-  render: () => <HostCapturesSectionComponent captures={placeholderCaptures} />,
-};
-
 export const HostApplySectionStory: Story = {
   name: "Host apply section",
   parameters: {
@@ -195,42 +31,6 @@ export const HostApplySectionStory: Story = {
     },
   },
   render: () => <HostApplySectionComponent />,
-};
-
-export const HostFoundingOfferSectionStory: Story = {
-  name: "Host founding offer",
-  parameters: {
-    catchComponent: {
-      id: "host_founding_offer_section",
-      routeIds: ["host"],
-      states: ["beta-offer"],
-    },
-  },
-  render: () => <HostFoundingOfferSectionComponent />,
-};
-
-export const HostTrustSectionStory: Story = {
-  name: "Host trust",
-  parameters: {
-    catchComponent: {
-      id: "host_trust_section",
-      routeIds: ["host"],
-      states: ["default"],
-    },
-  },
-  render: () => <HostTrustSectionComponent />,
-};
-
-export const HostFaqSectionStory: Story = {
-  name: "Host FAQ",
-  parameters: {
-    catchComponent: {
-      id: "host_faq_section",
-      routeIds: ["host"],
-      states: ["default"],
-    },
-  },
-  render: () => <HostFaqSectionComponent />,
 };
 
 export const HostApplicationFlowInitial: Story = {

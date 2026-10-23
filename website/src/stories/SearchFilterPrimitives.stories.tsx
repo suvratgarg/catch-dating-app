@@ -1,14 +1,7 @@
 import {CatchField} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {FormEvent} from "react";
-import {
-  Button,
-  FilterRail,
-  PublicSearchBar,
-  SearchFormShell,
-  ToggleChipButton,
-  type PublicSearchSuggestion,
-} from "../shared/ui/primitives";
+import {Button, PublicSearchBar, SearchFormShell, type PublicSearchSuggestion} from "../shared/ui/primitives";
 
 const searchSuggestions: PublicSearchSuggestion[] = [
   {
@@ -93,52 +86,6 @@ export const OrganizerSearchFormShellStory: Story = {
       />
       <Button type="submit">Search</Button>
     </SearchFormShell>
-  ),
-};
-
-export const OrganizerFilterRailStory: Story = {
-  name: "Organizer filter rail",
-  parameters: {
-    catchComponent: {
-      id: "shared_filter_rail",
-      routeIds: ["organizer_search"],
-      states: ["status-city-format-filters"],
-    },
-  },
-  render: () => (
-    <FilterRail>
-      <CatchField
-        recipe="select"
-        id="storybook-organizer-status-filter"
-        title="Status"
-        name="status"
-        values={["all", "verified", "claimed", "unclaimed"]}
-        itemLabelBuilder={(status) => ({all: "Any status", verified: "Verified on Catch",
-          claimed: "Claimed", unclaimed: "Unclaimed"})[status] ?? status}
-        initialValue="unclaimed"
-      />
-      <CatchField
-        recipe="select"
-        id="storybook-organizer-city-filter"
-        title="City"
-        name="city"
-        values={["all", "Mumbai", "Indore", "Bengaluru"]}
-        itemLabelBuilder={(city) => city === "all" ? "Any city" : city}
-        initialValue="Mumbai"
-      />
-      <CatchField
-        recipe="select"
-        id="storybook-organizer-format-filter"
-        title="Format"
-        name="format"
-        values={["all", "run club", "dinner", "rooftop social"]}
-        itemLabelBuilder={(format) => format === "all" ? "Any format" : format}
-        initialValue="run club"
-      />
-      <ToggleChipButton selected onClick={() => undefined}>
-        Has upcoming events
-      </ToggleChipButton>
-    </FilterRail>
   ),
 };
 

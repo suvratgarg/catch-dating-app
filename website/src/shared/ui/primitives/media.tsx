@@ -1,17 +1,9 @@
 import type {CSSProperties, HTMLAttributes, ReactNode} from "react";
 import type {ActivityMeta} from "./foundation";
-import type {ContentGridVariant} from "./layout";
+
 import type {ActivityListing} from "./organizer";
 import {classNames} from "@catch/web-ui";
-import {
-  ContentGrid,
-  UiLabel,
-  captureGridClassNames,
-  marketingSectionClassNames,
-  marketingSectionCopyClassNames,
-} from "./layout";
-import {ButtonLink} from "./actionControls";
-import {fallbackCaptionForCapture} from "./media2";
+import {marketingSectionClassNames, marketingSectionCopyClassNames} from "./layout";
 
 export type ActivityMarkSize = "sm" | "md" | "lg";
 
@@ -31,16 +23,6 @@ export interface MarketingLoopListProps
   variant?: MarketingLoopListVariant;
 }
 
-export interface MarketingInfoCardItem {
-  action?: {href: string; label: ReactNode};
-  body: ReactNode;
-  key?: string;
-  label?: ReactNode;
-  title: ReactNode;
-}
-
-export type MarketingInfoCardLabelVariant = "plain" | "ui";
-
 export type MarketingSectionVariant =
   | "captures"
   | "download"
@@ -53,8 +35,6 @@ export type MarketingSectionVariant =
   | "trust";
 
 export type MarketingSectionCopyVariant = "download" | "proof";
-
-export type CaptureGridVariant = "default" | "host";
 
 export function ActivityMark({
   activity,
@@ -112,40 +92,6 @@ export function MarketingLoopList({
   );
 }
 
-export function HomeHeroMedia({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("hero__media", className)}>
-      {children}
-    </div>
-  );
-}
-
-export function HostCreateFlowCapture({
-  children,
-  className,
-  reveal = true,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-  reveal?: boolean;
-}) {
-  return (
-    <div
-      {...props}
-      className={classNames("host-create-flow__capture", className)}
-      data-reveal={reveal || undefined}
-    >
-      {children}
-    </div>
-  );
-}
-
 export function MarketingSection({
   children,
   className,
@@ -195,73 +141,6 @@ export function MarketingSectionCopy({
   );
 }
 
-export function MarketingInfoCardGrid({
-  className,
-  items,
-  labelVariant = "plain",
-  reveal = true,
-  variant,
-  ...props
-}: Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
-  items: readonly MarketingInfoCardItem[];
-  labelVariant?: MarketingInfoCardLabelVariant;
-  reveal?: boolean;
-  variant: Extract<ContentGridVariant, "surface" | "trust">;
-}) {
-  return (
-    <ContentGrid {...props} className={className} variant={variant}>
-      {items.map((item, index) => (
-        <MarketingInfoCard
-          action={item.action}
-          body={item.body}
-          key={item.key ?? (typeof item.title === "string" ? item.title : index)}
-          label={item.label}
-          labelVariant={labelVariant}
-          reveal={reveal}
-          title={item.title}
-        />
-      ))}
-    </ContentGrid>
-  );
-}
-
-export function MarketingInfoCard({
-  action,
-  body,
-  className,
-  label,
-  labelVariant = "plain",
-  reveal = true,
-  title,
-  ...props
-}: Omit<HTMLAttributes<HTMLElement>, "title"> & {
-  action?: MarketingInfoCardItem["action"];
-  body: ReactNode;
-  label?: ReactNode;
-  labelVariant?: MarketingInfoCardLabelVariant;
-  reveal?: boolean;
-  title: ReactNode;
-}) {
-  return (
-    <article
-      {...props}
-      className={className}
-      data-reveal={reveal || undefined}
-    >
-      {label ? (
-        labelVariant === "ui" ? (
-          <UiLabel>{label}</UiLabel>
-        ) : (
-          <span>{label}</span>
-        )
-      ) : null}
-      <h3>{title}</h3>
-      <p>{body}</p>
-      {action ? <ButtonLink href={action.href} variant="ghost">{action.label}</ButtonLink> : null}
-    </article>
-  );
-}
-
 export function AppleStoreMark() {
   return (
     <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
@@ -299,143 +178,10 @@ export function GooglePlayStoreMark() {
   );
 }
 
-export function HostPreviewHeroMedia({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("host-preview-hero__media", className)}>
-      {children}
-    </div>
-  );
-}
-
-export function CaptureGrid({
-  children,
-  className,
-  reveal = false,
-  variant = "default",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-  reveal?: boolean;
-  variant?: CaptureGridVariant;
-}) {
-  return (
-    <div
-      {...props}
-      className={classNames(captureGridClassNames[variant], className)}
-      data-reveal={reveal || undefined}
-    >
-      {children}
-    </div>
-  );
-}
-
 export interface CaptureRecord {
   id: string;
   webPath: string;
   alt: string;
   caption: string;
   walkthroughStep: string;
-}
-
-export function CaptureCard({
-  captures,
-  className,
-  fallbackStep,
-  id,
-  reveal = true,
-  ...props
-}: HTMLAttributes<HTMLElement> & {
-  captures: Record<string, CaptureRecord>;
-  fallbackStep: ReactNode;
-  id: string;
-  reveal?: boolean;
-}) {
-  const capture = captures[id];
-  const imagePath = capture?.webPath ?? `/assets/app-screenshots/placeholders/${id}.svg`;
-
-  return (
-    <figure
-      {...props}
-      className={classNames("capture-card", className)}
-      data-capture-slot={id}
-      data-reveal={reveal || undefined}
-    >
-      <img
-        src={imagePath}
-        alt={capture?.alt ?? fallbackAltForCapture(id)}
-        loading="lazy"
-      />
-      <figcaption>
-        <span>{capture?.walkthroughStep ?? fallbackStep}</span>
-        <strong>{capture?.caption ?? fallbackCaptionForCapture(id)}</strong>
-      </figcaption>
-    </figure>
-  );
-}
-
-export function PhoneCaptureShell({
-  caption,
-  captureSlotId,
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLElement> & {
-  caption: ReactNode;
-  captureSlotId: string;
-  children: ReactNode;
-}) {
-  return (
-    <figure {...props} className={classNames("phone-capture", className)} data-capture-slot={captureSlotId}>
-      <div className="phone-capture__device">
-        <span className="phone-capture__notch" aria-hidden="true" />
-        <div className="phone-capture__screen">{children}</div>
-      </div>
-      <figcaption>{caption}</figcaption>
-    </figure>
-  );
-}
-
-export function fallbackAltForCapture(id: string) {
-  switch (id) {
-    case "member-event-discovery":
-      return "Catch event discovery screen showing hosted singles events";
-    case "post-run-catch-window":
-      return "Catch post-event roster screen for the 24 hour catch window";
-    case "match-chat-context":
-      return "Catch match chat screen with shared event context";
-    case "host-event-setup":
-      return "Catch host event setup screen";
-    case "host-live-console":
-      return "Catch host live console with roster and check-in controls";
-    case "host-post-event-report":
-      return "Catch host post-event report screen";
-    default:
-      return "Catch app screen";
-  }
-}
-
-// Neutral read-only facts. Workflow identity and state authority stay in the
-// feature/content owner; this shell cannot approve, pay or change admission.
-export function MarketingFactList({label, items, note}: {
-  label: ReactNode;
-  items: readonly {label: ReactNode; value: ReactNode}[];
-  note?: ReactNode;
-}) {
-  return (
-    <div className="marketing-facts">
-      <UiLabel>{label}</UiLabel>
-      <dl>
-        {items.map((item, index) => (
-          <div key={index}><dt>{item.label}</dt><dd>{item.value}</dd></div>
-        ))}
-      </dl>
-      {note ? <p>{note}</p> : null}
-    </div>
-  );
 }

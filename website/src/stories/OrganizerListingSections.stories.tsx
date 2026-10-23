@@ -10,7 +10,6 @@ import {
   ListingExternalEventsSection,
 } from "../features/organizers/sections/ListingEventsSections";
 import {ListingFactsSection} from "../features/organizers/sections/ListingFactsSection";
-import {ListingFitSection} from "../features/organizers/sections/ListingFitSection";
 import {
   ListingHeroRailSection,
   ListingHeroSection,
@@ -287,40 +286,6 @@ export const ListingEventSuccess: Story = {
         <ListingEventSuccessSection summary={appCreatedListing.eventSuccessSummary} />
       ) : null}
     </>
-  ),
-};
-
-export const ListingFit: Story = {
-  name: "Fit · claimable",
-  parameters: {
-    catchComponent: {
-      id: "listing_fit_section",
-      routeIds: listingRouteIds,
-      states: ["claimable-unclaimed"],
-    },
-  },
-  render: () => (
-    <ListingFitSection
-      isAppCreated={false}
-      listing={claimableListing}
-    />
-  ),
-};
-
-export const ListingFitAppCreated: Story = {
-  name: "Fit · app-created",
-  parameters: {
-    catchComponent: {
-      id: "listing_fit_section",
-      routeIds: listingRouteIds,
-      states: ["app-created"],
-    },
-  },
-  render: () => (
-    <ListingFitSection
-      isAppCreated
-      listing={appCreatedListing}
-    />
   ),
 };
 

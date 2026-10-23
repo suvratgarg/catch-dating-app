@@ -175,20 +175,6 @@ export function ListingSuccessMetricGrid({
   );
 }
 
-export function EventTicketMeta({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("event-ticket__meta", className)}>
-      {children}
-    </div>
-  );
-}
-
 export function ClaimBandSection({
   children,
   className,
@@ -228,28 +214,6 @@ export function ClaimBandRail({
     <div {...props} className={classNames("claim-band__rail", className)}>
       {children}
     </div>
-  );
-}
-
-export function ClaimMissingEvidenceList({
-  className,
-  items,
-  reveal = true,
-  ...props
-}: HTMLAttributes<HTMLUListElement> & {
-  items: ReactNode[];
-  reveal?: boolean;
-}) {
-  return (
-    <ul
-      {...props}
-      className={classNames("missing-list", className)}
-      data-reveal={reveal || undefined}
-    >
-      {items.map((item, index) => (
-        <li key={typeof item === "string" ? item : index}>{item}</li>
-      ))}
-    </ul>
   );
 }
 

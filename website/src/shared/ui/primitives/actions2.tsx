@@ -154,29 +154,6 @@ export function ClaimResultButton({
   );
 }
 
-export function FeaturedOrganizersCta({
-  body,
-  children,
-  className,
-  reveal = false,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  body: ReactNode;
-  children: ReactNode;
-  reveal?: boolean;
-}) {
-  return (
-    <div
-      {...props}
-      className={classNames("featured-organizers__cta", className)}
-      data-reveal={reveal || undefined}
-    >
-      <p>{body}</p>
-      {children}
-    </div>
-  );
-}
-
 export function ToggleChipButton({
   children,
   className,

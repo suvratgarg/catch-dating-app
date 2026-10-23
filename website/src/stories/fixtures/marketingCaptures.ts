@@ -58,8 +58,6 @@ export const captures: Record<string, CaptureRecord> = {
   ),
 };
 
-export const placeholderCaptures: Record<string, CaptureRecord> = {};
-
 function capture(id: string, walkthroughStep: string, caption: string): CaptureRecord {
   return {
     id,

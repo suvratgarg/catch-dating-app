@@ -10,80 +10,7 @@ import type {ListingClaimController} from "../features/claims/useListingClaimCon
 import type {HostListing} from "../features/organizers/types";
 import {PageShell, WebsitePageMain} from "../shared/site/PageShell";
 import {WebsiteQueryProvider} from "../shared/query/queryClient";
-import {
-  Button,
-  ButtonLink,
-  ClaimBandGrid,
-  ClaimBandRail,
-  ClaimBandSection,
-  ClaimFlowHero,
-  ClaimFlowMain,
-  ClaimFlowPanel,
-  ClaimFlowStage,
-  ClaimFlowWorkspace,
-  ClaimListingResults,
-  ClaimMissingEvidenceList,
-  ClaimRequestForm,
-  ClaimRequestPanel,
-  ClaimRequestPanelHeading,
-  ClaimResultButton,
-  ContentGrid,
-  DirectoryClaimPressureCopy,
-  DirectoryClaimPressureCta,
-  DirectoryClaimPressureList,
-  DirectoryClaimPressureStats,
-  FormStatus,
-  HostApplicationCompletenessSummary,
-  HostApplicationPanel,
-  HostApplicationReviewCard,
-  HostApplicationReviewGrid,
-  HostApplicationShell,
-  HostApplicationStage,
-  HostApplicationSubmitted,
-  HostComparisonTableHeading,
-  HostCreateFlowCapture,
-  HostFeatureGrid,
-  HostFeatureRail,
-  HostFeatureSection,
-  HostHeroCopy,
-  HostHeroInner,
-  HostHeroShell,
-  HostPageSection,
-  HostPreviewApplyShell,
-  HostPreviewChipRow,
-  HostPreviewConsole,
-  HostPreviewFaqList,
-  HostPreviewFormatRail,
-  HostPreviewHeroCopy,
-  HostPreviewHeroInner,
-  HostPreviewHeroMedia,
-  HostPreviewHeroProduct,
-  HostPreviewHeroShell,
-  HostPreviewHeroStores,
-  HostPreviewLiveGrid,
-  HostPreviewLiveModules,
-  HostPreviewLoopGrid,
-  HostPreviewMain,
-  HostPreviewOfferCard,
-  HostPreviewOfferShell,
-  HostPreviewOfferSteps,
-  HostPreviewPaymentFlow,
-  HostPreviewProductSplitCopy,
-  HostPreviewRoster,
-  HostPreviewSection,
-  HostPreviewSectionHead,
-  HostPreviewTrustGrid,
-  OperationalNote,
-  OrganizerResultSummary,
-  OrganizerSearchSection,
-  OrganizerSearchStats,
-  OwnerUnlockBoard,
-  PrivacyGuardrail,
-  ProductShell,
-  SelectedListingCard,
-  UiLabel,
-  VerificationMethodGrid,
-} from "../shared/ui/primitives";
+import {Button, ButtonLink, ClaimBandGrid, ClaimBandRail, ClaimBandSection, ClaimFlowHero, ClaimFlowMain, ClaimFlowPanel, ClaimFlowStage, ClaimFlowWorkspace, ClaimListingResults, ClaimRequestForm, ClaimRequestPanel, ClaimRequestPanelHeading, ClaimResultButton, ContentGrid, FormStatus, HostApplicationCompletenessSummary, HostApplicationPanel, HostApplicationReviewCard, HostApplicationReviewGrid, HostApplicationShell, HostApplicationStage, HostApplicationSubmitted, HostPreviewFaqList, HostPreviewSection, HostPreviewSectionHead, OperationalNote, OwnerUnlockBoard, SelectedListingCard, UiLabel, VerificationMethodGrid} from "../shared/ui/primitives";
 
 const claimableListing = hostListings.find(isUnclaimedListing) ?? requireListing("afterfly");
 const listingRouteIds = ["organizer_listing_canonical", "organizer_listing_legacy"];
@@ -234,22 +161,15 @@ export const ListingClaimShellStory: Story = {
     catchComponent: {
       id: "shared_listing_claim_shell",
       routeIds: listingRouteIds,
-      states: ["missing-list", "claim-request-form", "status"],
+      states: ["claim-request-form", "status"],
     },
   },
   render: () => (
     <ClaimRequestPanel>
       <ClaimRequestPanelHeading>
-        <UiLabel>Missing evidence</UiLabel>
-        <h3>What this listing still needs</h3>
+        <UiLabel>Claim this listing</UiLabel>
+        <h3>Request ownership</h3>
       </ClaimRequestPanelHeading>
-      <ClaimMissingEvidenceList
-        items={[
-          "A source page that names the organizer.",
-          "A reachable owner email or phone number.",
-          "Proof that the requester can manage this public listing.",
-        ]}
-      />
       <ClaimRequestForm onSubmit={preventSubmit}>
         <CatchField
           recipe="input"
@@ -268,43 +188,6 @@ export const ListingClaimShellStory: Story = {
         <FormStatus status={{message: "Storybook claim request is ready for review.", tone: "is-success"}} />
       </ClaimRequestForm>
     </ClaimRequestPanel>
-  ),
-};
-
-export const HostPageShellStory: Story = {
-  name: "Host page shell",
-  parameters: {
-    catchComponent: {
-      id: "shared_host_page_shell",
-      routeIds: ["host"],
-      states: ["hero", "section-variants"],
-    },
-  },
-  render: () => (
-    <>
-      <HostHeroShell>
-        <HostHeroInner>
-          <HostHeroCopy>
-            <UiLabel>Host with Catch</UiLabel>
-            <h1>Launch source-backed social events.</h1>
-            <p>Host page shells keep hero and section variants governed by shared primitives.</p>
-          </HostHeroCopy>
-          <ProductShell variant="host-console">
-            <strong>Live console</strong>
-            <p>Roster, waitlist, and event notes in one host surface.</p>
-          </ProductShell>
-        </HostHeroInner>
-      </HostHeroShell>
-      <ContentGrid variant="surface">
-        {(["evidence", "surface", "fill-room", "proof-ledger"] as const).map((variant) => (
-          <HostPageSection variant={variant} key={variant}>
-            <UiLabel>{variant}</UiLabel>
-            <h2>{variant} section</h2>
-            <p>Route copy configures this shared host section shell.</p>
-          </HostPageSection>
-        ))}
-      </ContentGrid>
-    </>
   ),
 };
 
@@ -365,65 +248,6 @@ export const HostApplicationShellStory: Story = {
   ),
 };
 
-export const HostFeatureSectionShellStory: Story = {
-  name: "Host feature section shell",
-  parameters: {
-    a11y: {test: "todo"},
-    catchComponent: {
-      id: "shared_host_feature_section_shell",
-      routeIds: ["host"],
-      states: ["create-flow", "event-success", "comparison", "rail", "guardrail"],
-    },
-  },
-  render: () => (
-    <ContentGrid variant="surface">
-      <HostFeatureSection variant="create-flow">
-        <HostFeatureGrid variant="create-flow">
-          <HostFeatureRail
-            activeId="details"
-            label="Create event steps"
-            variant="create-flow"
-            items={[
-              {id: "details", label: "Details", body: "Set the format and venue."},
-              {id: "proof", label: "Proof", body: "Attach source-backed trust context."},
-            ]}
-            onSelect={() => undefined}
-          />
-          <HostCreateFlowCapture>
-            <strong>Host create flow preview</strong>
-          </HostCreateFlowCapture>
-        </HostFeatureGrid>
-      </HostFeatureSection>
-      <HostFeatureSection variant="comparison">
-        <HostFeatureGrid variant="comparison-split">
-          <HostComparisonTableHeading>
-            <UiLabel>Comparison</UiLabel>
-            <h2>Catch vs. generic forms</h2>
-          </HostComparisonTableHeading>
-          <PrivacyGuardrail>
-            <strong>Privacy guardrail</strong>
-            <p>Guests see event context only after the right checks pass.</p>
-          </PrivacyGuardrail>
-        </HostFeatureGrid>
-      </HostFeatureSection>
-      <HostFeatureSection variant="event-success">
-        <HostFeatureGrid variant="event-success">
-          <HostFeatureRail
-            activeId="checkin"
-            label="Playbook stages"
-            variant="event-success"
-            items={[
-              {id: "checkin", label: "Check-in", body: "Validate arrivals."},
-              {id: "debrief", label: "Debrief", body: "Capture outcome notes."},
-            ]}
-            onSelect={() => undefined}
-          />
-        </HostFeatureGrid>
-      </HostFeatureSection>
-    </ContentGrid>
-  ),
-};
-
 export const HostPreviewShellStory: Story = {
   name: "Host preview shell",
   parameters: {
@@ -431,155 +255,20 @@ export const HostPreviewShellStory: Story = {
     catchComponent: {
       id: "shared_host_preview_shell",
       routeIds: ["host"],
-      states: ["main", "hero", "offer", "sections", "apply", "live", "trust", "faq"],
+      states: ["sections", "faq"],
     },
   },
   render: () => (
-    <HostPreviewMain>
-      <HostPreviewHeroShell>
-        <HostPreviewHeroInner>
-          <HostPreviewHeroCopy>
-            <UiLabel>Preview</UiLabel>
-            <h1>Host preview route shell</h1>
-            <p>Preview-specific shells stay governed before launch traffic reaches them.</p>
-            <HostPreviewHeroStores>
-              <ButtonLink href="/download/">Open app</ButtonLink>
-            </HostPreviewHeroStores>
-          </HostPreviewHeroCopy>
-          <HostPreviewHeroMedia>
-            <HostPreviewHeroProduct>
-              <HostPreviewConsole
-                label="Live room"
-                title="Dinner club"
-                items={[
-                  {label: "Guests", value: "18"},
-                  {label: "Waitlist", value: "6"},
-                ]}
-              />
-            </HostPreviewHeroProduct>
-          </HostPreviewHeroMedia>
-        </HostPreviewHeroInner>
-      </HostPreviewHeroShell>
-      <HostPreviewOfferShell>
-        <HostPreviewOfferCard
-          badgeAriaLabel="Founding host offer"
-          badgeLabel="Founding"
-          badgeValue="0%"
-          title="Founding host offer"
-          titleId="storybook-host-preview-offer"
-          body="Offer cards, steps, and sections use shared route-specific shells."
-        />
-        <HostPreviewOfferSteps items={["Apply", "Review", "Launch"]} />
-      </HostPreviewOfferShell>
-      <HostPreviewSection variant="product-split">
-        <HostPreviewSectionHead title="Launch formats" titleId="storybook-host-preview-section" />
-        <HostPreviewFormatRail
-          items={[
-            {key: "dinner", label: "Dinner", active: true},
-            {key: "run", label: "Run club"},
-          ]}
-        />
-        <HostPreviewProductSplitCopy
-          title="Everything before publish"
-          titleId="storybook-host-preview-split"
-          body="Format rails, chip rows, rosters, live modules, and payment flows stay component-owned."
-        >
-          <HostPreviewChipRow items={[{key: "safety", label: "Safety"}, {key: "proof", label: "Proof"}]} />
-        </HostPreviewProductSplitCopy>
-      </HostPreviewSection>
-      <HostPreviewSection variant="loop">
-        <HostPreviewLoopGrid
-          items={[
-            {step: "Apply", title: "Send context", body: "Tell Catch about the room."},
-            {step: "Launch", title: "Publish with controls", body: "Use waitlist, roster, and check-in."},
-          ]}
-        />
-      </HostPreviewSection>
-      <HostPreviewSection variant="live">
-        <HostPreviewLiveGrid>
-          <HostPreviewRoster
-            items={[
-              {name: "Aarav", status: "Checked in", note: "Dinner seat 4"},
-              {name: "Mira", status: "Waitlist", note: "Notify if space opens"},
-            ]}
-          />
-          <HostPreviewPaymentFlow items={["Ticket", "Refund policy", "Settlement"]} />
-          <HostPreviewLiveModules items={["QR check-in", "Crowd balance", "First hello"]} />
-        </HostPreviewLiveGrid>
-      </HostPreviewSection>
-      <HostPreviewSection variant="trust">
-        <HostPreviewTrustGrid
-          items={[
-            {title: "Owner review", body: "Staff review happens before controls unlock."},
-            {title: "Guest safety", body: "Event context controls what guests can see."},
-          ]}
-        />
-        <HostPreviewFaqList
-          items={[
-            {question: "Can I publish directly?", answer: "Catch reviews the first host packet before launch."},
-          ]}
-        />
-      </HostPreviewSection>
-      <HostPreviewApplyShell
-        title="Apply as a host"
-        titleId="storybook-host-preview-apply"
-        body="The apply shell reuses the governed waitlist section contract."
-      >
-        <ButtonLink href="/host/apply/">Start application</ButtonLink>
-      </HostPreviewApplyShell>
-    </HostPreviewMain>
+    <HostPreviewSection variant="trust">
+      <HostPreviewSectionHead title="Questions hosts ask" titleId="storybook-host-preview-section" />
+      <HostPreviewFaqList
+        items={[
+          {question: "Can I publish directly?", answer: "Catch reviews the first host packet before launch."},
+        ]}
+      />
+    </HostPreviewSection>
   ),
 };
-
-export const OrganizerSearchSectionShellStory: Story = {
-  name: "Organizer search section shell",
-  parameters: {
-    catchComponent: {
-      id: "shared_organizer_search_section_shell",
-      routeIds: ["organizer_search"],
-      states: ["hero", "results", "claim-pressure"],
-    },
-  },
-  render: () => (
-    <>
-      <OrganizerSearchSection variant="hero" reveal>
-        <UiLabel>Organizer directory</UiLabel>
-        <h1>Search source-backed organizer pages</h1>
-        <OrganizerSearchStats
-          items={[
-            {label: "Profiles", value: "42"},
-            {label: "Cities", value: "9"},
-          ]}
-        />
-      </OrganizerSearchSection>
-      <OrganizerSearchSection variant="results">
-        <OrganizerResultSummary>
-          <strong>12 organizers found</strong>
-          <p>Results sections own summaries while result cards stay separate primitives.</p>
-        </OrganizerResultSummary>
-      </OrganizerSearchSection>
-      <OrganizerSearchSection variant="claim-pressure">
-        <DirectoryClaimPressureCopy>
-          <UiLabel>Claim pressure</UiLabel>
-          <h2>Turn public profiles into owner-managed pages.</h2>
-        </DirectoryClaimPressureCopy>
-        <DirectoryClaimPressureStats
-          items={[
-            {label: "Claimable", value: "18"},
-            {label: "Verified", value: "7"},
-          ]}
-        />
-        <DirectoryClaimPressureList>
-          <span>Attach source proof</span>
-          <span>Review owner role</span>
-          <span>Unlock responses</span>
-        </DirectoryClaimPressureList>
-        <DirectoryClaimPressureCta href="/claim/">Start claim</DirectoryClaimPressureCta>
-      </OrganizerSearchSection>
-    </>
-  ),
-};
-
 export const ListingSectionsAssemblyStory: Story = {
   name: "Listing sections assembly",
   parameters: {

@@ -9,11 +9,10 @@ import type {
   ReactNode,
 } from "react";
 import type {ActionGroupVariant} from "./actions";
-import type {ChipRailItem} from "./layout2";
 import {PlainLink} from "./actionControls";
 import {PublicSearchCityButton, PublicSearchSubmitButton} from "./actions2";
 import {PublicSearchInputField, SearchFormShell} from "./forms2";
-import {ChipRail, PublicSearchResultsPanel} from "./layout2";
+import {PublicSearchResultsPanel} from "./layout2";
 
 export {emptyStateClassNames} from "./feedback";
 export {buttonClassName} from "./actionControls";
@@ -83,53 +82,6 @@ export const actionGroupClassNames: Record<ActionGroupVariant, string> = {
   marketing: "marketing-actions",
   "host-create-flow": "host-create-flow__actions",
 };
-
-export const listingHeroClassNames = {
-  copy: "listing-hero__copy",
-  eyebrow: "listing-hero__eyebrow",
-  inner: "listing-hero__inner",
-  shell: "listing-hero",
-};
-
-export function LiveMeter({
-  className,
-  items,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  items: readonly ReactNode[];
-}) {
-  return (
-    <div {...props} className={classNames("live-meter", className)}>
-      {items.map((item, index) => (
-        <span key={index}>{item}</span>
-      ))}
-    </div>
-  );
-}
-
-export function ProductBoardNav({
-  className,
-  items,
-  ...props
-}: Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
-  items: ChipRailItem[];
-}) {
-  return <ChipRail {...props} className={classNames("product-board__nav", className)} items={items} />;
-}
-
-export function ProductBoardMain({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("product-board__main", className)}>
-      {children}
-    </div>
-  );
-}
 
 export interface StatStripItem {
   key?: string;

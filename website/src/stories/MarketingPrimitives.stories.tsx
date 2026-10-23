@@ -1,19 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {
-  ActivityMark,
-  AppDownloadCtaGroup,
-  Button,
-  ContentGrid,
-  FeaturedOrganizerCardGrid,
-  LiveMeter,
-  MarketingConsentBannerShell,
-  MarketingLoopList,
-  MarketingSection,
-  MarketingSectionCopy,
-  StatusBadge,
-  type ActivityMeta,
-  type FeaturedOrganizerCardItem,
-} from "../shared/ui/primitives";
+import {ActivityMark, AppDownloadCtaGroup, Button, ContentGrid, FeaturedOrganizerCardGrid, MarketingConsentBannerShell, MarketingLoopList, MarketingSection, MarketingSectionCopy, StatusBadge, type ActivityMeta, type FeaturedOrganizerCardItem} from "../shared/ui/primitives";
 import {memberLoop} from "@content/marketing";
 
 const appStoreItems = [
@@ -94,7 +80,7 @@ export const MarketingSectionShellStory: Story = {
     catchComponent: {
       id: "shared_marketing_section_shell",
       routeIds: ["home", "host", "organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["section-shell", "section-copy", "live-meter"],
+      states: ["section-shell", "section-copy"],
     },
   },
   render: () => (
@@ -105,9 +91,7 @@ export const MarketingSectionShellStory: Story = {
         title="A marketing section configures copy, proof, and live signals."
         body="Feature sections provide the content; shared primitives own spacing, copy rails, and repeated shell styling."
         variant="proof"
-      >
-        <LiveMeter items={["42 source-backed organizers", "9 cities", "3 launch loops"]} />
-      </MarketingSectionCopy>
+      />
     </MarketingSection>
   ),
 };

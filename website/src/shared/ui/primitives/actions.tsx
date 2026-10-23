@@ -1,6 +1,6 @@
 import {ButtonLink, PlainButton, PlainLink, buttonClassName} from "./actionControls";
 import type {ButtonSize, ButtonVariant} from "./actionControls";
-import {forwardRef, useState} from "react";
+import {useState} from "react";
 import type {
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
@@ -11,7 +11,7 @@ import type {
 } from "react";
 import {ButtonControl, classNames} from "@catch/web-ui";
 import type {AppDownloadStorePlatform} from "./marketing";
-import {DataTable, StoreButton} from "./actions2";
+import {StoreButton} from "./actions2";
 import {LiveStatus, defaultAppDownloadPendingStatus} from "./feedback";
 import {StatStrip, actionGroupClassNames} from "./foundation";
 import {UiLabel} from "./layout";
@@ -214,69 +214,6 @@ export function ActionGroup({
     >
       {children}
     </div>
-  );
-}
-
-export const HostComparisonTableHeading = forwardRef<
-  HTMLDivElement,
-  HTMLAttributes<HTMLDivElement> & {
-    children: ReactNode;
-    reveal?: boolean;
-  }
->(function HostComparisonTableHeading({
-  children,
-  className,
-  reveal = true,
-  ...props
-}, ref) {
-  return (
-    <div
-      {...props}
-      className={classNames("comparison-table-heading", className)}
-      data-reveal={reveal || undefined}
-      ref={ref}
-    >
-      {children}
-    </div>
-  );
-});
-
-export function HostComparisonTable({
-  ariaLabel = "Host platform comparison",
-  children,
-  className,
-  reveal = true,
-  tableClassName,
-}: {
-  ariaLabel?: string;
-  children: ReactNode;
-  className?: string;
-  reveal?: boolean;
-  tableClassName?: string;
-}) {
-  return (
-    <DataTable
-      ariaLabel={ariaLabel}
-      className={classNames("comparison-table-wrap", className)}
-      reveal={reveal}
-      tableClassName={classNames("comparison-table", tableClassName)}
-    >
-      {children}
-    </DataTable>
-  );
-}
-
-export function DirectoryClaimPressureCta({
-  children,
-  className,
-  ...props
-}: AnchorHTMLAttributes<HTMLAnchorElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <PlainLink {...props} className={classNames("directory-claim-pressure__cta", className)}>
-      {children}
-    </PlainLink>
   );
 }
 
