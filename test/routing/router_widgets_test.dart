@@ -420,7 +420,7 @@ void main() {
       expect(find.text('Club not found.'), findsNothing);
       // The private create flow schedules draft timers; unmount to settle them.
       await tester.pumpWidget(const SizedBox.shrink());
-      await tester.pump(const Duration(seconds: 5));
+      await pumpFeatureUiFor(tester, const Duration(seconds: 5));
     },
   );
 
