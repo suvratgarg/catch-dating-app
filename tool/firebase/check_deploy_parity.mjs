@@ -31,11 +31,6 @@ import {
   parseFirebaseProjectAliases,
   resolveFirebaseProjectId,
 } from "./check_environment_readiness.mjs";
-import {
-  clientCallableSurfaces,
-  deriveClientCallables,
-  formatClientCallableReport,
-} from "./check_client_callable_dependencies.mjs";
 import {listFirebaseFunctionTargets} from
   "./list_firebase_function_targets.mjs";
 
@@ -88,7 +83,7 @@ export function parseArgs(argv) {
         requireValue(argv, ++index, arg),
       );
     } else if (arg === "--client-callables") {
-      parsed.clientSurfaces = parseClientSurfaces(
+      parsed.clientSurfaces = parseClientSurfaceRequest(
         requireValue(argv, ++index, arg),
       );
     } else if (arg === "--client-root") {
@@ -117,16 +112,40 @@ export function parseArgs(argv) {
   return parsed;
 }
 
-export function parseClientSurfaces(value) {
-  const known = Object.keys(clientCallableSurfaces);
-  const surfaces = value === "all" ? known : String(value).split(",");
-  const unknown = surfaces.filter((surface) => !known.includes(surface));
-  if (unknown.length > 0 || new Set(surfaces).size !== surfaces.length) {
+export function parseClientSurfaceRequest(value) {
+  if (value === "all") return value;
+  const surfaces = String(value).split(",");
+  if (surfaces.some((surface) => !/^[a-z]+$/u.test(surface)) ||
+      new Set(surfaces).size !== surfaces.length) {
     throw new DeployParityUsageError(
-      `--client-callables accepts all or unique surfaces from ${known.join(",")}.`,
+      "--client-callables accepts all or unique comma-separated surfaces.",
     );
   }
   return surfaces;
+}
+
+export function resolveClientSurfaces(request, knownSurfaces) {
+  const surfaces = request === "all" ? [...knownSurfaces] : request;
+  const unknown = surfaces.filter((surface) => !knownSurfaces.includes(surface));
+  if (unknown.length > 0) {
+    throw new DeployParityUsageError(
+      `--client-callables accepts all or surfaces from ${knownSurfaces.join(",")}.`,
+    );
+  }
+  return surfaces;
+}
+
+/**
+ * Client source scanning loads only for --client-callables, so the deploy
+ * executor's import of loadRepositoryInventory keeps its dependency closure.
+ */
+export async function loadClientCallableTools() {
+  const tools = await import("./check_client_callable_dependencies.mjs");
+  return {
+    surfaces: Object.keys(tools.clientCallableSurfaces),
+    derive: tools.deriveClientCallables,
+    format: tools.formatClientCallableReport,
+  };
 }
 
 export function parseSelectedFunctionTargets(value) {
@@ -380,8 +399,13 @@ export function runDeployParity({
   selectedFunctionTargets = null,
   clientSurfaces = null,
   clientRoot = null,
-  deriveClientReferences = deriveClientCallables,
+  clientCallableTools = null,
 }) {
+  if (clientSurfaces !== null && clientCallableTools === null) {
+    throw new DeployParityUsageError(
+      "Client parity requires loadClientCallableTools().",
+    );
+  }
   const aliases = parseFirebaseProjectAliases(
     readUtf8(path.join(repoRoot, ".firebaserc"), ".firebaserc"),
   );
@@ -400,13 +424,13 @@ export function runDeployParity({
     ),
   );
   if (clientSurfaces !== null) {
-    const derived = deriveClientReferences({
+    const derived = clientCallableTools.derive({
       root: clientRoot ?? repoRoot,
       surfaces: clientSurfaces,
     });
     if (!derived.ok) {
       throw new DeployParityUsageError(
-        formatClientCallableReport(derived, clientSurfaces),
+        clientCallableTools.format(derived, clientSurfaces),
       );
     }
     return {
@@ -486,12 +510,19 @@ function usage() {
   ].join("\n");
 }
 
-function main() {
+async function main() {
   try {
     const options = parseArgs(process.argv.slice(2));
     if (options.help) {
       console.log(usage());
       return;
+    }
+    if (options.clientSurfaces !== null) {
+      options.clientCallableTools = await loadClientCallableTools();
+      options.clientSurfaces = resolveClientSurfaces(
+        options.clientSurfaces,
+        options.clientCallableTools.surfaces,
+      );
     }
     const report = runDeployParity(options);
     console.log(

@@ -13,11 +13,15 @@ import {
   loadRepositoryInventory,
   parseArgs,
   parseDeployedFunctionNames,
-  parseClientSurfaces,
+  loadClientCallableTools,
+  parseClientSurfaceRequest,
   parseLiveSecretNames,
   parseSelectedFunctionTargets,
+  resolveClientSurfaces,
   runDeployParity,
 } from "./check_deploy_parity.mjs";
+import {formatClientCallableReport} from
+  "./check_client_callable_dependencies.mjs";
 
 test("fails when a repo export is absent while ignoring deployed extension extras", () => {
   const report = compareDeployParity({
@@ -353,12 +357,27 @@ test("client parity reports referenced Functions the environment lacks", () => {
   );
 });
 
-test("client surfaces parse exactly and exclude deploy-target selection", () => {
-  assert.deepEqual(parseClientSurfaces("all"), ["app", "website", "admin"]);
-  assert.deepEqual(parseClientSurfaces("website,app"), ["website", "app"]);
-  for (const value of ["mobile", "app,app", ""]) {
-    assert.throws(() => parseClientSurfaces(value), (error) => error.exitCode === 64);
+test("client surfaces parse exactly and exclude deploy-target selection", async () => {
+  const tools = await loadClientCallableTools();
+  assert.deepEqual(tools.surfaces, ["app", "website", "admin"]);
+  assert.deepEqual(
+    resolveClientSurfaces(parseClientSurfaceRequest("all"), tools.surfaces),
+    ["app", "website", "admin"],
+  );
+  assert.deepEqual(
+    resolveClientSurfaces(parseClientSurfaceRequest("website,app"), tools.surfaces),
+    ["website", "app"],
+  );
+  for (const value of ["app,app", "", "App"]) {
+    assert.throws(
+      () => parseClientSurfaceRequest(value),
+      (error) => error.exitCode === 64,
+    );
   }
+  assert.throws(
+    () => resolveClientSurfaces(parseClientSurfaceRequest("mobile"), tools.surfaces),
+    (error) => error.exitCode === 64,
+  );
   const parsed = parseArgs([
     "--env", "prod", "--client-callables", "website", "--client-root", ".",
   ]);
@@ -418,7 +437,10 @@ test("runDeployParity checks a newer client checkout against the deployed invent
     runCommand,
     clientSurfaces: ["app", "website"],
     clientRoot: "/control-plane",
-    deriveClientReferences,
+    clientCallableTools: {
+      derive: deriveClientReferences,
+      format: formatClientCallableReport,
+    },
   });
   assert.deepEqual(derivations, [{
     root: "/control-plane",
@@ -436,15 +458,27 @@ test("runDeployParity checks a newer client checkout against the deployed invent
       repoRoot,
       runCommand,
       clientSurfaces: ["admin"],
-      deriveClientReferences: () => ({
-        ok: false,
-        callables: [],
-        references: new Map(),
-        dormantReferences: ["expireEventWaitlistOffers"],
-        undeclaredInvocations: [],
-      }),
+      clientCallableTools: {
+        derive: () => ({
+          ok: false,
+          callables: [],
+          references: new Map(),
+          dormantReferences: ["expireEventWaitlistOffers"],
+          undeclaredInvocations: [],
+        }),
+        format: formatClientCallableReport,
+      },
     }),
     (error) => error.exitCode === 64 &&
       /expireEventWaitlistOffers/u.test(error.message),
+  );
+  assert.throws(
+    () => runDeployParity({
+      environment: "prod",
+      repoRoot,
+      runCommand,
+      clientSurfaces: ["app"],
+    }),
+    (error) => error.exitCode === 64,
   );
 });
