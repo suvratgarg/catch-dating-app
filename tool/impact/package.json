@@ -1,0 +1,8 @@
+{
+  "name": "@catch/tool-impact",
+  "private": true,
+  "description": "Pinned import-graph tooling that derives Tools-lane check inputs from real imports.",
+  "devDependencies": {
+    "dependency-cruiser": "18.7.0"
+  }
+}
