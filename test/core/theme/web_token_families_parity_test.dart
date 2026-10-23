@@ -61,6 +61,47 @@ void main() {
     }
   });
 
+  test('field tokens match the Flutter field values', () {
+    expect(
+      number('catch-radius-interactive-tile'),
+      CatchRadius.interactiveTile,
+    );
+    expect(
+      number('catch-opacity-control-overlay-hover'),
+      CatchOpacity.controlOverlayHover,
+    );
+    expect(
+      number('catch-field-active-tint-alpha'),
+      CatchFieldTokens.activeTintAlpha,
+    );
+    expect(
+      number('catch-field-pressed-tint-alpha'),
+      CatchFieldTokens.pressedTintAlpha,
+    );
+    expect(
+      number('catch-field-disabled-opacity'),
+      CatchFieldTokens.disabledOpacity,
+    );
+    for (final brightness in Brightness.values) {
+      final mode = brightness.name;
+      final shadow = CatchElevation.fieldActive(brightness).single;
+      final color = shadow.color;
+      final rgba = [
+        color.r,
+        color.g,
+        color.b,
+      ].map((channel) => (channel * 255).round()).join(', ');
+      final alpha = double.parse(color.a.toStringAsFixed(2));
+      expect(
+        value('catch-theme-$mode-elevation-field-active'),
+        '${shadow.offset.dx == 0 ? 0 : '${shadow.offset.dx}px'} '
+        '${shadow.offset.dy.round()}px ${shadow.blurRadius.round()}px '
+        'rgba($rgba, ${alpha == alpha.roundToDouble() ? alpha.round() : alpha})',
+        reason: mode,
+      );
+    }
+  });
+
   test('page body end matches the Flutter page body inset', () {
     expect(number('catch-layout-page-body-end'), CatchSpacing.screenPb);
     expect(CatchInsets.pageBody.bottom, CatchSpacing.screenPb);
@@ -171,6 +212,14 @@ void main() {
           reason: '$mode $role',
         );
       }
+      expect(
+        block,
+        contains(
+          '--catch-elevation-field-active: '
+          'var(--catch-theme-$mode-elevation-field-active);',
+        ),
+        reason: '$mode field elevation',
+      );
     }
   });
 }

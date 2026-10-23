@@ -1,3 +1,5 @@
+import 'package:catch_tokens/generated/catch_design_tokens.g.dart';
+
 /// Semantic opacity levels for component states and editorial visual effects.
 abstract final class CatchOpacity {
   static const double visible = 1.0;
@@ -142,7 +144,8 @@ abstract final class CatchOpacity {
   static const double activityAvatarPrint = 0.08;
   static const double activityAvatarInnerRule = 0.16;
   static const double activityAvatarDim = 0.20;
-  static const double activityMapPinShadow = 0.30;
+  static const double activityMapPinShadow =
+      GeneratedCatchOpacityTokens.activityMapPinShadow;
   static const double distanceRing = 0.28;
   static const double distanceRingLabelFill = 0.94;
   static const double activityArtPrint = 0.07;
@@ -218,7 +221,8 @@ abstract final class CatchOpacity {
   static const double bottomActionScrim = 0.82;
 
   /// Hover overlay for buttons and tappable controls.
-  static const double controlOverlayHover = 0.04;
+  static const double controlOverlayHover =
+      GeneratedCatchOpacityTokens.controlOverlayHover;
 
   /// Pressed/splash overlay for buttons and tappable controls.
   static const double controlOverlayPressed = 0.08;

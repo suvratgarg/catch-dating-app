@@ -12,7 +12,8 @@ abstract final class CatchRadius {
   static const double segmentedInner = CatchSpacing.micro18;
   static const double segmentedOuter = 22.0;
   static const double infoTile = 10.0;
-  static const double interactiveTile = 12.0;
+  static const double interactiveTile =
+      GeneratedCatchRadiusTokens.interactiveTile;
   static const double heroCard = 22.0;
   static const double profilePhotoBottom = 30.0;
   static const double attendedEventTile = 18.0;
