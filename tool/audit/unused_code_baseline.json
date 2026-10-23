@@ -55,8 +55,6 @@
     "export functions/src/shared/relationshipDocuments.ts savedEventId",
     "export functions/src/transport/flightProviderConfig.ts defaultAlertBaseUrl",
     "export functions/src/transport/programTravel.ts upsertProgramTravelPartyHandler",
-    "export website/scripts/next/publicValidators.mjs validateExternalEventDocument",
-    "export website/src/features/organizers/routing.ts getHostListingForPath",
     "file functions/src/eventSuccess/operations/contracts.typecheck.ts",
     "file functions/src/hostAlerts/runtime.ts",
     "file functions/src/operations/index.ts",
