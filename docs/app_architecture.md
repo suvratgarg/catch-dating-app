@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.81.1
-updated: 2026-10-23
+version: 1.82.0
+updated: 2026-10-24
 owner: app_architecture
 status: active
 ---
@@ -57,7 +57,7 @@ section under 120 lines.
 | L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `packages/catch_ui/lib/src/components` | `packages/catch_ui` | L0–L2 |
 | L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `packages/catch_ui/lib/src/patterns` | `packages/catch_ui` | L0–L3 |
 | L4a | riverpod adapters | `CatchAsyncBoundary`, mutation error family, provider-backed notices | `lib/core/riverpod_ui/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
-| L5 | feature UI | domain-aware compositions; private widgets legal here only | `lib/<feature>/presentation/widgets/**` | unchanged | L0–L4 + own feature |
+| L5 | feature UI | arranges L2–L4 components and binds domain data to their props; draws nothing itself (D18) | `lib/<feature>/presentation/widgets/**` | unchanged | L0–L4 + own feature |
 | L6 | screens | route wiring, providers, controllers, navigation | `lib/<feature>/presentation/**` | unchanged | everything below |
 
 Shared foundations are imported through `package:catch_ui/catch_ui.dart`.
@@ -90,19 +90,24 @@ in the shared package. Connectivity and rehearsal state remain app callers.
 
 1. Reads providers, mutations, or routes? → L6 screen, or L4a when it is a
    reusable Riverpod translation of an L2–L4 surface.
-2. API names a domain concept (event, organizer, profile, roster)? → L5 or
-   L6. Entity material with a presentation-neutral API (poster, polaroid,
-   ticket) is L3.
-3. Reusable across features under a feature-neutral name? → L3/L4 after
-   catalog registration; until a second unrelated consumer exists, keep it
-   L5 and public.
-4. Otherwise → the smallest layer that owns the visual job. Check
-   `docs/widget_catalog.md` and Widgetbook before creating anything.
+2. Draws anything (surface, border, clip, paint, image, icon, text style, tap
+   feedback)? → L2–L4 in `catch_ui` with a registry entry and tier, even when
+   one place uses it (T4 when only one surface does). D18: the library
+   draws; features arrange and bind. Check `docs/widget_catalog.md`,
+   Widgetbook and registry aliases first. A name, alias or role-noun match
+   needs `comparedWith` and a reason, or the new thing is a recipe of the
+   existing component.
+3. API names a domain concept (event, organizer, profile, roster)? → an L5
+   binding or L6 screen that maps the domain data onto a domain-free L2–L4
+   component (poster, polaroid, ticket) and draws nothing.
+4. Otherwise → the smallest layer that owns the job, arranging library
+   components with the framework's layout widgets and token spacing.
 
 ### Naming grammar (summary — the Naming Grammar section below is binding)
 
 - `Catch[<UseCase>]<RoleNoun>` is reserved for L0–L4a; public feature widgets
-  are `<Feature><RoleNoun>`; `_Private` widgets only in L5.
+  are `<Feature><RoleNoun>`; `_Private` widgets only in L5, where they arrange
+  and bind like any feature widget (D18).
 - Use the same name for the same responsibility. A qualified use case must
   record its concrete distinction from the nearest existing contract in the
   registry; a new ID or implementation technique does not establish one.
@@ -2586,20 +2591,25 @@ Widgets have two normal homes:
 - `lib/core/widgets/**` for shared, app-coupled widgets that cannot live in
   `catch_ui` because they use app domain types or copy. They follow feature
   naming (`<Feature><RoleNoun>`, never the `Catch` prefix) and are registered
-  in the component registry.
+  in the component registry. Like feature widgets they arrange and bind; what
+  they draw lives in `catch_ui` (D18).
 - `lib/<feature>/presentation/widgets/**` for feature-owned UI that depends on
   feature domain/state language.
 
-Feature widgets own:
+Feature widgets own (D18, `docs/plans/ui_system_blueprint_and_conformance_audit.md`):
 
-- rendering sections, rows, cards, slivers, rails, forms, and body fragments;
-- local visual relationships inside their component;
-- local Flutter mechanics when they are genuinely component-local;
+- arranging library components into sections, rows, slivers, rails, forms,
+  and body fragments, using the framework's layout widgets and token spacing;
+- local Flutter mechanics that draw nothing (scroll, focus, animation
+  controllers) when they are genuinely component-local;
 - callbacks supplied by the screen/controller;
-- translating typed display state into core primitives.
+- translating typed display state into library component props.
 
 Feature widgets do not own:
 
+- drawing of any kind: decoration, clipping, painting, images, icons, styled
+  text, tap feedback. It belongs in a `catch_ui` component, even one only this
+  feature uses;
 - repository reads/writes;
 - mutation orchestration;
 - backend/platform calls;

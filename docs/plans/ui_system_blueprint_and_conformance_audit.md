@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.27.0
-updated: 2026-10-23
+version: 1.28.0
+updated: 2026-10-24
 owner: app_architecture
 status: active
 ---
@@ -22,7 +22,9 @@ program to the React surfaces (`website/`, `admin/`, `packages/web-ui`), so
 Flutter and React implement one component contract under one name.
 The 2026-10-22 web unification (D16–D17) keeps the website and Admin as
 separate deployables over one shared web system, enforced with stylelint and
-ESLint rather than hand-written scanners.
+ESLint rather than hand-written scanners. D18 (2026-10-23) gives both
+frameworks one placement rule: the library draws, and features only arrange
+and bind.
 
 It is a point-in-time plan, not a parallel architecture document. Durable rules
 ratified here are folded into `docs/app_architecture.md` (and the widget
@@ -701,6 +703,100 @@ too. Rules that need a token family wait for that family: no rule may fail a
 build with nothing valid to switch to. Rejected alternative: extending the
 hand-written Node scanners, which numbered about eighteen and covered none of
 spacing, typography or sizing.
+
+### D18. The library draws; features arrange and bind (ratified 2026-10-23)
+
+Owner direction (2026-10-23): every screen is built from library components,
+a visual one place needs goes into the library instead of the feature, and
+Flutter and React follow the same rule. Measured on 2026-10-23 against
+`origin/main` f03deb7e5, using scans that only report:
+
+- **Flutter.** App code outside `catch_ui` and `lib/core/theme` has 585 files
+  that define widgets.
+  - 245 (42%) already only arrange and bind.
+  - 140 draw nothing except text. App code makes 1,020 `Text`, `TextSpan` and
+    `SelectableText` calls, which is CAT-211's switch to `CatchText`.
+  - 200 draw. 84 of them draw only an `Icon` (331 calls), and the library has
+    no icon component to switch to. The other 116 build their own visuals in
+    377 calls, led by `BorderRadius` and `ColoredBox` (49 each),
+    `BoxDecoration` and `Tooltip` (25 each), then `Material`, `ClipRRect`,
+    `CustomPaint` and `DecoratedBox` (16 to 18 each).
+
+  The same files call framework layout widgets (`Column`, `Row`,
+  `Expanded`, `Padding`, `SizedBox`, `Stack`, `Wrap`) 2,162 times.
+- **React.** Feature and app-shell code has 123 `.tsx` files, and 88 of them
+  render raw HTML: 48 of Admin's 60 files (947 elements) and 40 of the
+  website's 63 (539 elements). The existing boundary gate keeps `className` out
+  of all of them, and only 8 pass `style`. Instead, 649 rules in the apps' CSS
+  reach these bare elements through a parent class
+  (`.intake-batch-inspector p`).
+  - The 1,486 elements are 998 text elements (`p`, `span`, `strong`, headings,
+    `code`), 272 table elements, 186 layout, list and landmark boxes, 20
+    `legend` and 9 images.
+  - The two apps' 44 shared-UI files add 1,252 raw elements and 811
+    `className` uses. All of that drawing belongs in the library.
+
+The rule:
+
+- **The library draws.** Anything that decides how something looks lives in
+  the framework's library, `packages/catch_ui` or `@catch/web-ui`, however
+  many places use it. That covers surfaces, borders, clipping, painting,
+  images, icons, type, tap and hover feedback, and composite visuals such as
+  the ticket. Every library component has a registry entry and a tier.
+  - A component that only one surface uses is T4.
+  - Library components stay domain-free, as D15 materials do: they take
+    presentation props and never import domain types, repositories, Firebase
+    or routes.
+- **Features arrange and bind.** Feature and screen code (L5 and L6 in
+  Flutter, `features/**` and the app shells in React) may only:
+  - arrange library components, spaced with token values;
+  - pass domain data and callbacks to library props.
+
+  It renders no raw drawing element, passes no styling and uses no raw value.
+  - **Web:** arrangement goes through `CatchGap`, `CatchInset`, `CatchPageBody`
+    and `CatchSectionList`, because an HTML element without a class has no
+    layout of its own.
+  - **Flutter:** features keep the framework's layout widgets (`Row`,
+    `Column`, `Stack`, `Expanded`, `Wrap`, `Align`, slivers). They arrange but
+    draw nothing, and the existing raw-value lints already keep their spacing
+    and sizes on tokens.
+  - `lib/core/widgets` and the two web apps' shared-UI layers follow the
+    feature rule. Their widgets become bindings, and their drawing moves into
+    the library.
+- **The rule looks at what code renders, not where a class lives or whether it
+  is private.** A feature widget that only arranges and binds is legal. The
+  new-widget gate's existing ban on new private widget classes is unchanged.
+- **Checking each addition stops duplication; where files live does not.** A
+  new library component needs a registry entry with its tier and aliases
+  before it merges. When its name, an alias or its role noun matches an
+  existing entry, it also records `comparedWith` and a `comparisonReason`
+  saying why it is not a recipe of that entry.
+  - The new-widget gate (Flutter) and `web:shared-ui-adoption` (React) do this
+    today for T1 and T2. D18 extends both to every tier.
+  - T4 entries are where generalisation starts. When a review finds two T4
+    entries doing one job, they become one recipe, and a second surface
+    adopting one promotes it.
+- **Cross-framework parity is required only for T1 and T2.** D9's rule (same
+  symbol and props in both frameworks) applies to those tiers. A T3 or T4
+  component exists in its one framework and needs no twin.
+
+Rejected alternatives:
+
+- **Every distinct composition in the library, with no bindings in
+  features.** Screen sections would move too, so the library would mirror the
+  app's structure, and every product change would become a library change. To
+  render domain data, the library would have to import domain types, at which
+  point it is the app.
+- **One-offs stay in their feature until a second consumer appears** (the
+  placement rule until now). A visual drawn inside a feature is invisible to
+  the next agent, which draws its own. That is how `catch.field` reached 12
+  implementations.
+- **A visuals folder in each feature.** It turns one place to check into one
+  per feature.
+- **Single-use shared exports move into their feature** (the earlier Phase 7
+  "screens become assemblies" plan). That puts drawing back into features.
+- **Parity for every library component.** Admin-only and native-only
+  components would need twins that no surface renders.
 
 ## Part 4 — Delivery Program
 
@@ -1879,10 +1975,43 @@ than building its own. Changes to the remaining phases:
   `shared/contracts/generated` pipeline, plus the query-key and
   pending-mutation helpers. Starts after the website read layer (#753) is
   wired in.
-- **Screens become assemblies.** Shared exports that one feature renders move
-  into that feature and dead exports are deleted (the `web:shared-ui-adoption`
-  move and delete counts become ratchets). A feature turns on the
-  no-bare-elements rule once it composes only library components.
+- **Screens become assemblies** (amended by D18 on 2026-10-23). Dead exports
+  are deleted. Shared exports that one feature renders become registered
+  `@catch/web-ui` components, and the feature keeps only a binding; they no
+  longer move into the feature. A feature turns on the no-bare-elements rule
+  once it composes only library components.
+
+**D18 delivery (2026-10-23).** D18 adds no new phase. It changes work already
+planned:
+
+- **Two rules, one per framework.** The 7g ESLint preset reports raw HTML
+  elements, `className` and `style` everywhere outside `packages/web-ui`. A
+  new `catch_ui_lints` rule reports raw drawing widgets and styling objects
+  outside `catch_ui`. Each starts from today's counts as a shrink-only
+  baseline (D17). The hand-written check each rule covers, such as
+  `web:react-classname-boundaries`, retires in the same change (D8).
+- **Missing library components come first.** Element families with no
+  library component to switch to stay out of the rules until one exists, so
+  each call site does not create its own wrapper:
+  - Flutter `Icon` (331 calls) and `Tooltip` (25) wait for library icon and
+    tooltip components;
+  - React tables (272 elements) wait for `catch.table`;
+  - images wait for `catch.network_image`.
+
+  Text is in from the start, because `CatchText` exists in both frameworks.
+- **The registry accepts React-only one-offs.** `component_concepts.mjs`
+  rejects a `react` record on T3 and T4 entries, so a React component that only
+  one surface uses cannot register in `@catch/web-ui` yet. A T4 entry gets the
+  record for its one framework and names its owning surface. Until then, a new
+  React one-off goes in its app's `shared/ui`, never into a feature.
+- **Re-scoped tickets.**
+  - CAT-219 registers Admin's single-use shared exports as `@catch/web-ui`
+    components with feature bindings, instead of moving them into features.
+  - `screens.web_single_use_shared` keeps its target of zero, counting only
+    single-use shared exports that the library has not registered.
+  - CAT-211 is D18's Flutter text slice.
+  - The ESLint suppressions are the `screens.web_bare_markup` gate CAT-217
+    already tracks.
 
 ### Consolidation done-gates (owner decision, 2026-10-23)
 
