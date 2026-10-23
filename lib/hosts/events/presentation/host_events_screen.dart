@@ -10,6 +10,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_flow.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';
 import 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
@@ -133,11 +134,29 @@ class _HostEventsRouteScaffoldState
   late DateTime _clockNow;
   late DateTime _timelineBoundary;
   Timer? _clockTimer;
+  GoRouter? _router;
+  bool _wasEventsIndex = false;
+  bool _refreshQueued = false;
+
+  bool get _isEventsIndex =>
+      _router?.state.name == Routes.hostEventsScreen.name &&
+      !_router!.state.uri.queryParameters.containsKey('eventId');
 
   @override
   void initState() {
     super.initState();
     _resetClock();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final router = GoRouter.maybeOf(context);
+    if (identical(router, _router)) return;
+    _router?.routerDelegate.removeListener(_onRouteChanged);
+    _router = router;
+    _wasEventsIndex = _isEventsIndex;
+    router?.routerDelegate.addListener(_onRouteChanged);
   }
 
   @override
@@ -149,7 +168,30 @@ class _HostEventsRouteScaffoldState
   @override
   void dispose() {
     _clockTimer?.cancel();
+    _router?.routerDelegate.removeListener(_onRouteChanged);
     super.dispose();
+  }
+
+  // Create, resume, repeat and program flows, the embedded event workspace and
+  // other tabs all return through the router. The retained timeline keeps its
+  // session boundary, so returning re-reads it, private setups included.
+  void _onRouteChanged() {
+    final isEventsIndex = _isEventsIndex;
+    if (isEventsIndex && !_wasEventsIndex) _queueRefresh();
+    _wasEventsIndex = isEventsIndex;
+  }
+
+  void _queueRefresh() {
+    if (_refreshQueued) return;
+    _refreshQueued = true;
+    // A covered list pauses its timeline subscription, and Riverpod schedules
+    // no refresh for a paused provider. Invalidate once the return frame has
+    // shown the list again.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshQueued = false;
+      if (!mounted || !_isEventsIndex) return;
+      ref.invalidate(hostEventsTimelineControllerProvider);
+    });
   }
 
   void _resetClock() {
