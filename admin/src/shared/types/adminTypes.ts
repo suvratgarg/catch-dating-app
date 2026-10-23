@@ -1,10 +1,3 @@
-export interface AdminOverviewMetric {
-  id: string;
-  label: string;
-  value: number;
-  unit?: string;
-}
-
 export interface AdminQueueItem {
   id: string;
   title: string;
@@ -1744,12 +1737,8 @@ export interface AdminGetMarketingOpsDashboardResponse {
 }
 
 export type EventIntakeSourceProfile = MarketingSourceProfile;
-export type EventIntakeQueryTemplate = MarketingQueryTemplate;
-export type EventIntakeRunPlan = MarketingRunPlan;
 export type EventIntakeSourceResult = MarketingSourceResult;
 export type EventIntakeCandidate = MarketingEventCandidate;
-export type EventIntakeDedupeGroup = MarketingDedupeGroup;
-export type EventIntakeAuditTrailItem = MarketingAuditTrailItem;
 
 export type EventIntakeBridge = Pick<
   MarketingOpsBridge,

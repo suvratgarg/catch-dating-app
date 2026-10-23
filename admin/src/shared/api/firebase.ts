@@ -8,7 +8,6 @@ import {
   signOut,
 } from "firebase/auth";
 import {firebaseApp} from "./firebaseCore";
-export {firebaseConfig} from "./firebaseCore";
 
 export const auth = getAuth(firebaseApp);
 

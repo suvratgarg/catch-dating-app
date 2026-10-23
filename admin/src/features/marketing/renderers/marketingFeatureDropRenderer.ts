@@ -169,8 +169,6 @@ export function marketingFeatureDropDefaults(
   return cloneConfig(audience === "hosts" ? hostDefaults : memberDefaults);
 }
 
-export const defaultMarketingFeatureDropConfig = marketingFeatureDropDefaults("members");
-
 export async function renderFeatureDropPreviewUrls(
   config: MarketingFeatureDropConfig,
   resolveImage: FeatureDropImageResolver
