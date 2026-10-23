@@ -11,6 +11,13 @@
  *   node tool/firebase/check_deploy_parity.mjs --env prod \
  *     --targets functions:firstCallable,functions:secondCallable
  *   node tool/firebase/check_deploy_parity.mjs --env staging --json
+ *   node tool/firebase/check_deploy_parity.mjs --env prod \
+ *     --client-callables website --client-root .
+ *
+ * `--client-callables` checks the Functions that client source references
+ * (derived by check_client_callable_dependencies.mjs) instead of the deploy
+ * plan, so a client checkout newer than the deployed source fails when it
+ * calls a Function the environment does not serve.
  */
 
 import {spawnSync} from "node:child_process";
@@ -57,6 +64,8 @@ function requireValue(argv, index, option) {
 
 export function parseArgs(argv) {
   const parsed = {
+    clientRoot: null,
+    clientSurfaces: null,
     environment: null,
     help: false,
     json: false,
@@ -73,6 +82,12 @@ export function parseArgs(argv) {
       parsed.selectedFunctionTargets = parseSelectedFunctionTargets(
         requireValue(argv, ++index, arg),
       );
+    } else if (arg === "--client-callables") {
+      parsed.clientSurfaces = parseClientSurfaceRequest(
+        requireValue(argv, ++index, arg),
+      );
+    } else if (arg === "--client-root") {
+      parsed.clientRoot = path.resolve(requireValue(argv, ++index, arg));
     } else if (arg === "--json") {
       parsed.json = true;
     } else if (arg === "--help" || arg === "-h") {
@@ -84,7 +99,53 @@ export function parseArgs(argv) {
   if (!parsed.help && !parsed.environment) {
     throw new DeployParityUsageError("--env <environment> is required.");
   }
+  if (parsed.clientSurfaces && parsed.selectedFunctionTargets) {
+    throw new DeployParityUsageError(
+      "--client-callables and --targets select different scopes; pass one.",
+    );
+  }
+  if (parsed.clientRoot && !parsed.clientSurfaces) {
+    throw new DeployParityUsageError(
+      "--client-root requires --client-callables.",
+    );
+  }
   return parsed;
+}
+
+export function parseClientSurfaceRequest(value) {
+  if (value === "all") return value;
+  const surfaces = String(value).split(",");
+  if (surfaces.some((surface) => !/^[a-z]+$/u.test(surface)) ||
+      new Set(surfaces).size !== surfaces.length) {
+    throw new DeployParityUsageError(
+      "--client-callables accepts all or unique comma-separated surfaces.",
+    );
+  }
+  return surfaces;
+}
+
+export function resolveClientSurfaces(request, knownSurfaces) {
+  const surfaces = request === "all" ? [...knownSurfaces] : request;
+  const unknown = surfaces.filter((surface) => !knownSurfaces.includes(surface));
+  if (unknown.length > 0) {
+    throw new DeployParityUsageError(
+      `--client-callables accepts all or surfaces from ${knownSurfaces.join(",")}.`,
+    );
+  }
+  return surfaces;
+}
+
+/**
+ * Client source scanning loads only for --client-callables, so the deploy
+ * executor's import of loadRepositoryInventory keeps its dependency closure.
+ */
+export async function loadClientCallableTools() {
+  const tools = await import("./check_client_callable_dependencies.mjs");
+  return {
+    surfaces: Object.keys(tools.clientCallableSurfaces),
+    derive: tools.deriveClientCallables,
+    format: tools.formatClientCallableReport,
+  };
 }
 
 export function parseSelectedFunctionTargets(value) {
@@ -299,12 +360,52 @@ export function compareDeployParity({
   };
 }
 
+/**
+ * Client parity: every Function the client source references is deployed.
+ * Unlike selected parity, a referenced name need not exist in the deployed
+ * source; a newer client calling it is exactly the failure to report.
+ */
+export function compareClientCallableParity({
+  clientReferences,
+  deployedFunctionNames,
+  declaredSecretNames,
+  liveSecretNames,
+}) {
+  const missingFunctions = [...clientReferences.keys()]
+    .filter((name) => !deployedFunctionNames.has(name))
+    .sort();
+  const missingSecrets = [...declaredSecretNames]
+    .filter((name) => !liveSecretNames.has(name))
+    .sort();
+  return {
+    ok: missingFunctions.length === 0 && missingSecrets.length === 0,
+    missingFunctions,
+    missingFunctionSurfaces: Object.fromEntries(missingFunctions.map(
+      (name) => [name, [...clientReferences.get(name)].sort()],
+    )),
+    missingSecrets,
+    parityScope: "client",
+    checkedFunctionCount: clientReferences.size,
+    deployedFunctionCount: deployedFunctionNames.size,
+    declaredSecretCount: declaredSecretNames.size,
+    liveSecretCount: liveSecretNames.size,
+  };
+}
+
 export function runDeployParity({
   environment,
   repoRoot = defaultRepoRoot,
   runCommand = defaultRunCommand,
   selectedFunctionTargets = null,
+  clientSurfaces = null,
+  clientRoot = null,
+  clientCallableTools = null,
 }) {
+  if (clientSurfaces !== null && clientCallableTools === null) {
+    throw new DeployParityUsageError(
+      "Client parity requires loadClientCallableTools().",
+    );
+  }
   const aliases = parseFirebaseProjectAliases(
     readUtf8(path.join(repoRoot, ".firebaserc"), ".firebaserc"),
   );
@@ -322,6 +423,32 @@ export function runDeployParity({
       "Secret Manager inventory",
     ),
   );
+  if (clientSurfaces !== null) {
+    const derived = clientCallableTools.derive({
+      root: clientRoot ?? repoRoot,
+      surfaces: clientSurfaces,
+    });
+    if (!derived.ok) {
+      throw new DeployParityUsageError(
+        clientCallableTools.format(derived, clientSurfaces),
+      );
+    }
+    return {
+      environment,
+      projectId,
+      clientSurfaces,
+      repoFunctionCount: repository.functionNames.size,
+      ...compareClientCallableParity({
+        clientReferences: new Map(derived.callables.map((name) => [
+          name,
+          derived.references.get(name).surfaces,
+        ])),
+        deployedFunctionNames,
+        declaredSecretNames: repository.secretNames,
+        liveSecretNames,
+      }),
+    };
+  }
   const validatedSelectedTargets = selectedFunctionTargets === null ? null :
     parseSelectedFunctionTargets(selectedFunctionTargets.join(","));
   const selectedFunctionNames = validatedSelectedTargets === null ? null :
@@ -341,19 +468,25 @@ export function runDeployParity({
 }
 
 export function formatReport(report) {
+  const checked = report.parityScope === "client" ?
+    `client-referenced Function(s) from ${report.clientSurfaces.join(", ")}` :
+    `${report.parityScope === "selected" ? "selected " : ""}` +
+      "deployable source export(s)";
   const lines = [
     `${report.ok ? "PASS" : "FAIL"} deploy parity for ` +
       `${report.environment}: ${report.projectId}`,
-    `  Functions: ${report.checkedFunctionCount} ` +
-      `${report.parityScope === "selected" ? "selected " : ""}` +
-      "deployable source export(s), " +
-      `${report.deployedFunctionCount} deployed, ` +
-      `${report.environmentOnlyFunctionCount} environment-only ignored`,
+    `  Functions: ${report.checkedFunctionCount} ${checked}, ` +
+      `${report.deployedFunctionCount} deployed` +
+      (report.parityScope === "client" ? "" :
+        `, ${report.environmentOnlyFunctionCount} environment-only ignored`),
     `  Secrets: ${report.declaredSecretCount} defineSecret name(s), ` +
       `${report.liveSecretCount} present`,
   ];
   if (report.missingFunctions.length > 0) {
-    lines.push(`  Missing Functions: ${report.missingFunctions.join(", ")}`);
+    const surfaces = report.missingFunctionSurfaces ?? {};
+    lines.push(`  Missing Functions: ${report.missingFunctions.map((name) =>
+      surfaces[name] ? `${name} (${surfaces[name].join(", ")})` : name,
+    ).join(", ")}`);
   }
   if (report.missingSecrets.length > 0) {
     lines.push(`  Missing secrets: ${report.missingSecrets.join(", ")}`);
@@ -369,17 +502,27 @@ function usage() {
     "Options:",
     "  --repo-root <path>  Read exports and defineSecret declarations here.",
     "  --targets <csv>      Check exact selected functions:<name> targets.",
+    "  --client-callables <all|app,website,admin>",
+    "                      Check Functions referenced by client source.",
+    "  --client-root <path> Read client source here (default: --repo-root).",
     "  --json              Emit a machine-readable report.",
     "  --help              Show this help.",
   ].join("\n");
 }
 
-function main() {
+async function main() {
   try {
     const options = parseArgs(process.argv.slice(2));
     if (options.help) {
       console.log(usage());
       return;
+    }
+    if (options.clientSurfaces !== null) {
+      options.clientCallableTools = await loadClientCallableTools();
+      options.clientSurfaces = resolveClientSurfaces(
+        options.clientSurfaces,
+        options.clientCallableTools.surfaces,
+      );
     }
     const report = runDeployParity(options);
     console.log(
