@@ -72,7 +72,6 @@ import {
   AdminMarketingRecommendationList,
   AdminMarketingSection,
   AdminMarketingSectionHeader,
-  AdminMarketingSelectField,
   AdminMarketingSlideEditor,
   AdminMarketingSlideEditorTopline,
   AdminMarketingSlideList,
@@ -1052,39 +1051,14 @@ export const AdminMarketingEditGridStory: Story = {
     <AdminWorkspace>
       <AdminMarketingEditGrid>
         <AdminMarketingTitleInput ariaLabel="Headline" value="Bring better people together" onChange={() => undefined} />
-        <AdminMarketingSelectField
-          label="Tone"
-          options={[
-            {label: "Warm", value: "warm"},
-            {label: "Direct", value: "direct"},
-          ]}
+        <CatchField
+          recipe="select"
+          title="Tone"
+          values={["warm", "direct"]}
+          itemLabelBuilder={(item) => item === "warm" ? "Warm" : "Direct"}
           value="warm"
-          onChange={() => undefined}
         />
       </AdminMarketingEditGrid>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminMarketingSelectFieldStory: Story = {
-  name: "Marketing select field",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_marketing_select_field",
-      states: ["default"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminMarketingSelectField
-        label="Channel"
-        options={[
-          {label: "Instagram", value: "instagram"},
-          {label: "Newsletter", value: "newsletter"},
-        ]}
-        value="instagram"
-        onChange={() => undefined}
-      />
     </AdminWorkspace>
   ),
 };
@@ -1584,14 +1558,12 @@ export const AdminMarketingImageMetaFieldsStory: Story = {
     <AdminWorkspace>
       <AdminMarketingImageMetaFields>
         <AdminMarketingTitleInput ariaLabel="Image title" value="Host console proof" onChange={() => undefined} />
-        <AdminMarketingSelectField
-          label="Usage"
-          options={[
-            {label: "Hero", value: "hero"},
-            {label: "Carousel", value: "carousel"},
-          ]}
+        <CatchField
+          recipe="select"
+          title="Usage"
+          values={["hero", "carousel"]}
+          itemLabelBuilder={(item) => item === "hero" ? "Hero" : "Carousel"}
           value="carousel"
-          onChange={() => undefined}
         />
       </AdminMarketingImageMetaFields>
     </AdminWorkspace>

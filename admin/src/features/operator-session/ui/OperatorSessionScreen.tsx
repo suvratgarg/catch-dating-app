@@ -1,6 +1,7 @@
+import {CatchField} from "@catch/web-ui";
 import {useEffect, useRef, useState} from "react";
 import {auth} from "../../../shared/api/firebase";
-import {AdminButton, AdminSignInPanel, AdminSignInScreen, TextareaField} from "../../../shared/ui/AdminPrimitives";
+import {AdminButton, AdminSignInPanel, AdminSignInScreen} from "../../../shared/ui/AdminPrimitives";
 import {transferSession} from "../api/operatorSessionHandoff";
 import {createSessionTransport, takeSessionLaunch, sessionRequest, sessionFailureCode, type SessionRequest} from "../api/operatorSessionTransport";
 
@@ -99,7 +100,8 @@ export function OperatorSessionScreen() {
     <h1>Catch operator session</h1><p>{status}</p>
     {initial ? <><p>Selected local directory: {initial.home}. Source: {initial.runtime.sourceSha}.</p>
       <p>Runtime fingerprint: {initial.runtime.executionSha256}.</p>
-      <TextareaField label="Selected profile configuration — never enter tokens, passwords or secret payloads" rows={12} value={configuration} onChange={setConfiguration} readOnly={Boolean(initial.profile) || Boolean(request)} disabled={pending || cancelled || consumed} />
+      <CatchField recipe="input" title="Selected profile configuration — never enter tokens, passwords or secret payloads" maxLines={12} value={configuration} onChanged={setConfiguration}
+        inputMode={pending || cancelled || consumed ? "inactive" : initial.profile || request ? "readOnly" : "editable"} />
       <AdminButton disabled={pending || cancelled || Boolean(request)} onClick={() => void configure()}>Validate configuration</AdminButton></> : null}
     {request ? <p>Project: {request.projectId}. Google account: {request.actorUid}. Endpoint scope: {request.scopeSha256}.</p> : null}
     <AdminButton disabled={!request || pending || consumed || cancelled || !alive.current} onClick={() => void transfer()}>Save my current Google session</AdminButton>

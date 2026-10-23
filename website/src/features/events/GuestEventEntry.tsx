@@ -5,7 +5,6 @@ import {guestEventAction} from "./guestEventAction";
 import {
   Button,
   ButtonLink,
-  TextField,
   FormStatus,
   EventRegistrationForm,
   EventRegistrationPrivacy,
@@ -161,9 +160,10 @@ function ApprovalNotifications({eventId, user}: {eventId: string; user: User}) {
         onChange={(event) => c.choose("emailUpdates", event.target.checked)}>{c.value.terms.email}</CheckboxField>
       {!c.value.emailVerified ? <>
         <p>{copy.verifyFirst}</p>
-        <TextField id={`${c.id}-email`} label={copy.email} type="email" autoComplete="email"
-          value={c.email} disabled={c.pending} readOnly={Boolean(user.email)}
-          onChange={(event) => c.setEmail(event.target.value)} />
+        <CatchField recipe="input" id={`${c.id}-email`} title={copy.email} keyboardType="emailAddress"
+          autoComplete="email" value={c.email}
+          inputMode={c.pending ? "inactive" : user.email ? "readOnly" : "editable"}
+          onChanged={(value) => c.setEmail(value)} />
         <Button type="button" disabled={c.pending || !c.email.trim()}
           onClick={() => void c.verify()}>{copy.verify}</Button>
       </> : null}

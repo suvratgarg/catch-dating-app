@@ -1,4 +1,4 @@
-import {CatchField, CatchGap} from "@catch/web-ui";
+import {CatchField, CatchGap, CatchText} from "@catch/web-ui";
 import {useMemo} from "react";
 import {
   Button,
@@ -11,9 +11,7 @@ import {
   EventRuntimeModule,
   EventRuntimeNoticeStack,
   EventRuntimePanel,
-  Field,
   FormStatus,
-  SelectField,
 } from "../../shared/ui/primitives";
 import {programHouseholdItineraryIcsUrl} from "../../firebase";
 import {householdRsvpCopy as copy} from "../../content/householdRsvp";
@@ -82,7 +80,8 @@ function MemberFunctionCard({
       {fn.venueName ? <p>{fn.venueName}</p> : null}
       {fn.dressCode ? <p>{copy.dressCodeLabel} {fn.dressCode}</p> : null}
       {fn.instructions ? <p>{fn.instructions}</p> : null}
-      <Field label={<span id={`${inputId}-label`}>{member.displayName}</span>}>
+      <CatchGap size="inline">
+        <CatchText as="span" id={`${inputId}-label`} variant="fieldLabel">{member.displayName}</CatchText>
         <ChoiceChipGrid aria-labelledby={`${inputId}-label`}>
           {STATUS_CHOICES.map((choice) => (
             <ChoiceChip key={choice.status}
@@ -93,7 +92,7 @@ function MemberFunctionCard({
             </ChoiceChip>
           ))}
         </ChoiceChipGrid>
-      </Field>
+      </CatchGap>
       {attending ? (
         <CatchField
           recipe="input"
@@ -200,28 +199,25 @@ function TravelBlockCard({
         }}
         keyboardType="datetime"
       />
-      <SelectField
+      <CatchField
+        recipe="select"
         id={`${inputId}-hotel`}
-        label={copy.travelHotel}
-        disabled={pending}
-        value={destination}
-        onChange={(event) => {
-          const value = event.target.value;
+        title={copy.travelHotel}
+        hintText={copy.travelHotelChoose}
+        values={[...hotels.map((hotel) => hotel.hotelId), OTHER_DESTINATION]}
+        itemLabelBuilder={(hotelId) => hotelId === OTHER_DESTINATION ? copy.travelHotelOther :
+          hotels.find((hotel) => hotel.hotelId === hotelId)?.name ?? hotelId}
+        inputMode={pending ? "inactive" : "editable"}
+        value={destination || null}
+        onChanged={(selected) => {
+          const value = selected ?? "";
           onChange({
             destinationHotelId: value === "" || value === OTHER_DESTINATION ?
               null : value,
             destinationLabel: value === OTHER_DESTINATION ?
               draft?.destinationLabel ?? null : null,
           });
-        }}>
-        <option value="">{copy.travelHotelChoose}</option>
-        {hotels.map((hotel) => (
-          <option key={hotel.hotelId} value={hotel.hotelId}>
-            {hotel.name}
-          </option>
-        ))}
-        <option value={OTHER_DESTINATION}>{copy.travelHotelOther}</option>
-      </SelectField>
+        }} />
       {destination === OTHER_DESTINATION ? (
         <CatchField
           recipe="input"

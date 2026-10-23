@@ -9,7 +9,6 @@ import {
   selectOptionLabeller,
   selectOptionValues,
   StateRow,
-  TextField,
 } from "../../../shared/ui/AdminPrimitives";
 import {toLocalDateTimeInput, type SalesWorkspaceController} from
   "../controllers/useSalesWorkspaceController";
@@ -137,9 +136,9 @@ function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
           {value: "email", label: "Email"}, {value: "phone", label: "Phone"},
         ])}
       />
-      <TextField label={endpointKind === "email" ? "Email address (unverified)" :
+      <CatchField recipe="input" title={endpointKind === "email" ? "Email address (unverified)" :
         "Phone number (unverified)"} value={endpointValue}
-        onChange={setEndpointValue} type={endpointKind === "email" ? "email" : "text"} />
+        onChanged={setEndpointValue} keyboardType={endpointKind === "email" ? "emailAddress" : "text"} />
       <p>These contact details still need review before they can be used.</p>
       <AdminButton type="submit" disabled={!name.trim() || !role.trim() ||
         controller.isSaving}>Add contact</AdminButton>

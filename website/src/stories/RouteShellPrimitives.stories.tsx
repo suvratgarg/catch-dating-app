@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchField, CatchGap} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {FormEvent, ReactNode} from "react";
 import {hostListings} from "./fixtures/hostListings";
@@ -32,7 +32,6 @@ import {
   DirectoryClaimPressureCta,
   DirectoryClaimPressureList,
   DirectoryClaimPressureStats,
-  FieldGrid,
   FormStatus,
   HostApplicationCompletenessSummary,
   HostApplicationPanel,
@@ -82,7 +81,6 @@ import {
   PrivacyGuardrail,
   ProductShell,
   SelectedListingCard,
-  SelectField,
   UiLabel,
   VerificationMethodGrid,
 } from "../shared/ui/primitives";
@@ -151,7 +149,7 @@ export const ClaimFlowShellStory: Story = {
       <ClaimFlowWorkspace onSubmit={preventSubmit}>
         <ClaimFlowPanel>
           <ClaimFlowStage>
-            <FieldGrid>
+            <CatchGap size="formField">
               <CatchField
                 recipe="input"
                 id="storybook-claim-name"
@@ -159,11 +157,10 @@ export const ClaimFlowShellStory: Story = {
                 name="requesterName"
                 initialValue="Taylor Host"
               />
-              <SelectField id="storybook-claim-role" label="Role" name="requesterRole" defaultValue="owner">
-                <option value="owner">Owner</option>
-                <option value="manager">Manager</option>
-              </SelectField>
-            </FieldGrid>
+              <CatchField recipe="select" id="storybook-claim-role" title="Role" name="requesterRole"
+                values={["owner", "manager"]} itemLabelBuilder={(role) => role === "owner" ? "Owner" : "Manager"}
+                initialValue="owner" />
+            </CatchGap>
             <ClaimListingResults>
               <ClaimResultButton activityToken="var(--activity-dinner)" selected>
                 Sunday Table Club

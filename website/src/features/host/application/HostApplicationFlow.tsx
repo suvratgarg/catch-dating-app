@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchField, CatchGap, CatchText} from "@catch/web-ui";
 import {websiteCopy} from "@content/generated";
 import {hostApplicationCopy} from "@content/host";
 import {websiteTemplates} from "@content/templates";
@@ -9,8 +9,6 @@ import {
   ButtonLink,
   ChoiceChip,
   ChoiceChipGrid,
-  Field,
-  FieldGrid,
   FormStatus,
   HostApplicationCompletenessSummary,
   HostApplicationPanel,
@@ -21,10 +19,7 @@ import {
   HostApplicationSubmitted,
   OperationalNote,
   ProfileStrength,
-  SelectField,
   StepRail,
-  TextAreaField,
-  TextField,
 } from "../../../shared/ui/primitives";
 import {
   hostApplicationChecklist,
@@ -77,7 +72,7 @@ export function HostApplicationFlow() {
 
         {!submitted && step === "profile" ? (
           <HostApplicationStage>
-            <FieldGrid>
+            <CatchGap size="formField">
               <CatchField
                 recipe="input"
                 id="host-full-name"
@@ -97,17 +92,16 @@ export function HostApplicationFlow() {
                 required
                 keyboardType="emailAddress"
               />
-              <SelectField
+              <CatchField
+                recipe="select"
                 id="host-city"
-                label={websiteCopy["hostapplicationflow_0245"]}
+                title={websiteCopy["hostapplicationflow_0245"]}
+                values={activeHostApplicationCityOptions}
+                itemLabelBuilder={(city) => city}
                 value={draft.city}
-                onChange={(event) => updateDraft("city", event.currentTarget.value)}
+                onChanged={(city) => updateDraft("city", city ?? "")}
                 required
-              >
-                {activeHostApplicationCityOptions.map((city) => (
-                  <option key={city}>{city}</option>
-                ))}
-              </SelectField>
+              />
               {draft.city === "Other" ? (
                 <CatchField
                   recipe="input"
@@ -127,35 +121,39 @@ export function HostApplicationFlow() {
                 onChanged={(value) => updateDraft("organizationName", value)}
                 required
               />
-              <SelectField
+              <CatchField
+                recipe="select"
                 id="host-org-type"
-                label={websiteCopy["hostapplicationflow_0233"]}
+                title={websiteCopy["hostapplicationflow_0233"]}
+                values={[
+                  websiteCopy["hostapplicationflow_0234"],
+                  websiteCopy["hostapplicationflow_0255"],
+                  websiteCopy["hostapplicationflow_0259"],
+                  websiteCopy["hostapplicationflow_0217"],
+                  websiteCopy["hostapplicationflow_0222"],
+                ]}
+                itemLabelBuilder={(type) => type}
                 value={draft.organizationType}
-                onChange={(event) => updateDraft("organizationType", event.currentTarget.value)}
-              >
-                <option>{websiteCopy["hostapplicationflow_0234"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0255"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0259"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0217"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0222"]}</option>
-              </SelectField>
-              <TextField
+                onChanged={(type) => updateDraft("organizationType", type ?? "")}
+              />
+              <CatchField
+                recipe="input"
                 id="host-community-link"
-                label={websiteCopy["hostapplicationflow_0218"]}
+                title={websiteCopy["hostapplicationflow_0218"]}
                 value={draft.communityLink}
                 autoComplete="url"
-                placeholder={websiteCopy["hostapplicationflow_0235"]}
-                onChange={(event) => updateDraft("communityLink", event.currentTarget.value)}
-                span
+                inputHint={websiteCopy["hostapplicationflow_0235"]}
+                onChanged={(value) => updateDraft("communityLink", value)}
                 required
               />
-            </FieldGrid>
+            </CatchGap>
           </HostApplicationStage>
         ) : null}
 
         {!submitted && step === "event" ? (
           <HostApplicationStage>
-            <Field span label={<span>{websiteCopy["hostapplicationflow_0228"]}</span>}>
+            <CatchGap size="inline">
+              <CatchText as="span" variant="fieldLabel">{websiteCopy["hostapplicationflow_0228"]}</CatchText>
               <ChoiceChipGrid aria-label={websiteCopy["hostapplicationflow_0228"]}>
                 {hostFormatOptions.map((format) => (
                   <ChoiceChip
@@ -167,20 +165,23 @@ export function HostApplicationFlow() {
                   </ChoiceChip>
                 ))}
               </ChoiceChipGrid>
-            </Field>
-            <FieldGrid>
-              <SelectField
+            </CatchGap>
+            <CatchGap size="formField">
+              <CatchField
+                recipe="select"
                 id="host-event-cadence"
-                label={websiteCopy["hostapplicationflow_0215"]}
+                title={websiteCopy["hostapplicationflow_0215"]}
+                values={[
+                  websiteCopy["hostapplicationflow_0262"],
+                  websiteCopy["hostapplicationflow_0212"],
+                  websiteCopy["hostapplicationflow_0240"],
+                  websiteCopy["hostapplicationflow_0252"],
+                  websiteCopy["hostapplicationflow_0243"],
+                ]}
+                itemLabelBuilder={(cadence) => cadence}
                 value={draft.eventCadence}
-                onChange={(event) => updateDraft("eventCadence", event.currentTarget.value)}
-              >
-                <option>{websiteCopy["hostapplicationflow_0262"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0212"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0240"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0252"]}</option>
-                <option>{websiteCopy["hostapplicationflow_0243"]}</option>
-              </SelectField>
+                onChanged={(cadence) => updateDraft("eventCadence", cadence ?? "")}
+              />
               <CatchField
                 recipe="input"
                 id="host-event-name"
@@ -190,22 +191,19 @@ export function HostApplicationFlow() {
                 onChanged={(value) => updateDraft("nextEventName", value)}
                 required
               />
-              <SelectField
+              <CatchField
+                recipe="select"
                 id="host-event-pricing"
-                label={hostApplicationCopy.eventPricing.label}
-                value={draft.eventPricing}
+                title={hostApplicationCopy.eventPricing.label}
+                hintText={hostApplicationCopy.eventPricing.placeholder}
+                values={hostApplicationCopy.eventPricing.options}
+                itemLabelBuilder={(option) => option.label}
+                itemValueBuilder={(option) => option.value}
+                value={hostApplicationCopy.eventPricing.options.find(
+                  (option) => option.value === draft.eventPricing) ?? null}
                 required
-                onChange={(event) => {
-                  const value = hostApplicationCopy.eventPricing.options.find(
-                    (option) => option.value === event.currentTarget.value)?.value;
-                  updateDraft("eventPricing", value ?? "");
-                }}
-              >
-                <option value="">{hostApplicationCopy.eventPricing.placeholder}</option>
-                {hostApplicationCopy.eventPricing.options.map((option) => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
-                ))}
-              </SelectField>
+                onChanged={(option) => updateDraft("eventPricing", option?.value ?? "")}
+              />
               <CatchField
                 recipe="input"
                 id="host-event-date"
@@ -222,13 +220,13 @@ export function HostApplicationFlow() {
                 onChanged={(value) => updateDraft("eventLocation", value)}
                 required
               />
-            </FieldGrid>
+            </CatchGap>
           </HostApplicationStage>
         ) : null}
 
         {!submitted && step === "setup" ? (
           <HostApplicationStage>
-            <FieldGrid>
+            <CatchGap size="formField">
               <CatchField
                 recipe="input"
                 id="host-capacity"
@@ -238,34 +236,32 @@ export function HostApplicationFlow() {
                 required
                 keyboardType="number"
               />
-              <SelectField
+              <CatchField
+                recipe="select"
                 id="host-booking-platform"
-                label={hostApplicationCopy.setup.bookingPlatformLabel}
+                title={hostApplicationCopy.setup.bookingPlatformLabel}
+                values={hostApplicationCopy.setup.bookingPlatforms}
+                itemLabelBuilder={(platform) => platform}
                 value={draft.bookingPlatform}
-                onChange={(event) => updateDraft("bookingPlatform", event.currentTarget.value)}
-                span
-              >
-                {hostApplicationCopy.setup.bookingPlatforms.map((platform) => (
-                  <option key={platform}>{platform}</option>
-                ))}
-              </SelectField>
-              <SelectField
+                onChanged={(platform) => updateDraft("bookingPlatform", platform ?? "")}
+              />
+              <CatchField
+                recipe="select"
                 id="host-guest-list-format"
-                label={hostApplicationCopy.setup.guestListFormatLabel}
+                title={hostApplicationCopy.setup.guestListFormatLabel}
+                values={hostApplicationCopy.setup.guestListFormats}
+                itemLabelBuilder={(format) => format}
                 value={draft.guestListFormat}
-                onChange={(event) => updateDraft("guestListFormat", event.currentTarget.value)}
-              >
-                {hostApplicationCopy.setup.guestListFormats.map((format) => (
-                  <option key={format}>{format}</option>
-                ))}
-              </SelectField>
-            </FieldGrid>
+                onChanged={(format) => updateDraft("guestListFormat", format ?? "")}
+              />
+            </CatchGap>
           </HostApplicationStage>
         ) : null}
 
         {!submitted && step === "success" ? (
           <HostApplicationStage>
-            <Field span label={<span>{websiteCopy["hostapplicationflow_0224"]}</span>}>
+            <CatchGap size="inline">
+              <CatchText as="span" variant="fieldLabel">{websiteCopy["hostapplicationflow_0224"]}</CatchText>
               <ChoiceChipGrid aria-label={websiteCopy["hostapplicationflow_0224"]}>
                 {hostSuccessModuleOptions.map((module) => (
                   <ChoiceChip
@@ -277,28 +273,28 @@ export function HostApplicationFlow() {
                   </ChoiceChip>
                 ))}
               </ChoiceChipGrid>
-            </Field>
-            <FieldGrid>
-              <TextAreaField
+            </CatchGap>
+            <CatchGap size="formField">
+              <CatchField
+                recipe="input"
                 id="host-goals"
-                label={websiteCopy["hostapplicationflow_0263"]}
+                title={websiteCopy["hostapplicationflow_0263"]}
                 value={draft.hostGoals}
-                rows={3}
-                placeholder={websiteCopy["hostapplicationflow_0211"]}
-                onChange={(event) => updateDraft("hostGoals", event.currentTarget.value)}
-                span
+                maxLines={3}
+                inputHint={websiteCopy["hostapplicationflow_0211"]}
+                onChanged={(value) => updateDraft("hostGoals", value)}
                 required
               />
-              <TextAreaField
+              <CatchField
+                recipe="input"
                 id="host-operating-notes"
-                label={websiteCopy["hostapplicationflow_0246"]}
+                title={websiteCopy["hostapplicationflow_0246"]}
                 value={draft.operatingNotes}
-                rows={3}
-                placeholder={websiteCopy["hostapplicationflow_0219"]}
-                onChange={(event) => updateDraft("operatingNotes", event.currentTarget.value)}
-                span
+                maxLines={3}
+                inputHint={websiteCopy["hostapplicationflow_0219"]}
+                onChanged={(value) => updateDraft("operatingNotes", value)}
               />
-            </FieldGrid>
+            </CatchGap>
           </HostApplicationStage>
         ) : null}
 

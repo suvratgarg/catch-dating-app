@@ -6,8 +6,6 @@ import {
   Button,
   FormStatus,
   HoneypotField,
-  SelectField,
-  TextField,
   WaitlistFormShell,
 } from "../../shared/ui/primitives";
 import {useWaitlistFormController} from "./useWaitlistFormController";
@@ -47,44 +45,39 @@ export function WaitlistForm({variant}: {variant: FormVariant}) {
         required
         keyboardType="emailAddress"
       />
-      <SelectField
+      <CatchField
+        recipe="select"
         id={`${variant}-waitlist-city`}
-        label={websiteCopy["waitlistform_0513"]}
+        title={websiteCopy["waitlistform_0513"]}
         name="city"
         required
-        onChange={(event) => {
-          handleCityChange(event.currentTarget.value);
-        }}
-      >
-        <option value="">{websiteCopy["waitlistform_0512"]}</option>
-        {activeWaitlistCityOptions.map((city) => (
-          <option key={city}>{city}</option>
-        ))}
-      </SelectField>
-      <TextField
-        id={`${variant}-waitlist-custom-city`}
-        label={websiteCopy["waitlistform_0517"]}
-        name="customCity"
-        autoComplete="address-level2"
-        hidden={!showCustomCity}
-        required={showCustomCity}
+        hintText={websiteCopy["waitlistform_0512"]}
+        values={activeWaitlistCityOptions}
+        itemLabelBuilder={(city) => city}
+        onChanged={(city) => handleCityChange(city ?? "")}
       />
-      <SelectField
+      {showCustomCity ? (
+        <CatchField
+          recipe="input"
+          id={`${variant}-waitlist-custom-city`}
+          title={websiteCopy["waitlistform_0517"]}
+          name="customCity"
+          autoComplete="address-level2"
+          required
+        />
+      ) : null}
+      <CatchField
+        recipe="select"
         id={`${variant}-waitlist-role`}
-        label={websiteCopy["waitlistform_0516"]}
+        title={websiteCopy["waitlistform_0516"]}
         name="role"
         required
-        defaultValue={variant === "host" ? "host" : ""}
-        onChange={(event) => {
-          handleRoleChange(event.currentTarget.value);
-        }}
-      >
-        {roleOptions.map((option) => (
-          <option value={option.value} key={option.value || option.label}>
-            {option.label}
-          </option>
-        ))}
-      </SelectField>
+        values={roleOptions}
+        itemLabelBuilder={(option) => option.label}
+        itemValueBuilder={(option) => option.value}
+        initialValue={roleOptions.find((option) => option.value === (variant === "host" ? "host" : ""))}
+        onChanged={(option) => handleRoleChange(option?.value ?? "")}
+      />
       <CatchField
         recipe="input"
         id={`${variant}-waitlist-community-link`}

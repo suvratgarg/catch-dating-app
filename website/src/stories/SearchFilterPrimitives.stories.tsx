@@ -6,7 +6,6 @@ import {
   FilterRail,
   PublicSearchBar,
   SearchFormShell,
-  SelectField,
   ToggleChipButton,
   type PublicSearchSuggestion,
 } from "../shared/ui/primitives";
@@ -108,39 +107,34 @@ export const OrganizerFilterRailStory: Story = {
   },
   render: () => (
     <FilterRail>
-      <SelectField
+      <CatchField
+        recipe="select"
         id="storybook-organizer-status-filter"
-        label="Status"
+        title="Status"
         name="status"
-        defaultValue="unclaimed"
-      >
-        <option value="all">Any status</option>
-        <option value="verified">Verified on Catch</option>
-        <option value="claimed">Claimed</option>
-        <option value="unclaimed">Unclaimed</option>
-      </SelectField>
-      <SelectField
+        values={["all", "verified", "claimed", "unclaimed"]}
+        itemLabelBuilder={(status) => ({all: "Any status", verified: "Verified on Catch",
+          claimed: "Claimed", unclaimed: "Unclaimed"})[status] ?? status}
+        initialValue="unclaimed"
+      />
+      <CatchField
+        recipe="select"
         id="storybook-organizer-city-filter"
-        label="City"
+        title="City"
         name="city"
-        defaultValue="Mumbai"
-      >
-        <option value="all">Any city</option>
-        <option>Mumbai</option>
-        <option>Indore</option>
-        <option>Bengaluru</option>
-      </SelectField>
-      <SelectField
+        values={["all", "Mumbai", "Indore", "Bengaluru"]}
+        itemLabelBuilder={(city) => city === "all" ? "Any city" : city}
+        initialValue="Mumbai"
+      />
+      <CatchField
+        recipe="select"
         id="storybook-organizer-format-filter"
-        label="Format"
+        title="Format"
         name="format"
-        defaultValue="run club"
-      >
-        <option value="all">Any format</option>
-        <option>run club</option>
-        <option>dinner</option>
-        <option>rooftop social</option>
-      </SelectField>
+        values={["all", "run club", "dinner", "rooftop social"]}
+        itemLabelBuilder={(format) => format === "all" ? "Any format" : format}
+        initialValue="run club"
+      />
       <ToggleChipButton selected onClick={() => undefined}>
         Has upcoming events
       </ToggleChipButton>

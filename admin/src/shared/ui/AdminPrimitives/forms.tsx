@@ -53,37 +53,6 @@ export function AdminStateRow({
   );
 }
 
-export function AdminTextField({
-  className = "marketing-field",
-  descriptionId,
-  invalid,
-  label,
-  value,
-  onChange,
-  ...props
-}: {
-  className?: string;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-} & Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "aria-describedby" | "aria-invalid" | "className" | "onChange" | "value"
-> & FieldValidationProps) {
-  return (
-    <label className={className}>
-      <span>{label}</span>
-      <TextInputControl
-        descriptionId={descriptionId}
-        invalid={invalid}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        {...props}
-      />
-    </label>
-  );
-}
-
 export function TextField({
   className = "field-control",
   descriptionId,
@@ -150,40 +119,6 @@ export function AdminOrganizerIntakeCheckboxField({
       {...props}
       className={classNames("intake-checkbox-row", className)}
     />
-  );
-}
-
-export function AdminTextareaField({
-  className = "marketing-field",
-  descriptionId,
-  invalid,
-  label,
-  rows,
-  value,
-  onChange,
-  ...props
-}: {
-  className?: string;
-  label: string;
-  rows: number;
-  value: string;
-  onChange: (value: string) => void;
-} & Omit<
-  TextareaHTMLAttributes<HTMLTextAreaElement>,
-  "aria-describedby" | "aria-invalid" | "className" | "onChange" | "rows" | "value"
-> & FieldValidationProps) {
-  return (
-    <label className={className}>
-      <span>{label}</span>
-      <TextareaControl
-        descriptionId={descriptionId}
-        invalid={invalid}
-        rows={rows}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        {...props}
-      />
-    </label>
   );
 }
 
@@ -365,13 +300,6 @@ type SelectFieldProps = {
   SelectHTMLAttributes<HTMLSelectElement>,
   "aria-describedby" | "aria-invalid" | "className" | "onChange" | "value"
 >;
-
-export function AdminMarketingSelectField({
-  className = "marketing-field",
-  ...props
-}: SelectFieldProps) {
-  return <SelectField {...props} className={className} />;
-}
 
 export function SelectField({
   className = "field-control",

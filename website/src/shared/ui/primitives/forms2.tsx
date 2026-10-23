@@ -45,16 +45,6 @@ export function PublicSearchInputField({
   );
 }
 
-export function FieldGrid({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return <div className={classNames("flow-field-grid", className)}>{children}</div>;
-}
-
 export function StepRail<TId extends string>({
   currentIndex,
   getDisabled,

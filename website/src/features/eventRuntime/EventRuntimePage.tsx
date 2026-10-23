@@ -33,7 +33,6 @@ import {
   EventRuntimeRouteMap,
   EventRuntimeStageMarquee,
   FormStatus,
-  SelectField,
 } from "../../shared/ui/primitives";
 import {useEventRuntimeController} from "./useEventRuntimeController";
 import {
@@ -614,17 +613,18 @@ function LiveEventRuntime({
         <EventRuntimeModule title={eventRuntimeCopy.wingmanTitle}>
           <p>{eventRuntimeCopy.wingmanBody}</p>
           {controller.wingmanCandidates.length ? (
-            <SelectField
+            <CatchField
+              recipe="select"
               id="event-runtime-wingman"
-              label={eventRuntimeCopy.wingmanSelect}
-              onChange={(event) => controller.setWingmanTargetUid(event.target.value)}
-              value={controller.wingmanTargetUid}
-            >
-              <option value="">{eventRuntimeCopy.wingmanSelect}</option>
-              {controller.wingmanCandidates.map((candidate) => (
-                <option key={candidate.uid} value={candidate.uid}>{candidate.displayName}</option>
-              ))}
-            </SelectField>
+              title={eventRuntimeCopy.wingmanSelect}
+              hintText={eventRuntimeCopy.wingmanSelect}
+              values={controller.wingmanCandidates}
+              itemLabelBuilder={(candidate) => candidate.displayName}
+              itemValueBuilder={(candidate) => candidate.uid}
+              value={controller.wingmanCandidates.find(
+                (candidate) => candidate.uid === controller.wingmanTargetUid) ?? null}
+              onChanged={(candidate) => controller.setWingmanTargetUid(candidate?.uid ?? "")}
+            />
           ) : <p>{eventRuntimeCopy.wingmanEmpty}</p>}
           {controller.liveState.wingmanTargetUid ? (
             <Button onClick={() => void controller.withdrawWingmanRequest()} type="button" variant="ghost">

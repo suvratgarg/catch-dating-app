@@ -14,7 +14,6 @@ import {
   selectOptionLabeller,
   selectOptionValues,
   StateRow,
-  TextField,
 } from "../../../shared/ui/AdminPrimitives";
 import type {DemoBlueprint, DemoCapabilityReview, DemoDisposition,
   DemoFieldMapping, DemoManagementApi, DemoPreviewCopy} from
@@ -282,10 +281,10 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
               {value: "phone", label: "Verified phone"},
             ])}
           />
-          {contactKind !== "preview" ? <TextField label={contactKind === "email" ?
+          {contactKind !== "preview" ? <CatchField recipe="input" title={contactKind === "email" ?
             "Intended email" : "Intended phone (+country code)"}
-          type={contactKind === "email" ? "email" : "tel"}
-          value={contactValue} onChange={setContactValue} disabled={locked} /> : null}
+          keyboardType={contactKind === "email" ? "emailAddress" : "phone"}
+          value={contactValue} onChanged={setContactValue} inputMode={locked ? "inactive" : "editable"} /> : null}
           <CatchField
             recipe="input"
             title="Expires (within seven days)"

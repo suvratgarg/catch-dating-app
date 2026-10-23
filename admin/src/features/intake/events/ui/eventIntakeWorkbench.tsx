@@ -12,7 +12,6 @@ import {
   AdminIntakeTaskToolbar,
   AdminLinkButton,
   SearchField,
-  SelectField,
   selectOptionLabeller,
   selectOptionValues,
 } from "../../../../shared/ui/AdminPrimitives";
@@ -686,23 +685,18 @@ function detailForRecord({
             onChanged={(value) => onEditField("publicDescription", value)}
           />
           <AdminIntakeSection variant="event-ceiling">
-            <SelectField
-              descriptionId={`event-ceiling-${candidate.id}`}
-              disabled
-              label="App visibility ceiling"
-              options={[
-                {value: "discoverable", label: "Discoverable"},
-                {value: "hidden", label: "Hidden"},
-              ]}
+            <CatchField
+              recipe="select"
+              inputMode="inactive"
+              title="App visibility ceiling"
+              helperText={candidate.organizerCeiling?.reason ??
+                "Organizer visibility was not projected; app discovery remains blocked."}
+              values={["discoverable", "hidden"]}
+              itemLabelBuilder={(ceiling) => ceiling === "discoverable" ? "Discoverable" : "Hidden"}
               value={candidate.organizerCeiling?.canAppDiscover ?
                 "discoverable" :
                 "hidden"}
-              onChange={() => undefined}
             />
-            <small id={`event-ceiling-${candidate.id}`}>
-              {candidate.organizerCeiling?.reason ??
-                "Organizer visibility was not projected; app discovery remains blocked."}
-            </small>
           </AdminIntakeSection>
         </>
       ) : (

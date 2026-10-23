@@ -15,7 +15,6 @@ import {
   EventSuccessModuleGrid,
   EvidenceStrip,
   FeaturedOrganizersCta,
-  FieldGrid,
   FormStatus,
   HostConsoleGrid,
   HostConsoleHeader,
@@ -31,9 +30,7 @@ import {
   ProductModuleGrid,
   ProductShell,
   ProofLedgerRows,
-  SelectField,
   StepRail,
-  TextField,
   UiLabel,
   VerificationMethodGrid,
   WaitlistFormShell,
@@ -132,39 +129,6 @@ export const ActionGroupStory: Story = {
         <Button type="button" variant="ghost">Review evidence</Button>
       </ActionGroup>
     </ContentGrid>
-  ),
-};
-
-export const FieldGridStory: Story = {
-  name: "Field grid",
-  parameters: {
-    catchComponent: {
-      id: "shared_field_grid",
-      routeIds: ["host", "claim"],
-      states: ["two-column", "span-field", "select-field"],
-    },
-  },
-  render: () => (
-    <FieldGrid>
-      <CatchField
-        recipe="input"
-        id="storybook-field-name"
-        title="Organizer name"
-        name="organizerName"
-        initialValue="Sunday Table Club"
-      />
-      <SelectField id="storybook-field-format" label="Format" name="format" defaultValue="dinner">
-        <option value="dinner">Dinner club</option>
-        <option value="run">Run club</option>
-      </SelectField>
-      <TextField
-        id="storybook-field-source"
-        label="Source link"
-        name="source"
-        defaultValue="https://example.com/sunday-table"
-        span
-      />
-    </FieldGrid>
   ),
 };
 
@@ -270,11 +234,8 @@ export const WaitlistFormShellStory: Story = {
         required
         keyboardType="emailAddress"
       />
-      <SelectField id="storybook-form-city" label="City" name="city" defaultValue="Mumbai">
-        <option>Mumbai</option>
-        <option>Indore</option>
-        <option>Bengaluru</option>
-      </SelectField>
+      <CatchField recipe="select" id="storybook-form-city" title="City" name="city"
+        values={["Mumbai", "Indore", "Bengaluru"]} itemLabelBuilder={(city) => city} initialValue="Mumbai" />
       <Button type="submit">Join the list</Button>
       <FormStatus status={{message: "Saved locally for Storybook review.", tone: "is-success"}} />
     </WaitlistFormShell>

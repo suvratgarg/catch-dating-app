@@ -4,7 +4,8 @@ import {ArrowRight, CalendarDays, MapPin, Users, MessageCircle, Shuffle, Plus, M
 import {consumerHomeCopy as copy} from "@content/consumerHome";
 import {activeMarket} from "@content/markets";
 import {interpolateContent as fill} from "@content/interpolate";
-import {ButtonLink, PlainButton, PlainLink, SelectField} from "../../../shared/ui/primitives";
+import {CatchField} from "@catch/web-ui";
+import {ButtonLink, PlainButton, PlainLink} from "../../../shared/ui/primitives";
 import {useConsumerHomeController} from "../useConsumerHomeController";
 import {categoryForActivity, homeEditorialImage} from "../homeDiscovery";
 
@@ -12,9 +13,9 @@ type Controller = ReturnType<typeof useConsumerHomeController>;
 const icons = [MessageCircle, Users, Shuffle];
 function CityChoice({home, id}: {home: Controller; id: string}) {
  return <ConsumerCity ><MapPin size={19} aria-hidden="true" />
-  <SelectField id={id} label={copy.cityLabel} value={home.city.slug} onChange={event => home.selectCity(event.target.value)}>
-   {activeMarket.cities.map(city => <option key={city.id} value={city.slug}>{city.label}</option>)}
-  </SelectField>
+  <CatchField recipe="select" id={id} title={copy.cityLabel} labelMode="hidden"
+   values={activeMarket.cities} itemLabelBuilder={city => city.label} itemValueBuilder={city => city.slug}
+   value={home.city} onChanged={city => {if (city) home.selectCity(city.slug);}} />
  </ConsumerCity>;
 }
 export function renderConsumerHero(home: Controller) {

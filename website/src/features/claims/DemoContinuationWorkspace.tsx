@@ -10,7 +10,6 @@ import {
   ClaimFlowMain,
   ClaimRequestForm,
   FormStatus,
-  SelectField,
   EventRuntimeLoading,
   EventRuntimeModule,
   EventRuntimePanel,
@@ -177,10 +176,19 @@ function ContinuationClaim({view, email, phone}: {
           inputMode={claim.isPending ? "inactive" : "editable"}
           onChanged={(value) => setName(value)}
         />
-        <SelectField id="continuation-role" label={continuationCopy.yourRole} value={role} disabled={claim.isPending}
-          onChange={(e) => setRole(e.target.value as ClaimRole)}>
-          {claimRoleOptions.filter((item) => ["owner", "founder"].includes(item.value)).map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
-        </SelectField>
+        <CatchField
+          recipe="select"
+          id="continuation-role"
+          title={continuationCopy.yourRole}
+          values={claimRoleOptions.filter((item) => ["owner", "founder"].includes(item.value))}
+          itemLabelBuilder={(item) => item.label}
+          itemValueBuilder={(item) => item.value}
+          value={claimRoleOptions.find((item) => item.value === role) ?? null}
+          inputMode={claim.isPending ? "inactive" : "editable"}
+          onChanged={(item) => {
+            if (item) setRole(item.value as ClaimRole);
+          }}
+        />
         <CatchField
           recipe="input"
           id="continuation-email"

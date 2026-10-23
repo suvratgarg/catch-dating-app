@@ -40,8 +40,6 @@ import {
   selectOptionValues,
   StateRow,
   StatusChip,
-  TextareaField,
-  TextField,
 } from "../../../../shared/ui/AdminPrimitives";
 import {
   decisionLabel,
@@ -419,19 +417,19 @@ function OrganizerExternalEventLocationResolutionView({
                     value={form.longitude}
                     keyboardType="decimal"
                   />
-                  <TextField
-                    span={2}
-                    label="Resolution notes"
-                    onChange={(notes) =>
+                  <CatchField
+                    recipe="input"
+                    title="Resolution notes"
+                    onChanged={(notes) =>
                       onFormChange(task.taskId, {...form, notes})}
                     value={form.notes}
                   />
-                  <TextareaField
-                    span={2}
-                    label="Review note"
-                    onChange={(note) =>
+                  <CatchField
+                    recipe="input"
+                    title="Review note"
+                    onChanged={(note) =>
                       onFormChange(task.taskId, {...form, note})}
-                    rows={2}
+                    maxLines={2}
                     value={form.note}
                   />
                 </AdminOrganizerLocationResolutionForm>

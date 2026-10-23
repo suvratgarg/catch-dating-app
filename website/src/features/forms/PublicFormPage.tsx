@@ -23,9 +23,6 @@ import {
   PublicFormReviewAnswer,
   PublicFormSection,
   PublicFormSignatureInput,
-  SelectField,
-  TextAreaField,
-  TextField,
 } from "../../shared/ui/primitives";
 import {PublicFormFieldError, PublicFormPhoneFields, PublicFormVerification}
   from "../../shared/ui/primitives/publicForms";
@@ -412,15 +409,13 @@ function AnswerReuseSection({controller}: {
     {!activity.isPending && controller.reuseSources.length === 0 ?
       <FormStatus status={{message: publicFormsCopy.reuseEmpty, tone: ""}} /> : null}
     {controller.reuseSources.length > 0 ? <>
-      <SelectField id="public-form-reuse-source" label={publicFormsCopy.reuseSourceLabel}
-        value={controller.reuseSourceId} disabled={controller.reusePending || controller.pending}
-        onChange={(event) => controller.chooseReuseSource(event.target.value)}>
-        <option value="">{publicFormsCopy.reuseSourcePlaceholder}</option>
-        {controller.reuseSources.map((source) =>
-          <option key={source.sourceId} value={source.sourceId}>
-            {publicFormsCopy.reuseSourceDate(source.submittedAtMillis)}
-          </option>)}
-      </SelectField>
+      <CatchField recipe="select" id="public-form-reuse-source" title={publicFormsCopy.reuseSourceLabel}
+        hintText={publicFormsCopy.reuseSourcePlaceholder} values={controller.reuseSources}
+        itemLabelBuilder={(source) => publicFormsCopy.reuseSourceDate(source.submittedAtMillis)}
+        itemValueBuilder={(source) => source.sourceId}
+        value={controller.reuseSources.find((source) => source.sourceId === controller.reuseSourceId) ?? null}
+        inputMode={controller.reusePending || controller.pending ? "inactive" : "editable"}
+        onChanged={(source) => controller.chooseReuseSource(source?.sourceId ?? "")} />
       <Button type="button" disabled={!controller.reuseSourceId || controller.pending}
         loading={controller.reusePending} loadingLabel={publicFormsCopy.reuseChecking}
         onClick={() => void controller.previewReusableAnswers()}>
@@ -504,7 +499,7 @@ function InlinePhoneVerification({
       <PublicFormForm onSubmit={controller.handlePhoneSubmit} pending={controller.pending}>
         <PhoneNumberField
           id="public-form-inline-phone"
-          invalid={Boolean(question && controller.errors[question.questionId])}
+          errorText={question ? controller.errors[question.questionId] : undefined}
           label={question?.label ?? publicFormsCopy.phoneLabel}
           onBlur={question ? () => controller.blurQuestion(question.questionId) : undefined}
           onChange={(value) => {
@@ -557,44 +552,48 @@ function QuestionField({
   if (question.canonicalFieldId === "city" &&
       question.answerDestination === "catchProfile" &&
       cityOptions && cityOptions.length > 0) {
-    return <PublicFormQuestion {...common}>
-      <SelectField
+    return <PublicFormQuestion {...common} error={undefined}>
+      <CatchField
+        recipe="select"
         id={`form-question-${question.questionId}`}
-        invalid={Boolean(error)}
-        label={question.label}
+        title={question.label}
+        labelMode="hidden"
+        errorText={error}
+        hintText={publicFormsCopy.chooseOne}
+        values={cityOptions}
+        itemLabelBuilder={(city) => `${city.label}, ${city.regionName}`}
+        itemValueBuilder={(city) => city.marketId}
         onBlur={onBlur}
-        onChange={(event) => onChange(event.target.value || null)}
+        onChanged={(city) => onChange(city?.marketId ?? null)}
         required={question.required}
-        value={typeof answer === "string" ? answer : ""}
-      >
-        <option value="">{publicFormsCopy.chooseOne}</option>
-        {cityOptions.map((city) => <option key={city.marketId}
-          value={city.marketId}>{city.label}, {city.regionName}</option>)}
-      </SelectField>
+        value={cityOptions.find((city) => city.marketId === answer) ?? null}
+      />
     </PublicFormQuestion>;
   }
   if (question.kind === "longText") {
     return (
-      <PublicFormQuestion {...common}>
-        <TextAreaField
+      <PublicFormQuestion {...common} error={undefined}>
+        <CatchField
+          recipe="input"
           id={`form-question-${question.questionId}`}
-          invalid={Boolean(error)}
-          label={question.label}
+          title={question.label}
+          labelMode="hidden"
+          errorText={error}
           maxLength={question.validation.maxLength ?? undefined}
-          onChange={(event) => onChange(event.target.value)}
+          onChanged={(value) => onChange(value)}
           onBlur={onBlur}
           required={question.required}
-          rows={5}
+          maxLines={5}
           value={typeof answer === "string" ? answer : ""}
         />
       </PublicFormQuestion>
     );
   }
   if (question.kind === "phone") {
-    return <PublicFormQuestion {...common}>
+    return <PublicFormQuestion {...common} error={undefined}>
       <PhoneNumberField
         id={`form-question-${question.questionId}`}
-        invalid={Boolean(error)}
+        errorText={error}
         label={question.label}
         onBlur={onBlur}
         onChange={onChange}
@@ -605,16 +604,18 @@ function QuestionField({
   if (["shortText", "date", "phone", "email", "url", "number"].includes(
     question.kind
   )) {
-    const type = question.kind === "number" ? "number" :
+    const keyboardType = question.kind === "number" ? "number" :
       question.kind === "date" ? "date" :
-      question.kind === "email" ? "email" :
+      question.kind === "email" ? "emailAddress" :
       question.kind === "url" ? "url" : "text";
     return (
-      <PublicFormQuestion {...common}>
-        <TextField
+      <PublicFormQuestion {...common} error={undefined}>
+        <CatchField
+          recipe="input"
           id={`form-question-${question.questionId}`}
-          invalid={Boolean(error)}
-          label={question.label}
+          title={question.label}
+          labelMode="hidden"
+          errorText={error}
           max={question.kind === "number" ?
             question.validation.maxNumber ?? undefined :
             question.validation.latestDate ?? undefined}
@@ -622,35 +623,35 @@ function QuestionField({
           min={question.kind === "number" ?
             question.validation.minNumber ?? undefined :
             question.validation.earliestDate ?? undefined}
-          onChange={(event) => onChange(question.kind === "number" ?
-            (event.target.value === "" ? null : event.target.valueAsNumber) :
-            event.target.value)}
+          onChanged={(value) => onChange(question.kind === "number" ?
+            (value === "" ? null : Number(value)) : value)}
           onBlur={onBlur}
           required={question.required}
-          type={type}
+          keyboardType={keyboardType}
           value={typeof answer === "string" || typeof answer === "number" ?
-            answer : ""}
+            String(answer) : ""}
         />
       </PublicFormQuestion>
     );
   }
   if (question.kind === "singleChoice" && question.options.length > 4) {
     return (
-      <PublicFormQuestion {...common}>
-        <SelectField
+      <PublicFormQuestion {...common} error={undefined}>
+        <CatchField
+          recipe="select"
           id={`form-question-${question.questionId}`}
-          invalid={Boolean(error)}
-          label={question.label}
-          onChange={(event) => onChange(event.target.value || null)}
+          title={question.label}
+          labelMode="hidden"
+          errorText={error}
+          hintText={publicFormsCopy.chooseOne}
+          values={question.options}
+          itemLabelBuilder={(option) => option.label}
+          itemValueBuilder={(option) => option.value}
+          onChanged={(option) => onChange(option?.value ?? null)}
           onBlur={onBlur}
           required={question.required}
-          value={typeof answer === "string" ? answer : ""}
-        >
-          <option value="">{publicFormsCopy.chooseOne}</option>
-          {question.options.map((option) => (
-            <option key={option.optionId} value={option.value}>{option.label}</option>
-          ))}
-        </SelectField>
+          value={question.options.find((option) => option.value === answer) ?? null}
+        />
       </PublicFormQuestion>
     );
   }
@@ -754,14 +755,14 @@ const phoneDialOptions = [
 
 function PhoneNumberField({
   id,
-  invalid = false,
+  errorText,
   label,
   onBlur,
   onChange,
   value,
 }: {
   id: string;
-  invalid?: boolean;
+  errorText?: string;
   label: string;
   onBlur?: () => void;
   onChange: (value: string) => void;
@@ -774,34 +775,34 @@ function PhoneNumberField({
     (value.startsWith("+") ? "other" : preferredCode);
   const national = known ? value.slice(known.dialCode.length) : value;
   return <PublicFormPhoneFields>
-    <SelectField
+    <CatchField
+      recipe="select"
       id={`${id}-country`}
-      label={publicFormsCopy.phoneCountryLabel}
+      title={publicFormsCopy.phoneCountryLabel}
+      values={[...phoneDialOptions.map((option) => option.dialCode), "other"]}
+      itemLabelBuilder={(code) => {
+        const option = phoneDialOptions.find((item) => item.dialCode === code);
+        return option ? `${option.country} ${option.dialCode}` : publicFormsCopy.phoneOtherCountry;
+      }}
       onBlur={onBlur}
-      onChange={(event) => {
-        const nextCode = event.target.value;
+      onChanged={(nextCode) => {
+        if (!nextCode) return;
         setPreferredCode(nextCode);
         onChange(nextCode === "other" ? "" :
           national ? `${nextCode}${national.replace(/\D/gu, "")}` : "");
       }}
       value={selectedCode}
-    >
-      {phoneDialOptions.map((option) => (
-        <option key={option.country} value={option.dialCode}>
-          {option.country} {option.dialCode}
-        </option>
-      ))}
-      <option value="other">{publicFormsCopy.phoneOtherCountry}</option>
-    </SelectField>
-    <TextField
+    />
+    <CatchField
+      recipe="input"
       autoComplete={selectedCode === "other" ? "tel" : "tel-national"}
       id={id}
-      inputMode="tel"
-      invalid={invalid}
-      label={label}
+      keyboardType="phone"
+      errorText={errorText}
+      title={label}
       onBlur={onBlur}
-      onChange={(event) => {
-        const entered = event.target.value.trim();
+      onChanged={(value) => {
+        const entered = value.trim();
         if (!entered) { onChange(""); return; }
         if (entered.startsWith("+") || selectedCode === "other") {
           onChange(entered.replace(/[^+\d]/gu, ""));
@@ -809,7 +810,7 @@ function PhoneNumberField({
           onChange(`${selectedCode}${entered.replace(/\D/gu, "")}`);
         }
       }}
-      placeholder={selectedCode === "other" ? "+44 7123 456789" :
+      inputHint={selectedCode === "other" ? "+44 7123 456789" :
         publicFormsCopy.phoneNationalPlaceholder}
       value={national}
     />

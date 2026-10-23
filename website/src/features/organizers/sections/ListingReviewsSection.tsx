@@ -17,7 +17,6 @@ import {
   ListingSection,
   OwnerResponsePrompt,
   ReviewSignalLane,
-  SelectField,
   UiLabel,
 } from "../../../shared/ui/primitives";
 import {trackCtaClick} from "../../marketing/tracking";
@@ -171,18 +170,23 @@ export function ListingReviewsSection({listing}: {listing: HostListing}) {
               <UiLabel>{websiteCopy["listingreviewssection_0424"]}</UiLabel>
               <h3>{websiteCopy["listingreviewssection_0438"]} {listing.name}.</h3>
             </div>
-            <SelectField
+            <CatchField
+              recipe="select"
               id={`${reviewFormId}-rating`}
-              label={websiteCopy["listingreviewssection_0435"]}
+              title={websiteCopy["listingreviewssection_0435"]}
+              values={[5, 4, 3, 2, 1]}
+              itemLabelBuilder={(stars) => ({
+                5: websiteCopy["listingreviewssection_0423"],
+                4: websiteCopy["listingreviewssection_0422"],
+                3: websiteCopy["listingreviewssection_0421"],
+                2: websiteCopy["listingreviewssection_0420"],
+                1: websiteCopy["listingreviewssection_0419"],
+              })[stars] ?? String(stars)}
               value={rating}
-              onChange={(event) => setRating(Number(event.target.value))}
-            >
-              <option value={5}>{websiteCopy["listingreviewssection_0423"]}</option>
-              <option value={4}>{websiteCopy["listingreviewssection_0422"]}</option>
-              <option value={3}>{websiteCopy["listingreviewssection_0421"]}</option>
-              <option value={2}>{websiteCopy["listingreviewssection_0420"]}</option>
-              <option value={1}>{websiteCopy["listingreviewssection_0419"]}</option>
-            </SelectField>
+              onChanged={(stars) => {
+                if (stars !== null) setRating(stars);
+              }}
+            />
             <CatchField
               recipe="input"
               id={`${reviewFormId}-reviewer`}

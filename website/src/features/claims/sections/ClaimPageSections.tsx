@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchField, CatchGap} from "@catch/web-ui";
 import {websiteCopy} from "@content/generated";
 import {websiteTemplates} from "@content/templates";
 import {trackMarketingEvent} from "../../../analytics";
@@ -16,16 +16,13 @@ import {
   ChoiceCard,
   ContentGrid,
   EmptyState,
-  FieldGrid,
   FormStatus,
   OwnerUnlockBoard,
   ProcessStatusPanel,
   type ProcessStatusAction,
-  SelectField,
   SelectedListingCard,
   StepRail,
   TextActionButton,
-  TextAreaField,
   UiLabel,
   VerificationMethodGrid,
 } from "../../../shared/ui/primitives";
@@ -179,7 +176,7 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
               <TextActionButton onClick={() => setStep("listing")}>{websiteCopy["claimpagesections_0043"]}</TextActionButton>
             </SelectedListingCard>
 
-            <FieldGrid>
+            <CatchGap size="formField">
               <CatchField
                 recipe="input"
                 id="claim-name"
@@ -189,19 +186,19 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
                 onChanged={(value) => setRequesterName(value)}
                 required
               />
-              <SelectField
+              <CatchField
+                recipe="select"
                 id="claim-role"
-                label={websiteCopy["claimpagesections_0081"]}
-                value={requesterRole}
-                onChange={(event) => setRequesterRole(event.currentTarget.value as ClaimRole)}
+                title={websiteCopy["claimpagesections_0081"]}
+                values={claimRoleOptions}
+                itemLabelBuilder={(option) => option.label}
+                itemValueBuilder={(option) => option.value}
+                value={claimRoleOptions.find((option) => option.value === requesterRole) ?? null}
+                onChanged={(option) => {
+                  if (option) setRequesterRole(option.value as ClaimRole);
+                }}
                 required
-              >
-                {claimRoleOptions.map((option) => (
-                  <option value={option.value} key={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </SelectField>
+              />
               <CatchField
                 recipe="input"
                 id="claim-email"
@@ -220,16 +217,16 @@ export function ClaimWorkspaceSection({controller}: {controller: ClaimFlowContro
                 onChanged={(value) => setBusinessPhone(value)}
                 keyboardType="phone"
               />
-              <TextAreaField
+              <CatchField
+                recipe="input"
                 id="claim-proof"
-                label={websiteCopy["claimpagesections_0074"]}
-                rows={3}
+                title={websiteCopy["claimpagesections_0074"]}
+                maxLines={3}
                 value={proofUrls}
-                placeholder={websiteCopy["claimpagesections_0069"]}
-                onChange={(event) => setProofUrls(event.currentTarget.value)}
-                span
+                inputHint={websiteCopy["claimpagesections_0069"]}
+                onChanged={(value) => setProofUrls(value)}
               />
-            </FieldGrid>
+            </CatchGap>
 
             <ActionGroup>
               <Button variant="ghost" type="button" onClick={() => setStep("listing")}>{websiteCopy["claimpagesections_0037"]}</Button>

@@ -20,7 +20,6 @@ import {
   selectOptionValues,
   StateRow,
   TableActionButton,
-  TextField,
 } from "../../../shared/ui/AdminPrimitives";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {renderSalesPrivacyWorkspace} from "./SalesPrivacyWorkspace";
@@ -734,8 +733,8 @@ function CustomFieldValueEditor({field, detail, controller}: {
         itemLabelBuilder={selectOptionLabeller([{value: "", label: "Unknown"}, {value: "true", label: "Yes"},
           {value: "false", label: "No"}])}
       /> :
-      <TextField label={field.label} value={textValue} onChange={update}
-        type={field.type === "number" ? "number" :
+      <CatchField recipe="input" title={field.label} value={textValue} onChanged={update}
+        keyboardType={field.type === "number" ? "decimal" :
           field.type === "date" ? "date" : "text"} />}
     {field.helpText ? <p>{field.helpText}</p> : null}
     {!validNumber ? <p role="alert">Enter a valid number.</p> : null}
