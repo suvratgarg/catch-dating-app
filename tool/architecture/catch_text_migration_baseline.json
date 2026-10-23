@@ -982,15 +982,10 @@
       "supporting": 1
     },
     "lib/user_profile/presentation/form_profile_review_screen.dart": {
-      "proseM": 1,
-      "sectionTitle": 1,
-      "supporting": 6
+      "proseM": 1
     },
     "lib/user_profile/presentation/form_profiles_screen.dart": {
       "proseM": 1
-    },
-    "lib/user_profile/presentation/widgets/profile_tab_body.dart": {
-      "supporting": 1
     }
   }
 }
