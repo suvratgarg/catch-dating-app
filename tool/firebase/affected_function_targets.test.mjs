@@ -152,7 +152,7 @@ test("dynamic loading always redeploys only the Functions that reach it", (t) =>
   f.write("docs.md", "# not a runtime input");
   assert.deepEqual(f.select({baseSha: next}).targets, [], "Non-runtime changes deploy nothing.");
   const docs = f.git("rev-parse", "HEAD");
-  f.write("operations/src/workflow.mjs", "export const step = 2;");
+  f.write("operations/workflows/step.mjs", "export const step = 2;");
   assert.deepEqual(f.select({baseSha: docs}).targets, ["functions:alpha", "functions:alphaAlias"],
     "Operations files copied into lib reach only the dynamically loading Functions.");
 });
