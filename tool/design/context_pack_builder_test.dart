@@ -1015,12 +1015,6 @@ final _styleRegistry = <_StyleEntry>[
     },
   ),
   _StyleEntry.single(
-    'statusBarTime',
-    'data',
-    CatchTextStyles.statusBarTime,
-    casePolicy: 'numeric',
-  ),
-  _StyleEntry.single(
     'otpDigit',
     'data',
     CatchTextStyles.otpDigit,

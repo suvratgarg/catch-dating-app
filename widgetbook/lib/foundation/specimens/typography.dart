@@ -269,11 +269,6 @@ class FoundationTypographyTokens extends StatelessWidget {
                 'AS',
                 CatchTextStyles.avatarInitials(context, size: 18),
               ),
-              _TypeSpec(
-                'statusBarTime',
-                '9:41',
-                CatchTextStyles.statusBarTime(context),
-              ),
             ],
           ),
         ),

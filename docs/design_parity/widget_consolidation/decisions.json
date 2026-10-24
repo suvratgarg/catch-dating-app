@@ -8592,6 +8592,28 @@
       "decidedBy": "owner-approved -> codex",
       "date": "2026-10-08",
       "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-236:status-bar-time",
+      "decision": "delete",
+      "members": [
+        {
+          "name": "CatchTextStyles.statusBarTime",
+          "action": "delete"
+        },
+        {
+          "name": "CatchLayout.statusBarTimeFontSize",
+          "action": "delete"
+        },
+        {
+          "name": "FoundationTypographyTokens statusBarTime specimen",
+          "action": "delete"
+        }
+      ],
+      "rationale": "CAT-236 comment 22a3daa7-9274-4c45-99a8-1629a0db61fc records the owner-delegated 2026-10-24 Claude decision to retire unused status-time typography. Remove the public style and font-size alias, its specimen and generated handoff projection; no production consumer needs a replacement. This records only the status-time decision, not the separate welcome extraction or display-scale proposal.",
+      "decidedBy": "owner+claude",
+      "date": "2026-10-24",
+      "status": "implemented"
     }
   ]
 }
