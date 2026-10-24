@@ -6,6 +6,7 @@
   "captures": [
     {
       "id": "member-event-discovery",
+      "kind": "app-capture",
       "audience": "member",
       "surface": "Event discovery",
       "status": "active",
@@ -20,6 +21,7 @@
     },
     {
       "id": "post-run-catch-window",
+      "kind": "app-capture",
       "audience": "member",
       "surface": "Post-event catch window",
       "status": "active",
@@ -34,6 +36,7 @@
     },
     {
       "id": "match-chat-context",
+      "kind": "app-capture",
       "audience": "member",
       "surface": "Contextual match chat",
       "status": "active",
@@ -48,6 +51,7 @@
     },
     {
       "id": "host-event-setup",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Event review",
       "status": "active",
@@ -62,6 +66,7 @@
     },
     {
       "id": "host-create-basics",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Event basics",
       "status": "active",
@@ -76,6 +81,7 @@
     },
     {
       "id": "host-create-location",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Meeting location in When & where",
       "status": "active",
@@ -90,6 +96,7 @@
     },
     {
       "id": "host-create-schedule",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Schedule in When & where",
       "status": "active",
@@ -104,6 +111,7 @@
     },
     {
       "id": "host-create-policy",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Booking & live guide",
       "status": "active",
@@ -118,6 +126,7 @@
     },
     {
       "id": "host-create-guide",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Event Success customization",
       "status": "active",
@@ -132,6 +141,7 @@
     },
     {
       "id": "host-live-console",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Host live console",
       "status": "active",
@@ -142,10 +152,15 @@
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-console.svg",
       "alt": "Catch host live console with roster and check-in controls",
       "caption": "Confirm guest arrivals and follow the host-led run of show.",
-      "walkthroughStep": "Live"
+      "walkthroughStep": "Live",
+      "pages": [
+        "/",
+        "/host/"
+      ]
     },
     {
       "id": "host-post-event-report",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Event recap",
       "status": "active",
@@ -160,6 +175,7 @@
     },
     {
       "id": "host-today-dashboard",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Host Today",
       "status": "active",
