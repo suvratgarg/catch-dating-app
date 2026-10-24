@@ -135,6 +135,17 @@ calling workflow to review.
   `provider_error` and `cancelled`. Every stop other than `finished` is a
   signal for human review.
 
+Its first caller is Supply Intake's listing research
+(`workflows/supply-intake/research-agent.mjs`). There the agent reads pages
+through the same guarded page source and adapters as gathering, so anything an
+adapter can read flows through the ordinary listing builder. Beyond that it can
+record only a fact it quotes verbatim from a page it fetched in that run, and
+the tool checks the quote against the page text before it counts. Findings rank
+below adapter-read facts, carry `method: "agent"` provenance, and never become
+copy. `config/agent_policy.json` ships disabled with zero allowance. Enabling it
+cites an accepted `agent_research_policy` decision, and its schema caps the
+monthly ceiling at $50.
+
 ## Primary protocol references
 
 Reviewed on 2026-10-07; model support must be rechecked before activation:
