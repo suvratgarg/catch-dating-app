@@ -110,7 +110,7 @@ function checkWebsiteMedia(manifest) {
   console.log("Marketing website media is in sync.");
 }
 
-function validateSourceManifest(manifest) {
+export function validateSourceManifest(manifest) {
   const errors = [];
   if (!manifest || typeof manifest !== "object") {
     return ["tool/marketing/capture_manifest.json must contain an object."];
