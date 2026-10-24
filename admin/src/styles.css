@@ -116,7 +116,7 @@
 
 .intake-batch-title h3,
 .intake-batch-inspector h3 {
-  font-size: 18px;
+  font-size: var(--catch-typography-web-title-size);
   line-height: var(--catch-typography-brand-meta-line-height);
 }
 
@@ -398,7 +398,7 @@
 .intake-batch-table thead th {
   height: 32px;
   color: var(--muted);
-  font-weight: 650;
+  font-weight: var(--catch-typography-web-headline-weight);
   background: var(--surface-subtle);
 }
 
@@ -740,7 +740,7 @@
 .intake-inspector-section.diagnostics summary {
   cursor: pointer;
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 650;
+  font-weight: var(--catch-typography-web-headline-weight);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -1005,7 +1005,7 @@ button {
   border: var(--catch-stroke-hairline) solid var(--sidebar-line-strong);
   background: var(--sidebar-fill);
   color: var(--sidebar-ink);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .brand-mark.large {
@@ -1020,7 +1020,7 @@ button {
 
 .brand-title {
   font-size: var(--catch-typography-web-control-size);
-  font-weight: 750;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .nav-list {
@@ -1212,7 +1212,7 @@ button {
   font-family: var(--catch-font-head);
   font-stretch: 78%;
   font-size: var(--catch-typography-web-display-medium-size);
-  font-weight: 760;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   line-height: var(--catch-typography-brand-headline-s-line-height);
   letter-spacing: 0;
 }
@@ -1283,7 +1283,7 @@ button {
   display: block;
   overflow: hidden;
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 750;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   line-height: var(--catch-typography-brand-headline-s-line-height);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1346,7 +1346,7 @@ button {
   background: var(--positive-soft);
   color: var(--positive);
   font-size: var(--catch-typography-brand-kicker-size);
-  font-weight: 750;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .admin-account-role.muted {
@@ -1367,7 +1367,7 @@ button {
   background: var(--surface);
   color: var(--danger);
   cursor: pointer;
-  font-weight: 750;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .admin-account-sign-out:hover:not(:disabled) {
@@ -1432,7 +1432,7 @@ select {
   background: var(--surface-sunken);
   color: var(--muted);
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 750;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   white-space: nowrap;
 }
 
@@ -1588,15 +1588,15 @@ select {
   gap: var(--catch-space-s1);
   margin-top: var(--catch-space-micro10);
   font-family: var(--catch-font-mono);
-  font-size: 30px;
-  font-weight: 780;
+  font-size: var(--catch-typography-web-display-medium-size);
+  font-weight: var(--catch-typography-brand-kicker-weight);
   line-height: 1;
 }
 
 .metric-value span {
   color: var(--muted);
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 650;
+  font-weight: var(--catch-typography-web-headline-weight);
 }
 
 .metric-caption {
@@ -1716,7 +1716,7 @@ select {
   margin-bottom: var(--catch-space-s2);
   color: var(--muted);
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 750;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .queue-heading-copy {
@@ -1736,7 +1736,7 @@ select {
   color: var(--muted);
   font-family: var(--catch-font-mono);
   font-size: var(--catch-typography-brand-badge-size);
-  font-weight: 650;
+  font-weight: var(--catch-typography-web-headline-weight);
   text-transform: uppercase;
 }
 
@@ -1818,7 +1818,7 @@ select {
   color: var(--ink);
   cursor: pointer;
   font-size: var(--catch-typography-brand-kicker-size);
-  font-weight: 750;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .decision-actions .queue-decision-button:disabled {
@@ -1860,7 +1860,7 @@ select {
   max-width: 520px;
   color: var(--muted);
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 650;
+  font-weight: var(--catch-typography-web-headline-weight);
   line-height: 1.35;
 }
 
@@ -1875,7 +1875,7 @@ select {
   color: var(--muted);
   cursor: pointer;
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 750;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   list-style-position: inside;
 }
 
@@ -1999,7 +1999,7 @@ select {
   border-radius: var(--catch-radius-sm);
   color: var(--muted);
   font-size: var(--catch-typography-web-context-size);
-  font-weight: 750;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .workbench-table table {
@@ -2063,7 +2063,7 @@ select {
 .muted-cell {
   color: var(--muted);
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 650;
+  font-weight: var(--catch-typography-web-headline-weight);
 }
 
 .row-title.compact {
@@ -2095,7 +2095,7 @@ select {
   display: block;
   color: var(--muted);
   font-size: var(--catch-typography-brand-kicker-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   text-transform: uppercase;
 }
 
@@ -2158,7 +2158,7 @@ select {
   cursor: pointer;
   font: inherit;
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -2179,7 +2179,7 @@ select {
 .checklist-heading span {
   color: var(--muted);
   font-size: var(--catch-typography-brand-kicker-size);
-  font-weight: 750;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .checklist-copy {
@@ -2267,7 +2267,7 @@ select {
 .field-control span {
   color: var(--muted);
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 750;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .field-control select {
@@ -2300,7 +2300,7 @@ select {
   padding: 0 var(--catch-space-micro6);
   color: var(--ink);
   font-size: var(--catch-typography-web-context-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .form-grid {
@@ -2397,7 +2397,7 @@ select {
   color: var(--on-primary);
   cursor: pointer;
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .search-candidate-actions > button:disabled {
@@ -2434,14 +2434,14 @@ select {
 
 .intake-card-header h3 {
   margin: var(--catch-space-micro3) 0 0;
-  font-size: 17px;
+  font-size: var(--catch-typography-web-name-size);
   line-height: var(--catch-typography-brand-kicker-line-height);
 }
 
 .intake-eyebrow {
   color: var(--muted);
   font-size: var(--catch-typography-brand-kicker-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   text-transform: uppercase;
 }
 
@@ -2467,7 +2467,7 @@ select {
   background: var(--surface);
   color: var(--ink);
   font-size: var(--catch-typography-brand-kicker-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   overflow-wrap: anywhere;
 }
 
@@ -2519,7 +2519,7 @@ select {
 .intake-section-title {
   color: var(--muted);
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   text-transform: uppercase;
 }
 
@@ -2662,7 +2662,7 @@ select {
   color: var(--ink);
   cursor: pointer;
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .intake-decision-actions button:first-child {
@@ -2715,7 +2715,7 @@ select {
 .command-row span {
   color: var(--muted);
   font-size: var(--catch-typography-brand-kicker-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   text-transform: uppercase;
 }
 
@@ -2740,7 +2740,7 @@ select {
 .state-row span {
   color: var(--muted);
   font-size: var(--catch-typography-brand-kicker-size);
-  font-weight: 750;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .state-row strong {
@@ -2785,7 +2785,7 @@ select {
   color: var(--muted);
   font-family: var(--catch-font-mono);
   font-size: var(--catch-typography-brand-mono-label-s-size);
-  font-weight: 650;
+  font-weight: var(--catch-typography-web-headline-weight);
 }
 
 .chart-labels > span,
@@ -2847,7 +2847,7 @@ td {
 th {
   color: var(--muted);
   font-size: var(--catch-typography-brand-kicker-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   text-transform: uppercase;
 }
 
@@ -2858,7 +2858,7 @@ th {
   padding: var(--catch-space-micro3) var(--catch-space-s2);
   border-radius: var(--catch-radius-pill);
   font-size: var(--catch-typography-brand-kicker-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .risk.low {
@@ -2886,7 +2886,7 @@ th {
   color: var(--ink);
   cursor: pointer;
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .signals,
@@ -3147,13 +3147,13 @@ th {
 .marketing-studio-summary span {
   color: var(--muted);
   font-size: var(--catch-typography-brand-kicker-size);
-  font-weight: 780;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   text-transform: uppercase;
 }
 
 .marketing-studio-summary strong {
   color: var(--ink);
-  font-size: 18px;
+  font-size: var(--catch-typography-web-title-size);
   line-height: 1.12;
 }
 
@@ -3165,7 +3165,7 @@ th {
   background: var(--surface);
   color: var(--muted);
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 760;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .marketing-post-board {
@@ -3195,7 +3195,7 @@ th {
 .marketing-board-column > header span {
   color: var(--ink);
   font-size: var(--catch-typography-web-context-size);
-  font-weight: 820;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .marketing-board-column > header strong {
@@ -3267,7 +3267,7 @@ th {
   border-radius: var(--catch-radius-pill);
   color: var(--ink);
   font-size: var(--catch-typography-brand-mono-label-s-size);
-  font-weight: 820;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   text-transform: uppercase;
 }
 
@@ -3342,7 +3342,7 @@ th {
   background: var(--surface);
   color: var(--muted);
   font-size: var(--catch-typography-brand-kicker-size);
-  font-weight: 820;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .marketing-step-chip.active {
@@ -3407,7 +3407,7 @@ th {
   background: var(--surface);
   color: var(--ink);
   font-size: var(--catch-typography-brand-mono-label-s-size);
-  font-weight: 820;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .marketing-picker-row.selected > span {
@@ -3559,7 +3559,7 @@ th {
   border-radius: var(--catch-radius-pill);
   color: var(--ink);
   font-size: var(--catch-typography-brand-mono-label-s-size);
-  font-weight: 820;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   text-transform: uppercase;
 }
 
@@ -3708,7 +3708,7 @@ th {
   color: var(--positive);
   cursor: pointer;
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 780;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .marketing-grid {
@@ -3765,7 +3765,7 @@ th {
 
 .marketing-card-header h3 {
   margin: var(--catch-space-micro3) 0 0;
-  font-size: 17px;
+  font-size: var(--catch-typography-web-name-size);
   line-height: 1.18;
 }
 
@@ -3800,8 +3800,8 @@ th {
   outline: 0;
   background: transparent;
   color: var(--ink);
-  font-size: 18px;
-  font-weight: 750;
+  font-size: var(--catch-typography-web-title-size);
+  font-weight: var(--catch-typography-brand-kicker-weight);
   line-height: var(--catch-typography-brand-meta-line-height);
 }
 
@@ -3883,7 +3883,7 @@ th {
   border-radius: var(--catch-radius-sm);
   color: var(--muted);
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
 }
 
 .marketing-step p {
@@ -3960,7 +3960,7 @@ th {
 .admin-decision-footer.publishing-actions > div:first-child span {
   color: var(--muted);
   font-size: var(--catch-typography-web-status-size);
-  font-weight: 650;
+  font-weight: var(--catch-typography-web-headline-weight);
 }
 
 .marketing-empty-state {
@@ -4090,7 +4090,7 @@ th {
 .marketing-app-media-paths span {
   color: var(--muted);
   font-size: var(--catch-typography-brand-mono-label-s-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   text-transform: uppercase;
 }
 
@@ -4161,7 +4161,7 @@ th {
 .feature-drop-preview-card figcaption {
   color: var(--muted);
   font-size: var(--catch-typography-brand-kicker-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   text-transform: uppercase;
 }
 
@@ -4248,7 +4248,7 @@ th {
   gap: var(--catch-space-s2);
   color: var(--muted);
   font-size: var(--catch-typography-brand-mono-label-s-size);
-  font-weight: 800;
+  font-weight: var(--catch-typography-brand-kicker-weight);
   text-transform: uppercase;
 }
 
