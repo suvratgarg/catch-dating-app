@@ -176,9 +176,7 @@ Widget probe(BuildContext context, dynamic data, int? nullableLines) => Column(c
       );
       variants.createSync(recursive: true);
       variants.writeAsStringSync(
-        File(
-          '$root/packages/catch_ui/lib/src/primitives/catch_text_variant.dart',
-        ).readAsStringSync(),
+        'enum CatchTextVariant { supporting, titleL; }',
       );
       final baseline = File('${fixture.path}/$textMigrationBaseline');
       baseline.createSync(recursive: true);
@@ -230,9 +228,9 @@ Widget probe(BuildContext context, dynamic data, int? nullableLines) => Column(c
       // Publishing a role activates its original allowance, not another role's
       // quota. A later unsupported call acquires no extra reservation.
       final enumSource = variants.readAsStringSync();
-      expect(enumSource, contains('metric;'));
+      expect(enumSource, contains('titleL;'));
       variants.writeAsStringSync(
-        enumSource.replaceFirst('metric;', 'metric, proseM;'),
+        enumSource.replaceFirst('titleL;', 'titleL, proseM;'),
       );
       variants.setLastModifiedSync(
         DateTime.now().add(const Duration(seconds: 1)),

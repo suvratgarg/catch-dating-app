@@ -18,7 +18,13 @@ enum CatchTextVariant {
   supportingStrong,
   fieldLabel,
   statusLabel,
-  metric;
+  metric,
+  recordTitle,
+  recordContext,
+  recordBody,
+  proseL,
+  proseM,
+  name;
 
   /// The [CatchTextStyles] role for this variant, optionally recolored.
   TextStyle style(BuildContext context, {Color? color}) => switch (this) {
@@ -56,5 +62,20 @@ enum CatchTextVariant {
       color: color,
     ),
     CatchTextVariant.metric => CatchTextStyles.metric(context, color: color),
+    CatchTextVariant.recordTitle => CatchTextStyles.recordTitle(
+      context,
+      color: color,
+    ),
+    CatchTextVariant.recordContext => CatchTextStyles.recordContext(
+      context,
+      color: color,
+    ),
+    CatchTextVariant.recordBody => CatchTextStyles.recordBody(
+      context,
+      color: color,
+    ),
+    CatchTextVariant.proseL => CatchTextStyles.proseL(context, color: color),
+    CatchTextVariant.proseM => CatchTextStyles.proseM(context, color: color),
+    CatchTextVariant.name => CatchTextStyles.name(context, color: color),
   };
 }

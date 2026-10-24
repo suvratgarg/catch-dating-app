@@ -22,9 +22,10 @@ const textCss = read("./CatchText.module.css");
 const kebab = (name: string) => name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
 function cssRule(css: string, selector: string) {
-  const start = css.indexOf(`${selector} {`);
-  expect(start, `missing CSS rule ${selector}`).toBeGreaterThanOrEqual(0);
-  return css.slice(start, css.indexOf("}", start));
+  const rules = [...css.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+    .filter((rule) => rule[1].split(",").map((value) => value.trim()).includes(selector));
+  expect(rules.length, `missing or duplicate flat CSS rule ${selector}`).toBe(1);
+  return `{${rules[0][2]}}`;
 }
 
 function declaration(rule: string, property: string) {
@@ -36,6 +37,16 @@ function selectorValues(css: string, attribute: string) {
   return [...css.matchAll(new RegExp(`\\[data-${attribute}="([A-Za-z]+)"\\]`, "g"))]
     .map((match) => match[1]);
 }
+
+it("finds exact members of grouped parity selectors", () => {
+  const css = ".target-extra { color: red; } /* roles */ .first, .target, .last { color: blue; }";
+  for (const selector of [".first", ".target", ".last"]) {
+    expect(declaration(cssRule(css, selector), "color")).toBe("blue");
+  }
+  expect(declaration(cssRule(css, ".target-extra"), "color")).toBe("red");
+  expect(() => cssRule(css, ".missing")).toThrow();
+  expect(() => cssRule(`${css} .target { color: green; }`, ".target")).toThrow();
+});
 
 describe("CatchGaps parity", () => {
   // CatchGaps names each role after the generated gap token it reads; the web
