@@ -51,8 +51,10 @@ selective rendering) are CAT-239, owned separately.
    builds the website's own types (`HostListing`, event records). A model change
    breaks the reader at compile time instead of drifting silently.
 4. **One validator, one schema.** A JSON Schema in `tool/demo/demo_seed/schema/`
-   defines the world format. `tool/demo/lib/demo_world.mjs` validates it and checks
-   invariants (below). The existing scenario-catalog test runs it over every
+   defines the world format. `tool/demo/lib/demo_world.mjs` validates it with a
+   small built-in checker (no npm dependency: Demo Ops CI installs none) that
+   rejects any schema keyword it doesn't implement, then checks invariants
+   (below). The existing scenario-catalog test runs it over every
    scenario in CI.
 5. **Facts are exported, not retyped.** `demoWorldFacts(world, eventId, moment)`
    returns the values copy may quote (guest counts, names, times). Website

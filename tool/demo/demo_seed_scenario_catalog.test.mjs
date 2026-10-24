@@ -125,5 +125,14 @@ test("rejects contact details outside the reserved demo ranges", () => {
 test("rejects stored counts: the world format has no field for them", () => {
   const world = clone();
   world.events[0].bookedCount = 24;
-  assert.throws(() => validateDemoWorld(world), /must NOT have additional properties/);
+  assert.throws(() => validateDemoWorld(world), /bookedCount is not a field of the demo world format/);
+});
+
+test("the schema check reports missing fields and wrong types by path", () => {
+  const missing = clone();
+  delete missing.events[0].capacity;
+  assert.throws(() => validateDemoWorld(missing), /\/events\/0 is missing capacity/);
+  const wrongType = clone();
+  wrongType.events[0].capacity = "thirty";
+  assert.throws(() => validateDemoWorld(wrongType), /\/events\/0\/capacity must be integer/);
 });

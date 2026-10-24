@@ -4,7 +4,6 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-import Ajv2020 from "ajv/dist/2020.js";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../../..");
@@ -14,20 +13,17 @@ const eventCommonPath = path.join(repoRoot, "contracts", "shared", "event_common
 // Doors open before the start time; a check-in earlier than this is an error.
 const doorsOpenMinutes = 30;
 
-let compiledSchema;
+let worldSchema;
 
 export function isDemoWorld(config) {
   return config?.schemaVersion === 2;
 }
 
 export function validateDemoWorld(world, label = world?.id ?? "demo world") {
-  compiledSchema ??= new Ajv2020({allErrors: true, strict: true})
-    .compile(JSON.parse(fs.readFileSync(schemaPath, "utf8")));
-  if (!compiledSchema(world)) {
-    const details = compiledSchema.errors
-      .map((error) => `${error.instancePath || "/"} ${error.message}`)
-      .join("; ");
-    throw new Error(`${label} does not match the demo world schema: ${details}`);
+  worldSchema ??= JSON.parse(fs.readFileSync(schemaPath, "utf8"));
+  const errors = schemaErrors(world, worldSchema, worldSchema, "");
+  if (errors.length) {
+    throw new Error(`${label} does not match the demo world schema: ${errors.join("; ")}`);
   }
   const problems = invariantProblems(world);
   if (problems.length) throw new Error(`${label} breaks demo world invariants:\n  - ${problems.join("\n  - ")}`);
@@ -66,6 +62,62 @@ export function demoWorldFacts(world, eventId, moment) {
     currency: world.currency,
     ...eventStateAt(world, eventId, moment),
   };
+}
+
+// A dependency-free check of the JSON Schema keywords demo_world.schema.json
+// uses (Demo Ops CI installs no root packages). An unsupported keyword is an
+// error, so the schema file stays the single definition of the format.
+const annotationKeywords = new Set(["$schema", "$id", "title", "description"]);
+const checkedKeywords = new Set(["type", "properties", "required", "additionalProperties", "items", "minItems",
+  "uniqueItems", "enum", "const", "pattern", "minLength", "minimum", "maximum", "minProperties", "propertyNames",
+  "$ref", "$defs"]);
+
+function schemaErrors(value, schema, root, at) {
+  for (const keyword of Object.keys(schema)) {
+    if (!annotationKeywords.has(keyword) && !checkedKeywords.has(keyword)) {
+      throw new Error(`demo_world.schema.json uses unsupported keyword ${keyword} at ${at || "/"}`);
+    }
+  }
+  if (schema.$ref) {
+    const name = schema.$ref.replace(/^#\/\$defs\//, "");
+    if (!root.$defs?.[name]) throw new Error(`demo_world.schema.json has no $defs/${name}`);
+    return schemaErrors(value, root.$defs[name], root, at);
+  }
+  const where = at || "/";
+  const kind = Array.isArray(value) ? "array" : value === null ? "null" :
+    Number.isInteger(value) ? "integer" : typeof value;
+  if ("const" in schema && value !== schema.const) return [`${where} must equal ${JSON.stringify(schema.const)}`];
+  if (schema.enum && !schema.enum.includes(value)) return [`${where} must be one of ${schema.enum.join(", ")}`];
+  if (schema.type && !(schema.type === kind || (schema.type === "number" && kind === "integer"))) {
+    return [`${where} must be ${schema.type}`];
+  }
+  const errors = [];
+  if (kind === "string") {
+    if (schema.minLength != null && value.length < schema.minLength) errors.push(`${where} must not be empty`);
+    if (schema.pattern && !new RegExp(schema.pattern, "u").test(value)) errors.push(`${where} must match ${schema.pattern}`);
+  }
+  if (kind === "integer" || kind === "number") {
+    if (schema.minimum != null && value < schema.minimum) errors.push(`${where} must be at least ${schema.minimum}`);
+    if (schema.maximum != null && value > schema.maximum) errors.push(`${where} must be at most ${schema.maximum}`);
+  }
+  if (kind === "array") {
+    if (schema.minItems != null && value.length < schema.minItems) errors.push(`${where} needs at least ${schema.minItems} item(s)`);
+    if (schema.uniqueItems && new Set(value.map((item) => JSON.stringify(item))).size !== value.length) errors.push(`${where} must not repeat items`);
+    if (schema.items) value.forEach((item, index) => errors.push(...schemaErrors(item, schema.items, root, `${at}/${index}`)));
+  }
+  if (kind === "object") {
+    const keys = Object.keys(value);
+    if (schema.minProperties != null && keys.length < schema.minProperties) errors.push(`${where} needs at least ${schema.minProperties} field(s)`);
+    for (const key of schema.required ?? []) if (!(key in value)) errors.push(`${where} is missing ${key}`);
+    for (const key of keys) {
+      const child = `${at}/${key}`;
+      if (schema.propertyNames) errors.push(...schemaErrors(key, schema.propertyNames, root, `${child} (name)`));
+      if (schema.properties?.[key]) errors.push(...schemaErrors(value[key], schema.properties[key], root, child));
+      else if (schema.additionalProperties === false) errors.push(`${child} is not a field of the demo world format`);
+      else if (typeof schema.additionalProperties === "object") errors.push(...schemaErrors(value[key], schema.additionalProperties, root, child));
+    }
+  }
+  return errors;
 }
 
 function invariantProblems(world) {
