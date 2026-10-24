@@ -5970,7 +5970,8 @@
       "impactPaths": [
         "tool/marketing/capture_pipeline.test.mjs",
         "tool/marketing/sync_website_media.test.mjs",
-        "tool/demo/demo_seed/scenarios/**",
+        "tool/marketing/capture_manifest.json",
+        "tool/demo/demo_seed/scenarios/host-marketing-india.json",
         "artifacts/marketing/app-screenshots/**"
       ]
     },

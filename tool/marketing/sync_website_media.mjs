@@ -198,16 +198,28 @@ function validatePresentation(errors, label, capture) {
       errors.push(`${label}: only an active capture can name pages.`);
     }
   }
-  if (capture.scenario !== undefined) errors.push(...scenarioProblems(label, capture.scenario));
+  if (capture.scenario !== undefined) {
+    const {world, event, moment} = capture.scenario ?? {};
+    if (![world, event, moment].every(value => typeof value === "string" && /^[A-Za-z0-9][A-Za-z0-9_-]*$/.test(value))) {
+      errors.push(`${label}: scenario needs world, event and moment.`);
+    }
+  }
 }
 
-function scenarioProblems(label, scenario) {
-  const {world, event, moment} = scenario ?? {};
-  if (![world, event, moment].every(value => typeof value === "string" && value !== "")) {
-    return [`${label}: scenario needs world, event and moment.`];
-  }
+/**
+ * Checks each scenario against its demo world. Kept out of
+ * validateSourceManifest: hosted export fixtures copy the manifest without the
+ * worlds, and sync_website_media.test.mjs runs this over the real repository.
+ */
+export function scenarioReferenceProblems(manifest) {
+  return manifest.captures
+    .filter(capture => capture.scenario !== undefined)
+    .flatMap(capture => scenarioProblems(capture.id, capture.scenario));
+}
+
+function scenarioProblems(label, {world, event, moment}) {
   const worldPath = `${scenarioRoot}/${world}.json`;
-  if (!/^[a-z0-9][a-z0-9-]*$/.test(world) || !fs.existsSync(fromRepo(worldPath))) {
+  if (!fs.existsSync(fromRepo(worldPath))) {
     return [`${label}: scenario world ${world} is not a file under ${scenarioRoot}.`];
   }
   const data = readJson(fromRepo(worldPath));
