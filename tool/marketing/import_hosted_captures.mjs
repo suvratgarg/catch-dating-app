@@ -20,6 +20,8 @@ const digest = bytes => `sha256:${crypto.createHash("sha256").update(bytes).dige
 const json = value => Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
 const sha = value => typeof value === "string" && /^[a-f0-9]{40}$/u.test(value);
 const positive = value => typeof value === "string" && /^[1-9][0-9]*$/u.test(value) && Number.isSafeInteger(Number(value));
+// The reusable marketing-captures.yml job; callers prefix it as "<job> / <name>".
+export const CAPTURE_PRODUCER_JOB = "Render and validate 12 canonical iPhone captures";
 
 export function validateBinding(binding) {
   assert.match(binding?.repository ?? "", /^[\w.-]+\/[\w.-]+$/u, "Invalid capture repository.");
@@ -32,7 +34,27 @@ export function validateBinding(binding) {
   assert.match(binding.artifactDigest ?? "", /^sha256:[a-f0-9]{64}$/u, "Invalid capture artifact digest.");
 }
 
-export function verifyArtifactMetadata({binding, artifact, repositoryId, run, workflow}) {
+/**
+ * The one successful capture job in the binding's exact attempt that was
+ * running when the artifact was created. A newer merge to main cancels the
+ * older main CI run (ci.yml concurrency) after its captures may already be
+ * complete; the job, not the run, is then the evidence.
+ */
+export function selectCaptureProducerJob({jobs, binding, artifact}) {
+  assert.ok(Array.isArray(jobs), "Missing capture run jobs.");
+  const created = Date.parse(artifact?.created_at);
+  assert.ok(Number.isFinite(created), "Missing capture artifact creation time.");
+  const producers = jobs.filter(job => job?.name === CAPTURE_PRODUCER_JOB ||
+    (typeof job?.name === "string" && job.name.endsWith(` / ${CAPTURE_PRODUCER_JOB}`)));
+  const matches = producers.filter(job => job.run_id === Number(binding.runId) &&
+    job.run_attempt === Number(binding.runAttempt) && job.head_sha === binding.runHeadSha &&
+    job.status === "completed" && job.conclusion === "success" &&
+    Date.parse(job.started_at) <= created && created <= Date.parse(job.completed_at));
+  assert.equal(matches.length, 1, "Capture run was cancelled before its capture job succeeded.");
+  return matches[0];
+}
+
+export function verifyArtifactMetadata({binding, artifact, repositoryId, run, workflow, producerJob = null}) {
   validateBinding(binding);
   assert.ok(Number.isSafeInteger(repositoryId) && repositoryId > 0, "Invalid repository id.");
   assert.equal(artifact?.id, Number(binding.artifactId), "Wrong capture artifact id.");
@@ -52,7 +74,11 @@ export function verifyArtifactMetadata({binding, artifact, repositoryId, run, wo
   assert.ok(Number.isSafeInteger(workflow?.id) && workflow.id > 0, "Missing canonical capture workflow.");
   assert.equal(workflow.path, workflowPath, "Wrong canonical capture workflow path.");
   assert.equal(run.workflow_id, workflow.id, "Wrong capture workflow generation.");
-  assert.ok(!["failure", "cancelled", "timed_out", "action_required"].includes(run.conclusion), "Capture run failed or was cancelled.");
+  assert.ok(!["failure", "timed_out", "action_required"].includes(run.conclusion), "Capture run failed.");
+  if (run.conclusion === "cancelled") {
+    assert.ok(producerJob, "Capture run was cancelled; its successful capture job is required evidence.");
+    assert.equal(selectCaptureProducerJob({jobs: [producerJob], binding, artifact}), producerJob);
+  }
 }
 
 // Python's standard ZIP reader checks local names, decompression bounds/overlap
@@ -203,12 +229,23 @@ export async function downloadCaptureArtifact({binding, request = githubRequest}
   const artifact = await request(`${base}/actions/artifacts/${binding.artifactId}`);
   const workflowFile = binding.workflowRef.split("/.github/workflows/")[1].split("@")[0];
   const workflow = await request(`${base}/actions/workflows/${workflowFile}`);
+  let producerJob = null;
+  const producerFor = async (candidate) => {
+    if (candidate?.conclusion !== "cancelled") return null;
+    if (!producerJob) {
+      const page = await request(`${base}/actions/runs/${binding.runId}/attempts/${binding.runAttempt}/jobs?per_page=100`);
+      assert.ok(Array.isArray(page?.jobs) && page.total_count === page.jobs.length, "Incomplete capture run job listing.");
+      producerJob = selectCaptureProducerJob({jobs: page.jobs, binding, artifact});
+    }
+    return producerJob;
+  };
   const run = await request(`${base}/actions/runs/${binding.runId}`);
-  verifyArtifactMetadata({binding, artifact, repositoryId: repository.id, run, workflow});
+  verifyArtifactMetadata({binding, artifact, repositoryId: repository.id, run, workflow, producerJob: await producerFor(run)});
   const bytes = await request(`${base}/actions/artifacts/${binding.artifactId}/zip`, {binary: true});
   assert.equal(digest(bytes), binding.artifactDigest, "Downloaded capture ZIP digest differs.");
   const current = await request(`${base}/actions/runs/${binding.runId}`);
-  verifyArtifactMetadata({binding, artifact, repositoryId: repository.id, run: current, workflow});
+  verifyArtifactMetadata({binding, artifact, repositoryId: repository.id, run: current, workflow,
+    producerJob: await producerFor(current)});
   return bytes;
 }
 
