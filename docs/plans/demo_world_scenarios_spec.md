@@ -51,7 +51,7 @@ selective rendering) are CAT-239, owned separately.
    builds the website's own types (`HostListing`, event records). A model change
    breaks the reader at compile time instead of drifting silently.
 4. **One validator, one schema.** A JSON Schema in `tool/demo/demo_seed/schema/`
-   defines the world format. `tool/demo/demo_world.mjs` validates it and checks
+   defines the world format. `tool/demo/lib/demo_world.mjs` validates it and checks
    invariants (below). The existing scenario-catalog test runs it over every
    scenario in CI.
 5. **Facts are exported, not retyped.** `demoWorldFacts(world, eventId, moment)`
@@ -104,8 +104,10 @@ Derived at (event, moment):
 | --- | --- |
 | `booked` | attendance with `bookedAt ≤ moment` and not cancelled by then |
 | `checkedIn` | attendance with `checkedInAt ≤ moment` |
-| `waitlisted` | attendance with `waitlistedAt ≤ moment` and not promoted by then |
 | `phase` | before start = upcoming, within start–end = live, after end = ended |
+
+Waitlist, payment, application and message records join the format when a
+scenario first needs them, with the same rule: timestamps in, counts derived.
 
 ## Invariants the validator enforces
 
