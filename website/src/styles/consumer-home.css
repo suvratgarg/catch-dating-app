@@ -18,7 +18,7 @@
 .consumer-city { position: relative; min-width: 155px; }
 .consumer-section { padding: var(--catch-space-s12) var(--consumer-gutter); }
 .consumer-section__heading { display: flex; align-items: center; justify-content: space-between; gap: var(--catch-space-s5); margin-bottom: var(--catch-space-s6); }
-.consumer-filters { display: flex; flex-wrap: wrap; gap: 26px; margin: -4px 0 var(--catch-space-s6); }
+.consumer-filters { display: flex; flex-wrap: wrap; gap: 26px; margin: calc(var(--catch-space-s1) * -1) 0 var(--catch-space-s6); }
 .consumer-filters button { padding: var(--catch-space-micro10) 0; min-height: 44px; font: inherit; font-size: 15px; color: var(--website-text-muted); background: none; border-bottom: 3px solid transparent; cursor: pointer; }
 .consumer-filters button[aria-pressed="true"] { color: var(--catch-activity-social-run-deep); border-color: var(--catch-activity-social-run-deep); font-weight: 600; }
 .consumer-event-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--catch-space-s7); }
