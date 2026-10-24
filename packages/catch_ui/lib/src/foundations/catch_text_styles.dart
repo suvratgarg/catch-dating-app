@@ -196,12 +196,6 @@ abstract final class CatchTextStyles {
 
   // ===========================================================================
   // FUNCTION — platform system font (UI titles, body, labels, controls)
-  static TextStyle recordTitle(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.name,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
   static TextStyle recordContext(BuildContext context, {Color? color}) =>
       _functionProfile(
         CatchPlatformTokens.typography.context,
@@ -222,13 +216,6 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink,
       );
 
-  /// Profile prompt answers — user-authored content, not brand voice.
-  static TextStyle profileAnswer(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.name,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
   /// Long-form app/user copy — bios, event descriptions, readable details.
   static TextStyle proseL(BuildContext context, {Color? color}) =>
       _functionProfile(
@@ -240,13 +227,6 @@ abstract final class CatchTextStyles {
   static TextStyle proseM(BuildContext context, {Color? color}) =>
       _functionProfile(
         CatchPlatformTokens.typography.secondary,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
-  /// Host/person row name treatment (`.t-name`).
-  static TextStyle name(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.name,
         color: color ?? CatchTokens.of(context).ink,
       );
 

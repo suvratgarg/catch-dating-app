@@ -20,12 +20,10 @@ Widget catchTextContractStates(BuildContext context) {
   );
   final variants = recordAndProse
       ? const [
-          CatchTextVariant.recordTitle,
           CatchTextVariant.recordContext,
           CatchTextVariant.recordBody,
           CatchTextVariant.proseL,
           CatchTextVariant.proseM,
-          CatchTextVariant.name,
         ]
       : const [
           CatchTextVariant.headline,

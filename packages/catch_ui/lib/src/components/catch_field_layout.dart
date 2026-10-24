@@ -74,7 +74,11 @@ final class CatchRecordLayout extends CatchFieldLayout {
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(title, style: CatchTextStyles.recordTitle(context)),
+      CatchText(
+        title,
+        variant: CatchTextVariant.sectionTitle,
+        color: CatchTokens.of(context).ink,
+      ),
       if (metadata case final text? when text.isNotEmpty) ...[
         const SizedBox(height: CatchRecordTokens.titleGap),
         Text(text, style: CatchTextStyles.recordContext(context)),
@@ -188,7 +192,13 @@ final class CatchPersonLayout extends CatchFieldLayout {
           builder: (context, constraints) => Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: Text(name, style: CatchTextStyles.name(context))),
+              Expanded(
+                child: CatchText(
+                  name,
+                  variant: CatchTextVariant.sectionTitle,
+                  color: CatchTokens.of(context).ink,
+                ),
+              ),
               if (badges.isNotEmpty && !stacked) ...[
                 const SizedBox(width: CatchSpacing.s2),
                 ConstrainedBox(
@@ -283,7 +293,11 @@ final class CatchConversationLayout extends CatchFieldLayout {
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(name, style: CatchTextStyles.name(context)),
+      CatchText(
+        name,
+        variant: CatchTextVariant.sectionTitle,
+        color: CatchTokens.of(context).ink,
+      ),
       const SizedBox(height: CatchRecordTokens.titleGap),
       CatchText(preview, variant: CatchTextVariant.supporting),
       if (this.context case final text? when text.isNotEmpty) ...[

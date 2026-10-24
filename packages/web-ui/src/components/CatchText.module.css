@@ -35,9 +35,7 @@
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
-.text[data-variant="sectionTitle"],
-.text[data-variant="recordTitle"],
-.text[data-variant="name"] {
+.text[data-variant="sectionTitle"] {
   --catch-text-size: var(--catch-typography-web-name-size);
   --catch-text-line-height: var(--catch-typography-web-name-line-height);
   --catch-text-weight: var(--catch-typography-web-name-weight);

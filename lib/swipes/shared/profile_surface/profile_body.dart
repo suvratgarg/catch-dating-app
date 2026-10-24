@@ -368,9 +368,10 @@ class ProfilePromptSection extends StatelessWidget {
       children: [
         ProfileKickerText(section.question),
         gapH8,
-        Text(
+        CatchText(
           section.answer,
-          style: CatchTextStyles.profileAnswer(context, color: t.ink),
+          variant: CatchTextVariant.sectionTitle,
+          color: t.ink,
         ),
       ],
     );

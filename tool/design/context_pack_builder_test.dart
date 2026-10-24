@@ -885,7 +885,6 @@ final _styleRegistry = <_StyleEntry>[
     'function',
     CatchTextStyles.navigationLabel,
   ),
-  _StyleEntry.single('recordTitle', 'function', CatchTextStyles.recordTitle),
   _StyleEntry.single(
     'recordContext',
     'function',
@@ -906,11 +905,6 @@ final _styleRegistry = <_StyleEntry>[
     CatchTextStyles.welcomeIntroBody,
   ),
   _StyleEntry.single('titleL', 'function', CatchTextStyles.titleL),
-  _StyleEntry.single(
-    'profileAnswer',
-    'function',
-    CatchTextStyles.profileAnswer,
-  ),
   _StyleEntry.single('proseL', 'function', CatchTextStyles.proseL),
   _StyleEntry.single('proseM', 'function', CatchTextStyles.proseM),
   _StyleEntry(
@@ -946,7 +940,6 @@ final _styleRegistry = <_StyleEntry>[
   _StyleEntry.single('eventTitle', 'voice', CatchTextStyles.eventTitle),
   _StyleEntry.single('consoleTitle', 'voice', CatchTextStyles.consoleTitle),
   _StyleEntry.single('hint', 'voice', CatchTextStyles.hint),
-  _StyleEntry.single('name', 'function', CatchTextStyles.name),
   _StyleEntry.single('sectionTitle', 'function', CatchTextStyles.sectionTitle),
   _StyleEntry.single('sectionCount', 'data', CatchTextStyles.sectionCount),
   _StyleEntry.single('titleS', 'function', CatchTextStyles.titleS),

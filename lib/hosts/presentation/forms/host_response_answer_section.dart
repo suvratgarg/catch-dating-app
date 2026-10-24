@@ -19,7 +19,11 @@ class HostResponseAnswerRow extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: CatchTextStyles.recordTitle(context)),
+          CatchText(
+            label,
+            variant: CatchTextVariant.sectionTitle,
+            color: CatchTokens.of(context).ink,
+          ),
           gapH8,
           Text(answer, style: CatchTextStyles.recordBody(context)),
           if (origin != null) ...[

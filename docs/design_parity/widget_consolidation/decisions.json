@@ -8640,6 +8640,43 @@
       "decidedBy": "owner+claude",
       "date": "2026-10-24",
       "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:section-title-record-name-aliases",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.recordTitle",
+          "action": "absorb",
+          "note": "CatchTextVariant.sectionTitle for supported Text calls; CatchTextStyles.sectionTitle for unchanged style carriers."
+        },
+        {
+          "name": "CatchTextStyles.name",
+          "action": "absorb",
+          "note": "CatchTextVariant.sectionTitle for supported Text calls; CatchTextStyles.sectionTitle for unchanged style carriers."
+        }
+      ],
+      "rationale": "CAT-211 comment 5e573577-8360-4eb5-b8a3-63dee7477d49 records the owner-delegated:2026-10-24 -> claude decision to absorb recordTitle and name into existing sectionTitle and retire both aliases instead of exposing synonyms. Record approval as owner+claude under the goal handoff format. Complete TextStyle equality holds across six platforms, both themes and default/danger/transparent colors; the original thirteen variants are distinct. Retire all callers, methods and the two Flutter/React variants and catalog projections together, preserving colors and rendering. No new API or visual decision.",
+      "decidedBy": "owner+claude",
+      "date": "2026-10-24",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:section-title-profile-answer-identity",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.profileAnswer",
+          "action": "absorb",
+          "note": "CatchTextVariant.sectionTitle for supported Text calls; CatchTextStyles.sectionTitle for unchanged style carriers."
+        }
+      ],
+      "rationale": "The 2026-10-24 exact-identity coordinator rule in .claude/handoffs/codex_ui_consolidation_goal.md authorizes absorbing an identical style into its existing variant without exposing a synonym. profileAnswer equals the unique original sectionTitle recipe across six platforms, both themes and default/danger/transparent colors. Migrate its supported production Text call to CatchTextVariant.sectionTitle, rename unchanged specimen/test carriers and retire the alias and generated projection. Preserve all rendering and caller colors. This is the mechanical rule, not an additional Claude design approval.",
+      "decidedBy": "codex-rule:exact-text-role-identity",
+      "date": "2026-10-24",
+      "status": "implemented"
     }
   ]
 }

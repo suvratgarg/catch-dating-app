@@ -371,12 +371,10 @@ extension _CatchFieldRendering on _CatchFieldState {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  CatchText(
                     title,
-                    style: CatchTextStyles.recordTitle(
-                      context,
-                      color: _toneColor(t, primaryFallback: t.ink),
-                    ),
+                    variant: CatchTextVariant.sectionTitle,
+                    color: _toneColor(t, primaryFallback: t.ink),
                   ),
                   const SizedBox(height: CatchRecordTokens.titleGap),
                   Text(

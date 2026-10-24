@@ -35,12 +35,10 @@ const textVariants: readonly CatchTextVariant[] = [
 ];
 
 const recordAndProseVariants: readonly CatchTextVariant[] = [
-  "recordTitle",
   "recordContext",
   "recordBody",
   "proseL",
   "proseM",
-  "name",
 ];
 
 const gapSizes: readonly CatchGapSize[] = [

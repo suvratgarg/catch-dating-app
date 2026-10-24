@@ -112,7 +112,7 @@ class FoundationTypographyTokens extends StatelessWidget {
               _TypeSpec(
                 'profileAnswer',
                 'I like events with a clean plan and warm arrival.',
-                CatchTextStyles.profileAnswer(context),
+                CatchTextStyles.sectionTitle(context),
               ),
               _TypeSpec(
                 'proseL',
@@ -124,7 +124,11 @@ class FoundationTypographyTokens extends StatelessWidget {
                 'Smaller long-form copy for cards, sheets, and explanations.',
                 CatchTextStyles.proseM(context),
               ),
-              _TypeSpec('name', 'Aanya Shah', CatchTextStyles.name(context)),
+              _TypeSpec(
+                'name',
+                'Aanya Shah',
+                CatchTextStyles.sectionTitle(context),
+              ),
               _TypeSpec(
                 'sectionTitle',
                 'Profile',
