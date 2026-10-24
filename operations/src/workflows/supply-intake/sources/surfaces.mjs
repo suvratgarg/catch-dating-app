@@ -68,6 +68,22 @@ export function normalizeOrganizerSurfaceUrl(inputUrl, options = {}) {
   };
 }
 
+/**
+ * A Luma single-segment URL is an event or a calendar; only the page says
+ * which. Once a page reads as an organizer page, its surface is the calendar.
+ */
+export function surfaceForOrganizerPage(surface) {
+  if (surface?.platform !== "luma" || surface.surfaceKind !== "eventListing" ||
+      !surface.normalizedKey?.startsWith("luma:event:")) {
+    return surface;
+  }
+  return {
+    ...surface,
+    surfaceKind: "eventCalendar",
+    normalizedKey: `luma:calendar:${surface.normalizedKey.slice("luma:event:".length)}`,
+  };
+}
+
 export function surfaceFromUrl(inputUrl, options = {}) {
   const normalized = normalizeOrganizerSurfaceUrl(inputUrl, options);
   const surfaceId = options.surfaceId ?? surfaceIdFromNormalizedKey(

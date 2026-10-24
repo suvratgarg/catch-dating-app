@@ -90,7 +90,8 @@ freshness-scheduled `runKey` to an injected acquisition port and receives a raw
 JSON payload plus bounded provenance. The workflow never constructs a network
 client, and the React admin has no acquisition or model client.
 
-Two adapters implement that port:
+Two adapters implement that port (on-demand page fetching for intake
+requests is a separate channel, described below):
 
 - `manual_file` reads the same reviewed JSON payloads used by the existing
   compatibility capture commands. It consumes no network allowance and
@@ -119,6 +120,61 @@ and budget evidence. The checked policy fixes
 `firestorePersistenceAllowed=false` and
 `persistence=external_artifact_store_only`.
 
+### Supply intake requests
+
+Every way an organizer enters Catch creates one intake request
+(`contracts/operations/supply_intake_request.schema.json`): a sales
+associate's or sales partner's nomination, an organizer's own submission, or
+an Admin-started discovery run. A request names a market, a seed (organizer
+name, up to ten URLs, notes, categories) and who submitted it. A nomination
+requires the submitter's uid, a partner nomination also requires the
+partner id, and discovery requests are always submitted by `system`.
+
+`supply-intake/intake-request.mjs` turns a request into one listing:
+
+1. **Gather.** Each seed URL is normalized and read through an injected page
+   source. The deterministic adapters in `supply-intake/sources/` extract
+   organizer and event candidates. Organizer pages that a seed links to on an
+   adapter platform (an event's organizer, a profile's `sameAs`) are read too,
+   one hop from the seed, up to twelve pages. A page that cannot be read, or
+   whose template drifted, becomes a recorded outcome rather than an error.
+2. **Build the listing.** Name, description, image and locality each record
+   the page and adapter they came from. Organizer pages outrank event pages,
+   and a nominator's typed name is used only when no page names the
+   organizer. Links keep only organizer surfaces, and their normalized keys
+   become the identity keys used for matching. Upcoming events are
+   deduplicated by platform id and by title and start time across platforms;
+   past events are counted, not listed.
+3. **Record gaps.** Missing fields, unreadable seeds, a name that differs from
+   the nomination, an exhausted fetch budget and similar conditions are
+   listed as gaps. Gaps that more evidence could close mark the listing
+   `researchNeeded`.
+
+The listing is the only content of the request's input snapshot
+(`intakeListings`). Supply Intake projects it as an `organizer_listing_draft`
+work item, and each upcoming event as a `listing_event_candidate` linked to
+it. Both are owned by a person: a listing waits in Verify for staff review (or
+in Resolve when it has no name or no readable source), and an event stays
+ineligible for promotion until its organizer's listing is approved. The work
+item contract validates both projections strictly, and every listing field
+carries provenance naming its source page.
+
+Two page sources implement capture. `StaticPageSource` reads pages a person
+saved and never touches the network. `GuardedPageFetchPort` fetches live
+pages only when `acquisition_policy.json` enables `pageFetch`, cites an
+accepted `on_demand_page_fetch_policy` decision, and freezes positive
+per-intake and monthly request ceilings. That channel is separate from the
+recurring crawl provider and its `recurring_event_crawl_policy`. The fetcher
+(`platform/network/page-fetcher.mjs`) connects only to public addresses: every
+DNS answer is checked at connect time, so a name cannot pass the check and
+then rebind to a private address. It refuses credentials in URLs and
+non-standard ports, revalidates every redirect (three at most), honours
+robots.txt for its own product token (a missing file allows everything; an
+unreachable one disallows everything), and stops at ten seconds or 4 MB.
+Robots.txt and each redirect consume budget like any other request. A capture
+returns a page snapshot without raw HTML plus a receipt holding only the
+outcome, hashes, sizes and budget window.
+
 ## Reference Layout
 
 ```text
@@ -127,6 +183,7 @@ operations/
   src/admin-cli/                   catalog-driven admin callable client
   src/admin/                       action catalog, client, local receipts
   src/platform/                    reusable execution and persistence ports
+  src/platform/network/            guarded public-web page fetcher
   src/workflows/registry.mjs       workflow inventory and factories
   src/workflows/supply-intake/     reference business workflow
   test/                            engine, adapter, safety, and replay tests
