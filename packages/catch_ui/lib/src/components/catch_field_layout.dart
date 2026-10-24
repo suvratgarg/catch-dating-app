@@ -285,7 +285,7 @@ final class CatchConversationLayout extends CatchFieldLayout {
     children: [
       Text(name, style: CatchTextStyles.name(context)),
       const SizedBox(height: CatchRecordTokens.titleGap),
-      Text(preview, style: CatchTextStyles.chatPreview(context)),
+      CatchText(preview, variant: CatchTextVariant.supporting),
       if (this.context case final text? when text.isNotEmpty) ...[
         const SizedBox(height: CatchRecordTokens.titleGap),
         Text(text, style: CatchTextStyles.recordContext(context)),

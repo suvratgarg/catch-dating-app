@@ -217,14 +217,11 @@ class ShareCardBubble extends StatelessWidget {
               ),
             ),
             padding: CatchInsets.chatBubbleContent,
-            child: Text(
+            child: CatchText(
               text,
+              variant: CatchTextVariant.bodyL,
+              color: isMe ? t.primaryInk : t.ink,
               maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.chatMessage(
-                context,
-                color: isMe ? t.primaryInk : t.ink,
-              ),
             ),
           ),
         ),

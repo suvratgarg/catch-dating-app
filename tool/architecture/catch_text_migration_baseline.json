@@ -31,14 +31,10 @@
       "recordBody": 1,
       "sectionTitle": 1
     },
-    "lib/chats/presentation/widgets/chat_event_context_header.dart": {
-      "chatThreadContext": 1
-    },
     "lib/chats/presentation/widgets/chat_message_list.dart": {
       "badge": 1
     },
     "lib/chats/presentation/widgets/chat_share_card.dart": {
-      "chatMessage": 1,
       "titleL": 1
     },
     "lib/chats/presentation/widgets/event_chat_message_tile.dart": {

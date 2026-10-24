@@ -189,21 +189,6 @@ class FoundationTypographyTokens extends StatelessWidget {
                 CatchTextStyles.avatarCount(context, size: 12),
               ),
               _TypeSpec(
-                'chatMessage',
-                'I will meet you by the fountain.',
-                CatchTextStyles.chatMessage(context),
-              ),
-              _TypeSpec(
-                'chatPreview',
-                'You both ran the Sundowner 5K.',
-                CatchTextStyles.chatPreview(context),
-              ),
-              _TypeSpec(
-                'chatThreadContext',
-                'Thursday Social Run',
-                CatchTextStyles.chatThreadContext(context),
-              ),
-              _TypeSpec(
                 'statCompact',
                 '24',
                 CatchTextStyles.statCompact(context),

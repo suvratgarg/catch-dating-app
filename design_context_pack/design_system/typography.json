@@ -27,8 +27,8 @@
     "color": "Base UI is paper and ink; chroma is reserved for activity meaning."
   },
   "registry": {
-    "publicStaticTextStyleMethods": 68,
-    "covered": 66,
+    "publicStaticTextStyleMethods": 65,
+    "covered": 63,
     "excluded": 2
   },
   "excluded": {
@@ -1009,49 +1009,6 @@
         "FontFeature('tnum', 1)"
       ],
       "casePolicy": "numeric"
-    },
-    "chatMessage": {
-      "role": "function",
-      "family": "Roboto",
-      "size": 16.0,
-      "weight": 400,
-      "lineHeight": 1.5,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      },
-      "casePolicy": "mixed"
-    },
-    "chatPreview": {
-      "role": "function",
-      "family": "Roboto",
-      "size": 14.0,
-      "weight": 400,
-      "lineHeight": 1.4285714285714286,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#544F47",
-        "dark": "#BAB2A7"
-      },
-      "casePolicy": "mixed",
-      "aliasOf": "bodyS"
-    },
-    "chatThreadContext": {
-      "role": "function",
-      "family": "Roboto",
-      "size": 14.0,
-      "weight": 600,
-      "lineHeight": 1.4285714285714286,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      },
-      "casePolicy": "mixed"
     },
     "statCompact": {
       "role": "function",
