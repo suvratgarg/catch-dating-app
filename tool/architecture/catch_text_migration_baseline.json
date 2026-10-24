@@ -373,10 +373,6 @@
     "lib/event_success/presentation/event_assistance_visit_section.dart": {
       "supporting": 5
     },
-    "lib/event_success/presentation/event_message_preference_section.dart": {
-      "sectionTitle": 1,
-      "supporting": 9
-    },
     "lib/event_success/presentation/event_message_preferences_sheet.dart": {
       "supporting": 3
     },
