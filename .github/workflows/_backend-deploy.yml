@@ -153,6 +153,32 @@ jobs:
           node tool/firebase/check_functions_params_coverage.mjs \
             --functions-dir functions --env-file "functions/.env.$project_id"
 
+      # A target this environment is not ready for (missing secret, TTL, IAM)
+      # stops the run before any mutation. Prerequisites the check cannot
+      # confirm in time only warn: Firebase and the parity check still verify
+      # secrets during and after the deploy.
+      - name: Check this environment is ready for these targets
+        if: ${{ steps.plan.outputs.mode != 'no-op' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          DEPLOY_TARGETS: ${{ steps.plan.outputs.targets }}
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          node tool/firebase/check_environment_readiness.mjs \
+            --env "$DEPLOY_ENVIRONMENT" --targets "$DEPLOY_TARGETS" \
+            --source-root . --source-sha "$GITHUB_SHA" --json > build/readiness.json || true
+          statuses() { jq -r --arg s "$1" '[.. | objects | select(has("id") and .status == $s) | .id] | .[]' build/readiness.json; }
+          blocked="$(statuses not-ready)"
+          if [[ -n "$blocked" ]]; then
+            echo "::error::$DEPLOY_ENVIRONMENT is not ready for these targets: $(paste -sd, <<< "$blocked")"
+            exit 1
+          fi
+          unknown="$(statuses unknown)"
+          if [[ -n "$unknown" ]]; then
+            echo "::warning::Readiness could not confirm: $(paste -sd, <<< "$unknown")"
+          fi
+
       # CI already ran the predeploy test suites for this commit, and the build
       # above produced lib, so deploy from a copy of firebase.json without hooks.
       # New indexes must be READY before Functions that query them deploy.
@@ -182,6 +208,16 @@ jobs:
             ./tool/deploy_firebase_targets.sh "$DEPLOY_ENVIRONMENT" "$remaining" \
               --config firebase.deploy.json --force
           fi
+
+      # Live Firestore and Storage rules must equal this commit's sources before
+      # the tag claims the environment received it.
+      - name: Verify the active rules match this commit
+        if: ${{ steps.plan.outputs.mode != 'no-op' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+        run: >-
+          node tool/firebase/check_rules_deployment_drift.mjs
+          --env "$DEPLOY_ENVIRONMENT" --wait-seconds 180 --poll-seconds 10
 
       - name: Record the deployed commit
         env:
