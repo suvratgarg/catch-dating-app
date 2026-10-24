@@ -160,6 +160,7 @@ export 'src/components/catch_top_bar_navigation.dart';
 export 'src/components/catch_top_bar_primary_button.dart';
 export 'src/components/catch_top_bar_search.dart';
 export 'src/components/catch_top_bar_tone.dart';
+export 'src/components/catch_welcome_text.dart';
 export 'src/components/catch_wheel_picker_sheet.dart';
 export 'src/foundations/catch_adaptive_platform.dart';
 export 'src/foundations/catch_font_licenses.dart';
