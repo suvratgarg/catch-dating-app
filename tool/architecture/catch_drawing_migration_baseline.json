@@ -604,8 +604,7 @@
       "Icon": 2
     },
     "lib/hosts/presentation/forms/host_form_editor_viewport.dart": {
-      "ColoredBox": 1,
-      "VerticalDivider": 2
+      "ColoredBox": 1
     },
     "lib/hosts/presentation/forms/host_form_overview_section_list.dart": {
       "Icon": 1
