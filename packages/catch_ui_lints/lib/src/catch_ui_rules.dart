@@ -7,6 +7,7 @@ import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/error/error.dart';
 
+import 'catch_drawing_migration.dart';
 import 'catch_text_migration.dart';
 import 'catch_ui_rules_tables.g.dart';
 
@@ -321,7 +322,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const noRawSurfaceShell = LintCode(
     'catch_no_raw_surface_shell',
-    'Use CatchSurface or a shared surface primitive instead of hand-rolling a local decorated surface.',
+    'Drawing belongs in catch_ui. Arrange existing Catch components instead of adding an SDK drawing constructor or subclass.',
     severity: DiagnosticSeverity.INFO,
   );
 
@@ -722,6 +723,28 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       );
     }
 
+    for (final site in newDrawingMigrationSites(node, currentPath)) {
+      final drawing = site.node;
+      if (drawing is InstanceCreationExpression) {
+        // Keep one boundary diagnostic where an existing rule already fires.
+        // Share their resolved names so aliases receive the same delegation.
+        final typeName = _constructorTypeName(drawing);
+        if (!allowRawControlConstructors &&
+            catchRawControlConstructors.contains(typeName)) {
+          continue;
+        }
+        if (typeName == 'Image' &&
+            _constructorMemberName(drawing) == 'network' &&
+            !_isCoreWidgetPrimitivePath) {
+          continue;
+        }
+      }
+      rule.reportAtNode(
+        drawing,
+        diagnosticCode: CatchUiLayoutRules.noRawSurfaceShell,
+      );
+    }
+
     for (final match in _allowDebtPattern.allMatches(source)) {
       if (_isThemeIndependentArtAllow(match.start)) continue;
       rule.reportAtOffset(
@@ -944,10 +967,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
     if (isUiSystemScannerPath && _isRawMotionConstructor(node, typeName)) {
       _reportAtNode(node, CatchUiLayoutRules.noRawMotion);
-    }
-
-    if (_isLocalDecoratedSurfaceShell(node, typeName)) {
-      _reportAtNode(node, CatchUiLayoutRules.noRawSurfaceShell);
     }
 
     if (isUiSystemScannerPath &&
@@ -1487,27 +1506,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     if (typeName == 'Duration') return !isCatchUiDateArithmeticDuration(node);
     if (typeName != 'CurveTween') return false;
     return node.toSource().contains('Curves.');
-  }
-
-  bool _isLocalDecoratedSurfaceShell(
-    InstanceCreationExpression node,
-    String typeName,
-  ) {
-    if (!isUiSystemScannerPath) return false;
-    if (!isFeaturePresentationPath) return false;
-    if (!_surfaceShellConstructors.contains(typeName)) return false;
-
-    final decoration = _namedArgument(node, 'decoration');
-    if (decoration == null) return false;
-    if (decoration is! InstanceCreationExpression) return false;
-    if (_constructorTypeName(decoration) != 'BoxDecoration') return false;
-
-    final text = decoration.toSource();
-    return text.contains('gradient:') ||
-        text.contains('borderRadius:') ||
-        text.contains('Border.all') ||
-        text.contains('boxShadow:') ||
-        text.contains('shape:');
   }
 
   bool _isNestedRoundedRectangleSurface(

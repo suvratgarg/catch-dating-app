@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.84.0
+version: 1.85.0
 updated: 2026-10-24
 owner: app_architecture
 status: active
@@ -1469,6 +1469,28 @@ variant that does not exist. Both enabled and dormant allowances only shrink.
 Modified styles, uncovered roles and unsupported text APIs remain review inputs;
 the steer does not invent replacement props or change typography to fit a role.
 The missing-style diagnostic continues to apply independently.
+
+`catch_no_raw_surface_shell` owns the D18 drawing boundary across handwritten
+production `lib/**` and both app packages. Its resolved SDK identities cover
+surfaces, clipping, paint/effects, images, dividers, decoration, borders, radii
+and gradients, including aliases and direct SDK subclass declarations. Custom
+painter, clipper and decoration strategy bases belong to that same boundary. Layout
+widgets such as Row, Column, Stack, Padding and SizedBox remain arrangement.
+The former decorated-surface heuristic is retired. Existing control/network
+image diagnostics retain their boundary where they already fire.
+
+Existing drawing sites have per-file, per-family allowances in
+`tool/architecture/catch_drawing_migration_baseline.json`. The lint-drift zero
+gate checks this resolved inventory and its merge-base shrink constraint;
+regenerate with
+`bash tool/check_catch_ui_lint_drift.sh --update-drawing-baseline` after a
+migration. The initial baseline requires unchanged app/library source.
+Icon and Tooltip are inventoried as dormant reservations until CAT-226 supplies
+their library components; their later activation cannot enlarge allowances.
+The baseline's `activeKinds` records the same families enforced by the rule.
+Drawing and text use the same census/history engine, preserving separate
+budgets for each source file, including parts. This migration changes ownership
+enforcement without changing rendering or choosing new component APIs.
 
 Closed Field layouts and secondary actions render only inside their owning
 Field library. The inventory's exact source/library/owner/method/return-type
