@@ -9,7 +9,7 @@ import crypto from "node:crypto";
 import {pathToFileURL} from "node:url";
 import {extractSteps} from "../harness/lib/workflow_steps.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
-import {canonicalInventory, exportHostedCaptures, resolveCaptureRequest} from "./export_hosted_captures.mjs";
+import {canonicalInventory, exportHostedCaptures, MAX_CAPTURES, resolveCaptureRequest} from "./export_hosted_captures.mjs";
 
 const repository = "owner/repo";
 function labelEvent() {
@@ -158,9 +158,15 @@ test("mutable refs, source mismatch, dirty inputs and Linux fail before renderin
   assert.ok(!fs.existsSync(f.options.outputDir));
 });
 
-test("bounded inventory rejects subsets, duplicate fixtures and traversal paths", t => {
+test("the manifest sets the capture count; the inventory rejects duplicates and traversal paths", t => {
   const f = fixture(t);
-  assert.throws(() => canonicalInventory({...f.manifest, captures: f.manifest.captures.slice(1)}), /exactly 12/);
+  const sized = count => ({...f.manifest, captures: Array.from({length: count}, (_, index) => ({
+    ...f.manifest.captures[0], id: `capture-${index}`, fixtureKey: `fixture.capture${index}`,
+    sourcePath: `artifacts/marketing/app-screenshots/capture-${index}.png`,
+    websitePath: `website/public/assets/app-screenshots/capture-${index}.png`}))});
+  for (const count of [1, 11, 13, MAX_CAPTURES]) assert.equal(canonicalInventory(sized(count)).length, count);
+  for (const count of [0, MAX_CAPTURES + 1]) assert.throws(() => canonicalInventory(sized(count)), /Expected 1 to 100/);
+  assert.throws(() => canonicalInventory({...f.manifest, captures: undefined}), /Expected 1 to 100/);
   for (const change of [{id: f.manifest.captures[1].id}, {fixtureKey: f.manifest.captures[1].fixtureKey},
     {sourcePath: "../../outside.png"}, {websitePath: "/tmp/outside.png"}, {status: "paused"}]) {
     const manifest = structuredClone(f.manifest);

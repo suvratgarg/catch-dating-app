@@ -85,8 +85,10 @@ export function verifyArtifactMetadata({binding, artifact, repositoryId, run, wo
 // and CRCs. Read only the complete allowlist into memory; never extract paths.
 export function readCaptureArchive(bytes, expectedNames) {
   assert.ok(Buffer.isBuffer(bytes) && bytes.length <= maxBytes && bytes.subarray(0, 4).equals(Buffer.from("PK\x03\x04")), "Invalid capture ZIP.");
-  assert.equal(expectedNames.length, 28, "Expected 27 capture files plus their receipt.");
-  assert.equal(new Set(expectedNames).size, 28, "Duplicate expected capture paths.");
+  // The manifest, design context and website manifest, two copies of each
+  // capture, and the receipt.
+  assert.ok(expectedNames.length >= 6 && expectedNames.length % 2 === 0, "Expected capture files plus their receipt.");
+  assert.equal(new Set(expectedNames).size, expectedNames.length, "Duplicate expected capture paths.");
   const script = `import base64, io, json, stat, sys, zipfile
 allowed = json.loads(sys.argv[1])
 with zipfile.ZipFile(io.BytesIO(sys.stdin.buffer.read())) as archive:
@@ -310,7 +312,7 @@ export function verifyBuiltCaptureBytes({binding}) {
     const target = file.replace("website/public/", "website/dist/");
     assert.ok(fs.readFileSync(destination(target)).equals(files.get(file)), `Built website capture differs from verified input: ${file}`);
   }
-  return {sourceSha: binding.sourceSha, artifactId: binding.artifactId, verifiedFiles: 13};
+  return {sourceSha: binding.sourceSha, artifactId: binding.artifactId, verifiedFiles: context.captures.length + 1};
 }
 
 if (process.argv[1] && fs.realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {
