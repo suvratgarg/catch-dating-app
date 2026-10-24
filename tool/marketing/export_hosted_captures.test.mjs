@@ -626,6 +626,19 @@ sys.stdout.buffer.write(output.getvalue())`, f.options.outputDir], {maxBuffer: 6
   assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /symlink|Untracked consumer source/);
   fs.unlinkSync(path.join(f.root, "tool/widget_dedupe/.dart_tool"));
   fs.rmSync(path.join(f.root, "tool/widget_dedupe"), {recursive: true});
+  // Tools also installs the pinned import-graph tool, with npm's .bin links.
+  f.write("tool/impact/node_modules/acorn/bin/acorn", "#!/usr/bin/env node");
+  fs.mkdirSync(path.join(f.root, "tool/impact/node_modules/.bin"));
+  fs.symlinkSync("../acorn/bin/acorn", path.join(f.root, "tool/impact/node_modules/.bin/acorn"));
+  assert.throws(() => consumer.importCaptureArchive({bytes: packed.stdout, binding}), /Untracked consumer source/);
+  assert.equal(consumer.verifyImportedCaptureBytes({binding}).verifiedFiles, 26);
+  fs.symlinkSync(path.join(f.root, "website/src"), path.join(f.root, "tool/impact/node_modules/.bin/escape"));
+  assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /escapes its install/);
+  fs.rmSync(path.join(f.root, "tool/impact"), {recursive: true});
+  fs.mkdirSync(path.join(f.root, "tool/impact"));
+  fs.symlinkSync(path.join(f.root, "website/src"), path.join(f.root, "tool/impact/node_modules"));
+  assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /not a plain directory|Untracked consumer source/);
+  fs.rmSync(path.join(f.root, "tool/impact"), {recursive: true});
   f.write("lib/leaf.dart", "changed after import");
   assert.throws(() => consumer.verifyImportedCaptureBytes({binding}), /authored source differs/);
   f.git("restore", "--", "lib/leaf.dart");
