@@ -215,7 +215,7 @@
 @media (max-width: 760px) {
   .host-section-nav { gap: 4px 20px; padding-block: 10px; }
   .host-section-nav a { font-size: 12px; }
-  .host-section-nav a:last-child { margin-left: 0; }
+  .host-section-nav a:last-child:not(:only-child) { margin-left: 0; }
   .host-participation-grid { grid-template-columns: 1fr; gap: 22px; }
   .host-participation-grid article { padding-top: 20px; }
   .host-adoption-layout { grid-template-columns: 1fr; gap: 32px; margin-top: 30px; }

@@ -67,7 +67,9 @@ async function exerciseHeaderContrast({canvasElement}: {canvasElement: HTMLEleme
     await expect(close).toHaveFocus();
     const actions = menu.getAllByRole("link");
     for (const action of actions) {
-      await hoverAction(action, false);
+      // Park the pointer on Close: the stacked menu links leave no gap for an unhover.
+      await hoverAction(close);
+      await expect(action.matches(":hover")).toBe(false);
       await expect(contrastRatio(action)).toBeGreaterThanOrEqual(4.5);
       await hoverAction(action);
       await expect(contrastRatio(action)).toBeGreaterThanOrEqual(4.5);
