@@ -30,11 +30,12 @@ class EventSuccessAssignmentReasonNotice extends StatelessWidget {
               color: t.ink2,
             ),
             gapW6,
-            Text(
+            CatchText(
               context
                   .l10n
                   .eventSuccessEventSuccessHostOverridesTextAssignmentNotes,
-              style: CatchTextStyles.labelM(context, color: t.ink2),
+              variant: CatchTextVariant.statusLabel,
+              color: t.ink2,
             ),
           ],
         ),

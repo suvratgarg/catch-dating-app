@@ -682,7 +682,7 @@ class _EventSuccessRoomLegendItem extends StatelessWidget {
               : Icon(icon, size: CatchIcon.micro, color: color),
         ),
         gapW4,
-        Text(label, style: CatchTextStyles.labelS(context, color: t.ink2)),
+        CatchText(label, variant: CatchTextVariant.statusLabel, color: t.ink2),
       ],
     );
   }
@@ -773,15 +773,13 @@ class _EventSuccessMapUnit extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text(
+                    child: CatchText(
                       unit.label,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+
                       textAlign: TextAlign.center,
-                      style: CatchTextStyles.labelM(
-                        context,
-                        color: selectedDestination ? t.success : t.ink,
-                      ),
+                      variant: CatchTextVariant.statusLabel,
+                      color: selectedDestination ? t.success : t.ink,
                     ),
                   ),
                   if (invalid || alert)

@@ -38,8 +38,16 @@ void main() {
                     CatchTextStyles.bodyS(context),
                     profile.context,
                   ),
-                  ('labelM', CatchTextStyles.labelM(context), profile.status),
-                  ('labelS', CatchTextStyles.labelS(context), profile.status),
+                  (
+                    'labelM',
+                    CatchTextStyles.statusLabel(context),
+                    profile.status,
+                  ),
+                  (
+                    'labelS',
+                    CatchTextStyles.statusLabel(context),
+                    profile.status,
+                  ),
                   (
                     'navigationLabel',
                     CatchTextStyles.navigationLabel(context),

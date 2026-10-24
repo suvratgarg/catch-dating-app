@@ -152,8 +152,6 @@ class FoundationTypographyTokens extends StatelessWidget {
                 'INVITE CODE',
                 CatchTextStyles.fieldLabel(context),
               ),
-              _TypeSpec('labelM', 'Optional', CatchTextStyles.labelM(context)),
-              _TypeSpec('labelS', 'NEW', CatchTextStyles.labelS(context)),
               _TypeSpec(
                 'statusLabel',
                 'OPEN',

@@ -528,7 +528,6 @@
         ],
         "dartRoles": [
           "CatchTextStyles.badgeCaps",
-          "CatchTextStyles.labelS",
           "CatchTextStyles.labelL",
           "CatchTextStyles.kicker",
           "CatchTextStyles.buttonSm",

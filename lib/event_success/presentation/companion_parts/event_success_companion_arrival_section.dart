@@ -112,14 +112,12 @@ class CompanionArrivalSection extends StatelessWidget {
                         ),
                   ),
                   gapH2,
-                  Text(
+                  CatchText(
                     caption,
                     textAlign: TextAlign.center,
-                    style: CatchTextStyles.labelS(
-                      context,
-                      color: fg.withValues(
-                        alpha: CatchOpacity.eventSuccessArrivalCaption,
-                      ),
+                    variant: CatchTextVariant.statusLabel,
+                    color: fg.withValues(
+                      alpha: CatchOpacity.eventSuccessArrivalCaption,
                     ),
                   ),
                 ],

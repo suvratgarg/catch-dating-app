@@ -276,18 +276,6 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink2,
       );
 
-  static TextStyle labelM(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.status,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
-
-  static TextStyle labelS(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.status,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
-
   /// Readable sentence-case status label (sans).
   static TextStyle statusLabel(BuildContext context, {Color? color}) =>
       _functionProfile(
@@ -506,7 +494,7 @@ abstract final class CatchTextStyles {
 
   /// Compact numeric seal on club cards.
   static TextStyle clubMemberSeal(BuildContext context, {Color? color}) =>
-      labelM(context, color: color).copyWith(height: 1.05);
+      statusLabel(context, color: color).copyWith(height: 1.05);
 
   static TextStyle debugDetails(BuildContext context, {Color? color}) =>
       CatchFonts.mono(

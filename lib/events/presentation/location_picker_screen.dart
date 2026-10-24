@@ -538,11 +538,11 @@ class PlaceSuggestionRow extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                CatchText(
                   title,
-                  style: CatchTextStyles.labelM(context),
+                  variant: CatchTextVariant.statusLabel,
+                  color: CatchTokens.of(context).ink2,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
                 if (subtitle.isNotEmpty) ...[
                   gapH4,

@@ -8740,6 +8740,27 @@
       "decidedBy": "owner+claude",
       "date": "2026-10-24",
       "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:canonical-status-role-aliases",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.labelM",
+          "action": "absorb",
+          "note": "CatchTextVariant.statusLabel for supported app Text calls; CatchTextStyles.statusLabel retains existing drawing, measurement and carrier APIs."
+        },
+        {
+          "name": "CatchTextStyles.labelS",
+          "action": "absorb",
+          "note": "CatchTextVariant.statusLabel for supported app Text calls; CatchTextStyles.statusLabel retains existing drawing, measurement and carrier APIs."
+        }
+      ],
+      "rationale": "The handoff exact-identity rule authorizes absorbing identical recipes into an existing variant. Resolved complete signatures and bodies match statusLabel. Migrate the deterministic supported app call-site set, rename library and unsupported carriers without changing arguments, retire both methods and duplicate specimens, and shrink the resolved Text baseline. Includes the unqualified clubMemberSeal style dependency. This records the mechanical rule without introducing a design decision or new variant.",
+      "decidedBy": "codex-rule:exact-text-role-identity",
+      "date": "2026-10-24",
+      "status": "implemented"
     }
   ]
 }

@@ -634,9 +634,10 @@ class PaymentConfirmationNotice extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          CatchText(
             context.l10n.paymentsPaymentConfirmationScreenTextHeadsUp,
-            style: CatchTextStyles.labelM(context, color: t.primary),
+            variant: CatchTextVariant.statusLabel,
+            color: t.primary,
           ),
           gapH6,
           CatchText(

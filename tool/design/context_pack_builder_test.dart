@@ -961,8 +961,6 @@ final _styleRegistry = <_StyleEntry>[
     aliasOf: 'titleS',
   ),
   _StyleEntry.single('fieldLabel', 'function', CatchTextStyles.fieldLabel),
-  _StyleEntry.single('labelM', 'function', CatchTextStyles.labelM),
-  _StyleEntry.single('labelS', 'function', CatchTextStyles.labelS),
   _StyleEntry.single('statusLabel', 'function', CatchTextStyles.statusLabel),
   _StyleEntry.single('buttonSm', 'function', CatchTextStyles.buttonSm),
   _StyleEntry.single('buttonMd', 'function', CatchTextStyles.buttonMd),

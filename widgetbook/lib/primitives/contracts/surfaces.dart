@@ -144,7 +144,7 @@ Widget catchTicketContractStates(BuildContext context) {
               child: Center(
                 child: Text(
                   'Card media',
-                  style: CatchTextStyles.labelM(context, color: t.ink),
+                  style: CatchTextStyles.statusLabel(context, color: t.ink),
                 ),
               ),
             ),
@@ -153,7 +153,7 @@ Widget catchTicketContractStates(BuildContext context) {
               children: [
                 Text(
                   'Card body',
-                  style: CatchTextStyles.labelM(context, color: t.ink),
+                  style: CatchTextStyles.statusLabel(context, color: t.ink),
                 ),
                 gapH8,
                 Text(
@@ -176,7 +176,7 @@ Widget catchTicketContractStates(BuildContext context) {
                 child: Center(
                   child: Text(
                     compact ? 'Compact visual' : 'Expanded visual',
-                    style: CatchTextStyles.labelM(context, color: t.ink),
+                    style: CatchTextStyles.statusLabel(context, color: t.ink),
                   ),
                 ),
               ),
@@ -185,7 +185,7 @@ Widget catchTicketContractStates(BuildContext context) {
                 children: [
                   Text(
                     compact ? 'Compact body' : 'Expanded body',
-                    style: CatchTextStyles.labelM(context, color: t.ink),
+                    style: CatchTextStyles.statusLabel(context, color: t.ink),
                   ),
                   gapH8,
                   Text(

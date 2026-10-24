@@ -148,7 +148,7 @@ class _CatchCelebrationScreenState extends ConsumerState<CelebrationScreen> {
                       if (widget.eyebrow != null) ...[
                         Text(
                           widget.eyebrow!.toUpperCase(),
-                          style: CatchTextStyles.labelM(
+                          style: CatchTextStyles.statusLabel(
                             context,
                             color: _celebrationCream.withValues(alpha: 0.9),
                           ).copyWith(fontWeight: FontWeight.w800),
@@ -308,7 +308,7 @@ class PaperCelebrationScaffold extends StatelessWidget {
                     Text(
                       eyebrow!.toUpperCase(),
                       textAlign: TextAlign.center,
-                      style: CatchTextStyles.labelM(
+                      style: CatchTextStyles.statusLabel(
                         context,
                         color: t.primary,
                       ).copyWith(fontWeight: FontWeight.w800),
@@ -454,9 +454,10 @@ class PaperCelebrationDetailRow extends StatelessWidget {
           if (icon != null) ...[Icon(icon, size: 18, color: t.ink3), gapW12],
           SizedBox(
             width: CatchLayout.celebrationDetailLabelWidth,
-            child: Text(
+            child: CatchText(
               detail.label.toUpperCase(),
-              style: CatchTextStyles.labelS(context, color: t.ink2),
+              variant: CatchTextVariant.statusLabel,
+              color: t.ink2,
             ),
           ),
           gapW12,
@@ -550,12 +551,10 @@ class CelebrationDetailRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              CatchText(
                 detail.label,
-                style: CatchTextStyles.labelS(
-                  context,
-                  color: _celebrationInk.withValues(alpha: 0.74),
-                ),
+                variant: CatchTextVariant.statusLabel,
+                color: _celebrationInk.withValues(alpha: 0.74),
               ),
               gapH3,
               Text(

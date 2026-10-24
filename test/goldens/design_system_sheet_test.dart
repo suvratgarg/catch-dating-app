@@ -144,7 +144,7 @@ Widget _swatch(BuildContext context, String name, Color color) {
           ),
         ),
         const SizedBox(height: 4),
-        Text(name, style: CatchTextStyles.labelS(context)),
+        Text(name, style: CatchTextStyles.statusLabel(context)),
       ],
     ),
   );

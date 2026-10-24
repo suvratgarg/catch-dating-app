@@ -305,15 +305,13 @@ class QuestionProgressRail extends StatelessWidget {
                     ? t.primarySoft
                     : t.surface,
                 borderRole: CatchBorderRole.separator,
-                child: Text(
+                child: CatchText(
                   context.l10n
                       .eventSuccessEventSuccessCompanionQuestionnaireTextValue1(
                         value1: index + 1,
                       ),
-                  style: CatchTextStyles.labelS(
-                    context,
-                    color: index == activeIndex ? t.surface : t.ink2,
-                  ),
+                  variant: CatchTextVariant.statusLabel,
+                  color: index == activeIndex ? t.surface : t.ink2,
                 ),
               ),
             ),

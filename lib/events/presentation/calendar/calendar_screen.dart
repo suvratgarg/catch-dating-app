@@ -684,10 +684,11 @@ class CalendarMonthGrid extends StatelessWidget {
               context.l10n.eventsCalendarScreenVisiblecopyS,
             ])
               Expanded(
-                child: Text(
+                child: CatchText(
                   day,
                   textAlign: TextAlign.center,
-                  style: CatchTextStyles.labelM(context),
+                  variant: CatchTextVariant.statusLabel,
+                  color: CatchTokens.of(context).ink2,
                 ),
               ),
           ],

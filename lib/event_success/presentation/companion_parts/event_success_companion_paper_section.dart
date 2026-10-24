@@ -113,14 +113,15 @@ class CompanionPaperNavigationRow extends StatelessWidget {
             gapW8,
             SizedBox(
               width: CatchLayout.eventSuccessStageNavExtent,
-              child: Text(
+              child: CatchText(
                 context.l10n
                     .eventSuccessEventSuccessCompanionSharedTextPadleftTotalsteps(
                       padLeft: activeStep.toString().padLeft(2, '0'),
                       totalSteps: totalSteps,
                     ),
                 textAlign: TextAlign.end,
-                style: CatchTextStyles.labelS(context, color: t.ink2),
+                variant: CatchTextVariant.statusLabel,
+                color: t.ink2,
               ),
             ),
           ],

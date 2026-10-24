@@ -425,7 +425,7 @@ class RecapHeader extends StatelessWidget {
         children: [
           Text(
             state.kicker,
-            style: CatchTextStyles.labelM(
+            style: CatchTextStyles.statusLabel(
               context,
               color: t.surface.withValues(
                 alpha: CatchOpacity.eventRecapHeroKicker,
@@ -495,11 +495,11 @@ class RecapStatTile extends StatelessWidget {
               ),
             ),
             gapH3,
-            Text(
+            CatchText(
               value,
-              style: CatchTextStyles.labelM(context, color: t.surface),
+              variant: CatchTextVariant.statusLabel,
+              color: t.surface,
               maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -565,14 +565,11 @@ class VibeTile extends StatelessWidget {
                 left: CatchSpacing.s2,
                 right: CatchSpacing.s2,
                 bottom: CatchSpacing.s2,
-                child: Text(
+                child: CatchText(
                   row.displayName,
-                  style: CatchTextStyles.labelM(
-                    context,
-                    color: CatchTokens.editorialWhite,
-                  ),
+                  variant: CatchTextVariant.statusLabel,
+                  color: CatchTokens.editorialWhite,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               if (row.selected)
