@@ -150,6 +150,9 @@ export {validateSalesHostSettlementAttestationsDocument} from "./validators/sale
 export {validateSalesHostSettlementEvidenceUsesDocument} from "./validators/salesHostSettlementEvidenceUses";
 export {validateOutreachDraftingInput} from "./validators/outreachDraftingInput";
 export {validateOutreachDraftingSelection} from "./validators/outreachDraftingSelection";
+export {validateSupplyIntakeRequest} from "./validators/supplyIntakeRequest";
+export {validateSupplyIntakeRequestsDocument} from "./validators/supplyIntakeRequestsDocument";
+export {validateSupplyIntakeUsageDocument} from "./validators/supplyIntakeUsageDocument";
 export {validateAdminSalesIntelligenceGenerateCallablePayload} from "./validators/adminSalesIntelligenceGenerateInput";
 export {validateSalesOutreachJobsDocument} from "./validators/salesOutreachJobsDocument";
 export {validateOutreachDraft} from "./validators/outreachDraft";

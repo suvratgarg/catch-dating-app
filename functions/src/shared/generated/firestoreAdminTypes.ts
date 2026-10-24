@@ -4,6 +4,7 @@
 
 import type {OutreachDraftingInput} from "./outreachDraftingInput";
 import type {OutreachDraftingSelection} from "./outreachDraftingSelection";
+import type {SupplyIntakeRequest} from "./supplyIntakeRequest";
 import type {OutreachDraft} from "./outreachDraft";
 import type {AdminBuildSalesOutreachInputPayload} from "./adminSalesIntelligenceDraftCallablePayload";
 import type {AdminRefreshSalesFitQueueResponse} from "./adminRefreshSalesFitQueueResponse";
@@ -2371,6 +2372,86 @@ export interface SalesHostSettlementEvidenceUsesDocument {
   organizerId: string;
   opportunityId: string;
   createdAt: string;
+}
+
+/**
+ * One organizer intake request and its processing state. Front doors create it queued; the trusted Supply Intake worker leases it, gathers the seed pages, runs the workflow and records where the reviewable listing landed. Page snapshots live in the server-only artifact store; only their hashes and paths appear here.
+ */
+export interface SupplyIntakeRequestsDocument {
+  schemaVersion: 1;
+  requestId: string;
+  request: SupplyIntakeRequest;
+  status: "queued" | "running" | "completed" | "failed";
+  attempts: number;
+  leaseUntil: string | null;
+  result: null | {
+    runId: string;
+    listingId: string;
+    listingWorkItemId: string;
+    /**
+     * @maxItems 60
+     */
+    eventWorkItemIds: string[];
+    listingContentHash: string;
+    /**
+     * @maxItems 40
+     */
+    gaps: string[];
+    researchNeeded: boolean;
+    eventCount: number;
+    stoppedReason: string | null;
+    artifactHash: string;
+    /**
+     * @maxItems 12
+     */
+    snapshotRefs: string[];
+    /**
+     * @maxItems 12
+     */
+    captureReceipts: {
+      schemaVersion: 1;
+      runKey: string;
+      adapterId: "page_fetch" | "static_page";
+      policyVersion: string;
+      policyDecisionId: string | null;
+      requestedUrl: string;
+      finalUrl: string | null;
+      outcome: string;
+      status: number | null;
+      contentType: string | null;
+      capturedAt: string | null;
+      snapshotHash: string | null;
+      snapshotBytes: number;
+      networkRequestsConsumed: number;
+      budgetWindow: null | {
+        monthKey: string;
+        intakeConsumed: number;
+        intakeLimit: number;
+        monthConsumed: number;
+        monthLimit: number;
+      };
+      rawPayloadPersistence: "external_artifact_store_only";
+      firestorePersistenceAllowed: false;
+    }[];
+  };
+  failure: null | {
+    code: string;
+    message: string;
+    at: string;
+    attempts: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Durable monthly page-fetch usage for Supply Intake. The worker reserves an intake's allowance here in a transaction before any request leaves the process and releases what it did not use; the monthly cap in acquisition_policy.json is enforced against this count, never against process memory.
+ */
+export interface SupplyIntakeUsageDocument {
+  schemaVersion: 1;
+  monthKey: string;
+  networkRequests: number;
+  updatedAt: string;
 }
 
 /**

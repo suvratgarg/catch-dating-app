@@ -848,6 +848,10 @@ export {
   adminGetSalesOutreachDraftJob,
   adminGetSalesOutreachDraft,
 } from "./admin/salesIntelligence/callables";
+export {
+  onSupplyIntakeRequestCreated,
+  recoverSupplyIntakeRequests,
+} from "./operations/supplyIntake/triggers";
 
 export {
   getSalesDemoSetup, prepareSalesDemoFormDraft, getSalesDemoPreview,
