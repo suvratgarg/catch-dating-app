@@ -1,7 +1,7 @@
 // @vitest-environment node
 import {readFileSync} from "node:fs";
 import {describe, expect, it} from "vitest";
-import previewCards from "../generated/previewCards.json" with {type: "json"};
+import previewCards from "../content/previewCards.json" with {type: "json"};
 import {pageMeta} from "../app/pageMeta";
 import {previewCardFor, previewCardImage, type PreviewCardId} from "./previewCards";
 

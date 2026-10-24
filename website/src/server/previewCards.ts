@@ -1,6 +1,6 @@
-import previewCards from "../generated/previewCards.json" with {type: "json"};
+import previewCards from "../content/previewCards.json" with {type: "json"};
 
-// Rendered by tool/marketing/render_preview_cards.mjs; the version query
+// Rendered by website/scripts/renderPreviewCards.mjs; the version query
 // changes with the card's inputs so chat apps fetch a re-rendered card.
 export type PreviewCardId = keyof typeof previewCards.cards;
 

@@ -5,18 +5,21 @@
 // without a browser, so a copy, token, font or capture change that skips a
 // re-render fails CI.
 //
-//   node tool/marketing/render_preview_cards.mjs --update   # render all cards
-//   node tool/marketing/render_preview_cards.mjs --check    # inputs unchanged?
+//   node scripts/renderPreviewCards.mjs --update   # render all cards (from website/)
+//   node scripts/renderPreviewCards.mjs --check    # inputs unchanged?
 import crypto from "node:crypto";
 import fs from "node:fs";
 import {fileURLToPath} from "node:url";
+import path from "node:path";
 import {PNG} from "pngjs";
-import {fromRepo} from "../lib/repo_paths.mjs";
+
+const repoRoot = fileURLToPath(new URL("../../", import.meta.url));
+const fromRepo = (file) => path.join(repoRoot, file);
 
 export const cardWidth = 1200;
 export const cardHeight = 630;
 const outputDir = "website/public/assets/og";
-const indexPath = "website/src/generated/previewCards.json";
+const indexPath = "website/src/content/previewCards.json";
 const metaPath = "website/src/content/meta.json";
 const tokensPath = "packages/web-config/generated/catch-tokens.css";
 const fontPath = "packages/web-config/generated/assets/fonts/Archivo-Roman-VF.woff2";
@@ -41,7 +44,7 @@ if (process.argv[1] && fs.realpathSync(process.argv[1]) === fileURLToPath(import
   if (command === "--update") await updateCards();
   else if (command === "--check") checkCards();
   else {
-    console.error("Usage: render_preview_cards.mjs --update | --check");
+    console.error("Usage: renderPreviewCards.mjs --update | --check");
     process.exit(64);
   }
 }
@@ -97,7 +100,7 @@ function checkCards() {
   const extra = Object.keys(index.cards).filter((id) => !cards.some((card) => card.id === id));
   if (extra.length) problems.push(`${indexPath} lists unknown cards: ${extra.join(", ")}`);
   if (problems.length) {
-    console.error(`Preview cards are stale:\n${problems.map((line) => `  - ${line}`).join("\n")}\nRe-render: node tool/marketing/render_preview_cards.mjs --update`);
+    console.error(`Preview cards are stale:\n${problems.map((line) => `  - ${line}`).join("\n")}\nRe-render from website/: node scripts/renderPreviewCards.mjs --update`);
     process.exit(1);
   }
   console.log(`Preview cards match their inputs (${cards.length} cards).`);
@@ -118,10 +121,10 @@ async function updateCards() {
       await page.setContent(cardHtml({content, tokens, font, mark: trimmedMark(marks[card.mark]),
         capture: card.capture ? dataUri(fs.readFileSync(fromRepo(`${screenshotDir}/${card.capture}.png`))) : null}), {waitUntil: "load"});
       await page.evaluate(() => document.fonts.ready);
-      const path = `/assets/og/${card.id}.png`;
-      await page.screenshot({path: fromRepo(`website/public${path}`), type: "png"});
+      const cardPath = `/assets/og/${card.id}.png`;
+      await page.screenshot({path: fromRepo(`website/public${cardPath}`), type: "png"});
       const inputHash = cardInputHash(card, {meta, tokens});
-      index.cards[card.id] = {path, version: inputHash.slice(0, 12), alt: content.alt, capture: card.capture, inputHash};
+      index.cards[card.id] = {path: cardPath, version: inputHash.slice(0, 12), alt: content.alt, capture: card.capture, inputHash};
     }
   } finally {
     await browser.close();

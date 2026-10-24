@@ -109,11 +109,11 @@ review/export remains available below. Never manually stamp old PNGs.
 
 ## Link-Preview Cards
 
-`tool/marketing/render_preview_cards.mjs --update` renders the 1200×630
+`website/scripts/renderPreviewCards.mjs --update` renders the 1200×630
 `og:image` cards in `website/public/assets/og/` with Playwright from the site's
 own Archivo font, light colour tokens, the Catch and Catch Host splash marks,
 page copy from `website/src/content/meta.json` and, for the Host cards, an app
-capture from this pipeline. It writes `website/src/generated/previewCards.json`
+capture from this pipeline. It writes `website/src/content/previewCards.json`
 with each card's path, alt text and input hash. `src/server/previewCards.ts`
 maps `/host/`, `/host/apply/` and `/f/` to their cards and every other page to
 the brand card. Page metadata and the private-link shell use that map, with the

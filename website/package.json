@@ -12,7 +12,7 @@
     "check:components": "node ../tool/marketing/check_website_components.mjs --check",
     "check:architecture": "node ../tool/web/check_react_architecture_boundaries.mjs --check --surface website",
     "check:copy": "node ../tool/web/check_website_copy_ownership.mjs --check",
-    "check:preview-cards": "node ../tool/marketing/render_preview_cards.mjs --check",
+    "check:preview-cards": "node scripts/renderPreviewCards.mjs --check",
     "check:css-tokens": "stylelint \"src/**/*.css\" \"app/**/*.css\" && node ../packages/web-config/lint/check-stylelint-suppressions.mjs \"src/**/*.css\" \"app/**/*.css\" && node --test scripts/cssTokenDebt.test.mjs",
     "check:analytics-contract": "node --experimental-strip-types --test scripts/analyticsContract.test.mjs",
     "check:app-check-provider": "node --test scripts/firebaseAppCheckProvider.test.mjs",
