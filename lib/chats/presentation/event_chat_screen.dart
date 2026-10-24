@@ -564,7 +564,6 @@ class EventChatPageBody extends StatelessWidget {
                         : l.eventChatGuestWaiting
                   : l.eventChatJoinDisclosure,
               variant: CatchTextVariant.bodyL,
-              color: CatchTokens.of(context).ink,
             ),
             gapH24,
             if (access.canManage &&
@@ -592,7 +591,6 @@ class EventChatPageBody extends StatelessWidget {
                     ? l.eventChatProfileHostHelp
                     : l.eventChatProfileHelp,
                 variant: CatchTextVariant.bodyL,
-                color: CatchTokens.of(context).ink,
               ),
               if (onReviewProfile != null) ...[
                 gapH16,
@@ -638,7 +636,6 @@ class EventChatPageBody extends StatelessWidget {
                           l.eventChatEmptyBody,
                           textAlign: TextAlign.center,
                           variant: CatchTextVariant.bodyL,
-                          color: CatchTokens.of(context).ink,
                         ),
                       ],
                     ),
@@ -743,9 +740,7 @@ class EventChatPageBody extends StatelessWidget {
                         CatchText(
                           reply.text ?? '',
                           maxLines: 2,
-
                           variant: CatchTextVariant.bodyM,
-                          color: CatchTokens.of(context).ink,
                         ),
                     ],
                   ),
