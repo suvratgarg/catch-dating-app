@@ -1257,7 +1257,7 @@ button {
 
 .admin-account-trigger:focus-visible,
 .admin-account-sign-out:focus-visible {
-  outline: 2px solid var(--catch-focus-ring-color);
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-focus-ring-color);
   outline-offset: 2px;
 }
 
@@ -3806,7 +3806,7 @@ th {
 }
 
 .marketing-title-input:focus-visible {
-  outline: 2px solid var(--catch-focus-ring-color);
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-focus-ring-color);
   outline-offset: 3px;
 }
 
