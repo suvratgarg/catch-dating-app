@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-10-23",
+  "updated": "2026-10-24",
   "sourceOfTruth": {
     "behavior": "Contracts in design/components/catch.components.json; Flutter is the reference implementation",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "76575de1d8403386a2164b917e1f4ccbf7179970b7b6c9c291e3454f15de6181",
+  "sourceDigest": "fb82528289d3017feb2be2ccb8a0acc003b475ac6ab4657f918c45d2b8a204d2",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "76575de1d8403386a2164b917e1f4ccbf7179970b7b6c9c291e3454f15de6181",
-    "contractDigest": "76575de1d8403386a2164b917e1f4ccbf7179970b7b6c9c291e3454f15de6181"
+    "digest": "fb82528289d3017feb2be2ccb8a0acc003b475ac6ab4657f918c45d2b8a204d2",
+    "contractDigest": "fb82528289d3017feb2be2ccb8a0acc003b475ac6ab4657f918c45d2b8a204d2"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "86c90721e906dc783c0ef63d3afbcfaba7d2ef0617f37e0e64fad8d0587e5b82",
+    "handoffRequestDigest": "a5fccbd320e833f32d244bb80d2e7dd7934471109c69abd4eb5fa8ef3cbdb790",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -1076,7 +1076,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 5,
-      "figmaExpectedPropertyDigest": "4119e962f07e99232c23603d952eaa3522ff9a380190d2e07b25acd30761c038",
+      "figmaExpectedPropertyDigest": "e4b49cda1960c691aaf68ef922402e8b482564dff5f64eda279037598a5fa773",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1084,7 +1084,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Text",
       "claudeAllowed": true,
-      "contractDigest": "93e16dc045ed016ed2f0899c5bbd0e31d5037147cf2894becadb6fbd5d74be38"
+      "contractDigest": "1d3a345ab8c3f559400a93ed05bc53f66ed3b8411a86a5d3c51f8347567ce08e"
     },
     {
       "contractId": "catch.mini_bar_chart",

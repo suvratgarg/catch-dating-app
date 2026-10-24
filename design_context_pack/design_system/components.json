@@ -6684,7 +6684,13 @@
               "supportingStrong",
               "fieldLabel",
               "statusLabel",
-              "metric"
+              "metric",
+              "recordTitle",
+              "recordContext",
+              "recordBody",
+              "proseL",
+              "proseM",
+              "name"
             ]
           },
           {

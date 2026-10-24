@@ -1,3 +1,4 @@
+import type {ComponentProps} from "react";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {CatchGap, type CatchGapSize} from "./CatchGap";
 import {CatchInset, type CatchInsetPadding} from "./CatchInset";
@@ -5,14 +6,17 @@ import {CatchPageBody} from "./CatchPageBody";
 import {CatchSectionList} from "./CatchSectionList";
 import {CatchText, type CatchTextVariant} from "./CatchText";
 
+type FoundationStoryArgs = ComponentProps<typeof CatchText> & {recordAndProse: boolean};
+
 const meta = {
   title: "Web UI/Foundations",
   component: CatchText,
-  args: {children: "Catch", variant: "bodyM"},
-} satisfies Meta<typeof CatchText>;
+  args: {children: "Catch", variant: "bodyM", recordAndProse: false},
+  argTypes: {recordAndProse: {control: "boolean"}},
+} satisfies Meta<FoundationStoryArgs>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<FoundationStoryArgs>;
 
 const textVariants: readonly CatchTextVariant[] = [
   "headline",
@@ -28,6 +32,15 @@ const textVariants: readonly CatchTextVariant[] = [
   "fieldLabel",
   "statusLabel",
   "metric",
+];
+
+const recordAndProseVariants: readonly CatchTextVariant[] = [
+  "recordTitle",
+  "recordContext",
+  "recordBody",
+  "proseL",
+  "proseM",
+  "name",
 ];
 
 const gapSizes: readonly CatchGapSize[] = [
@@ -54,10 +67,11 @@ const insetPaddings: readonly CatchInsetPadding[] = [
   "pageHorizontal",
 ];
 
-function TextRoles() {
+function TextRoles({recordAndProse}: {recordAndProse: boolean}) {
+  const variants = recordAndProse ? recordAndProseVariants : textVariants;
   return (
     <CatchGap size="related">
-      {textVariants.map((variant) => (
+      {variants.map((variant) => (
         <CatchText key={variant} variant={variant}>
           {variant === "metric" ? "1,280" : `${variant}: Thursday supper club, 8 PM`}
         </CatchText>
@@ -68,11 +82,11 @@ function TextRoles() {
 
 /** catch.text: every role in both themes, then the per-instance overrides. */
 export const Text: Story = {
-  render: () => (
+  render: ({recordAndProse}) => (
     <>
       <CatchPageBody>
         <CatchGap size="majorSection">
-          <TextRoles />
+          <TextRoles recordAndProse={recordAndProse} />
           <CatchGap size="related">
             <CatchText as="h2" variant="titleL">Heading element</CatchText>
             <CatchText color="danger" variant="supporting">Danger color</CatchText>
@@ -89,7 +103,7 @@ export const Text: Story = {
       </CatchPageBody>
       <div data-catch-theme="dark" style={{background: "var(--catch-theme-bg)"}}>
         <CatchPageBody>
-          <TextRoles />
+          <TextRoles recordAndProse={recordAndProse} />
         </CatchPageBody>
       </div>
     </>
