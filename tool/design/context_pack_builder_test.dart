@@ -1020,18 +1020,6 @@ final _styleRegistry = <_StyleEntry>[
     CatchTextStyles.otpDigit,
     casePolicy: 'numeric',
   ),
-  _StyleEntry.single('chatMessage', 'function', CatchTextStyles.chatMessage),
-  _StyleEntry.single(
-    'chatPreview',
-    'function',
-    CatchTextStyles.chatPreview,
-    aliasOf: 'bodyS',
-  ),
-  _StyleEntry.single(
-    'chatThreadContext',
-    'function',
-    CatchTextStyles.chatThreadContext,
-  ),
   _StyleEntry.single('statCompact', 'function', CatchTextStyles.statCompact),
   _StyleEntry.single(
     'kicker',

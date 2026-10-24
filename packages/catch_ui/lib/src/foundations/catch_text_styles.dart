@@ -409,27 +409,6 @@ abstract final class CatchTextStyles {
     color: color,
   );
 
-  /// Chat message body (sans, comfortable leading).
-  static TextStyle chatMessage(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.body,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
-  /// Chat inbox preview copy (`CatchPersonRow` chat-preview secondary line).
-  static TextStyle chatPreview(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.secondary,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
-
-  /// Chat thread event-context title (`ChatThreadHeader` secondary line).
-  static TextStyle chatThreadContext(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.secondary,
-        color: color ?? CatchTokens.of(context).ink,
-      ).copyWith(fontWeight: FontWeight.w600);
-
   /// Compact tabular stat figure (sans).
   static TextStyle statCompact(BuildContext context, {Color? color}) =>
       _tabular(

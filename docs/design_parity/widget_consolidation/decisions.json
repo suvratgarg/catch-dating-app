@@ -8614,6 +8614,32 @@
       "decidedBy": "owner+claude",
       "date": "2026-10-24",
       "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-234:chat-text-roles",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.chatMessage",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyL for direct text; CatchTextStyles.bodyL for unchanged timestamped carrier props."
+        },
+        {
+          "name": "CatchTextStyles.chatPreview",
+          "action": "absorb",
+          "note": "CatchTextVariant.supporting in conversation content."
+        },
+        {
+          "name": "CatchTextStyles.chatThreadContext",
+          "action": "absorb",
+          "note": "CatchTextVariant.supportingStrong; approved header-only weight 600 to 500."
+        }
+      ],
+      "rationale": "CAT-234 comment 2d5bdcb6-962b-43c6-bc7c-79f4147a5c0f records the owner-delegated:2026-10-24 -> claude decision B. Retire the three feature aliases into existing system roles without adding variants. Message and preview recipes preserve every style field and caller color. Only chat_event_context_header.dart changes rendered weight from 600 to 500; all other production output remains equivalent. CatchTimestampedMessageText keeps its textStyle and timestampStyle carrier API. Remove retired alias specimens and generated handoff entries with their definitions.",
+      "decidedBy": "owner+claude",
+      "date": "2026-10-24",
+      "status": "implemented"
     }
   ]
 }

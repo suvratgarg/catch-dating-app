@@ -149,7 +149,7 @@ class EventChatMessageTile extends StatelessWidget {
                         ? message.text ?? ''
                         : l.eventChatUnavailable,
                     timestamp: AppTimeFormatters.time(message.sentAt.toLocal()),
-                    textStyle: CatchTextStyles.chatMessage(context, color: ink),
+                    textStyle: CatchTextStyles.bodyL(context, color: ink),
                     timestampStyle: CatchTextStyles.supporting(
                       context,
                       color: ink,
