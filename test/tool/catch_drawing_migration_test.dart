@@ -126,6 +126,7 @@ void main() {
 class Container { const Container(); }
 class BorderRadius { const BorderRadius.circular(double radius); }
 class Icon { const Icon(); }
+class CustomPainter { const CustomPainter(); }
 ''');
       final path = '${fixture.path}/probe.dart';
       File(path).writeAsStringSync('''
@@ -135,6 +136,11 @@ import 'fake.dart' as app;
 typedef Round = fw.BorderRadius;
 class FeatureShell extends fw.ColoredBox { const FeatureShell():super(color:const fw.Color(0)); }
 class IndirectShell extends FeatureShell { const IndirectShell(); }
+typedef DrawBase = fw.CustomPainter;
+abstract class FeaturePainter extends DrawBase {}
+abstract class FeatureClipper extends fw.CustomClipper<fw.Path> {}
+abstract class FeatureDecoration extends fw.Decoration {}
+class LocalPainter extends app.CustomPainter {}
 List<Object> probe() => [
   fw.Container(decoration: const fw.BoxDecoration()),
   const fw.ColoredBox(color: fw.Color(0)),
@@ -172,6 +178,9 @@ List<Object> probe() => [
           'ColoredBox',
           'Opacity',
           'CustomPaint',
+          'CustomPainter',
+          'CustomClipper',
+          'Decoration',
           'Image',
           'BorderRadius',
           'Radius',
@@ -182,7 +191,7 @@ List<Object> probe() => [
         ]),
       );
       final active = drawingMigrationSites(result.unit, activeDrawingKinds);
-      expect(active, hasLength(11));
+      expect(active, hasLength(14));
       expect(
         active.any((site) => unavailableDrawingKinds.contains(site.kind)),
         isFalse,

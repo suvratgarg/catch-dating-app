@@ -9,7 +9,7 @@ import 'migration_baseline.dart';
 const drawingMigrationBaseline =
     'tool/architecture/catch_drawing_migration_baseline.json';
 
-/// SDK constructors that own pixels or interaction feedback (D18 / CAT-227).
+/// SDK drawing constructors and strategy bases (D18 / CAT-227).
 /// Icon and Tooltip are inventoried now but stay dormant until CAT-226 ships.
 const drawingMigrationKinds = <String>{
   'AnimatedContainer',
@@ -28,6 +28,9 @@ const drawingMigrationKinds = <String>{
   'ClipOval',
   'ClipPath',
   'CustomPaint',
+  'CustomPainter',
+  'CustomClipper',
+  'Decoration',
   'Opacity',
   'ShaderMask',
   'BackdropFilter',
@@ -165,4 +168,5 @@ Future<void> main(List<String> args) => runMigrationBaseline(
       drawingMigrationSites(unit, null).map((site) => site.kind),
   initialSources: const ['lib', 'apps', 'packages/catch_ui'],
   recordActiveKinds: true,
+  countedUnit: 'sites',
 );

@@ -24,8 +24,11 @@
     "ColoredBox",
     "Container",
     "ContinuousRectangleBorder",
+    "CustomClipper",
     "CustomPaint",
+    "CustomPainter",
     "DecoratedBox",
+    "Decoration",
     "Divider",
     "GestureDetector",
     "Gradient",
@@ -123,6 +126,7 @@
       "ClipRSuperellipse": 1,
       "ClipRect": 1,
       "ColoredBox": 2,
+      "CustomClipper": 1,
       "Icon": 4,
       "Material": 1,
       "Radius": 4
@@ -155,6 +159,7 @@
     "lib/clubs/shared/club_placeholder_cover.dart": {
       "BoxDecoration": 2,
       "CustomPaint": 1,
+      "CustomPainter": 1,
       "DecoratedBox": 2,
       "LinearGradient": 2,
       "Radius": 2
@@ -191,6 +196,7 @@
     "lib/core/widgets/event_backdrop_image.dart": {
       "BoxDecoration": 1,
       "CustomPaint": 1,
+      "CustomPainter": 1,
       "DecoratedBox": 1,
       "Icon": 1,
       "LinearGradient": 1,
@@ -222,7 +228,8 @@
       "Icon": 2
     },
     "lib/dashboard/presentation/widgets/empty_hero_card.dart": {
-      "CustomPaint": 1
+      "CustomPaint": 1,
+      "CustomPainter": 1
     },
     "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart": {
       "Icon": 2
@@ -309,6 +316,7 @@
     },
     "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart": {
       "BorderRadius": 1,
+      "CustomPainter": 3,
       "GestureDetector": 1,
       "Icon": 2,
       "LinearGradient": 2
@@ -362,6 +370,7 @@
     },
     "lib/event_success/presentation/reveal/event_success_countdown_indicator.dart": {
       "CustomPaint": 1,
+      "CustomPainter": 1,
       "SweepGradient": 1
     },
     "lib/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart": {
@@ -372,6 +381,7 @@
     },
     "lib/event_success/presentation/reveal/event_success_countdown_surface.dart": {
       "CustomPaint": 1,
+      "CustomPainter": 1,
       "LinearGradient": 1
     },
     "lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart": {
@@ -414,6 +424,9 @@
     },
     "lib/events/presentation/widgets/event_detail_body.dart": {
       "Icon": 2
+    },
+    "lib/events/presentation/widgets/event_detail_design_support.dart": {
+      "CustomPainter": 2
     },
     "lib/events/presentation/widgets/event_detail_dock.dart": {
       "Icon": 1
@@ -484,7 +497,9 @@
     },
     "lib/events/shared/event_tiles/event_date_rail_card.dart": {
       "ColoredBox": 1,
+      "CustomClipper": 1,
       "CustomPaint": 3,
+      "CustomPainter": 3,
       "Icon": 1
     },
     "lib/events/shared/event_tiles/event_date_tile.dart": {
@@ -534,6 +549,7 @@
     },
     "lib/explore/presentation/widgets/featured_event_poster.dart": {
       "CustomPaint": 1,
+      "CustomPainter": 1,
       "Icon": 3,
       "LinearGradient": 1,
       "RadialGradient": 1,
@@ -694,6 +710,7 @@
       "CircleBorder": 2,
       "ColoredBox": 2,
       "CustomPaint": 2,
+      "CustomPainter": 2,
       "Icon": 4,
       "InkWell": 2,
       "Material": 2,

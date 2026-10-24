@@ -105,6 +105,7 @@ Future<void> runMigrationBaseline(
   required Iterable<String> Function(CompilationUnit unit) kindsInUnit,
   required List<String> initialSources,
   bool recordActiveKinds = false,
+  String countedUnit = 'calls',
 }) async {
   try {
     if (args.length != 1 || !{'--check', '--update'}.contains(args.single)) {
@@ -235,7 +236,7 @@ Future<void> runMigrationBaseline(
         .expand((kinds) => kinds.values)
         .fold(0, (sum, count) => sum + count);
     stdout.writeln(
-      '$label migration baseline ${checking ? 'passed' : 'updated'}: $enabled covered calls, ${total - enabled} reserved legacy calls in ${current.length} files (${files.length} resolved files).',
+      '$label migration baseline ${checking ? 'passed' : 'updated'}: $enabled covered $countedUnit, ${total - enabled} reserved legacy $countedUnit in ${current.length} files (${files.length} resolved files).',
     );
   } catch (error) {
     stderr.writeln(error);

@@ -1473,7 +1473,8 @@ The missing-style diagnostic continues to apply independently.
 `catch_no_raw_surface_shell` owns the D18 drawing boundary across handwritten
 production `lib/**` and both app packages. Its resolved SDK identities cover
 surfaces, clipping, paint/effects, images, dividers, decoration, borders, radii
-and gradients, including aliases and direct SDK subclass declarations. Layout
+and gradients, including aliases and direct SDK subclass declarations. Custom
+painter, clipper and decoration strategy bases belong to that same boundary. Layout
 widgets such as Row, Column, Stack, Padding and SizedBox remain arrangement.
 The former decorated-surface heuristic is retired. Existing control/network
 image diagnostics retain their boundary where they already fire.

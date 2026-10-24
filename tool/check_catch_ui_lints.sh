@@ -473,6 +473,14 @@ fw.Widget drawingProbe() => SurfaceAlias(
 DART
 expect_probe exact catch_no_raw_surface_shell 3
 
+stage_probe "drawing strategy bases belong in the library" <<'DART'
+import 'package:flutter/material.dart' as fw;
+abstract class FeaturePainter extends fw.CustomPainter {}
+abstract class FeatureClipper extends fw.CustomClipper<fw.Path> {}
+abstract class FeatureDecoration extends fw.Decoration {}
+DART
+expect_probe exact catch_no_raw_surface_shell 3
+
 stage_probe "drawing steer permits arrangement, library primitives and unavailable families" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
