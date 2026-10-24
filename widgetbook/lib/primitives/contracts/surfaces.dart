@@ -67,7 +67,7 @@ Widget catchSurfaceContractStates(BuildContext context) {
           padding: CatchInsets.contentRelaxed,
           child: Text(
             'Boundary role resolves color and width together.',
-            style: CatchTextStyles.proseM(context),
+            style: CatchTextStyles.bodyM(context),
           ),
         ),
       ),
@@ -78,7 +78,7 @@ Widget catchSurfaceContractStates(BuildContext context) {
           padding: CatchInsets.contentRelaxed,
           child: Text(
             'Focus role is intentionally thicker and geometry-stable.',
-            style: CatchTextStyles.proseM(context),
+            style: CatchTextStyles.bodyM(context),
           ),
         ),
       ),
@@ -104,7 +104,7 @@ Widget catchSurfaceContractStates(BuildContext context) {
           width: WidgetbookPreviewLayout.surfaceCardWidth,
           child: Text(
             'Default bounded group',
-            style: CatchTextStyles.proseM(context),
+            style: CatchTextStyles.bodyM(context),
           ),
         ),
       ),

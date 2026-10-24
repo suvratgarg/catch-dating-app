@@ -25,7 +25,11 @@ class HostResponseAnswerRow extends StatelessWidget {
             color: CatchTokens.of(context).ink,
           ),
           gapH8,
-          Text(answer, style: CatchTextStyles.recordBody(context)),
+          CatchText(
+            answer,
+            variant: CatchTextVariant.bodyL,
+            color: CatchTokens.of(context).ink,
+          ),
           if (origin != null) ...[
             gapH8,
             CatchText(

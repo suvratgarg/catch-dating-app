@@ -17,18 +17,14 @@
       "fieldRowTitle": 1
     },
     "lib/chats/presentation/event_chat_participants_screen.dart": {
-      "proseM": 1,
       "supporting": 1
     },
     "lib/chats/presentation/event_chat_screen.dart": {
       "headlineS": 2,
-      "proseM": 1,
-      "recordBody": 3,
       "sectionTitle": 1,
       "supporting": 3
     },
     "lib/chats/presentation/inbox/event_chat_directory_section.dart": {
-      "recordBody": 1,
       "sectionTitle": 1
     },
     "lib/chats/presentation/widgets/chat_message_list.dart": {
@@ -38,21 +34,16 @@
       "titleL": 1
     },
     "lib/chats/presentation/widgets/event_chat_message_tile.dart": {
-      "proseM": 1,
-      "recordBody": 1,
       "supporting": 3
     },
     "lib/chats/presentation/widgets/event_profile_answer_field.dart": {
-      "fieldLabel": 1,
-      "recordBody": 1
+      "fieldLabel": 1
     },
     "lib/chats/presentation/widgets/event_profile_editor_section.dart": {
-      "recordBody": 2,
       "supporting": 7
     },
     "lib/chats/presentation/widgets/event_profile_identity_section.dart": {
       "headlineS": 1,
-      "recordBody": 1,
       "supporting": 1
     },
     "lib/chats/presentation/widgets/suvbot_dock.dart": {
@@ -64,8 +55,7 @@
       "titleL": 1
     },
     "lib/clubs/presentation/detail/widgets/club_detail_body.dart": {
-      "monoLabelS": 1,
-      "proseL": 1
+      "monoLabelS": 1
     },
     "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart": {
       "bodyLead": 2,
@@ -101,7 +91,6 @@
       "display": 2,
       "labelL": 1,
       "labelS": 2,
-      "proseM": 1,
       "supporting": 2
     },
     "lib/core/widgets/activity_map_pin.dart": {
@@ -419,9 +408,6 @@
     "lib/event_success/presentation/reveal/event_success_countdown_stepper.dart": {
       "labelS": 1
     },
-    "lib/event_success/presentation/reveal/event_success_countdown_surface.dart": {
-      "proseM": 1
-    },
     "lib/event_success/presentation/reveal/event_success_countdown_text.dart": {
       "display": 1,
       "labelS": 1
@@ -453,8 +439,7 @@
       "supporting": 1
     },
     "lib/event_success/presentation/reveal/event_success_standings_section.dart": {
-      "labelM": 2,
-      "proseM": 1
+      "labelM": 2
     },
     "lib/events/presentation/calendar/calendar_screen.dart": {
       "labelM": 1
@@ -553,14 +538,12 @@
       "eventTitle": 1,
       "kicker": 1,
       "kickerLg": 1,
-      "monoLabel": 1,
-      "proseM": 1
+      "monoLabel": 1
     },
     "lib/force_update/presentation/update_required_screen.dart": {
       "bodyLead": 1
     },
     "lib/hosts/audience/phone_import/presentation/phone_import_review_screen.dart": {
-      "proseM": 2,
       "sectionTitle": 1,
       "supporting": 3
     },
@@ -576,9 +559,6 @@
     "lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart": {
       "sectionTitle": 1,
       "supporting": 6
-    },
-    "lib/hosts/presentation/customers/host_customer_active_merges_section.dart": {
-      "proseM": 1
     },
     "lib/hosts/presentation/customers/host_customer_applications_section.dart": {
       "supporting": 1
@@ -604,12 +584,10 @@
       "supporting": 1
     },
     "lib/hosts/presentation/customers/host_saved_audience_editor.dart": {
-      "recordBody": 2,
       "supporting": 2
     },
     "lib/hosts/presentation/customers/host_saved_audience_section.dart": {
       "headline": 1,
-      "recordBody": 2,
       "supporting": 2
     },
     "lib/hosts/presentation/customers/host_static_audience_members_editor.dart": {
@@ -651,12 +629,10 @@
     },
     "lib/hosts/presentation/forms/host_form_analytics_screen.dart": {
       "headline": 3,
-      "recordBody": 2,
       "supporting": 5
     },
     "lib/hosts/presentation/forms/host_form_automations_screen.dart": {
       "headline": 1,
-      "recordBody": 1,
       "supporting": 1
     },
     "lib/hosts/presentation/forms/host_form_body.dart": {
@@ -673,7 +649,6 @@
       "supporting": 3
     },
     "lib/hosts/presentation/forms/host_form_payment_section.dart": {
-      "proseM": 1,
       "supporting": 1
     },
     "lib/hosts/presentation/forms/host_form_payments_section_list.dart": {
@@ -708,11 +683,7 @@
       "supporting": 2,
       "titleL": 1
     },
-    "lib/hosts/presentation/forms/host_response_answer_section.dart": {
-      "recordBody": 1
-    },
     "lib/hosts/presentation/forms/host_response_detail_section.dart": {
-      "recordBody": 1,
       "supporting": 4
     },
     "lib/hosts/presentation/forms/host_response_export_action.dart": {
@@ -747,8 +718,7 @@
     },
     "lib/hosts/presentation/host_operations/host_club_team_screen.dart": {
       "fieldRowTitle": 1,
-      "headlineS": 1,
-      "proseM": 1
+      "headlineS": 1
     },
     "lib/hosts/presentation/host_operations/host_team_hosted_clubs_section.dart": {
       "supporting": 1
@@ -773,9 +743,6 @@
     "lib/hosts/presentation/inbox/host_inbox_workspace_section.dart": {
       "supporting": 3
     },
-    "lib/hosts/presentation/inbox/host_manual_send_list.dart": {
-      "proseM": 1
-    },
     "lib/hosts/presentation/inbox/host_new_message_screen.dart": {
       "supporting": 4
     },
@@ -784,7 +751,6 @@
       "supporting": 6
     },
     "lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart": {
-      "proseM": 1,
       "supporting": 2
     },
     "lib/hosts/presentation/payments/host_payment_account_card.dart": {
@@ -875,7 +841,6 @@
       "headlineS": 1,
       "labelL": 2,
       "labelM": 1,
-      "proseM": 4,
       "sectionTitle": 2
     },
     "lib/payments/presentation/payment_history_screen.dart": {
@@ -887,14 +852,10 @@
     "lib/programs/presentation/program_lodging_layout.dart": {
       "supporting": 1
     },
-    "lib/programs/presentation/program_lodging_screen.dart": {
-      "recordBody": 8
-    },
     "lib/programs/presentation/program_lodging_setup_page_body.dart": {
       "supporting": 7
     },
     "lib/programs/presentation/program_operations_notice.dart": {
-      "recordBody": 2,
       "supporting": 1
     },
     "lib/programs/presentation/program_timezone_field.dart": {
@@ -907,16 +868,12 @@
       "labelL": 1,
       "labelS": 1
     },
-    "lib/safety/presentation/messaging_permissions_screen.dart": {
-      "proseM": 1
-    },
     "lib/safety/presentation/settings_screen.dart": {
       "statusLabel": 1
     },
     "lib/swipes/presentation/event_recap_screen.dart": {
       "headline": 1,
       "labelM": 2,
-      "proseM": 1,
       "supporting": 2,
       "titleL": 1
     },
@@ -931,7 +888,6 @@
       "bodyL": 1,
       "hint": 1,
       "kicker": 1,
-      "proseM": 1,
       "supporting": 1
     },
     "lib/swipes/shared/profile_surface/profile_reaction_action.dart": {
@@ -940,12 +896,6 @@
     "lib/user_analytics/shared/user_analytics_section.dart": {
       "labelL": 1,
       "supporting": 1
-    },
-    "lib/user_profile/presentation/form_profile_review_screen.dart": {
-      "proseM": 1
-    },
-    "lib/user_profile/presentation/form_profiles_screen.dart": {
-      "proseM": 1
     }
   }
 }

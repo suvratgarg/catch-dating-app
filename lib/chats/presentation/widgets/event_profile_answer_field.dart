@@ -50,7 +50,11 @@ class EventProfileAnswerField extends StatelessWidget {
           ],
         ),
         gapH4,
-        Text(answer, style: CatchTextStyles.recordBody(context)),
+        CatchText(
+          answer,
+          variant: CatchTextVariant.bodyL,
+          color: CatchTokens.of(context).ink,
+        ),
       ],
     ),
   );

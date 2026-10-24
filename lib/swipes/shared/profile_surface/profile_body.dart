@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 
 /// PHASE 2 — the flagship profile surface, in the locked editorial language:
 /// a person-polaroid hero on a graded photo, Archivo voice, IBM Plex Mono data,
-/// proseL reading text, hairlines over boxes. Color = activity (the kicker +
+/// bodyL reading text, hairlines over boxes. Color = activity (the kicker +
 /// reaction affordances borrow the meeting activity's pigment).
 ///
 /// Pure presentation over a [ProfileView]; real data is mapped on via
@@ -549,10 +549,7 @@ class ProfileCaptionText extends StatelessWidget {
       padding: CatchInsets.compactControlContent,
       radius: CatchRadius.sm,
       backgroundColor: dark.darkScrimFill,
-      child: Text(
-        text,
-        style: CatchTextStyles.proseM(context, color: dark.ink),
-      ),
+      child: CatchText(text, variant: CatchTextVariant.bodyM, color: dark.ink),
     );
   }
 }

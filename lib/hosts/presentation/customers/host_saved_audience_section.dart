@@ -136,9 +136,10 @@ class HostSavedAudienceSection extends ConsumerWidget {
                       in displayedAudience.definition.predicates)
                     Padding(
                       padding: CatchInsets.contentVerticalCompact,
-                      child: Text(
+                      child: CatchText(
                         _savedAudienceRuleSummary(context, predicate, options),
-                        style: CatchTextStyles.recordBody(context),
+                        variant: CatchTextVariant.bodyL,
+                        color: CatchTokens.of(context).ink,
                       ),
                     ),
                   CatchButton.command(
@@ -235,12 +236,13 @@ class HostSavedAudienceSection extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
+                        CatchText(
                           _savedAudienceReachBody(
                             context,
                             state.preview.reachSummary,
                           ),
-                          style: CatchTextStyles.recordBody(context),
+                          variant: CatchTextVariant.bodyL,
+                          color: CatchTokens.of(context).ink,
                         ),
                         gapH8,
                         Text(

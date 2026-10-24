@@ -610,7 +610,7 @@ body {
 main { max-width: 1120px; margin: 0 auto; padding: 56px 28px 72px; }
 .kicker { ${sampleStyle('kicker')} color: var(--ink2); text-transform: uppercase; }
 h1 { ${sampleStyle('display')} max-width: 760px; margin: 14px 0 18px; }
-.lead { ${sampleStyle('proseL')} max-width: 680px; color: var(--ink2); }
+.lead { ${sampleStyle('bodyL')} max-width: 680px; color: var(--ink2); }
 .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 34px; }
 .panel {
   background: var(--surface);
@@ -885,7 +885,6 @@ final _styleRegistry = <_StyleEntry>[
     'function',
     CatchTextStyles.navigationLabel,
   ),
-  _StyleEntry.single('recordBody', 'function', CatchTextStyles.recordBody),
   _StyleEntry.single('display', 'voice', CatchTextStyles.display),
   _StyleEntry.single('headline', 'function', CatchTextStyles.headline),
   _StyleEntry.single('headlineS', 'voice', CatchTextStyles.headlineS),
@@ -900,8 +899,6 @@ final _styleRegistry = <_StyleEntry>[
     CatchTextStyles.welcomeIntroBody,
   ),
   _StyleEntry.single('titleL', 'function', CatchTextStyles.titleL),
-  _StyleEntry.single('proseL', 'function', CatchTextStyles.proseL),
-  _StyleEntry.single('proseM', 'function', CatchTextStyles.proseM),
   _StyleEntry(
     name: 'clubDisplay',
     role: 'voice',

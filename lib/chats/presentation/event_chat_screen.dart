@@ -557,13 +557,14 @@ class EventChatPageBody extends StatelessWidget {
               style: CatchTextStyles.headlineS(context),
             ),
             gapH16,
-            Text(
+            CatchText(
               !access.isRoomOpen
                   ? access.canManage
                         ? l.eventChatHostSetup
                         : l.eventChatGuestWaiting
                   : l.eventChatJoinDisclosure,
-              style: CatchTextStyles.recordBody(context),
+              variant: CatchTextVariant.bodyL,
+              color: CatchTokens.of(context).ink,
             ),
             gapH24,
             if (access.canManage &&
@@ -586,11 +587,12 @@ class EventChatPageBody extends StatelessWidget {
                 style: CatchTextStyles.sectionTitle(context),
               ),
               gapH8,
-              Text(
+              CatchText(
                 onReviewProfile == null
                     ? l.eventChatProfileHostHelp
                     : l.eventChatProfileHelp,
-                style: CatchTextStyles.recordBody(context),
+                variant: CatchTextVariant.bodyL,
+                color: CatchTokens.of(context).ink,
               ),
               if (onReviewProfile != null) ...[
                 gapH16,
@@ -632,10 +634,11 @@ class EventChatPageBody extends StatelessWidget {
                           style: CatchTextStyles.headlineS(context),
                         ),
                         gapH12,
-                        Text(
+                        CatchText(
                           l.eventChatEmptyBody,
                           textAlign: TextAlign.center,
-                          style: CatchTextStyles.recordBody(context),
+                          variant: CatchTextVariant.bodyL,
+                          color: CatchTokens.of(context).ink,
                         ),
                       ],
                     ),
@@ -737,11 +740,12 @@ class EventChatPageBody extends StatelessWidget {
                         style: CatchTextStyles.supporting(context),
                       ),
                       if (reply != null)
-                        Text(
+                        CatchText(
                           reply.text ?? '',
                           maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.proseM(context),
+
+                          variant: CatchTextVariant.bodyM,
+                          color: CatchTokens.of(context).ink,
                         ),
                     ],
                   ),

@@ -6,6 +6,7 @@ import 'package:catch_dating_app/chats/presentation/widgets/event_profile_photo_
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -94,9 +95,10 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        CatchText(
           l.eventProfileDisclosure,
-          style: CatchTextStyles.recordBody(context),
+          variant: CatchTextVariant.bodyL,
+          color: CatchTokens.of(context).ink,
         ),
         gapH16,
         Text(
@@ -105,9 +107,10 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
         ),
         if (!current.settings.canShare) ...[
           gapH24,
-          Text(
+          CatchText(
             l.eventProfileCannotShare,
-            style: CatchTextStyles.recordBody(context),
+            variant: CatchTextVariant.bodyL,
+            color: CatchTokens.of(context).ink,
           ),
         ] else ...[
           gapH24,
@@ -119,7 +122,8 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                 copy: catchFieldCopy(l),
                 title: l.eventProfileFirstName,
                 titleMaxLines: 3,
-                emptyValueText: l.onboardingNameDobPageStateVisiblecopyFirstName,
+                emptyValueText:
+                    l.onboardingNameDobPageStateVisiblecopyFirstName,
                 initialValue: _draft.firstName,
                 maxLength: 80,
                 states: disabled ? const {WidgetState.disabled} : const {},

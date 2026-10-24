@@ -324,10 +324,11 @@ class PaperCelebrationScaffold extends StatelessWidget {
                   Align(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 340),
-                      child: Text(
+                      child: CatchText(
                         message,
                         textAlign: TextAlign.center,
-                        style: CatchTextStyles.proseM(context, color: t.ink2),
+                        variant: CatchTextVariant.bodyM,
+                        color: t.ink2,
                       ),
                     ),
                   ),

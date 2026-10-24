@@ -301,10 +301,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>OtpStep</code> | <code>lib/auth/presentation/otp_step.dart:21</code> | — | — | No class documentation or registry summary. |
 | <code>PhoneCountryCodePicker</code> | <code>lib/auth/presentation/phone_step.dart:305</code> | — | — | No class documentation or registry summary. |
 | <code>PhoneStep</code> | <code>lib/auth/presentation/phone_step.dart:23</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatParticipantsRowList</code> | <code>lib/chats/presentation/event_chat_participants_screen.dart:190</code> | — | — | No class documentation or registry summary. |
+| <code>EventChatParticipantsRowList</code> | <code>lib/chats/presentation/event_chat_participants_screen.dart:191</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatPageBody</code> | <code>lib/chats/presentation/event_chat_screen.dart:499</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatDirectoryRowList</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart:46</code> | — | — | Sliver directory of currently admitted events, including rooms not open yet. |
-| <code>EventChatDirectorySection</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart:13</code> | — | — | No class documentation or registry summary. |
+| <code>EventChatDirectoryRowList</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart:47</code> | — | — | Sliver directory of currently admitted events, including rooms not open yet. |
+| <code>EventChatDirectorySection</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart:14</code> | — | — | No class documentation or registry summary. |
 | <code>ChatConversationsList</code> | <code>lib/chats/presentation/inbox/widgets/chat_conversations_list.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>ChatsEmptyState</code> | <code>lib/chats/presentation/inbox/widgets/chats_empty_state.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>ChatPersonRowSkeleton</code> | <code>lib/chats/presentation/inbox/widgets/chats_list.dart:122</code> | — | — | No class documentation or registry summary. |
@@ -320,9 +320,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ShareCardHeader</code> | <code>lib/chats/presentation/widgets/chat_share_card.dart:114</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatEntrySection</code> | <code>lib/chats/presentation/widgets/event_chat_entry_section.dart:14</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatMessageTile</code> | <code>lib/chats/presentation/widgets/event_chat_message_tile.dart:8</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatReactionSection</code> | <code>lib/chats/presentation/widgets/event_chat_message_tile.dart:210</code> | — | — | No class documentation or registry summary. |
+| <code>EventChatReactionSection</code> | <code>lib/chats/presentation/widgets/event_chat_message_tile.dart:211</code> | — | — | No class documentation or registry summary. |
 | <code>EventProfileAnswerField</code> | <code>lib/chats/presentation/widgets/event_profile_answer_field.dart:7</code> | — | — | An entire reviewed answer, never an ellipsized summary of what will be shared. The optional toggle uses the same interaction and tokens as CatchField. |
-| <code>EventProfileEditorSection</code> | <code>lib/chats/presentation/widgets/event_profile_editor_section.dart:13</code> | — | — | Explicit sharing choices for eligible core values and one claimed organizer card. |
+| <code>EventProfileEditorSection</code> | <code>lib/chats/presentation/widgets/event_profile_editor_section.dart:14</code> | — | — | Explicit sharing choices for eligible core values and one claimed organizer card. |
 | <code>EventProfileIdentitySection</code> | <code>lib/chats/presentation/widgets/event_profile_identity_section.dart:11</code> | — | — | Renders the protected event projection with an ephemeral in-memory photo. |
 | <code>EventProfilePhotoField</code> | <code>lib/chats/presentation/widgets/event_profile_photo_field.dart:9</code> | — | — | An owned photo choice that stays disabled until its current preview decodes. |
 | <code>MediaMessageBody</code> | <code>lib/chats/presentation/widgets/message_bubble.dart:104</code> | — | — | No class documentation or registry summary. |
@@ -332,10 +332,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>SuvbotResetActionRow</code> | <code>lib/chats/presentation/widgets/suvbot_dock.dart:333</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDetailReadOnlyPreview</code> | <code>lib/clubs/presentation/detail/club_detail_read_only_preview.dart:15</code> | — | — | Live, consumer-facing Club Detail composition for an owner-facing read-only preview. The selected [initialClub] renders immediately while live detail data hydrates, matching the consumer route's initial-club fallback policy. |
 | <code>ClubContactSection</code> | <code>lib/clubs/presentation/detail/widgets/club_contact_section.dart:13</code> | — | — | No class documentation or registry summary. |
-| <code>ClubActivitySection</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:322</code> | — | — | No class documentation or registry summary. |
+| <code>ClubActivitySection</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:323</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDetailBody</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:31</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDetailSliverBody</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:78</code> | — | — | Sliver-native form of the canonical Club Detail composition. |
-| <code>ClubNextRunBanner</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:269</code> | — | — | No class documentation or registry summary. |
+| <code>ClubNextRunBanner</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:270</code> | — | — | No class documentation or registry summary. |
 | <code>ClubBellButton</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_dock.dart:251</code> | — | — | Member notifications bell — the active state fills with the club's activity accent (not the raw Material color scheme). |
 | <code>ClubDetailDock</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_dock.dart:24</code> | <code>Dock</code> | — | Design-system `ClubDock` (`components/clubs/ClubDock`): the persistent bottom bar of a club detail screen, stateful over membership role — BookingDock's club sibling. `visitor` shows the member count + an **activity-pigmented** Join CTA (the one sanctioned use of the club pigment on an action); `member` shows the count + a notifications bell + a quiet "Joined" control; `owner` shows Manage + a New-event pair; `guest` shows an ink "Sign in to join". The mono [footnote] carries the state's quiet facts. Also called: <code>ClubActionBar</code>, <code>ClubBottomBar</code>, <code>MembershipBar</code>. |
 | <code>ClubMemberCountText</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_dock.dart:213</code> | — | — | No class documentation or registry summary. |
@@ -359,13 +359,13 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ClubTagList</code> | <code>lib/clubs/shared/club_host_identity_row.dart:36</code> | — | — | No class documentation or registry summary. |
 | <code>ClubPlaceholderCover</code> | <code>lib/clubs/shared/club_placeholder_cover.dart:8</code> | <code>Cover</code> | <code>catch.organizer_poster</code> | Deterministic no-photo organizer artwork used by poster and compact cover states. |
 | <code>CatchConsumerBootstrap</code> | <code>lib/consumer_bootstrap.dart:25</code> | — | — | Consumer-only process bootstrap. |
-| <code>CelebrationDetailRow</code> | <code>lib/core/celebration/celebration_screen.dart:532</code> | — | — | No class documentation or registry summary. |
-| <code>CelebrationDetailsCard</code> | <code>lib/core/celebration/celebration_screen.dart:495</code> | — | — | No class documentation or registry summary. |
-| <code>CelebrationIcon</code> | <code>lib/core/celebration/celebration_screen.dart:475</code> | — | — | No class documentation or registry summary. |
-| <code>CelebrationNote</code> | <code>lib/core/celebration/celebration_screen.dart:575</code> | — | — | No class documentation or registry summary. |
-| <code>PaperCelebrationDetailRow</code> | <code>lib/core/celebration/celebration_screen.dart:437</code> | — | — | No class documentation or registry summary. |
-| <code>PaperCelebrationDetailsCard</code> | <code>lib/core/celebration/celebration_screen.dart:406</code> | — | — | No class documentation or registry summary. |
-| <code>PaperCelebrationIcon</code> | <code>lib/core/celebration/celebration_screen.dart:388</code> | — | — | No class documentation or registry summary. |
+| <code>CelebrationDetailRow</code> | <code>lib/core/celebration/celebration_screen.dart:533</code> | — | — | No class documentation or registry summary. |
+| <code>CelebrationDetailsCard</code> | <code>lib/core/celebration/celebration_screen.dart:496</code> | — | — | No class documentation or registry summary. |
+| <code>CelebrationIcon</code> | <code>lib/core/celebration/celebration_screen.dart:476</code> | — | — | No class documentation or registry summary. |
+| <code>CelebrationNote</code> | <code>lib/core/celebration/celebration_screen.dart:576</code> | — | — | No class documentation or registry summary. |
+| <code>PaperCelebrationDetailRow</code> | <code>lib/core/celebration/celebration_screen.dart:438</code> | — | — | No class documentation or registry summary. |
+| <code>PaperCelebrationDetailsCard</code> | <code>lib/core/celebration/celebration_screen.dart:407</code> | — | — | No class documentation or registry summary. |
+| <code>PaperCelebrationIcon</code> | <code>lib/core/celebration/celebration_screen.dart:389</code> | — | — | No class documentation or registry summary. |
 | <code>PaperCelebrationScaffold</code> | <code>lib/core/celebration/celebration_screen.dart:232</code> | — | — | No class documentation or registry summary. |
 | <code>AdaptiveTabScaffold</code> | <code>lib/core/presentation/adaptive_tab_scaffold.dart:12</code> | — | — | Shared adaptive placement contract for consumer and host tab shells. |
 | <code>AppShell</code> | <code>lib/core/presentation/app_shell.dart:55</code> | — | — | No class documentation or registry summary. |
@@ -871,8 +871,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostFormNumberField</code> | <code>lib/hosts/presentation/forms/host_form_number_field.dart:6</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormOverviewSectionList</code> | <code>lib/hosts/presentation/forms/host_form_overview_section_list.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormPaymentDetailSheet</code> | <code>lib/hosts/presentation/forms/host_form_payment_detail_sheet.dart:10</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormPaymentSection</code> | <code>lib/hosts/presentation/forms/host_form_payment_section.dart:15</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormPaymentSetupSection</code> | <code>lib/hosts/presentation/forms/host_form_payment_section.dart:48</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormPaymentSection</code> | <code>lib/hosts/presentation/forms/host_form_payment_section.dart:16</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormPaymentSetupSection</code> | <code>lib/hosts/presentation/forms/host_form_payment_section.dart:49</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormPaymentSheet</code> | <code>lib/hosts/presentation/forms/host_form_payment_sheet.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormPaymentsSectionList</code> | <code>lib/hosts/presentation/forms/host_form_payments_section_list.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormQuestionSection</code> | <code>lib/hosts/presentation/forms/host_form_question_section.dart:12</code> | — | — | No class documentation or registry summary. |
@@ -889,12 +889,12 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostFormValidationTextField</code> | <code>lib/hosts/presentation/forms/host_form_validation_text_field.dart:6</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormWorkspaceHeader</code> | <code>lib/hosts/presentation/forms/host_form_workspace_header.dart:9</code> | — | — | No class documentation or registry summary. |
 | <code>HostResponseAnswerRow</code> | <code>lib/hosts/presentation/forms/host_response_answer_section.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostResponseMetadataSection</code> | <code>lib/hosts/presentation/forms/host_response_answer_section.dart:43</code> | — | — | No class documentation or registry summary. |
-| <code>HostResponseContactSection</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:401</code> | — | — | No class documentation or registry summary. |
+| <code>HostResponseMetadataSection</code> | <code>lib/hosts/presentation/forms/host_response_answer_section.dart:47</code> | — | — | No class documentation or registry summary. |
+| <code>HostResponseContactSection</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:405</code> | — | — | No class documentation or registry summary. |
 | <code>HostResponseDetailSection</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:43</code> | — | — | No class documentation or registry summary. |
-| <code>HostResponsePrimaryAction</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:488</code> | — | — | No class documentation or registry summary. |
-| <code>HostResponseReviewNoteField</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:568</code> | — | — | Uses the shared explicit-save field so actions participate in its reveal, keyboard focus and cancellation behavior rather than floating below it. |
-| <code>HostResponseStartReviewAction</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:363</code> | — | — | No class documentation or registry summary. |
+| <code>HostResponsePrimaryAction</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:492</code> | — | — | No class documentation or registry summary. |
+| <code>HostResponseReviewNoteField</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:572</code> | — | — | Uses the shared explicit-save field so actions participate in its reveal, keyboard focus and cancellation behavior rather than floating below it. |
+| <code>HostResponseStartReviewAction</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:367</code> | — | — | No class documentation or registry summary. |
 | <code>HostResponseExportAction</code> | <code>lib/hosts/presentation/forms/host_response_export_action.dart:13</code> | — | — | Inline action for the applied manager query; it shares the response workspace instead of starting a second, unrelated export screen. |
 | <code>HostResponseConditionSection</code> | <code>lib/hosts/presentation/forms/host_response_query_editor_parts_section.dart:112</code> | — | — | No class documentation or registry summary. |
 | <code>HostResponseConditionValueSection</code> | <code>lib/hosts/presentation/forms/host_response_query_editor_parts_section.dart:228</code> | — | — | No class documentation or registry summary. |
@@ -929,8 +929,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostClubSpokeAsyncBoundary</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubSpokeScaffold</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart:127</code> | — | — | No class documentation or registry summary. |
 | <code>HostTeamProfessionalProfilePreview</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:338</code> | — | — | Read-only projection of the professional identity edited in Host team. This intentionally consumes [HostTeamProfileState] rather than the dating profile collection: a host can have a valid organizer identity without a discoverable consumer profile. |
-| <code>HostTeamProfileList</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:528</code> | — | — | No class documentation or registry summary. |
-| <code>HostTeamProfileSection</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:455</code> | — | — | No class documentation or registry summary. |
+| <code>HostTeamProfileList</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:529</code> | — | — | No class documentation or registry summary. |
+| <code>HostTeamProfileSection</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:456</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubsScaffold</code> | <code>lib/hosts/presentation/host_operations/host_clubs_scaffold.dart:72</code> | — | — | No class documentation or registry summary. |
 | <code>HostOrganizerStateScaffold</code> | <code>lib/hosts/presentation/host_operations/host_clubs_scaffold.dart:24</code> | — | — | Organizer route-state adapter that preserves the loaded workspace chrome. |
 | <code>HostManagerEventSetupPreferencesSection</code> | <code>lib/hosts/presentation/host_operations/host_manager_event_setup_preferences_section.dart:10</code> | — | — | Editor for a manager-authorized setup-preferences projection. No field is read from the public Club document, and a null onChanged disables writes until a revision-fenced manager settings command is available. |
@@ -951,16 +951,16 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostInboxPeopleSection</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:387</code> | — | — | No class documentation or registry summary. |
 | <code>HostInboxWorkspaceSection</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostMessagingWorkspaceTabBar</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:301</code> | — | — | No class documentation or registry summary. |
-| <code>HostManualSendList</code> | <code>lib/hosts/presentation/inbox/host_manual_send_list.dart:18</code> | — | — | No class documentation or registry summary. |
-| <code>HostManualSendListBody</code> | <code>lib/hosts/presentation/inbox/host_manual_send_list.dart:162</code> | — | — | No class documentation or registry summary. |
-| <code>HostManualSendTaskSheet</code> | <code>lib/hosts/presentation/inbox/host_manual_send_list.dart:245</code> | — | — | One manual send: the recipient, the prepared message and its delivery actions. |
+| <code>HostManualSendList</code> | <code>lib/hosts/presentation/inbox/host_manual_send_list.dart:19</code> | — | — | No class documentation or registry summary. |
+| <code>HostManualSendListBody</code> | <code>lib/hosts/presentation/inbox/host_manual_send_list.dart:163</code> | — | — | No class documentation or registry summary. |
+| <code>HostManualSendTaskSheet</code> | <code>lib/hosts/presentation/inbox/host_manual_send_list.dart:247</code> | — | — | One manual send: the recipient, the prepared message and its delivery actions. |
 | <code>HostNewMessageRouteSection</code> | <code>lib/hosts/presentation/inbox/host_new_message_screen.dart:255</code> | — | — | No class documentation or registry summary. |
 | <code>HostPersonConversationMenu</code> | <code>lib/hosts/presentation/inbox/host_person_conversation_menu.dart:15</code> | — | — | Keeps the existing Catch conversation actions available in the shared pane. The parent supplies only a currently authorized source and its messages. |
 | <code>HostPersonConversationPageBody</code> | <code>lib/hosts/presentation/inbox/host_person_conversation_page_body.dart:24</code> | — | — | Embedded presentation: the route/workspace owns Scaffold and keyboard insets. |
 | <code>HostSendIntentMenu</code> | <code>lib/hosts/presentation/inbox/host_send_intent_menu.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>HostSendsBackButton</code> | <code>lib/hosts/presentation/inbox/host_sends_back_button.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>HostSendsPageBody</code> | <code>lib/hosts/presentation/inbox/host_sends_page_body.dart:35</code> | — | — | No class documentation or registry summary. |
-| <code>HostWhatsappThreadSheet</code> | <code>lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart:17</code> | — | — | No class documentation or registry summary. |
+| <code>HostWhatsappThreadSheet</code> | <code>lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>HostPaymentAccountCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:34</code> | — | — | No class documentation or registry summary. |
 | <code>HostPaymentAccountErrorCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:671</code> | — | — | No class documentation or registry summary. |
 | <code>HostPaymentAccountLoadingCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:642</code> | — | — | No class documentation or registry summary. |
@@ -1070,13 +1070,13 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>OnboardingStepLayout</code> | <code>lib/onboarding/shared/onboarding_step_layout.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerAuthorityBadge</code> | <code>lib/organizers/presentation/organizer_authority_badge.dart:21</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentCheckoutHeader</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:191</code> | — | — | No class documentation or registry summary. |
-| <code>PaymentCheckoutSheet</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:254</code> | — | — | No class documentation or registry summary. |
-| <code>PaymentConfirmationBody</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:496</code> | — | — | No class documentation or registry summary. |
-| <code>PaymentConfirmationNotice</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:626</code> | — | — | No class documentation or registry summary. |
-| <code>PaymentConfirmedBody</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:447</code> | — | — | No class documentation or registry summary. |
+| <code>PaymentCheckoutSheet</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:255</code> | — | — | No class documentation or registry summary. |
+| <code>PaymentConfirmationBody</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:494</code> | — | — | No class documentation or registry summary. |
+| <code>PaymentConfirmationNotice</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:624</code> | — | — | No class documentation or registry summary. |
+| <code>PaymentConfirmedBody</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:445</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentPendingBody</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:71</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentPendingCheckoutBody</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:130</code> | — | — | No class documentation or registry summary. |
-| <code>PaymentReferralBanner</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:654</code> | — | — | No class documentation or registry summary. |
+| <code>PaymentReferralBanner</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:653</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentHistoryBody</code> | <code>lib/payments/presentation/payment_history_screen.dart:66</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentHistoryList</code> | <code>lib/payments/presentation/payment_history_screen.dart:97</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentHistorySkeleton</code> | <code>lib/payments/presentation/payment_history_screen.dart:147</code> | — | — | No class documentation or registry summary. |
@@ -1108,15 +1108,15 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramImportResultSection</code> | <code>lib/programs/presentation/program_import_screen.dart:311</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramLodgingFloorLayout</code> | <code>lib/programs/presentation/program_lodging_layout.dart:262</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramLodgingLayout</code> | <code>lib/programs/presentation/program_lodging_layout.dart:14</code> | — | — | Reuses EventSuccess's 2D grid normalization only, never its pair/rotation semantics. No write occurs without an injected authoritative callback. |
-| <code>ProgramLodgingExpiredPageBody</code> | <code>lib/programs/presentation/program_lodging_screen.dart:432</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramLodgingMembershipPageBody</code> | <code>lib/programs/presentation/program_lodging_screen.dart:469</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramLodgingScaffold</code> | <code>lib/programs/presentation/program_lodging_screen.dart:413</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramLodgingExpiredPageBody</code> | <code>lib/programs/presentation/program_lodging_screen.dart:436</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramLodgingMembershipPageBody</code> | <code>lib/programs/presentation/program_lodging_screen.dart:474</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramLodgingScaffold</code> | <code>lib/programs/presentation/program_lodging_screen.dart:417</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramLodgingSetupPageBody</code> | <code>lib/programs/presentation/program_lodging_setup_page_body.dart:17</code> | — | — | Staged, provider-free form mechanics. Persistence and authority lifetime remain with the routed controller. No household creates sharing choices. |
 | <code>ProgramFunctionNowNextRow</code> | <code>lib/programs/presentation/program_now_next_screen.dart:183</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramArrivalsOutboxBanner</code> | <code>lib/programs/presentation/program_operations_notice.dart:193</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramJournalRecoverySheet</code> | <code>lib/programs/presentation/program_operations_notice.dart:101</code> | — | — | Exports preserved local program operations through an account-fenced share flow. |
-| <code>ProgramOperationReviewSheet</code> | <code>lib/programs/presentation/program_operations_notice.dart:241</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramOperationsNotice</code> | <code>lib/programs/presentation/program_operations_notice.dart:16</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramArrivalsOutboxBanner</code> | <code>lib/programs/presentation/program_operations_notice.dart:194</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramJournalRecoverySheet</code> | <code>lib/programs/presentation/program_operations_notice.dart:102</code> | — | — | Exports preserved local program operations through an account-fenced share flow. |
+| <code>ProgramOperationReviewSheet</code> | <code>lib/programs/presentation/program_operations_notice.dart:242</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramOperationsNotice</code> | <code>lib/programs/presentation/program_operations_notice.dart:17</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramFunctionCountsRow</code> | <code>lib/programs/presentation/program_stakeholder_screen.dart:165</code> | — | — | Per-function RSVP and door-count card for the stakeholder counts view. |
 | <code>ProgramHotelOccupancyRow</code> | <code>lib/programs/presentation/program_stakeholder_screen.dart:237</code> | — | — | Per-hotel occupancy row for the stakeholder counts view. |
 | <code>ProgramStaffAccessDialog</code> | <code>lib/programs/presentation/program_team_screen.dart:313</code> | — | — | No class documentation or registry summary. |
@@ -1158,19 +1158,19 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostWorkspaceRouteFrame</code> | <code>lib/routing/host_navigation_workspace.dart:207</code> | — | — | Router frame retaining a single content element for each logical record. |
 | <code>HostWorkspaceRouteScope</code> | <code>lib/routing/host_navigation_workspace.dart:153</code> | — | — | Router-owned attachment of selected content to the existing pane path. |
 | <code>BlockedAccountsSection</code> | <code>lib/safety/presentation/blocked_account_tile.dart:12</code> | — | — | No class documentation or registry summary. |
-| <code>MessagingPermissionsPageBody</code> | <code>lib/safety/presentation/messaging_permissions_screen.dart:48</code> | — | — | No class documentation or registry summary. |
+| <code>MessagingPermissionsPageBody</code> | <code>lib/safety/presentation/messaging_permissions_screen.dart:49</code> | — | — | No class documentation or registry summary. |
 | <code>AccountProfileSection</code> | <code>lib/safety/presentation/settings_screen.dart:698</code> | — | — | No class documentation or registry summary. |
 | <code>BlockedAccountsSkeleton</code> | <code>lib/safety/presentation/settings_screen.dart:742</code> | — | — | No class documentation or registry summary. |
-| <code>EventRecapLoadingBody</code> | <code>lib/swipes/presentation/event_recap_screen.dart:277</code> | — | — | No class documentation or registry summary. |
+| <code>EventRecapLoadingBody</code> | <code>lib/swipes/presentation/event_recap_screen.dart:278</code> | — | — | No class documentation or registry summary. |
 | <code>EventRecapReadyBody</code> | <code>lib/swipes/presentation/event_recap_screen.dart:135</code> | — | — | No class documentation or registry summary. |
-| <code>RecapHeader</code> | <code>lib/swipes/presentation/event_recap_screen.dart:410</code> | — | — | No class documentation or registry summary. |
-| <code>RecapHeaderSkeleton</code> | <code>lib/swipes/presentation/event_recap_screen.dart:317</code> | — | — | No class documentation or registry summary. |
-| <code>RecapProfilePhoto</code> | <code>lib/swipes/presentation/event_recap_screen.dart:603</code> | — | — | No class documentation or registry summary. |
-| <code>RecapStatTile</code> | <code>lib/swipes/presentation/event_recap_screen.dart:472</code> | — | — | No class documentation or registry summary. |
-| <code>RecapStatTileSkeleton</code> | <code>lib/swipes/presentation/event_recap_screen.dart:349</code> | — | — | No class documentation or registry summary. |
-| <code>VibeGrid</code> | <code>lib/swipes/presentation/event_recap_screen.dart:214</code> | — | — | No class documentation or registry summary. |
-| <code>VibeGridSkeleton</code> | <code>lib/swipes/presentation/event_recap_screen.dart:368</code> | — | — | No class documentation or registry summary. |
-| <code>VibeTile</code> | <code>lib/swipes/presentation/event_recap_screen.dart:510</code> | — | — | No class documentation or registry summary. |
+| <code>RecapHeader</code> | <code>lib/swipes/presentation/event_recap_screen.dart:411</code> | — | — | No class documentation or registry summary. |
+| <code>RecapHeaderSkeleton</code> | <code>lib/swipes/presentation/event_recap_screen.dart:318</code> | — | — | No class documentation or registry summary. |
+| <code>RecapProfilePhoto</code> | <code>lib/swipes/presentation/event_recap_screen.dart:604</code> | — | — | No class documentation or registry summary. |
+| <code>RecapStatTile</code> | <code>lib/swipes/presentation/event_recap_screen.dart:473</code> | — | — | No class documentation or registry summary. |
+| <code>RecapStatTileSkeleton</code> | <code>lib/swipes/presentation/event_recap_screen.dart:350</code> | — | — | No class documentation or registry summary. |
+| <code>VibeGrid</code> | <code>lib/swipes/presentation/event_recap_screen.dart:215</code> | — | — | No class documentation or registry summary. |
+| <code>VibeGridSkeleton</code> | <code>lib/swipes/presentation/event_recap_screen.dart:369</code> | — | — | No class documentation or registry summary. |
+| <code>VibeTile</code> | <code>lib/swipes/presentation/event_recap_screen.dart:511</code> | — | — | No class documentation or registry summary. |
 | <code>FiltersBody</code> | <code>lib/swipes/presentation/filters_screen.dart:218</code> | — | — | No class documentation or registry summary. |
 | <code>FiltersSection</code> | <code>lib/swipes/presentation/filters_screen.dart:363</code> | — | — | No class documentation or registry summary. |
 | <code>FiltersValueText</code> | <code>lib/swipes/presentation/filters_screen.dart:390</code> | — | — | No class documentation or registry summary. |
@@ -1183,10 +1183,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>OverlayIconSkeleton</code> | <code>lib/swipes/presentation/swipe_screen.dart:339</code> | — | — | No class documentation or registry summary. |
 | <code>CatchesPassButton</code> | <code>lib/swipes/presentation/widgets/catches_pass_button.dart:7</code> | — | — | No class documentation or registry summary. |
 | <code>SwipeEmptyState</code> | <code>lib/swipes/presentation/widgets/swipe_empty_state.dart:6</code> | — | — | No class documentation or registry summary. |
-| <code>ProfileBody</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:21</code> | — | — | PHASE 2 — the flagship profile surface, in the locked editorial language: a person-polaroid hero on a graded photo, Archivo voice, IBM Plex Mono data, proseL reading text, hairlines over boxes. Color = activity (the kicker + reaction affordances borrow the meeting activity's pigment). |
+| <code>ProfileBody</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:21</code> | — | — | PHASE 2 — the flagship profile surface, in the locked editorial language: a person-polaroid hero on a graded photo, Archivo voice, IBM Plex Mono data, bodyL reading text, hairlines over boxes. Color = activity (the kicker + reaction affordances borrow the meeting activity's pigment). |
 | <code>ProfileCaptionText</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:540</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileCompatibilitySection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:288</code> | — | — | No class documentation or registry summary. |
-| <code>ProfileDivider</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:562</code> | — | — | No class documentation or registry summary. |
+| <code>ProfileDivider</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:559</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileFactsSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:445</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileHeader</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:121</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileKickerText</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:270</code> | — | — | No class documentation or registry summary. |
@@ -1217,8 +1217,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>FormProfilePhotoField</code> | <code>lib/user_profile/presentation/form_profile_photo_field.dart:13</code> | — | — | No class documentation or registry summary. |
 | <code>FormProfilePhotoSelectionField</code> | <code>lib/user_profile/presentation/form_profile_photo_field.dart:54</code> | — | — | Keep the private image in memory only and evict its decoder entry on leave. The selection remains disabled until the actual image has rendered. |
 | <code>FormProfileReviewPageBody</code> | <code>lib/user_profile/presentation/form_profile_review_screen.dart:86</code> | — | — | No class documentation or registry summary. |
-| <code>FormProfilesAsyncBoundary</code> | <code>lib/user_profile/presentation/form_profiles_screen.dart:35</code> | — | — | The authenticated form directory can render inside the account pager before the applicant has a Consumer profile. It owns its independent async state. |
-| <code>FormProfilesSectionList</code> | <code>lib/user_profile/presentation/form_profiles_screen.dart:57</code> | — | — | No class documentation or registry summary. |
+| <code>FormProfilesAsyncBoundary</code> | <code>lib/user_profile/presentation/form_profiles_screen.dart:36</code> | — | — | The authenticated form directory can render inside the account pager before the applicant has a Consumer profile. It owns its independent async state. |
+| <code>FormProfilesSectionList</code> | <code>lib/user_profile/presentation/form_profiles_screen.dart:58</code> | — | — | No class documentation or registry summary. |
 | <code>ProfilePreviewSkeletonSliverBody</code> | <code>lib/user_profile/presentation/profile_screen.dart:261</code> | — | — | No class documentation or registry summary. |
 | <code>ProfilePreviewSliverBody</code> | <code>lib/user_profile/presentation/profile_screen.dart:298</code> | — | — | No class documentation or registry summary. |
 | <code>FormProfileValueField</code> | <code>lib/user_profile/presentation/widgets/form_profile_value_field.dart:11</code> | — | — | A typed field in the participant's explicit profile review. The parent owns draft changes, text controllers and claim acknowledgement. |
@@ -1253,7 +1253,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>MyApp</code> | <code>lib/app.dart:42</code> | — | — | No class documentation or registry summary. |
 | <code>AuthScreen</code> | <code>lib/auth/presentation/auth_screen.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>ChatScreen</code> | <code>lib/chats/presentation/chat_screen.dart:36</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatParticipantsScreen</code> | <code>lib/chats/presentation/event_chat_participants_screen.dart:15</code> | — | — | No class documentation or registry summary. |
+| <code>EventChatParticipantsScreen</code> | <code>lib/chats/presentation/event_chat_participants_screen.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatScreen</code> | <code>lib/chats/presentation/event_chat_screen.dart:22</code> | — | — | No class documentation or registry summary. |
 | <code>EventProfileScreen</code> | <code>lib/chats/presentation/event_profile_screen.dart:17</code> | — | — | Account-bound editor and protected participant view for one event chat. |
 | <code>ChatsListScreen</code> | <code>lib/chats/presentation/inbox/chat_inbox_screen.dart:21</code> | — | — | No class documentation or registry summary. |
@@ -1357,7 +1357,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramHotelDeskScreen</code> | <code>lib/programs/presentation/program_hotel_desk_screen.dart:18</code> | — | — | The hotel welcome team's inbound view: vehicles on the way with their manifest names and plates, plus parties still expected at the airport. Deliberately narrow — no contact fields, no other hotels. |
 | <code>ProgramHotelRoomsScreen</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:20</code> | — | — | The hotel desk's room board for one property: routed guests still needing a room, every stay with its block/room/status, and the reserved blocks with live capacity. Mutations go through `upsertProgramStay` — the server re-counts block occupancy inside the transaction, so a stale board can never overbook. |
 | <code>ProgramImportScreen</code> | <code>lib/programs/presentation/program_import_screen.dart:19</code> | — | — | Manifest import flow: pick a CSV/XLSX, map its columns to manifest fields, preview server-side counts, then commit. The commit retries are idempotent through `clientOperationId`; preview and commit use separate operation ids because the receipt hash includes the mode. |
-| <code>ProgramLodgingScreen</code> | <code>lib/programs/presentation/program_lodging_screen.dart:24</code> | — | — | The private coordinator route. Hotel desks retain their separate scoped operational board; this route never fetches private collections directly. |
+| <code>ProgramLodgingScreen</code> | <code>lib/programs/presentation/program_lodging_screen.dart:25</code> | — | — | The private coordinator route. Hotel desks retain their separate scoped operational board; this route never fetches private collections directly. |
 | <code>ProgramNowNextScreen</code> | <code>lib/programs/presentation/program_now_next_screen.dart:19</code> | — | — | Function-lead Now/Next board: the program's functions bucketed by in-progress, upcoming and finished, with door-side counts so a lead can see where they are needed without opening each roster. Pure client projection over the staff work-access payload — no dedicated read. |
 | <code>ProgramStakeholderScreen</code> | <code>lib/programs/presentation/program_stakeholder_screen.dart:16</code> | — | — | Counts-only overview for stakeholderViewer staff: guest/household headcounts, per-function RSVP and door counts, and per-hotel occupancy from routed travel legs. The callable never returns names — function and hotel labels join from the work-access payload on the client. |
 | <code>ProgramTeamScreen</code> | <code>lib/programs/presentation/program_team_screen.dart:20</code> | — | — | Program team roster — active staff grants with their duty scopes, plus grant/invite/revoke actions. Duty sets are program-wide in W1 (empty resource scopes); per-station/hotel/function scoping lands with the assignment picker surfaces. |
@@ -1367,13 +1367,13 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PublicProfileScreen</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewsHistoryScreen</code> | <code>lib/reviews/presentation/reviews_history_screen.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>HostWorkspaceIndexScreen</code> | <code>lib/routing/host_workspace_index_screen.dart:5</code> | — | — | One route index recipe shared by the visible workspace and its navigator. The navigator anchor retains routing state without mounting a second index. |
-| <code>MessagingPermissionsScreen</code> | <code>lib/safety/presentation/messaging_permissions_screen.dart:11</code> | — | — | No class documentation or registry summary. |
+| <code>MessagingPermissionsScreen</code> | <code>lib/safety/presentation/messaging_permissions_screen.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>SettingsScreen</code> | <code>lib/safety/presentation/settings_screen.dart:33</code> | — | — | No class documentation or registry summary. |
 | <code>EventRecapScreen</code> | <code>lib/swipes/presentation/event_recap_screen.dart:21</code> | — | — | No class documentation or registry summary. |
 | <code>FiltersScreen</code> | <code>lib/swipes/presentation/filters_screen.dart:25</code> | — | — | No class documentation or registry summary. |
 | <code>SwipeScreen</code> | <code>lib/swipes/presentation/swipe_screen.dart:29</code> | — | — | No class documentation or registry summary. |
 | <code>FormProfileReviewScreen</code> | <code>lib/user_profile/presentation/form_profile_review_screen.dart:22</code> | — | — | No class documentation or registry summary. |
-| <code>FormProfilesScreen</code> | <code>lib/user_profile/presentation/form_profiles_screen.dart:14</code> | — | — | No class documentation or registry summary. |
+| <code>FormProfilesScreen</code> | <code>lib/user_profile/presentation/form_profiles_screen.dart:15</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileScreen</code> | <code>lib/user_profile/presentation/profile_screen.dart:24</code> | — | — | No class documentation or registry summary. |
 
 <!-- END GENERATED WIDGET INVENTORY -->

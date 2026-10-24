@@ -37,9 +37,10 @@ class EventSuccessStandingsSection extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: Text(
+                  child: CatchText(
                     entries[index].unitLabel,
-                    style: CatchTextStyles.proseM(context),
+                    variant: CatchTextVariant.bodyM,
+                    color: CatchTokens.of(context).ink,
                   ),
                 ),
                 gapW12,

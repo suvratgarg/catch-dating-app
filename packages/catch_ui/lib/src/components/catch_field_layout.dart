@@ -93,7 +93,7 @@ final class CatchRecordLayout extends CatchFieldLayout {
       ],
       if (description case final text? when text.isNotEmpty) ...[
         const SizedBox(height: CatchRecordTokens.bodyGap),
-        Text(text, style: CatchTextStyles.recordBody(context)),
+        Text(text, style: CatchTextStyles.bodyL(context)),
       ],
     ],
   );

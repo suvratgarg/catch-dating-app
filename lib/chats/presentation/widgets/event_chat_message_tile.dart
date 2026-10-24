@@ -134,13 +134,14 @@ class EventChatMessageTile extends StatelessWidget {
                       style: CatchTextStyles.supporting(context, color: ink),
                     ),
                     gapH4,
-                    Text(
+                    CatchText(
                       reply.available
                           ? reply.text ?? ''
                           : l.eventChatUnavailable,
                       maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.proseM(context, color: ink),
+
+                      variant: CatchTextVariant.bodyM,
+                      color: ink,
                     ),
                     gapH12,
                   ],
@@ -226,9 +227,10 @@ class EventChatReactionSection extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(
+              child: CatchText(
                 context.l10n.eventChatReactionsTitle,
-                style: CatchTextStyles.recordBody(context),
+                variant: CatchTextVariant.bodyL,
+                color: CatchTokens.of(context).ink,
               ),
             ),
             CatchIconAction(

@@ -315,11 +315,12 @@ class _HostSavedAudienceEditorFormState
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             if (_static)
-                              Text(
+                              CatchText(
                                 context.l10n.hostAudienceSelectedCount(
                                   count: _selectedIds.length,
                                 ),
-                                style: CatchTextStyles.recordBody(context),
+                                variant: CatchTextVariant.bodyL,
+                                color: CatchTokens.of(context).ink,
                               )
                             else ...[
                               CatchText(
@@ -333,13 +334,14 @@ class _HostSavedAudienceEditorFormState
                                 if (rule.toPredicate()
                                     case final predicate?) ...[
                                   gapH8,
-                                  Text(
+                                  CatchText(
                                     _savedAudienceRuleSummary(
                                       context,
                                       predicate,
                                       filterOptions,
                                     ),
-                                    style: CatchTextStyles.recordBody(context),
+                                    variant: CatchTextVariant.bodyL,
+                                    color: CatchTokens.of(context).ink,
                                   ),
                                 ],
                             ],

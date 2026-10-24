@@ -187,9 +187,10 @@ class _HostFormAnalyticsScreenState
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
-                                  child: Text(
+                                  child: CatchText(
                                     choice.label,
-                                    style: CatchTextStyles.recordBody(context),
+                                    variant: CatchTextVariant.bodyL,
+                                    color: CatchTokens.of(context).ink,
                                   ),
                                 ),
                                 gapW12,
@@ -220,7 +221,7 @@ class _HostFormAnalyticsScreenState
                           ],
                           if (question.numericCount > 0) ...[
                             gapH16,
-                            Text(
+                            CatchText(
                               context.l10n.hostAudienceNumericResult(
                                 average:
                                     (question.numericSum /
@@ -228,7 +229,8 @@ class _HostFormAnalyticsScreenState
                                         .toStringAsFixed(1),
                                 count: question.numericCount,
                               ),
-                              style: CatchTextStyles.recordBody(context),
+                              variant: CatchTextVariant.bodyL,
+                              color: CatchTokens.of(context).ink,
                             ),
                           ],
                         ],

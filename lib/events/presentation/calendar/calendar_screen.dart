@@ -309,7 +309,7 @@ class CalendarAgendaSliverSection extends StatelessWidget {
         iconSize: CatchLayout.calendarEmptyIconSize,
         padding: CatchInsets.contentSpacious,
         titleStyle: CatchTextStyles.titleL(context),
-        messageStyle: CatchTextStyles.proseM(
+        messageStyle: CatchTextStyles.supporting(
           context,
           color: CatchTokens.of(context).ink2,
         ),

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -205,9 +206,10 @@ class EventChatParticipantsRowList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        CatchText(
           l.eventChatParticipantsDescription,
-          style: CatchTextStyles.proseM(context),
+          variant: CatchTextVariant.bodyM,
+          color: CatchTokens.of(context).ink,
         ),
         gapH24,
         if (state.page.items.isEmpty)

@@ -197,31 +197,12 @@ abstract final class CatchTextStyles {
   // ===========================================================================
   // FUNCTION — platform system font (UI titles, body, labels, controls)
 
-  static TextStyle recordBody(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.body,
-        color: color ?? CatchTokens.of(context).ink,
-      );
   // ===========================================================================
 
   /// Large UI title for sections, cards, and sheet headings.
   static TextStyle titleL(BuildContext context, {Color? color}) =>
       _functionProfile(
         CatchPlatformTokens.typography.title,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
-  /// Long-form app/user copy — bios, event descriptions, readable details.
-  static TextStyle proseL(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.body,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
-  /// Long-form app/user copy, smaller cut.
-  static TextStyle proseM(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.secondary,
         color: color ?? CatchTokens.of(context).ink,
       );
 

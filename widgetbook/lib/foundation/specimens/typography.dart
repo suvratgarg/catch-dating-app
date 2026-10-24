@@ -109,26 +109,13 @@ class FoundationTypographyTokens extends StatelessWidget {
                 'Professional profile',
                 CatchTextStyles.titleL(context),
               ),
+
               _TypeSpec(
-                'profileAnswer',
-                'I like events with a clean plan and warm arrival.',
-                CatchTextStyles.sectionTitle(context),
-              ),
-              _TypeSpec(
-                'proseL',
-                'Write the details hosts and guests need before they commit.',
-                CatchTextStyles.proseL(context),
-              ),
-              _TypeSpec(
-                'proseM',
+                'bodyM',
                 'Smaller long-form copy for cards, sheets, and explanations.',
-                CatchTextStyles.proseM(context),
+                CatchTextStyles.bodyM(context),
               ),
-              _TypeSpec(
-                'name',
-                'Aanya Shah',
-                CatchTextStyles.sectionTitle(context),
-              ),
+
               _TypeSpec(
                 'sectionTitle',
                 'Profile',

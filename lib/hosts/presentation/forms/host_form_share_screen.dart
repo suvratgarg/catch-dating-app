@@ -119,7 +119,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                       children: [
                         SelectableText(
                           assets.canonicalUrl,
-                          style: CatchTextStyles.recordBody(context),
+                          style: CatchTextStyles.bodyL(context),
                         ),
                         gapH16,
                         Row(
@@ -193,7 +193,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                         children: [
                           SelectableText(
                             link.url,
-                            style: CatchTextStyles.recordBody(context),
+                            style: CatchTextStyles.bodyL(context),
                           ),
                           gapH8,
                           Wrap(
@@ -263,7 +263,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
               gapH16,
               SelectableText(
                 assets.canonicalUrl,
-                style: CatchTextStyles.recordBody(context),
+                style: CatchTextStyles.bodyL(context),
               ),
             ],
           ),
@@ -285,7 +285,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
           ),
           child: SelectableText(
             assets.embedSnippet,
-            style: CatchTextStyles.recordBody(context),
+            style: CatchTextStyles.bodyL(context),
           ),
         ),
       );

@@ -164,9 +164,10 @@ class EventRecapReadyBody extends StatelessWidget {
                 style: CatchTextStyles.titleL(context),
               ),
               gapH4,
-              Text(
+              CatchText(
                 context.l10n.swipesEventRecapScreenTextTapPeopleYouRemember,
-                style: CatchTextStyles.proseM(context, color: t.ink2),
+                variant: CatchTextVariant.bodyM,
+                color: t.ink2,
               ),
               gapH14,
               if (!state.hasAttendees)

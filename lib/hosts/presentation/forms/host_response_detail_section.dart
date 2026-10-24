@@ -293,7 +293,11 @@ class HostResponseDetailSection extends ConsumerWidget {
           gapH24,
           CatchSection.divided(
             title: context.l10n.hostApplicationReviewNote,
-            child: Text(note, style: CatchTextStyles.recordBody(context)),
+            child: CatchText(
+              note,
+              variant: CatchTextVariant.bodyL,
+              color: CatchTokens.of(context).ink,
+            ),
           ),
         ],
         gapH24,

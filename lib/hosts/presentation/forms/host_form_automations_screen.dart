@@ -257,9 +257,10 @@ class _HostFormAutomationsScreenState
                             'Read-only disclosure of a server-owned automation run outcome; no scalar value is persisted.',
                         body:
                             '${_runStatusLabel(context, run.status)} · ${AppTimeFormatters.compactRelativeTime(run.createdAt)}',
-                        child: Text(
+                        child: CatchText(
                           _runBody(context, run),
-                          style: CatchTextStyles.recordBody(context),
+                          variant: CatchTextVariant.bodyL,
+                          color: CatchTokens.of(context).ink,
                         ),
                       ),
                   ],

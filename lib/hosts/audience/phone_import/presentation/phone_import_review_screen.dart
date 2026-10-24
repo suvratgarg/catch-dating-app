@@ -129,9 +129,10 @@ class PhoneImportReviewScreen extends StatelessWidget {
               CatchSection.contained(
                 title: weddingName,
                 subtitle: context.l10n.phoneImportProgramCollaborators,
-                child: Text(
+                child: CatchText(
                   context.l10n.phoneImportChooseMessage,
-                  style: CatchTextStyles.proseM(context),
+                  variant: CatchTextVariant.bodyM,
+                  color: CatchTokens.of(context).ink,
                 ),
               ),
               gapH24,
@@ -275,11 +276,12 @@ class PhoneImportReviewScreen extends StatelessWidget {
                               ? null
                               : (value) =>
                                     controller.confirmSharing(value ?? false),
-                          title: Text(
+                          title: CatchText(
                             context.l10n.phoneImportConsent(
                               wedding: weddingName,
                             ),
-                            style: CatchTextStyles.proseM(context),
+                            variant: CatchTextVariant.bodyM,
+                            color: CatchTokens.of(context).ink,
                           ),
                         ),
                       ),

@@ -230,7 +230,7 @@ class PaymentCheckoutHeader extends StatelessWidget {
             top: CatchSpacing.s4,
             bottom: 0,
           ),
-          child: Text(
+          child: CatchText(
             context.l10n
                 .paymentsPaymentConfirmationScreenTextLongdatelabelTimerangelabelLocationnamePriceinpaise(
                   longDateLabel: event.longDateLabel,
@@ -242,7 +242,8 @@ class PaymentCheckoutHeader extends StatelessWidget {
                   ),
                   capacityLimit: event.capacityLimit,
                 ),
-            style: CatchTextStyles.proseM(context, color: t.ink2),
+            variant: CatchTextVariant.bodyM,
+            color: t.ink2,
           ),
         ),
         const Spacer(),
@@ -343,10 +344,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
               style: CatchTextStyles.headlineS(context, color: t.ink),
             ),
             gapH8,
-            Text(
-              message,
-              style: CatchTextStyles.proseM(context, color: t.ink2),
-            ),
+            CatchText(message, variant: CatchTextVariant.bodyM, color: t.ink2),
             gapH18,
             Padding(
               padding: CatchInsets.content,
@@ -641,9 +639,10 @@ class PaymentConfirmationNotice extends StatelessWidget {
             style: CatchTextStyles.labelM(context, color: t.primary),
           ),
           gapH6,
-          Text(
+          CatchText(
             context.l10n.paymentsPaymentConfirmationScreenTextBringAWaterBottle,
-            style: CatchTextStyles.proseM(context, color: t.ink),
+            variant: CatchTextVariant.bodyM,
+            color: t.ink,
           ),
         ],
       ),
@@ -685,11 +684,12 @@ class PaymentReferralBanner extends StatelessWidget {
                   style: CatchTextStyles.sectionTitle(context),
                 ),
                 gapH2,
-                Text(
+                CatchText(
                   context
                       .l10n
                       .paymentsPaymentConfirmationScreenTextTheBestInvitesHappen,
-                  style: CatchTextStyles.proseM(context, color: t.ink2),
+                  variant: CatchTextVariant.bodyM,
+                  color: t.ink2,
                 ),
               ],
             ),
