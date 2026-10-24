@@ -96,7 +96,7 @@
 
 .intake-batch-command-row {
   min-width: 0;
-  min-height: 32px;
+  min-height: var(--catch-space-s8);
   gap: var(--catch-space-s2);
 }
 
@@ -169,8 +169,8 @@
 }
 
 .intake-batch-toolbar {
-  min-height: 36px;
-  max-height: 36px;
+  min-height: var(--catch-space-s9);
+  max-height: var(--catch-space-s9);
   min-width: 0;
   gap: var(--catch-space-micro6);
   overflow-x: auto;
@@ -286,7 +286,7 @@
   inset-block-start: 82px;
   inset-inline-end: var(--catch-space-micro10);
   z-index: 9;
-  max-width: min(560px, calc(100% - 20px));
+  max-width: min(560px, calc(100% - var(--catch-space-s5)));
   padding: var(--catch-space-s1) var(--catch-space-s2);
   background: var(--surface);
   border: var(--catch-stroke-hairline) solid var(--line);
@@ -319,7 +319,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--catch-space-s2) var(--catch-space-micro14);
-  width: min(360px, calc(100vw - 32px));
+  width: min(360px, calc(100vw - var(--catch-space-s8)));
   padding: var(--catch-space-s3);
   font-size: 12px;
   background: var(--surface);
@@ -334,14 +334,14 @@
   inset-inline-end: var(--catch-space-micro6);
   display: grid;
   place-items: center;
-  min-width: 28px;
+  min-width: var(--catch-space-s7);
   padding: var(--catch-space-s1);
 }
 
 .intake-shortcuts kbd {
   display: inline-grid;
-  min-width: 20px;
-  min-height: 20px;
+  min-width: var(--catch-space-s5);
+  min-height: var(--catch-space-s5);
   place-items: center;
   font: 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
   background: var(--surface-subtle);
@@ -396,7 +396,7 @@
 }
 
 .intake-batch-table thead th {
-  height: 32px;
+  height: var(--catch-space-s8);
   color: var(--muted);
   font-weight: 650;
   background: var(--surface-subtle);
@@ -467,8 +467,8 @@
 .intake-batch-table td:last-child button,
 .intake-batch-inspector header > button {
   display: inline-grid;
-  width: 28px;
-  height: 28px;
+  width: var(--catch-space-s7);
+  height: var(--catch-space-s7);
   padding: 0;
   place-items: center;
   color: var(--ink);
@@ -1009,8 +1009,8 @@ button {
 }
 
 .brand-mark.large {
-  width: 48px;
-  height: 48px;
+  width: var(--catch-space-s12);
+  height: var(--catch-space-s12);
   margin: 0 auto var(--catch-space-micro14);
 }
 
@@ -1238,7 +1238,7 @@ button {
 
 .admin-account-trigger {
   display: inline-flex;
-  min-height: 36px;
+  min-height: var(--catch-space-s9);
   align-items: center;
   gap: var(--catch-space-s2);
   padding: var(--catch-space-micro3) var(--catch-space-s2) var(--catch-space-micro3) var(--catch-space-s1);
@@ -1263,9 +1263,9 @@ button {
 
 .admin-account-avatar {
   display: grid;
-  width: 28px;
-  height: 28px;
-  flex: 0 0 28px;
+  width: var(--catch-space-s7);
+  height: var(--catch-space-s7);
+  flex: 0 0 var(--catch-space-s7);
   place-items: center;
   border-radius: var(--catch-radius-sm);
   background: var(--primary);
@@ -1304,7 +1304,7 @@ button {
   top: calc(100% + var(--catch-space-s2));
   right: 0;
   display: grid;
-  width: min(300px, calc(100vw - 32px));
+  width: min(300px, calc(100vw - var(--catch-space-s8)));
   gap: var(--catch-space-s2);
   padding: var(--catch-space-micro14);
   border: var(--catch-stroke-hairline) solid var(--line);
@@ -1357,7 +1357,7 @@ button {
 .admin-account-sign-out {
   display: flex;
   width: 100%;
-  min-height: 36px;
+  min-height: var(--catch-space-s9);
   align-items: center;
   justify-content: center;
   gap: var(--catch-space-s2);
@@ -1384,7 +1384,7 @@ button {
   align-items: center;
   gap: var(--catch-space-s2);
   min-width: 244px;
-  height: 36px;
+  height: var(--catch-space-s9);
   padding: 0 var(--catch-space-s3);
   border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-sm);
@@ -1411,7 +1411,7 @@ select,
 .icon-button,
 .ghost-button,
 .primary-button {
-  min-height: 40px;
+  min-height: var(--catch-space-s10);
   border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-sm);
   background: var(--surface);
@@ -1425,7 +1425,7 @@ select {
 .admin-env-status {
   display: inline-flex;
   align-items: center;
-  height: 40px;
+  height: var(--catch-space-s10);
   padding: 0 var(--catch-space-s3);
   border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-sm);
@@ -1438,7 +1438,7 @@ select {
 
 .icon-button {
   display: grid;
-  width: 36px;
+  width: var(--catch-space-s9);
   place-items: center;
   cursor: pointer;
 }
@@ -1468,7 +1468,7 @@ select {
 
 .segmented {
   display: flex;
-  height: 36px;
+  height: var(--catch-space-s9);
   padding: var(--catch-space-micro3);
   border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-sm);
@@ -1476,7 +1476,7 @@ select {
 }
 
 .segmented button {
-  min-width: 44px;
+  min-width: var(--catch-space-s11);
   padding: 0 var(--catch-space-micro10);
   border-radius: var(--catch-radius-xs);
   background: transparent;
@@ -1547,7 +1547,7 @@ select {
 }
 
 .analytics-clear {
-  height: 36px;
+  height: var(--catch-space-s9);
 }
 
 .metric-tile,
@@ -1712,7 +1712,7 @@ select {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 36px;
+  min-height: var(--catch-space-s9);
   margin-bottom: var(--catch-space-s2);
   color: var(--muted);
   font-size: 12px;
@@ -1811,7 +1811,7 @@ select {
 
 .decision-actions .queue-decision-button {
   min-width: 52px;
-  height: 24px;
+  height: var(--catch-space-s6);
   border: var(--catch-stroke-hairline) solid var(--line-strong);
   border-radius: var(--catch-radius-xs);
   background: var(--surface);
@@ -2113,7 +2113,7 @@ select {
 
 .roadmap-list-item {
   display: grid;
-  grid-template-columns: 16px minmax(0, 1fr);
+  grid-template-columns: var(--catch-space-s4) minmax(0, 1fr);
   gap: var(--catch-space-s2);
   align-items: start;
   color: var(--muted);
@@ -2131,7 +2131,7 @@ select {
 }
 
 .roadmap-list-item.actionable {
-  grid-template-columns: 16px minmax(0, 1fr);
+  grid-template-columns: var(--catch-space-s4) minmax(0, 1fr);
   padding: var(--catch-space-micro10);
   border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-sm);
@@ -2201,7 +2201,7 @@ select {
 
 .check-row {
   display: grid;
-  grid-template-columns: 16px minmax(0, 1fr);
+  grid-template-columns: var(--catch-space-s4) minmax(0, 1fr);
   gap: var(--catch-space-s2);
   align-items: start;
   padding: var(--catch-space-micro10);
@@ -2273,7 +2273,7 @@ select {
 .field-control select {
   width: 100%;
   min-width: 0;
-  height: 36px;
+  height: var(--catch-space-s9);
   padding: 0 var(--catch-space-micro10);
   border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-sm);
@@ -2389,7 +2389,7 @@ select {
 
 .search-candidate-actions > button {
   justify-self: start;
-  min-height: 32px;
+  min-height: var(--catch-space-s8);
   padding: 0 var(--catch-space-s3);
   border: var(--catch-stroke-hairline) solid var(--primary);
   border-radius: var(--catch-radius-xs);
@@ -2459,7 +2459,7 @@ select {
 .intake-badge,
 .intake-tag {
   display: inline-flex;
-  min-height: 24px;
+  min-height: var(--catch-space-s6);
   align-items: center;
   padding: var(--catch-space-micro3) var(--catch-space-s2);
   border: var(--catch-stroke-hairline) solid var(--line);
@@ -2654,7 +2654,7 @@ select {
 }
 
 .intake-decision-actions button {
-  min-height: 32px;
+  min-height: var(--catch-space-s8);
   padding: 0 var(--catch-space-s3);
   border: var(--catch-stroke-hairline) solid var(--line-strong);
   border-radius: var(--catch-radius-xs);
@@ -2752,7 +2752,7 @@ select {
 .empty-row {
   display: flex;
   align-items: center;
-  min-height: 48px;
+  min-height: var(--catch-space-s12);
   color: var(--positive);
   background: var(--positive-soft);
 }
@@ -2853,7 +2853,7 @@ th {
 
 .risk {
   display: inline-flex;
-  min-width: 44px;
+  min-width: var(--catch-space-s11);
   justify-content: center;
   padding: var(--catch-space-micro3) var(--catch-space-s2);
   border-radius: var(--catch-radius-pill);
@@ -2878,7 +2878,7 @@ th {
 }
 
 .table-action {
-  height: 28px;
+  height: var(--catch-space-s7);
   padding: 0 var(--catch-space-micro10);
   border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-pill);
@@ -2926,7 +2926,7 @@ th {
 }
 
 .signal-track {
-  height: 6px;
+  height: var(--catch-space-micro6);
   overflow: hidden;
   border-radius: var(--catch-radius-pill);
   background: color-mix(in srgb, var(--ink) 9%, transparent);
@@ -3200,8 +3200,8 @@ th {
 
 .marketing-board-column > header strong {
   display: grid;
-  width: 24px;
-  height: 24px;
+  width: var(--catch-space-s6);
+  height: var(--catch-space-s6);
   place-items: center;
   border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-pill);
@@ -3320,7 +3320,7 @@ th {
 
 .marketing-step-chip {
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
+  grid-template-columns: var(--catch-space-s7) minmax(0, 1fr);
   gap: var(--catch-space-s2);
   align-items: center;
   min-width: 0;
@@ -3334,8 +3334,8 @@ th {
 
 .marketing-step-chip span {
   display: grid;
-  width: 28px;
-  height: 28px;
+  width: var(--catch-space-s7);
+  height: var(--catch-space-s7);
   place-items: center;
   border-radius: var(--catch-radius-pill);
   border: var(--catch-stroke-hairline) solid var(--line);
@@ -3399,8 +3399,8 @@ th {
 
 .marketing-picker-row > span {
   display: grid;
-  width: 24px;
-  height: 24px;
+  width: var(--catch-space-s6);
+  height: var(--catch-space-s6);
   place-items: center;
   border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-sm);
@@ -3625,12 +3625,12 @@ th {
 .intake-task-toolbar .search-control {
   width: 100%;
   min-width: 0;
-  height: 40px;
+  height: var(--catch-space-s10);
 }
 
 .intake-task-toolbar > .ghost-button,
 .intake-task-toolbar > .primary-button {
-  min-height: 40px;
+  min-height: var(--catch-space-s10);
 }
 
 .intake-stage-rail {
@@ -3701,7 +3701,7 @@ th {
 
 .intake-boundary-notice button {
   flex: none;
-  min-height: 32px;
+  min-height: var(--catch-space-s8);
   padding: 0 var(--catch-space-micro6);
   border: 0;
   background: transparent;
@@ -3869,15 +3869,15 @@ th {
 
 .marketing-step {
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
+  grid-template-columns: var(--catch-space-s7) minmax(0, 1fr);
   gap: var(--catch-space-micro10);
   align-items: start;
 }
 
 .marketing-step span {
   display: grid;
-  width: 28px;
-  height: 28px;
+  width: var(--catch-space-s7);
+  height: var(--catch-space-s7);
   place-items: center;
   border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-sm);
@@ -4228,7 +4228,7 @@ th {
 }
 
 .marketing-preview-image {
-  width: calc(100% - 24px);
+  width: calc(100% - var(--catch-space-s6));
   aspect-ratio: 4 / 3;
   margin: var(--catch-space-s9) var(--catch-space-s3) 0;
   border: var(--catch-stroke-hairline) solid var(--line);
@@ -4375,7 +4375,7 @@ th {
 
   .workbench-toolbar .search-control {
     max-width: none;
-    flex: 0 0 36px;
+    flex: 0 0 var(--catch-space-s9);
   }
 
   .roadmap-summary {
