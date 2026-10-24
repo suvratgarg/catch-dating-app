@@ -100,6 +100,41 @@ for durable workflow boundaries. Synthetic fixtures in
 exercise the adapter contract with the existing runner and preparation policy;
 this slice creates no credentials, bills, provider calls, deployments or sends.
 
+## Bounded research agent
+
+`guarded-agent-runner.mjs` runs one tool-use research loop for a trusted
+workflow: it calls the model, executes the caller's tools, and ends when the
+model calls the caller's finish tool. It is the only path to agentic model use
+in Operations, and it never publishes; its finish input is a proposal for the
+calling workflow to review.
+
+- **Model.** `claude-opus-5-5` only (`anthropic-agent-protocol.mjs`), over the
+  native Messages API with the same injected transport and secret ports as the
+  providers above. Thinking is left to the model (Claude Opus 5.5 cannot
+  disable it), effort is explicit, tools are `strict` with automatic choice
+  (forced tool choice is rejected by this model), and web search is the
+  `web_search_20260209` server tool. Server-side refusal fallback is on
+  (`fallbacks: "default"`).
+- **Cost.** `price-book.mjs` is a reviewed price book. Before each step the
+  runner reserves a proven ceiling in the run and monthly ledgers: input
+  bounded from the previous step's reported usage plus everything appended
+  since, the full output allowance, every remaining web search, and one
+  fallback attempt at the ceiling rate. After the step it settles to the priced
+  attempts in `usage.iterations`; a model outside the book is priced at the
+  ceiling. A response that cannot be priced (for example, a missing cache
+  counter) keeps its whole reservation charged.
+- **Bounds.** Steps, tool calls, web searches, per-step output and a per-step
+  deadline are capped. Nothing is retried after a request may have been
+  billed. Tool inputs are schema-checked before a handler runs, failures go
+  back to the model as bounded `is_error` results, and every tool result is
+  capped at 24 KB.
+- **Transcript.** The conversation only grows: assistant content, including
+  thinking blocks and fallback markers, is passed back unchanged.
+- **Stops.** `finished`, `ended_without_finish`, `step_limit`,
+  `tool_call_limit`, `budget_exhausted`, `max_tokens`, `refusal`,
+  `provider_error` and `cancelled`. Every stop other than `finished` is a
+  signal for human review.
+
 ## Primary protocol references
 
 Reviewed on 2026-10-07; model support must be rechecked before activation:
