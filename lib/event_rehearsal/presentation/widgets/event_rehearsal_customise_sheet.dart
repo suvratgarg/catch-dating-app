@@ -90,9 +90,10 @@ class _EventRehearsalCustomiseSheetState
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          CatchText(
             l10n.hostRehearsalChangesLocal,
-            style: CatchTextStyles.recordContext(context),
+            variant: CatchTextVariant.bodyS,
+            color: CatchTokens.of(context).ink2,
           ),
           gapH16,
           CatchSection.plain(
@@ -111,11 +112,12 @@ class _EventRehearsalCustomiseSheetState
           ),
           if (_draft.sourceEvent case final event?) ...[
             gapH8,
-            Text(
+            CatchText(
               l10n.hostRehearsalCopiedGuests(
                 count: _draft.sourceGuestCount ?? event.signedUpCount,
               ),
-              style: CatchTextStyles.recordContext(context),
+              variant: CatchTextVariant.bodyS,
+              color: CatchTokens.of(context).ink2,
             ),
             CatchFieldLanes.single(
               child: CatchField.toggle(
@@ -257,12 +259,10 @@ class _EventRehearsalCustomiseSheetState
               ],
             ),
           if (_showErrors && _draft.selectedModules.isEmpty)
-            Text(
+            CatchText(
               l10n.hostRehearsalSelectModule,
-              style: CatchTextStyles.recordContext(
-                context,
-                color: CatchTokens.of(context).danger,
-              ),
+              variant: CatchTextVariant.bodyS,
+              color: CatchTokens.of(context).danger,
             ),
           gapH16,
           CatchButton(

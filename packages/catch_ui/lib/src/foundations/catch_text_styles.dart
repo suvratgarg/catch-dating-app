@@ -196,11 +196,6 @@ abstract final class CatchTextStyles {
 
   // ===========================================================================
   // FUNCTION — platform system font (UI titles, body, labels, controls)
-  static TextStyle recordContext(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.context,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
 
   static TextStyle recordBody(BuildContext context, {Color? color}) =>
       _functionProfile(
@@ -284,21 +279,10 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink2,
       );
 
-  /// AppBar subtitle (`.t-body-s`) under compact and large screen titles.
-  static TextStyle appBarSubtitle(BuildContext context, {Color? color}) =>
-      bodyS(context, color: color);
-
   /// The workhorse supporting label — dense meta, secondary copy.
   static TextStyle supporting(BuildContext context, {Color? color}) =>
       _functionProfile(
         CatchPlatformTokens.typography.secondary,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
-
-  /// Supporting copy inside command and selection menus.
-  static TextStyle menuSupporting(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.context,
         color: color ?? CatchTokens.of(context).ink2,
       );
 

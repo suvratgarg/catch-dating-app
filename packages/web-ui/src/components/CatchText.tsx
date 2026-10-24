@@ -19,7 +19,6 @@ export type CatchTextVariant =
   | "fieldLabel"
   | "statusLabel"
   | "metric"
-  | "recordContext"
   | "recordBody"
   | "proseL"
   | "proseM";

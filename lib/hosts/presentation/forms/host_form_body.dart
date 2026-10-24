@@ -87,12 +87,13 @@ class _HostFormBodyState extends State<HostFormBody> {
           size: CatchButtonSize.lg,
         ),
         gapH12,
-        Text(
+        CatchText(
           widget.preview
               ? context.l10n.hostFormPreviewNoResponses
               : widget.definition.completionTitle,
           textAlign: TextAlign.center,
-          style: CatchTextStyles.recordContext(context),
+          variant: CatchTextVariant.bodyS,
+          color: CatchTokens.of(context).ink2,
         ),
       ],
     );

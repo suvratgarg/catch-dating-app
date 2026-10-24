@@ -19,7 +19,6 @@ enum CatchTextVariant {
   fieldLabel,
   statusLabel,
   metric,
-  recordContext,
   recordBody,
   proseL,
   proseM;
@@ -60,10 +59,6 @@ enum CatchTextVariant {
       color: color,
     ),
     CatchTextVariant.metric => CatchTextStyles.metric(context, color: color),
-    CatchTextVariant.recordContext => CatchTextStyles.recordContext(
-      context,
-      color: color,
-    ),
     CatchTextVariant.recordBody => CatchTextStyles.recordBody(
       context,
       color: color,

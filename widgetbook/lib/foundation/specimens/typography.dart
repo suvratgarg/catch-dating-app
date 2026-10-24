@@ -150,9 +150,9 @@ class FoundationTypographyTokens extends StatelessWidget {
                 CatchTextStyles.bodyL(context),
               ),
               _TypeSpec(
-                'appBarSubtitle',
+                'bodyS',
                 'Saturday - 8:30 PM',
-                CatchTextStyles.appBarSubtitle(context),
+                CatchTextStyles.bodyS(context),
               ),
               _TypeSpec(
                 'supporting',

@@ -6468,7 +6468,6 @@
               "fieldLabel",
               "statusLabel",
               "metric",
-              "recordContext",
               "recordBody",
               "proseL",
               "proseM"
@@ -9549,7 +9548,7 @@
           "CatchAvatar",
           "CatchTextStyles.headline",
           "CatchTextStyles.titleL",
-          "CatchTextStyles.appBarSubtitle",
+          "CatchTextStyles.bodyS",
           "CatchCollapsedHeaderTitle",
           "CatchIconAction",
           "CatchTopBarPrimaryButton",

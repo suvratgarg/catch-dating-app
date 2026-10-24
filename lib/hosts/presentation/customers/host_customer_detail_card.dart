@@ -432,19 +432,21 @@ class HostCustomerAttendanceCard extends StatelessWidget {
           ],
         ),
         gapH12,
-        Text(
+        CatchText(
           context.l10n.hostCustomersAttendanceSummary(
             cancelled: traits.cancelledEventCount,
             noShows: traits.noShowCount,
             imported: traits.importedEventCount,
           ),
-          style: CatchTextStyles.recordContext(context),
+          variant: CatchTextVariant.bodyS,
+          color: CatchTokens.of(context).ink2,
         ),
         if (traits.sourceCoverage != HostAudienceSourceCoverage.exact) ...[
           gapH8,
-          Text(
+          CatchText(
             context.l10n.hostCustomersAttendancePartial,
-            style: CatchTextStyles.recordContext(context),
+            variant: CatchTextVariant.bodyS,
+            color: CatchTokens.of(context).ink2,
           ),
         ],
       ],
@@ -513,13 +515,14 @@ class HostCustomerDetailsSection extends StatelessWidget {
         ],
       ),
       CatchSection.content(
-        child: Text(
+        child: CatchText(
           customer.phoneE164 == null && customer.email == null
               ? context.l10n.hostCustomersNoContactMethods
               : customer.contactDetailsEditable
               ? context.l10n.hostCustomersUnverifiedContactDetails
               : context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
-          style: CatchTextStyles.recordContext(context),
+          variant: CatchTextVariant.bodyS,
+          color: CatchTokens.of(context).ink2,
         ),
       ),
     ],
@@ -616,13 +619,14 @@ class HostCustomerRevenueCard extends StatelessWidget {
                     ),
                     for (final source in amount.sources) ...[
                       gapH4,
-                      Text(
+                      CatchText(
                         _customerRevenueSourceSummary(
                           context,
                           source,
                           amount.currency,
                         ),
-                        style: CatchTextStyles.recordContext(context),
+                        variant: CatchTextVariant.bodyS,
+                        color: CatchTokens.of(context).ink2,
                       ),
                     ],
                   ],

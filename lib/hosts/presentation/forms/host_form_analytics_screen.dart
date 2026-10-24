@@ -167,11 +167,12 @@ class _HostFormAnalyticsScreenState
                             color: CatchTokens.of(context).ink,
                           ),
                           gapH8,
-                          Text(
+                          CatchText(
                             context.l10n.hostFormAnalyticsQuestionSummary(
                               count: question.responseCount,
                             ),
-                            style: CatchTextStyles.recordContext(context),
+                            variant: CatchTextVariant.bodyS,
+                            color: CatchTokens.of(context).ink2,
                           ),
                           if (question.kind == 'multiChoice') ...[
                             gapH8,
@@ -247,9 +248,10 @@ class _HostFormAnalyticsScreenState
                       },
                     ),
                   ),
-                  Text(
+                  CatchText(
                     context.l10n.hostAudienceResponsesAllVersions,
-                    style: CatchTextStyles.recordContext(context),
+                    variant: CatchTextVariant.bodyS,
+                    color: CatchTokens.of(context).ink2,
                   ),
                   if (value.sources.isNotEmpty) ...[
                     gapH24,
@@ -275,9 +277,10 @@ class _HostFormAnalyticsScreenState
                   ],
                   if (value.sources.isNotEmpty) ...[
                     gapH8,
-                    Text(
+                    CatchText(
                       context.l10n.hostAudienceSourceTotalsScope,
-                      style: CatchTextStyles.recordContext(context),
+                      variant: CatchTextVariant.bodyS,
+                      color: CatchTokens.of(context).ink2,
                     ),
                   ],
                   gapH24,

@@ -154,7 +154,6 @@
       "supporting": 1
     },
     "lib/event_rehearsal/presentation/widgets/event_rehearsal_customise_sheet.dart": {
-      "recordContext": 3,
       "sectionTitle": 1
     },
     "lib/event_rehearsal/presentation/widgets/event_rehearsal_delivery_queue_sheet.dart": {
@@ -168,9 +167,6 @@
     },
     "lib/event_rehearsal/presentation/widgets/event_rehearsal_entry_page_body.dart": {
       "supporting": 3
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_entry_scaffold.dart": {
-      "recordContext": 1
     },
     "lib/event_rehearsal/presentation/widgets/event_rehearsal_help_queue_sheet.dart": {
       "supporting": 1
@@ -585,29 +581,22 @@
       "proseM": 1
     },
     "lib/hosts/presentation/customers/host_customer_applications_section.dart": {
-      "recordContext": 2,
       "supporting": 1
     },
     "lib/hosts/presentation/customers/host_customer_detail_card.dart": {
       "metric": 1,
-      "recordContext": 4,
       "supporting": 5
     },
     "lib/hosts/presentation/customers/host_customer_editor.dart": {
       "supporting": 3
     },
-    "lib/hosts/presentation/customers/host_customer_memory_section.dart": {
-      "recordContext": 1
-    },
     "lib/hosts/presentation/customers/host_customer_sources_section.dart": {
-      "recordContext": 1,
       "supporting": 1
     },
     "lib/hosts/presentation/customers/host_customer_submissions_section.dart": {
       "supporting": 1
     },
     "lib/hosts/presentation/customers/host_customer_timeline_section.dart": {
-      "recordContext": 3,
       "supporting": 1
     },
     "lib/hosts/presentation/customers/host_customers_list.dart": {
@@ -616,13 +605,11 @@
     },
     "lib/hosts/presentation/customers/host_saved_audience_editor.dart": {
       "recordBody": 2,
-      "recordContext": 1,
       "supporting": 2
     },
     "lib/hosts/presentation/customers/host_saved_audience_section.dart": {
       "headline": 1,
       "recordBody": 2,
-      "recordContext": 2,
       "supporting": 2
     },
     "lib/hosts/presentation/customers/host_static_audience_members_editor.dart": {
@@ -665,18 +652,15 @@
     "lib/hosts/presentation/forms/host_form_analytics_screen.dart": {
       "headline": 3,
       "recordBody": 2,
-      "recordContext": 3,
       "supporting": 5
     },
     "lib/hosts/presentation/forms/host_form_automations_screen.dart": {
       "headline": 1,
       "recordBody": 1,
-      "recordContext": 1,
       "supporting": 1
     },
     "lib/hosts/presentation/forms/host_form_body.dart": {
       "headline": 1,
-      "recordContext": 1,
       "supporting": 2
     },
     "lib/hosts/presentation/forms/host_form_editor_viewport.dart": {
@@ -725,8 +709,7 @@
       "titleL": 1
     },
     "lib/hosts/presentation/forms/host_response_answer_section.dart": {
-      "recordBody": 1,
-      "recordContext": 1
+      "recordBody": 1
     },
     "lib/hosts/presentation/forms/host_response_detail_section.dart": {
       "recordBody": 1,

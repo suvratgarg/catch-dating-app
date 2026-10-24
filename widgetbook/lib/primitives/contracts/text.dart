@@ -20,7 +20,6 @@ Widget catchTextContractStates(BuildContext context) {
   );
   final variants = recordAndProse
       ? const [
-          CatchTextVariant.recordContext,
           CatchTextVariant.recordBody,
           CatchTextVariant.proseL,
           CatchTextVariant.proseM,

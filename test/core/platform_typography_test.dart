@@ -39,7 +39,7 @@ void main() {
                   ),
                   (
                     'menuSupporting',
-                    CatchTextStyles.menuSupporting(context),
+                    CatchTextStyles.bodyS(context),
                     profile.context,
                   ),
                   ('labelM', CatchTextStyles.labelM(context), profile.status),

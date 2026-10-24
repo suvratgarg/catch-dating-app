@@ -265,9 +265,10 @@ class _HostFormAutomationsScreenState
                   ],
                 ),
                 gapH8,
-                Text(
+                CatchText(
                   context.l10n.hostAutomationRunHelp,
-                  style: CatchTextStyles.recordContext(context),
+                  variant: CatchTextVariant.bodyS,
+                  color: CatchTokens.of(context).ink2,
                 ),
                 if (state.canLoadMore) ...[
                   gapH16,

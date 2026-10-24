@@ -78,8 +78,7 @@
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
-.text[data-variant="bodyS"],
-.text[data-variant="recordContext"] {
+.text[data-variant="bodyS"] {
   --catch-text-size: var(--catch-typography-web-context-size);
   --catch-text-line-height: var(--catch-typography-web-context-line-height);
   --catch-text-weight: var(--catch-typography-web-context-weight);

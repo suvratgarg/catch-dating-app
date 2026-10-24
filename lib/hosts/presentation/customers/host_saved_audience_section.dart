@@ -124,12 +124,13 @@ class HostSavedAudienceSection extends ConsumerWidget {
                 children: [
                   if (!displayedAudience.definition.isStatic &&
                       displayedAudience.definition.predicates.length > 1)
-                    Text(
+                    CatchText(
                       displayedAudience.definition.join ==
                               HostSavedAudienceJoin.all
                           ? context.l10n.hostSavedAudienceMatchAll
                           : context.l10n.hostSavedAudienceMatchAny,
-                      style: CatchTextStyles.recordContext(context),
+                      variant: CatchTextVariant.bodyS,
+                      color: CatchTokens.of(context).ink2,
                     ),
                   for (final predicate
                       in displayedAudience.definition.predicates)
@@ -247,13 +248,14 @@ class HostSavedAudienceSection extends ConsumerWidget {
                           style: CatchTextStyles.supporting(context),
                         ),
                         gapH8,
-                        Text(
+                        CatchText(
                           context.l10n.hostAudienceGroupChecked(
                             date: DateFormat.yMMMd().add_jm().format(
                               state.preview.evaluatedAt,
                             ),
                           ),
-                          style: CatchTextStyles.recordContext(context),
+                          variant: CatchTextVariant.bodyS,
+                          color: CatchTokens.of(context).ink2,
                         ),
                       ],
                     ),

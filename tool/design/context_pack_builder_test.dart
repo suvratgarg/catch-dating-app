@@ -885,11 +885,6 @@ final _styleRegistry = <_StyleEntry>[
     'function',
     CatchTextStyles.navigationLabel,
   ),
-  _StyleEntry.single(
-    'recordContext',
-    'function',
-    CatchTextStyles.recordContext,
-  ),
   _StyleEntry.single('recordBody', 'function', CatchTextStyles.recordBody),
   _StyleEntry.single('display', 'voice', CatchTextStyles.display),
   _StyleEntry.single('headline', 'function', CatchTextStyles.headline),
@@ -961,18 +956,7 @@ final _styleRegistry = <_StyleEntry>[
   _StyleEntry.single('bodyL', 'function', CatchTextStyles.bodyL),
   _StyleEntry.single('bodyM', 'function', CatchTextStyles.bodyM),
   _StyleEntry.single('bodyS', 'function', CatchTextStyles.bodyS),
-  _StyleEntry.single(
-    'appBarSubtitle',
-    'function',
-    CatchTextStyles.appBarSubtitle,
-    aliasOf: 'bodyS',
-  ),
   _StyleEntry.single('supporting', 'function', CatchTextStyles.supporting),
-  _StyleEntry.single(
-    'menuSupporting',
-    'function',
-    CatchTextStyles.menuSupporting,
-  ),
   _StyleEntry.single(
     'labelL',
     'function',

@@ -35,7 +35,6 @@ const textVariants: readonly CatchTextVariant[] = [
 ];
 
 const recordAndProseVariants: readonly CatchTextVariant[] = [
-  "recordContext",
   "recordBody",
   "proseL",
   "proseM",

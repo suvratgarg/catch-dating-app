@@ -8677,6 +8677,43 @@
       "decidedBy": "codex-rule:exact-text-role-identity",
       "date": "2026-10-24",
       "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:body-small-record-context-alias",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.recordContext",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyS for supported Text calls; retire the synonym Flutter/React variant and catalog entries."
+        }
+      ],
+      "rationale": "CAT-211 comment 5e573577-8360-4eb5-b8a3-63dee7477d49 records the owner-delegated:2026-10-24 -> claude decision to absorb recordContext into existing bodyS and retire the alias. Complete TextStyle equality is verified across all six platforms, both themes and default/danger/transparent colors. Preserve the original context ink2 fallback at migrated call sites. No new role or visual decision.",
+      "decidedBy": "owner+claude",
+      "date": "2026-10-24",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:body-small-context-alias-identities",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.appBarSubtitle",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyS for supported Text calls; CatchTextStyles.bodyS for existing measurement and style-carrier APIs."
+        },
+        {
+          "name": "CatchTextStyles.menuSupporting",
+          "action": "absorb",
+          "note": "CatchTextStyles.bodyS preserves the conditional multiline menu carrier without changing its API."
+        }
+      ],
+      "rationale": "The exact-identity coordinator rule in .claude/handoffs/codex_ui_consolidation_goal.md authorizes absorbing identical roles into existing variants without synonyms. Both aliases equal bodyS across all six platforms, both themes and default/danger/transparent colors. Rename measurement and unsupported Text carriers without changing arguments, preserve original call-site colors, and retire the methods and handoff entries. This records the mechanical rule rather than an additional Claude design approval.",
+      "decidedBy": "codex-rule:exact-text-role-identity",
+      "date": "2026-10-24",
+      "status": "implemented"
     }
   ]
 }

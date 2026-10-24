@@ -322,11 +322,12 @@ class _HostSavedAudienceEditorFormState
                                 style: CatchTextStyles.recordBody(context),
                               )
                             else ...[
-                              Text(
+                              CatchText(
                                 _join == HostSavedAudienceJoin.all
                                     ? context.l10n.hostSavedAudienceMatchAll
                                     : context.l10n.hostSavedAudienceMatchAny,
-                                style: CatchTextStyles.recordContext(context),
+                                variant: CatchTextVariant.bodyS,
+                                color: CatchTokens.of(context).ink2,
                               ),
                               for (final rule in _rules)
                                 if (rule.toPredicate()
