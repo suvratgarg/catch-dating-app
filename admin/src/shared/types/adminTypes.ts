@@ -764,12 +764,6 @@ export type AdminCreateOrganizerDraftFromCandidatePayload =
 export type AdminCreateOrganizerDraftFromCandidateResponse =
   AdminCreateOrganizerDraftFromCandidateCallableResponse;
 
-export type AdminNominateOrganizerPayload =
-  AdminNominateOrganizerCallablePayload;
-
-export type AdminNominateOrganizerResponse =
-  AdminNominateOrganizerCallableResponse;
-
 export interface AdminClubDetails {
   clubId: string;
   name: string;
@@ -1848,10 +1842,6 @@ import type {AdminAssignSafetyTriageItemCallableResponse} from
   "../../generated/contracts/adminAssignSafetyTriageItemCallableResponse";
 import type {AdminCreateMarketingContentDraftCallablePayload} from
   "../../generated/contracts/adminCreateMarketingContentDraftCallablePayload";
-import type {AdminNominateOrganizerCallablePayload} from
-  "../../generated/contracts/adminNominateOrganizerCallablePayload";
-import type {AdminNominateOrganizerCallableResponse} from
-  "../../generated/contracts/adminNominateOrganizerCallableResponse";
 import type {AdminCreateOrganizerDraftFromCandidateCallablePayload} from
   "../../generated/contracts/adminCreateOrganizerDraftFromCandidateCallablePayload";
 import type {AdminCreateOrganizerDraftFromCandidateCallableResponse} from
