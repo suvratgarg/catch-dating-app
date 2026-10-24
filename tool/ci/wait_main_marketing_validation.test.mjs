@@ -12,7 +12,7 @@ const job = (id, name, conclusion = "success") => ({id, name, conclusion,
 const jobs = [job(20, "marketing / Validate marketing website"),
   job(21, "capture-freshness / Render and validate 12 canonical iPhone captures")];
 
-const artifact = {id: 40, expired: false, name: `canonical-marketing-${sourceSha}-${run.id}-${run.run_attempt}`,
+const artifact = {id: 40, expired: false, created_at: "2026-10-17T01:01:30Z", name: `canonical-marketing-${sourceSha}-${run.id}-${run.run_attempt}`,
   digest: `sha256:${"d".repeat(64)}`, workflow_run: {id: run.id, repository_id: 1, head_repository_id: 1, head_sha: sourceSha}};
 
 function fixture({artifacts = [artifact], runs = [run], results = jobs, canonicalResult = canonical, listings, sleep} = {}) {
@@ -50,9 +50,35 @@ for (const conclusion of ["failure", "cancelled", "timed_out", "neutral", "skipp
   });
 }
 
-test("a main CI run cancelled by a newer merge cannot authorize packaging and says why", async () => {
-  await assert.rejects(() => waitMainMarketingValidation(fixture({runs: [{...run, status: "completed", conclusion: "cancelled"}]})),
-    /newer merge to main superseded it/);
+const cancelledRun = {...run, status: "completed", conclusion: "cancelled"};
+
+test("a newer merge cancelling CI after its jobs succeeded keeps their exact evidence", async () => {
+  const result = await waitMainMarketingValidation(fixture({runs: [cancelledRun]}));
+  assert.equal(result.validated, true);
+  assert.equal(result.captureBinding.artifactId, "40");
+  assert.equal(result.authority, "same-source-marketing-and-capture-jobs");
+});
+
+test("CI cancelled before its capture job finished hands validation to the standalone path", async () => {
+  for (const results of [
+    [jobs[0], job(21, jobs[1].name, "cancelled")],
+    [job(20, jobs[0].name, "cancelled"), job(21, jobs[1].name, "cancelled")],
+  ]) {
+    const result = await waitMainMarketingValidation(fixture({runs: [cancelledRun], results}));
+    assert.deepEqual([result.validated, result.captureProduced, result.captureBinding], [false, false, undefined]);
+    assert.equal(result.reason, "source-ci-cancelled-before-evidence");
+  }
+});
+
+test("a cancelled run cannot reuse captures created outside its capture job", async () => {
+  const late = {...artifact, created_at: "2026-10-17T01:05:00Z"};
+  await assert.rejects(() => waitMainMarketingValidation(fixture({runs: [cancelledRun], artifacts: [late]})),
+    /cancelled before its capture job succeeded/);
+});
+
+test("CI that failed for any other reason still blocks packaging", async () => {
+  await assert.rejects(() => waitMainMarketingValidation(fixture({runs: [{...run, status: "completed", conclusion: "failure"}]})),
+    /ended failure/);
 });
 
 test("missing jobs and a completed run without evidence fail closed", async () => {
@@ -79,8 +105,13 @@ for (const change of [{head_sha: "b".repeat(40)}, {event: "pull_request"}, {head
   });
 }
 
-test("cancellation during the final identity recheck revokes reuse", async () => {
-  await assert.rejects(() => waitMainMarketingValidation(fixture({listings: [[run], [{...run, status: "completed", conclusion: "cancelled"}]]})), /failed or was cancelled/);
+test("a newer merge cancelling CI during the final identity recheck keeps succeeded evidence", async () => {
+  const result = await waitMainMarketingValidation(fixture({listings: [[run], [cancelledRun]]}));
+  assert.equal(result.validated, true);
+});
+
+test("failure during the final identity recheck revokes reuse", async () => {
+  await assert.rejects(() => waitMainMarketingValidation(fixture({listings: [[run], [{...run, status: "completed", conclusion: "failure"}]]})), /failed during inspection/);
 });
 
 test("a newer attempt cannot reuse successful jobs from the previous attempt", async () => {
