@@ -14,6 +14,11 @@ const generatedTokensCss = read("../../../web-config/generated/catch-tokens.css"
 const insetsDart = read("../../../catch_tokens/lib/src/semantic/catch_insets.dart");
 const textStylesDart = read("../../../catch_ui/lib/src/foundations/catch_text_styles.dart");
 const textVariantDart = read("../../../catch_ui/lib/src/primitives/catch_text_variant.dart");
+const textVariantTs = read("./CatchText.tsx");
+const textStoriesTs = read("./foundations.stories.tsx");
+const textPreviewDart = read("../../../../widgetbook/lib/primitives/contracts/text.dart");
+const textContract = JSON.parse(read("../../../../design/components/catch.components.json"))
+  .components.find((component: {id: string}) => component.id === "catch.text");
 const gapCss = read("./CatchGap.module.css");
 const sectionListCss = read("./CatchSectionList.module.css");
 const insetCss = read("./CatchInset.module.css");
@@ -146,6 +151,9 @@ describe("CatchInsets parity", () => {
 });
 
 describe("CatchTextStyles parity", () => {
+  const values = textVariantDart.match(/enum CatchTextVariant \{([^;]*);/)?.[1]
+    .split(",").map((value) => value.trim()).filter(Boolean) ?? [];
+
   function roleBody(role: string) {
     const start = textStylesDart.indexOf(`static TextStyle ${role}(`);
     expect(start, `missing CatchTextStyles.${role}`).toBeGreaterThanOrEqual(0);
@@ -172,10 +180,29 @@ describe("CatchTextStyles parity", () => {
   }
 
   it("offers exactly the Flutter CatchTextVariant values", () => {
-    const values = textVariantDart.match(/enum CatchTextVariant \{([^;]*);/)?.[1]
-      .split(",").map((value) => value.trim()).filter(Boolean);
-    expect(values?.length).toBeGreaterThan(0);
-    expect(selectorValues(textCss, "variant").sort()).toEqual([...values!].sort());
+    expect(values.length).toBeGreaterThan(0);
+    expect(selectorValues(textCss, "variant").sort()).toEqual([...values].sort());
+  });
+
+  it("publishes the same roles in TypeScript and the registry contract", () => {
+    const union = textVariantTs.match(/export type CatchTextVariant =([^;]*);/)?.[1] ?? "";
+    const tsValues = [...union.matchAll(/"(\w+)"/g)].map((match) => match[1]);
+    const registered = textContract.contract.props
+      .find((prop: {name: string}) => prop.name === "variant").values;
+    expect(tsValues).toEqual(values);
+    expect(registered).toEqual(values);
+  });
+
+  it("covers every role across the two preview control states", () => {
+    const flutterLists = textPreviewDart.match(/final variants = recordAndProse([\s\S]*?);/)?.[1] ?? "";
+    const flutterPreview = [...flutterLists.matchAll(/CatchTextVariant\.(\w+)/g)]
+      .map((match) => match[1]);
+    const reactPreview = ["textVariants", "recordAndProseVariants"].flatMap((name) => {
+      const list = textStoriesTs.match(new RegExp(`const ${name}: readonly CatchTextVariant\\[\\] = \\[([\\s\\S]*?)\\];`))?.[1] ?? "";
+      return [...list.matchAll(/"(\w+)"/g)].map((match) => match[1]);
+    });
+    expect(flutterPreview.sort()).toEqual([...values].sort());
+    expect(reactPreview.sort()).toEqual([...values].sort());
   });
 
   it("binds each CatchText variant to its Flutter role's profile, weight and color", () => {
