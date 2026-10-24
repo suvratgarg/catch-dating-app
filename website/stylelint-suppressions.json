@@ -113,10 +113,10 @@
   },
   "src/styles/host.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 344
+      "count": 240
     },
     "declaration-property-value-allowed-list": {
-      "count": 58
+      "count": 47
     },
     "media-feature-name-value-allowed-list": {
       "count": 4
