@@ -161,9 +161,10 @@ class _HostFormAnalyticsScreenState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text(
+                          CatchText(
                             question.label,
-                            style: CatchTextStyles.recordTitle(context),
+                            variant: CatchTextVariant.sectionTitle,
+                            color: CatchTokens.of(context).ink,
                           ),
                           gapH8,
                           Text(
@@ -191,9 +192,10 @@ class _HostFormAnalyticsScreenState
                                   ),
                                 ),
                                 gapW12,
-                                Text(
+                                CatchText(
                                   '${choice.count}',
-                                  style: CatchTextStyles.recordTitle(context),
+                                  variant: CatchTextVariant.sectionTitle,
+                                  color: CatchTokens.of(context).ink,
                                 ),
                               ],
                             ),

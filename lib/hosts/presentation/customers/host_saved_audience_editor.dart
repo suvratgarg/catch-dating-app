@@ -357,9 +357,10 @@ class _HostSavedAudienceEditorFormState
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             if (_previewFailedAfterSave) ...[
-                              Text(
+                              CatchText(
                                 context.l10n.hostAudienceSavedPreviewFailed,
-                                style: CatchTextStyles.recordTitle(context),
+                                variant: CatchTextVariant.sectionTitle,
+                                color: CatchTokens.of(context).ink,
                               ),
                               gapH8,
                             ],

@@ -600,7 +600,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventSuccessControlRoomSyncBadge</code> | <code>lib/event_success/presentation/host_live/event_success_control_room_sync_badge.dart:6</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessExclusionAlertBanner</code> | <code>lib/event_success/presentation/host_live/event_success_exclusion_alert_banner.dart:10</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessHostLivePageBody</code> | <code>lib/event_success/presentation/host_live/event_success_host_live_page_body.dart:46</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessPresenceSection</code> | <code>lib/event_success/presentation/host_live/event_success_presence_section.dart:10</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessPresenceSection</code> | <code>lib/event_success/presentation/host_live/event_success_presence_section.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessRoomSummarySection</code> | <code>lib/event_success/presentation/host_live/event_success_room_summary_section.dart:10</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessStepActionRow</code> | <code>lib/event_success/presentation/host_live/event_success_step_action_row.dart:7</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessFunnelSection</code> | <code>lib/event_success/presentation/host_report/event_success_funnel_section.dart:7</code> | — | — | No class documentation or registry summary. |
@@ -776,9 +776,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CreateClubPhotosPicker</code> | <code>lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>CreateClubProfileImagePicker</code> | <code>lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart:103</code> | — | — | No class documentation or registry summary. |
 | <code>HostAudienceSourceRuleSection</code> | <code>lib/hosts/presentation/customers/host_audience_source_rule_section.dart:10</code> | — | — | No class documentation or registry summary. |
-| <code>HostContactMergeCandidateCard</code> | <code>lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart:152</code> | — | — | No class documentation or registry summary. |
-| <code>HostContactMergeReviewSheet</code> | <code>lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart:14</code> | — | — | No class documentation or registry summary. |
-| <code>HostDismissedMergeCandidateCard</code> | <code>lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart:315</code> | — | — | A merge candidate the host dismissed, with the action to restore it. |
+| <code>HostContactMergeCandidateCard</code> | <code>lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart:153</code> | — | — | No class documentation or registry summary. |
+| <code>HostContactMergeReviewSheet</code> | <code>lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart:15</code> | — | — | No class documentation or registry summary. |
+| <code>HostDismissedMergeCandidateCard</code> | <code>lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart:320</code> | — | — | A merge candidate the host dismissed, with the action to restore it. |
 | <code>HostCustomerActiveMergesSection</code> | <code>lib/hosts/presentation/customers/host_customer_active_merges_section.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerApplicationCard</code> | <code>lib/hosts/presentation/customers/host_customer_applications_section.dart:148</code> | — | — | Displays the same grant-filtered answers as the application detail route. These remain a dated submission rather than becoming editable CRM fields. |
 | <code>HostCustomerApplicationsSection</code> | <code>lib/hosts/presentation/customers/host_customer_applications_section.dart:17</code> | — | — | Loads organizer-scoped submissions only when the Details tab is mounted. |
@@ -889,12 +889,12 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostFormValidationTextField</code> | <code>lib/hosts/presentation/forms/host_form_validation_text_field.dart:6</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormWorkspaceHeader</code> | <code>lib/hosts/presentation/forms/host_form_workspace_header.dart:9</code> | — | — | No class documentation or registry summary. |
 | <code>HostResponseAnswerRow</code> | <code>lib/hosts/presentation/forms/host_response_answer_section.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostResponseMetadataSection</code> | <code>lib/hosts/presentation/forms/host_response_answer_section.dart:35</code> | — | — | No class documentation or registry summary. |
-| <code>HostResponseContactSection</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:397</code> | — | — | No class documentation or registry summary. |
+| <code>HostResponseMetadataSection</code> | <code>lib/hosts/presentation/forms/host_response_answer_section.dart:39</code> | — | — | No class documentation or registry summary. |
+| <code>HostResponseContactSection</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:401</code> | — | — | No class documentation or registry summary. |
 | <code>HostResponseDetailSection</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:43</code> | — | — | No class documentation or registry summary. |
-| <code>HostResponsePrimaryAction</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:484</code> | — | — | No class documentation or registry summary. |
-| <code>HostResponseReviewNoteField</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:564</code> | — | — | Uses the shared explicit-save field so actions participate in its reveal, keyboard focus and cancellation behavior rather than floating below it. |
-| <code>HostResponseStartReviewAction</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:359</code> | — | — | No class documentation or registry summary. |
+| <code>HostResponsePrimaryAction</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:488</code> | — | — | No class documentation or registry summary. |
+| <code>HostResponseReviewNoteField</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:568</code> | — | — | Uses the shared explicit-save field so actions participate in its reveal, keyboard focus and cancellation behavior rather than floating below it. |
+| <code>HostResponseStartReviewAction</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:363</code> | — | — | No class documentation or registry summary. |
 | <code>HostResponseExportAction</code> | <code>lib/hosts/presentation/forms/host_response_export_action.dart:13</code> | — | — | Inline action for the applied manager query; it shares the response workspace instead of starting a second, unrelated export screen. |
 | <code>HostResponseConditionSection</code> | <code>lib/hosts/presentation/forms/host_response_query_editor_parts_section.dart:112</code> | — | — | No class documentation or registry summary. |
 | <code>HostResponseConditionValueSection</code> | <code>lib/hosts/presentation/forms/host_response_query_editor_parts_section.dart:228</code> | — | — | No class documentation or registry summary. |
@@ -1184,16 +1184,16 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchesPassButton</code> | <code>lib/swipes/presentation/widgets/catches_pass_button.dart:7</code> | — | — | No class documentation or registry summary. |
 | <code>SwipeEmptyState</code> | <code>lib/swipes/presentation/widgets/swipe_empty_state.dart:6</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileBody</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:21</code> | — | — | PHASE 2 — the flagship profile surface, in the locked editorial language: a person-polaroid hero on a graded photo, Archivo voice, IBM Plex Mono data, proseL reading text, hairlines over boxes. Color = activity (the kicker + reaction affordances borrow the meeting activity's pigment). |
-| <code>ProfileCaptionText</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:539</code> | — | — | No class documentation or registry summary. |
+| <code>ProfileCaptionText</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:540</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileCompatibilitySection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:288</code> | — | — | No class documentation or registry summary. |
-| <code>ProfileDivider</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:561</code> | — | — | No class documentation or registry summary. |
-| <code>ProfileFactsSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:444</code> | — | — | No class documentation or registry summary. |
+| <code>ProfileDivider</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:562</code> | — | — | No class documentation or registry summary. |
+| <code>ProfileFactsSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:445</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileHeader</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:121</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileKickerText</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:270</code> | — | — | No class documentation or registry summary. |
 | <code>ProfilePhoto</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:178</code> | — | — | Real photo (graded at display time) or the activity-art fallback when absent. |
-| <code>ProfilePhotoSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:488</code> | — | — | No class documentation or registry summary. |
+| <code>ProfilePhotoSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:489</code> | — | — | No class documentation or registry summary. |
 | <code>ProfilePromptSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:358</code> | — | — | No class documentation or registry summary. |
-| <code>ProfileRunningSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:382</code> | — | — | No class documentation or registry summary. |
+| <code>ProfileRunningSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:383</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:207</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileReactionAction</code> | <code>lib/swipes/shared/profile_surface/profile_reaction_action.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileReactionButton</code> | <code>lib/swipes/shared/profile_surface/profile_reaction_action.dart:217</code> | — | — | No class documentation or registry summary. |

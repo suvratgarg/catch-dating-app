@@ -19,12 +19,10 @@ export type CatchTextVariant =
   | "fieldLabel"
   | "statusLabel"
   | "metric"
-  | "recordTitle"
   | "recordContext"
   | "recordBody"
   | "proseL"
-  | "proseM"
-  | "name";
+  | "proseM";
 
 /** Theme color roles, named after the Flutter `CatchTokens` fields. */
 export type CatchTextColor =

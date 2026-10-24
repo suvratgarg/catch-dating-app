@@ -27,8 +27,8 @@
     "color": "Base UI is paper and ink; chroma is reserved for activity meaning."
   },
   "registry": {
-    "publicStaticTextStyleMethods": 65,
-    "covered": 63,
+    "publicStaticTextStyleMethods": 62,
+    "covered": 60,
     "excluded": 2
   },
   "excluded": {
@@ -115,20 +115,6 @@
       "size": 13.0,
       "weight": 600,
       "lineHeight": 1.0,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      },
-      "casePolicy": "mixed"
-    },
-    "recordTitle": {
-      "role": "function",
-      "family": "Roboto",
-      "size": 16.0,
-      "weight": 500,
-      "lineHeight": 1.5,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
@@ -281,20 +267,6 @@
       "size": 20.0,
       "weight": 500,
       "lineHeight": 1.4,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      },
-      "casePolicy": "mixed"
-    },
-    "profileAnswer": {
-      "role": "function",
-      "family": "Roboto",
-      "size": 16.0,
-      "weight": 500,
-      "lineHeight": 1.5,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
@@ -599,20 +571,6 @@
           "value": 78.0
         }
       ],
-      "casePolicy": "mixed"
-    },
-    "name": {
-      "role": "function",
-      "family": "Roboto",
-      "size": 16.0,
-      "weight": 500,
-      "lineHeight": 1.5,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      },
       "casePolicy": "mixed"
     },
     "sectionTitle": {

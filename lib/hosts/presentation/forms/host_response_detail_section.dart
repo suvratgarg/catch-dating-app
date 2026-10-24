@@ -101,7 +101,11 @@ class HostResponseDetailSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(formTitle, style: CatchTextStyles.recordTitle(context)),
+        CatchText(
+          formTitle,
+          variant: CatchTextVariant.sectionTitle,
+          color: CatchTokens.of(context).ink,
+        ),
         gapH8,
         Text(
           AppTimeFormatters.dateTime(submitted),

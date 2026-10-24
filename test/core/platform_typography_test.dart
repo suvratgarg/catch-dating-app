@@ -22,8 +22,8 @@ void main() {
               builder: (context) {
                 pairs.addAll([
                   (
-                    'profileAnswer',
-                    CatchTextStyles.profileAnswer(context),
+                    'sectionTitle',
+                    CatchTextStyles.sectionTitle(context),
                     profile.name,
                   ),
                   ('proseL', CatchTextStyles.proseL(context), profile.body),

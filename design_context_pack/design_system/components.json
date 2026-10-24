@@ -6685,12 +6685,10 @@
               "fieldLabel",
               "statusLabel",
               "metric",
-              "recordTitle",
               "recordContext",
               "recordBody",
               "proseL",
-              "proseM",
-              "name"
+              "proseM"
             ]
           },
           {

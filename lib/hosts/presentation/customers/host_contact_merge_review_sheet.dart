@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_contact_merge.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -183,7 +184,11 @@ class _HostContactMergeCandidateCardState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (final contact in candidate.contacts) ...[
-            Text(contact.displayName, style: CatchTextStyles.name(context)),
+            CatchText(
+              contact.displayName,
+              variant: CatchTextVariant.sectionTitle,
+              color: CatchTokens.of(context).ink,
+            ),
             if (contact.phoneE164 != null)
               Text(
                 contact.phoneE164!,
@@ -339,11 +344,12 @@ class _HostDismissedMergeCandidateCardState
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        CatchText(
           widget.candidate.contacts
               .map((contact) => contact.displayName)
               .join(' · '),
-          style: CatchTextStyles.name(context),
+          variant: CatchTextVariant.sectionTitle,
+          color: CatchTokens.of(context).ink,
         ),
         if (!widget.candidate.canReopen) ...[
           gapH4,

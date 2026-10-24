@@ -8640,6 +8640,32 @@
       "decidedBy": "owner+claude",
       "date": "2026-10-24",
       "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:section-title-alias-identity",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.recordTitle",
+          "action": "absorb",
+          "note": "CatchTextVariant.sectionTitle for supported Text calls; CatchTextStyles.sectionTitle for unchanged style carriers."
+        },
+        {
+          "name": "CatchTextStyles.name",
+          "action": "absorb",
+          "note": "CatchTextVariant.sectionTitle for supported Text calls; CatchTextStyles.sectionTitle for unchanged style carriers."
+        },
+        {
+          "name": "CatchTextStyles.profileAnswer",
+          "action": "absorb",
+          "note": "CatchTextVariant.sectionTitle for supported Text calls; CatchTextStyles.sectionTitle for unchanged style carriers."
+        }
+      ],
+      "rationale": "The 2026-10-24 coordinator rule in .claude/handoffs/codex_ui_consolidation_goal.md requires identical style recipes to absorb into an existing variant and forbids synonym variants. All three styles equal the unique original sectionTitle recipe across six target platforms, both themes and default/danger/transparent colors. Retire every alias caller and definition, the recordTitle/name Flutter and React variants, and their catalog projections together. Preserve all rendering, caller colors and unsupported text APIs; no new component, variant, prop or visual decision.",
+      "decidedBy": "codex-rule:exact-text-role-identity",
+      "date": "2026-10-24",
+      "status": "implemented"
     }
   ]
 }
