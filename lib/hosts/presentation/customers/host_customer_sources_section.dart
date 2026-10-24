@@ -28,9 +28,9 @@ class HostCustomerSourcesSection extends StatelessWidget {
                     label: l10n.hostCustomersReviewDuplicates,
                     onPressed: onReviewDuplicates,
                   ),
-            child: Text(
+            child: CatchText(
               l10n.hostCustomersCustomerProvenanceUnavailable,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           )
         else

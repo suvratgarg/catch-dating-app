@@ -471,11 +471,11 @@ class HostCustomerTimelineSection extends StatelessWidget {
         children: [
           if (entries.isEmpty)
             CatchSection.content(
-              child: Text(
+              child: CatchText(
                 hasGap
                     ? context.l10n.hostCustomersTimelineUnavailable
                     : context.l10n.hostCustomersTimelineEmpty,
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
             )
           else

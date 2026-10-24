@@ -89,9 +89,9 @@ class HostFormPaymentSetupSection extends StatelessWidget {
       title: l10n.hostFormPaymentTitle,
       footer: fee == null
           ? null
-          : Text(
+          : CatchText(
               l10n.hostFormPaymentPublishHelp,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
       children: [
         CatchField.content(

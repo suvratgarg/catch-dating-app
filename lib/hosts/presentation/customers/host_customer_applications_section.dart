@@ -62,9 +62,9 @@ class HostCustomerApplicationsSection extends ConsumerWidget {
             CatchSection.content(
               key: const ValueKey('host-customer-applications'),
               title: context.l10n.hostApplicationsTitle,
-              child: Text(
+              child: CatchText(
                 context.l10n.hostCustomersNoApplications,
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
             )
           else

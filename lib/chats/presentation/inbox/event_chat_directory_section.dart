@@ -63,9 +63,9 @@ class EventChatDirectoryRowList extends StatelessWidget {
         children: [
           gapH24,
           if (page.items.isEmpty) ...[
-            Text(
+            CatchText(
               l.eventChatsEmptyTitle,
-              style: CatchTextStyles.sectionTitle(context),
+              variant: CatchTextVariant.sectionTitle,
             ),
             gapH8,
             CatchText(

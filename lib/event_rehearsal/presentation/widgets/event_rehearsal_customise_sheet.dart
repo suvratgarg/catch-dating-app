@@ -106,9 +106,9 @@ class _EventRehearsalCustomiseSheetState
             ),
           ),
           gapH16,
-          Text(
+          CatchText(
             l10n.hostRehearsalGuests,
-            style: CatchTextStyles.sectionTitle(context),
+            variant: CatchTextVariant.sectionTitle,
           ),
           if (_draft.sourceEvent case final event?) ...[
             gapH8,

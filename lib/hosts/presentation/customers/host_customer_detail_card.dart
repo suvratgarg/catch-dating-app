@@ -133,13 +133,13 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
               footer: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
+                  CatchText(
                     widget.customer.contactDetailsEditable
                         ? context.l10n.hostCustomersUnverifiedContactDetails
                         : context
                               .l10n
                               .hostCustomersVerifiedDetailsManagedByCatch,
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
                   gapH12,
                   if (_contactMethodError != null) ...[
@@ -414,12 +414,12 @@ class HostCustomerAttendanceCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (segment != null) ...[
-          Text(
+          CatchText(
             _customerFilterLabel(
               context,
               hostCustomerFilterForAudienceSegment(segment),
             ),
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           gapH16,
         ],
@@ -589,14 +589,14 @@ class HostCustomerRevenueCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (revenue.coverage == HostCustomerRevenueCoverage.unavailable)
-          Text(
+          CatchText(
             context.l10n.hostCustomersDetailRevenueUnavailable,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           )
         else if (revenue.amounts.isEmpty)
-          Text(
+          CatchText(
             context.l10n.hostCustomersDetailNoRevenue,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           )
         else
           Column(
@@ -606,16 +606,16 @@ class HostCustomerRevenueCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    CatchText(
                       NumberFormat.simpleCurrency(
                         name: amount.currency,
                       ).format(amount.amountMinor / 100),
-                      style: CatchTextStyles.metric(context),
+                      variant: CatchTextVariant.metric,
                     ),
                     gapH4,
-                    Text(
+                    CatchText(
                       '${amount.currency} · ${context.l10n.hostCustomersDetailRevenueFacts(count: amount.factCount)}',
-                      style: CatchTextStyles.supporting(context),
+                      variant: CatchTextVariant.supporting,
                     ),
                     for (final source in amount.sources) ...[
                       gapH4,

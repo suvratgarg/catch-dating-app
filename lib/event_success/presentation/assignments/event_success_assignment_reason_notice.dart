@@ -43,9 +43,10 @@ class EventSuccessAssignmentReasonNotice extends StatelessWidget {
         for (final reason in reasons)
           Padding(
             padding: _hostLaunchIssueGap,
-            child: Text(
+            child: CatchText(
               reason,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+              variant: CatchTextVariant.supporting,
+              color: t.ink2,
             ),
           ),
       ],

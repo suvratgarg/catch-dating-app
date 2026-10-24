@@ -81,9 +81,9 @@ class _EventProfileIdentitySectionState
           ],
         ),
         gapH12,
-        Text(
+        CatchText(
           l.eventProfileSharedHere,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         if (profile.introduction case final introduction?) ...[
           gapH12,

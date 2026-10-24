@@ -46,18 +46,18 @@ class EventChatMessageTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (message.available && message.kind == 'announcement')
-              Text(
+              CatchText(
                 l.eventChatAnnouncement,
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
             if (message.available)
               Row(
                 children: [
                   Expanded(
                     child: onViewProfile == null
-                        ? Text(
+                        ? CatchText(
                             isMe ? l.eventChatYou : message.senderName ?? '',
-                            style: CatchTextStyles.supporting(context),
+                            variant: CatchTextVariant.supporting,
                           )
                         : Align(
                             alignment: AlignmentDirectional.centerStart,
@@ -127,11 +127,12 @@ class EventChatMessageTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   if (message.reply case final reply?) ...[
-                    Text(
+                    CatchText(
                       reply.available
                           ? reply.senderName ?? ''
                           : l.eventChatUnavailable,
-                      style: CatchTextStyles.supporting(context, color: ink),
+                      variant: CatchTextVariant.supporting,
+                      color: ink,
                     ),
                     gapH4,
                     CatchText(

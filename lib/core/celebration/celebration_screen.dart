@@ -163,12 +163,10 @@ class _CatchCelebrationScreenState extends ConsumerState<CelebrationScreen> {
                         ),
                       ),
                       gapH14,
-                      Text(
+                      CatchText(
                         widget.message,
-                        style: CatchTextStyles.bodyL(
-                          context,
-                          color: _celebrationCream.withValues(alpha: 0.92),
-                        ),
+                        variant: CatchTextVariant.bodyL,
+                        color: _celebrationCream.withValues(alpha: 0.92),
                       ),
                       if (details.isNotEmpty) ...[
                         gapH28,
@@ -338,10 +336,11 @@ class PaperCelebrationScaffold extends StatelessWidget {
                   ],
                   if (note != null) ...[
                     gapH12,
-                    Text(
+                    CatchText(
                       note!,
                       textAlign: TextAlign.center,
-                      style: CatchTextStyles.supporting(context, color: t.ink3),
+                      variant: CatchTextVariant.supporting,
+                      color: t.ink3,
                     ),
                   ],
                   for (final child in supplementalChildren) ...[gapH18, child],
@@ -557,12 +556,10 @@ class CelebrationDetailRow extends StatelessWidget {
                 color: _celebrationInk.withValues(alpha: 0.74),
               ),
               gapH3,
-              Text(
+              CatchText(
                 detail.value,
-                style: CatchTextStyles.bodyLead(
-                  context,
-                  color: _celebrationInk,
-                ),
+                variant: CatchTextVariant.bodyLead,
+                color: _celebrationInk,
               ),
             ],
           ),
@@ -592,12 +589,10 @@ class CelebrationNote extends StatelessWidget {
             Icon(CatchIcons.boltRounded, color: _celebrationInk, size: 18),
             gapW10,
             Expanded(
-              child: Text(
+              child: CatchText(
                 note,
-                style: CatchTextStyles.supporting(
-                  context,
-                  color: _celebrationInk,
-                ),
+                variant: CatchTextVariant.supporting,
+                color: _celebrationInk,
               ),
             ),
           ],

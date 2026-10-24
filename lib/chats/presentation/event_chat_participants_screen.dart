@@ -213,11 +213,11 @@ class EventChatParticipantsRowList extends StatelessWidget {
         ),
         gapH24,
         if (state.page.items.isEmpty)
-          Text(
+          CatchText(
             state.page.nextCursor == null
                 ? l.eventChatParticipantsEmpty
                 : l.eventChatParticipantsContinue,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         if (state.page.items.isNotEmpty)
           CatchSection.fieldRows(

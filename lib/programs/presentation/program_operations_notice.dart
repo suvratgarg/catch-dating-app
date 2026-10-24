@@ -299,9 +299,9 @@ class ProgramOperationReviewSheet extends ConsumerWidget {
                     _operationLabel(context, entry),
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
-                  Text(
+                  CatchText(
                     AppTimeFormatters.dateTime(entry.createdAt),
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
                   CatchText(
                     (entry.kind == ProgramOperationKind.dispatch

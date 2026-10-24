@@ -186,11 +186,12 @@ class CompanionPaperTicket extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        CatchText(
           context
               .l10n
               .eventSuccessEventSuccessCompanionSharedTextYourTicketToday,
-          style: CatchTextStyles.sectionTitle(context, color: t.ink2),
+          variant: CatchTextVariant.sectionTitle,
+          color: t.ink2,
         ),
         gapH12,
         CatchSurface(
@@ -306,7 +307,7 @@ class CompanionPaperTicketHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                CatchText(
                   context.l10n
                       .eventSuccessEventSuccessCompanionSharedTextTitleLocationname(
                         title: plan.playbook.title,
@@ -314,20 +315,19 @@ class CompanionPaperTicketHeader extends StatelessWidget {
                       )
                       .toUpperCase(),
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.sectionTitle(
-                    context,
-                    color: foreground.withValues(
-                      alpha: CatchOpacity.eventSuccessProminent,
-                    ),
+
+                  variant: CatchTextVariant.sectionTitle,
+                  color: foreground.withValues(
+                    alpha: CatchOpacity.eventSuccessProminent,
                   ),
                 ),
                 gapH6,
-                Text(
+                CatchText(
                   event.title,
                   maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.titleL(context, color: foreground),
+
+                  variant: CatchTextVariant.titleL,
+                  color: foreground,
                 ),
               ],
             ),
@@ -354,11 +354,12 @@ class CompanionPaperTicketRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        CatchText(
           label,
           maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.sectionTitle(context, color: t.ink3),
+
+          variant: CatchTextVariant.sectionTitle,
+          color: t.ink3,
         ),
         gapH6,
         Text(
@@ -492,7 +493,7 @@ class CompanionExpectationRow extends StatelessWidget {
         ),
         gapW12,
         Expanded(
-          child: Text(item.label, style: CatchTextStyles.supporting(context)),
+          child: CatchText(item.label, variant: CatchTextVariant.supporting),
         ),
       ],
     );
@@ -521,9 +522,10 @@ class CompanionPrivacySection extends StatelessWidget {
           ),
           gapW8,
           Expanded(
-            child: Text(
+            child: CatchText(
               text,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+              variant: CatchTextVariant.supporting,
+              color: t.ink2,
             ),
           ),
         ],

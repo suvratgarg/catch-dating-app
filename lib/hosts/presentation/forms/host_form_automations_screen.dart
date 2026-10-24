@@ -71,13 +71,13 @@ class _HostFormAutomationsScreenState
     final scopeHeader = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(scopeTitle, style: CatchTextStyles.headline(context)),
+        CatchText(scopeTitle, variant: CatchTextVariant.headline),
         gapH8,
-        Text(
+        CatchText(
           formId == null
               ? context.l10n.hostAudienceAutomationScopeAll
               : context.l10n.hostAudienceAutomationScopeForm,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
       ],
     );

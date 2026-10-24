@@ -546,11 +546,11 @@ class PlaceSuggestionRow extends StatelessWidget {
                 ),
                 if (subtitle.isNotEmpty) ...[
                   gapH4,
-                  Text(
+                  CatchText(
                     subtitle,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                    variant: CatchTextVariant.supporting,
+                    color: t.ink2,
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ],
@@ -624,9 +624,10 @@ class SelectedPointSection extends StatelessWidget {
                       style: CatchTextStyles.labelL(context, color: t.ink),
                     ),
                     gapH4,
-                    Text(
+                    CatchText(
                       subtitle,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                      variant: CatchTextVariant.supporting,
+                      color: t.ink2,
                     ),
                   ],
                 ),

@@ -101,9 +101,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
           color: CatchTokens.of(context).ink,
         ),
         gapH16,
-        Text(
+        CatchText(
           l.eventProfileReviewAgain,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         if (!current.settings.canShare) ...[
           gapH24,
@@ -179,9 +179,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
             title: l.eventProfilePhoto,
             children: [
               if (current.settings.photoIds.isEmpty)
-                Text(
+                CatchText(
                   l.eventProfileNoPhoto,
-                  style: CatchTextStyles.supporting(context),
+                  variant: CatchTextVariant.supporting,
                 ),
               for (final (index, id) in current.settings.photoIds.indexed)
                 if (widget.photos[id] case final image?)
@@ -197,9 +197,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                           ),
                   )
                 else
-                  Text(
+                  CatchText(
                     l.eventProfilePhotoUnavailable,
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
             ],
           ),
@@ -207,9 +207,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
           CatchSection.fieldRows(
             title: l.eventProfileCard,
             children: [
-              Text(
+              CatchText(
                 l.eventProfileCardDisclosure,
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
               if (choices.isNotEmpty)
                 CatchField<String>.select(
@@ -228,9 +228,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
               if (choices.isEmpty &&
                   current.nextCursor == null &&
                   current.cardError == null)
-                Text(
+                CatchText(
                   l.eventProfileNoCards,
-                  style: CatchTextStyles.supporting(context),
+                  variant: CatchTextVariant.supporting,
                 ),
               for (final field in fields)
                 Column(
@@ -255,9 +255,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                               }
                             }),
                     ),
-                    Text(
+                    CatchText(
                       l.eventProfileQuestionAudience,
-                      style: CatchTextStyles.supporting(context),
+                      variant: CatchTextVariant.supporting,
                     ),
                   ],
                 ),
@@ -285,9 +285,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                 : () => widget.onSave(_draft.selection()),
           ),
           gapH12,
-          Text(
+          CatchText(
             l.eventProfileEditAgain,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         if (current.settings.selection != null) ...[

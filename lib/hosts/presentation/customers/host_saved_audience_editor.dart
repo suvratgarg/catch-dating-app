@@ -346,9 +346,9 @@ class _HostSavedAudienceEditorFormState
                                 ],
                             ],
                             gapH12,
-                            Text(
+                            CatchText(
                               context.l10n.hostAudienceMembershipCheckOnSave,
-                              style: CatchTextStyles.supporting(context),
+                              variant: CatchTextVariant.supporting,
                             ),
                           ],
                         ),
@@ -379,9 +379,9 @@ class _HostSavedAudienceEditorFormState
                       CatchSectionListItem(
                         child: CatchSection.fieldRows(
                           title: context.l10n.hostSavedAudienceCurrentPreview,
-                          footer: Text(
+                          footer: CatchText(
                             context.l10n.hostAudienceSavedGroupPreviewHelp,
-                            style: CatchTextStyles.supporting(context),
+                            variant: CatchTextVariant.supporting,
                           ),
                           children: [
                             CatchField.read(

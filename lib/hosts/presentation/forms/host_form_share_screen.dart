@@ -72,9 +72,9 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          CatchText(
                             context.l10n.hostFormShare,
-                            style: CatchTextStyles.headline(context),
+                            variant: CatchTextVariant.headline,
                           ),
                           gapH8,
                           CatchBadge.status(label: context.l10n.hostFormShare),
@@ -91,9 +91,9 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                     builder: (context, editor) => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        CatchText(
                           editor.editor.definition.title,
-                          style: CatchTextStyles.headline(context),
+                          variant: CatchTextVariant.headline,
                         ),
                         gapH8,
                         CatchBadge.status(
@@ -221,9 +221,9 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                     ),
                   ],
                   gapH24,
-                  Text(
+                  CatchText(
                     context.l10n.hostFormCanonicalLinkHelp,
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
                 ],
               ),

@@ -581,9 +581,9 @@ class EventChatPageBody extends StatelessWidget {
               ),
             if (access.profileClaimRequired) ...[
               gapH24,
-              Text(
+              CatchText(
                 l.eventChatProfileRequired,
-                style: CatchTextStyles.sectionTitle(context),
+                variant: CatchTextVariant.sectionTitle,
               ),
               gapH8,
               CatchText(
@@ -708,9 +708,9 @@ class EventChatPageBody extends StatelessWidget {
         if (typing.isNotEmpty)
           Padding(
             padding: CatchInsets.contentHorizontal,
-            child: Text(
+            child: CatchText(
               l.eventChatTyping(names: typing),
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ),
         if (reacting != null && state.canSend)
@@ -728,13 +728,13 @@ class EventChatPageBody extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      CatchText(
                         reply == null
                             ? l.eventChatUnavailable
                             : l.eventChatReplyingTo(
                                 name: reply.senderName ?? '',
                               ),
-                        style: CatchTextStyles.supporting(context),
+                        variant: CatchTextVariant.supporting,
                       ),
                       if (reply != null)
                         CatchText(
@@ -756,11 +756,11 @@ class EventChatPageBody extends StatelessWidget {
         if (!access.canPostMessages)
           Padding(
             padding: CatchInsets.contentHorizontal,
-            child: Text(
+            child: CatchText(
               access.announcementsOnly
                   ? l.eventChatAnnouncementsReadOnly
                   : l.eventChatReadOnly,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ),
         if (reacting == null &&

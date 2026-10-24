@@ -74,9 +74,9 @@ class _HostFormAnalyticsScreenState
                     value: ref.watch(editorProvider),
                     onRetry: () => ref.read(editorProvider.notifier).reload(),
                     loadingBuilder: (_) => CatchSkeleton.content(
-                      child: Text(
+                      child: CatchText(
                         context.l10n.hostFormAnalyticsTitle,
-                        style: CatchTextStyles.headline(context),
+                        variant: CatchTextVariant.headline,
                       ),
                     ),
                     errorBuilder: (_, error, _, onBoundaryRetry) =>
@@ -86,17 +86,17 @@ class _HostFormAnalyticsScreenState
                           mode: CatchErrorStateMode.compact,
                           onRetry: onBoundaryRetry,
                         ),
-                    builder: (context, editor) => Text(
+                    builder: (context, editor) => CatchText(
                       editor.editor.definition.title,
-                      style: CatchTextStyles.headline(context),
+                      variant: CatchTextVariant.headline,
                     ),
                   ),
                   gapH8,
-                  Text(
+                  CatchText(
                     context.l10n.hostAudienceResultsVersion(
                       version: value.version,
                     ),
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
                   gapH24,
                   HostFormMetricRow(
@@ -122,37 +122,37 @@ class _HostFormAnalyticsScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
+                        CatchText(
                           value.starts == 0
                               ? '—'
                               : '${(value.completionRate * 100).round()}%',
-                          style: CatchTextStyles.headline(context),
+                          variant: CatchTextVariant.headline,
                         ),
                         gapH8,
-                        Text(
+                        CatchText(
                           context.l10n.hostAudienceCompletionDenominator(
                             submissions: value.submissions,
                             starts: value.starts,
                           ),
-                          style: CatchTextStyles.supporting(context),
+                          variant: CatchTextVariant.supporting,
                         ),
                         if (value.medianCompletionMillis
                             case final milliseconds?) ...[
                           gapH8,
-                          Text(
+                          CatchText(
                             context.l10n.hostAudienceMedianCompletion(
                               duration: _duration(milliseconds),
                             ),
-                            style: CatchTextStyles.supporting(context),
+                            variant: CatchTextVariant.supporting,
                           ),
                         ],
                       ],
                     ),
                   ),
                   gapH24,
-                  Text(
+                  CatchText(
                     context.l10n.hostFormAnalyticsPrivacyNotice,
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
                   for (final question in value.questions) ...[
                     gapH24,
@@ -176,9 +176,9 @@ class _HostFormAnalyticsScreenState
                           ),
                           if (question.kind == 'multiChoice') ...[
                             gapH8,
-                            Text(
+                            CatchText(
                               context.l10n.hostAudienceMultipleChoiceResults,
-                              style: CatchTextStyles.supporting(context),
+                              variant: CatchTextVariant.supporting,
                             ),
                           ],
                           for (final choice in question.choiceCounts) ...[

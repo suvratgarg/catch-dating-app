@@ -159,9 +159,9 @@ class EventRecapReadyBody extends StatelessWidget {
             children: [
               RecapHeader(state: state.hero),
               gapH24,
-              Text(
+              CatchText(
                 context.l10n.swipesEventRecapScreenTextWhoBroughtTheVibe,
-                style: CatchTextStyles.titleL(context),
+                variant: CatchTextVariant.titleL,
               ),
               gapH4,
               CatchText(
@@ -433,19 +433,16 @@ class RecapHeader extends StatelessWidget {
             ).copyWith(fontWeight: FontWeight.w800),
           ),
           gapH10,
-          Text(
+          CatchText(
             state.distanceLabel,
-            style: CatchTextStyles.headline(context, color: t.surface),
+            variant: CatchTextVariant.headline,
+            color: t.surface,
           ),
           gapH4,
-          Text(
+          CatchText(
             state.activityCheckedInLabel,
-            style: CatchTextStyles.supporting(
-              context,
-              color: t.surface.withValues(
-                alpha: CatchOpacity.eventRecapHeroMeta,
-              ),
-            ),
+            variant: CatchTextVariant.supporting,
+            color: t.surface.withValues(alpha: CatchOpacity.eventRecapHeroMeta),
           ),
           gapH18,
           Row(
@@ -485,13 +482,11 @@ class RecapStatTile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            CatchText(
               label.toUpperCase(),
-              style: CatchTextStyles.supporting(
-                context,
-                color: t.surface.withValues(
-                  alpha: CatchOpacity.eventRecapHeroStatLabel,
-                ),
+              variant: CatchTextVariant.supporting,
+              color: t.surface.withValues(
+                alpha: CatchOpacity.eventRecapHeroStatLabel,
               ),
             ),
             gapH3,
