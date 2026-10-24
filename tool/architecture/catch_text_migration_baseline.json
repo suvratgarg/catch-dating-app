@@ -937,11 +937,8 @@
       "labelS": 1
     },
     "lib/reviews/shared/reviews_section.dart": {
-      "bodyLead": 1,
       "labelL": 1,
-      "labelS": 1,
-      "supporting": 2,
-      "titleL": 1
+      "labelS": 1
     },
     "lib/safety/presentation/messaging_permissions_screen.dart": {
       "proseM": 1
