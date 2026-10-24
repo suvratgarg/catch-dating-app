@@ -889,9 +889,6 @@
       "bodyLead": 1,
       "headlineS": 1
     },
-    "lib/locations/shared/map_preview.dart": {
-      "supporting": 1
-    },
     "lib/onboarding/presentation/pages/onboarding_photos_step.dart": {
       "supporting": 2
     },
