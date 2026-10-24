@@ -184,8 +184,7 @@
 .host-section-nav { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; padding: 12px var(--consumer-gutter); border-block: 1px solid var(--host-line); background: #e9ece5; }
 .host-section-nav a { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 550; min-height: 32px; }
 .host-section-nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
-.host-section-nav a:last-child { margin-left: auto; }
-.host-section-nav a:only-child { margin-left: 0; }
+.host-section-nav a:last-child:not(:only-child) { margin-left: auto; }
 .host-participation-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 36px; }
 .host-participation-grid article { border-top: 1px solid var(--host-line); padding-top: 24px; }
 .host-participation-grid h3 { font-size: 27px; }
