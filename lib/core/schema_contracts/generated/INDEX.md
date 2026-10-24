@@ -157,6 +157,9 @@ Do not edit it by hand.
 | SalesHostSettlementEvidenceUsesDocument | `firestore/sales_host_settlement_evidence_uses.schema.json` | `functions/src/shared/generated/salesHostSettlementEvidenceUses.ts` |
 | OutreachDraftingInput | `operations/outreach_drafting_input.schema.json` | `functions/src/shared/generated/outreachDraftingInput.ts` |
 | OutreachDraftingSelection | `operations/outreach_drafting_selection.schema.json` | `functions/src/shared/generated/outreachDraftingSelection.ts` |
+| SupplyIntakeRequest | `operations/supply_intake_request.schema.json` | `functions/src/shared/generated/supplyIntakeRequest.ts` |
+| SupplyIntakeRequestsDocument | `firestore/supply_intake_requests.schema.json` | `functions/src/shared/generated/supplyIntakeRequestsDocument.ts` |
+| SupplyIntakeUsageDocument | `firestore/supply_intake_usage.schema.json` | `functions/src/shared/generated/supplyIntakeUsageDocument.ts` |
 | AdminSalesIntelligenceGenerateCallablePayload | `callables/admin_sales_intelligence_generate_payload.schema.json` | `functions/src/shared/generated/adminSalesIntelligenceGenerateCallablePayload.ts` |
 | SalesOutreachJobsDocument | `firestore/sales_outreach_jobs.schema.json` | `functions/src/shared/generated/salesOutreachJobsDocument.ts` |
 | OutreachDraft | `operations/outreach_drafting_draft.schema.json` | `functions/src/shared/generated/outreachDraft.ts` |
@@ -1408,6 +1411,9 @@ Do not edit it by hand.
 | `schemaSalesHostSettlementEvidenceUsesDocumentSchema` | SalesHostSettlementEvidenceUsesDocument | `firestore/sales_host_settlement_evidence_uses.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_host_settlement_evidence_uses_document.g.dart` |
 | `schemaOutreachDraftingInputSchema` | OutreachDraftingInput | `operations/outreach_drafting_input.schema.json` | `lib/core/schema_contracts/generated/schemas/outreach_drafting_input.g.dart` |
 | `schemaOutreachDraftingSelectionSchema` | OutreachDraftingSelection | `operations/outreach_drafting_selection.schema.json` | `lib/core/schema_contracts/generated/schemas/outreach_drafting_selection.g.dart` |
+| `schemaSupplyIntakeRequestSchema` | SupplyIntakeRequest | `operations/supply_intake_request.schema.json` | `lib/core/schema_contracts/generated/schemas/supply_intake_request.g.dart` |
+| `schemaSupplyIntakeRequestsDocumentSchema` | SupplyIntakeRequestsDocument | `firestore/supply_intake_requests.schema.json` | `lib/core/schema_contracts/generated/schemas/supply_intake_requests_document.g.dart` |
+| `schemaSupplyIntakeUsageDocumentSchema` | SupplyIntakeUsageDocument | `firestore/supply_intake_usage.schema.json` | `lib/core/schema_contracts/generated/schemas/supply_intake_usage_document.g.dart` |
 | `schemaAdminSalesIntelligenceGenerateCallablePayloadSchema` | AdminSalesIntelligenceGenerateCallablePayload | `callables/admin_sales_intelligence_generate_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_sales_intelligence_generate_callable_payload.g.dart` |
 | `schemaSalesOutreachJobsDocumentSchema` | SalesOutreachJobsDocument | `firestore/sales_outreach_jobs.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_outreach_jobs_document.g.dart` |
 | `schemaOutreachDraftSchema` | OutreachDraft | `operations/outreach_drafting_draft.schema.json` | `lib/core/schema_contracts/generated/schemas/outreach_draft.g.dart` |

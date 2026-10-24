@@ -211,6 +211,9 @@ const schemaSpecs = [
 
   {"name": "OutreachDraftingInput", "source": "operations/outreach_drafting_input.schema.json", "typeOutput": "functions/src/shared/generated/outreachDraftingInput.ts"},
   {"name": "OutreachDraftingSelection", "source": "operations/outreach_drafting_selection.schema.json", "typeOutput": "functions/src/shared/generated/outreachDraftingSelection.ts"},
+  {"name": "SupplyIntakeRequest", "source": "operations/supply_intake_request.schema.json", "typeOutput": "functions/src/shared/generated/supplyIntakeRequest.ts"},
+  {"name": "SupplyIntakeRequestsDocument", "source": "firestore/supply_intake_requests.schema.json", "typeOutput": "functions/src/shared/generated/supplyIntakeRequestsDocument.ts"},
+  {"name": "SupplyIntakeUsageDocument", "source": "firestore/supply_intake_usage.schema.json", "typeOutput": "functions/src/shared/generated/supplyIntakeUsageDocument.ts"},
 
   {"name": "AdminSalesIntelligenceGenerateCallablePayload", "source": "callables/admin_sales_intelligence_generate_payload.schema.json", "typeOutput": "functions/src/shared/generated/adminSalesIntelligenceGenerateCallablePayload.ts"},
   {"name": "SalesOutreachJobsDocument", "source": "firestore/sales_outreach_jobs.schema.json", "typeOutput": "functions/src/shared/generated/salesOutreachJobsDocument.ts"},

@@ -150,6 +150,9 @@ export {salesHostSettlementAttestationsDocumentSchema} from "./schemas/salesHost
 export {salesHostSettlementEvidenceUsesDocumentSchema} from "./schemas/salesHostSettlementEvidenceUses";
 export {outreachDraftingInputSchema} from "./schemas/outreachDraftingInput";
 export {outreachDraftingSelectionSchema} from "./schemas/outreachDraftingSelection";
+export {supplyIntakeRequestSchema} from "./schemas/supplyIntakeRequest";
+export {supplyIntakeRequestsDocumentSchema} from "./schemas/supplyIntakeRequestsDocument";
+export {supplyIntakeUsageDocumentSchema} from "./schemas/supplyIntakeUsageDocument";
 export {adminSalesIntelligenceGenerateCallablePayloadSchema} from "./schemas/adminSalesIntelligenceGenerateInput";
 export {salesOutreachJobsDocumentSchema} from "./schemas/salesOutreachJobsDocument";
 export {outreachDraftSchema} from "./schemas/outreachDraft";

@@ -175,6 +175,38 @@ Robots.txt and each redirect consume budget like any other request. A capture
 returns a page snapshot without raw HTML plus a receipt holding only the
 outcome, hashes, sizes and budget window.
 
+#### Trusted intake worker
+
+Front doors write `supplyIntakeRequests/{requestId}` as `queued`
+(`contracts/firestore/supply_intake_requests.schema.json`); clients can
+neither read nor write it. `onSupplyIntakeRequestCreated`
+(`functions/src/operations/supplyIntake/`) then:
+
+1. Leases the request in a transaction for nine minutes. A request still under
+   lease is left to its worker; an expired lease is taken over.
+2. Chooses the page source. When policy disables page fetching, it uses a
+   source that captures nothing, so the listing still forms from the
+   nomination and every seed becomes a gap. When page fetching is enabled, it
+   validates the cited decision before anything else, then reserves the
+   intake's allowance against `supplyIntakeUsage/{YYYY-MM}` in a transaction,
+   so the monthly cap holds across concurrent workers. It releases what the
+   intake did not use afterwards.
+3. Runs gathering, listing assembly and Supply Intake in a scratch file store,
+   using the packaged Operations runtime that the Functions build copies into
+   `lib` (`functions/scripts/copy-operations-runtime.cjs`, checked again
+   before deploy).
+4. Writes page snapshots to the server-only Storage path
+   `supply-intake/snapshots/{requestId}/{snapshotHash}.json`, then imports the
+   run's canonical projection idempotently into `operationRuns` and
+   `operationWorkItems`.
+5. Records the result on the request: run, listing and event work items, gaps,
+   snapshot paths and capture receipts.
+
+A failure releases the lease and leaves the request `queued` for the
+platform's redelivery. The third failed attempt, or an invalid request or
+policy, is terminal and recorded. `recoverSupplyIntakeRequests` runs hourly
+and picks up queued requests and expired leases whose events were lost.
+
 ## Reference Layout
 
 ```text
