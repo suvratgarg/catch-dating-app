@@ -1374,6 +1374,7 @@ test("plans fail closed above the canonical shardable work-item capacity", async
     externalEventCandidates: [],
     organizerLeads: [],
     crawlSurfaces: [],
+    intakeListings: [],
   });
   const workflow = new SupplyIntakeWorkflow({
     inputSnapshotLoader: async () => oversizedInput,
