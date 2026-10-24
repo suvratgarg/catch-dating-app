@@ -5,18 +5,9 @@
 /**
  * A Catch sales associate nominates an organizer. Supply Intake builds the listing from the name and links; nothing is published until staff review it.
  */
-export type AdminNominateOrganizerCallablePayload = (
-  | {
-      name?: string;
-      [k: string]: unknown;
-    }
-  | {
-      urls?: {
-        [k: string]: unknown;
-      };
-      [k: string]: unknown;
-    }
-) & {
+export type AdminNominateOrganizerCallablePayload = {
+  [k: string]: unknown;
+} & {
   requestId: string;
   name: string | null;
   market: string;

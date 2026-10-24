@@ -2,7 +2,7 @@
 import {createHash} from "node:crypto";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
-import {normalizeMarketId} from "../../locations/marketConfig";
+import {marketForIdOrAlias} from "../../locations/marketConfig";
 import type {SupplyIntakeRequest} from "../../shared/generated/supplyIntakeRequest";
 import {validateSupplyIntakeRequest} from "../../shared/generated/validators/supplyIntakeRequest";
 import {supplyIntakeCollections} from "./worker";
@@ -18,10 +18,14 @@ export function supplyIntakeRequestId(prefix: "nom" | "intent" | "discovery", pa
   return `${prefix}-${createHash("sha256").update(JSON.stringify(parts)).digest("hex").slice(0, 40)}`;
 }
 
-/** A free-text city resolves to its launch market; anything else waits in "unassigned". */
+/**
+ * A free-text city (or market id or alias) resolves to the market slug that
+ * Supply Intake keys work by, such as "mumbai"; anything else waits in
+ * "unassigned" for staff to place.
+ */
 export function intakeMarket(value: string | null | undefined): string {
-  const market = normalizeMarketId(value);
-  return market && /^[a-z][a-z0-9-]{1,49}$/u.test(market) ? market : UNMAPPED_MARKET;
+  const slug = marketForIdOrAlias(value)?.slug;
+  return slug && /^[a-z][a-z0-9-]{1,49}$/u.test(slug) ? slug : UNMAPPED_MARKET;
 }
 
 export async function createSupplyIntakeRequest(tx: Transaction, db: Firestore, request: SupplyIntakeRequest, now: Date):

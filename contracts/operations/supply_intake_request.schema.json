@@ -31,9 +31,11 @@
           "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,59}$"}
         }
       },
-      "anyOf": [
-        {"properties": {"name": {"type": "string"}}},
-        {"properties": {"urls": {"minItems": 1}}}
+      "allOf": [
+        {
+          "if": {"properties": {"name": {"type": "null"}}},
+          "then": {"properties": {"urls": {"minItems": 1}}}
+        }
       ]
     },
     "submittedBy": {

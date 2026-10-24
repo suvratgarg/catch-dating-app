@@ -12,17 +12,9 @@ export type SupplyIntakeRequest = {
   requestId: string;
   kind: "nomination" | "self_submission" | "discovery";
   market: string;
-  seed:
-    | {
-        name?: string;
-        [k: string]: unknown;
-      }
-    | {
-        urls?: {
-          [k: string]: unknown;
-        };
-        [k: string]: unknown;
-      };
+  seed: {
+    [k: string]: unknown;
+  };
   submittedBy: {
     role: "associate" | "partner" | "organizer" | "system";
     uid: string | null;

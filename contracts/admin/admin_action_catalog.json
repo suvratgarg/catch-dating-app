@@ -1356,7 +1356,7 @@
       }
     },
     {
-      "actionId": "sales.nominate-organizer",
+      "actionId": "sales.intake.nominate-organizer",
       "callable": "adminNominateOrganizer",
       "workflowIds": [
         "sales"
@@ -3398,7 +3398,7 @@
         "sales.contacts.list",
         "sales.evidence.list",
         "sales.hosts.create",
-        "sales.nominate-organizer",
+        "sales.intake.nominate-organizer",
         "sales.hosts.update",
         "sales.tasks.upsert",
         "sales.opportunities.upsert",

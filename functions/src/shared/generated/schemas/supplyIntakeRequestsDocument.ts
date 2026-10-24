@@ -117,18 +117,20 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
               }
             }
           },
-          "anyOf": [
+          "allOf": [
             {
-              "properties": {
-                "name": {
-                  "type": "string"
+              "if": {
+                "properties": {
+                  "name": {
+                    "type": "null"
+                  }
                 }
-              }
-            },
-            {
-              "properties": {
-                "urls": {
-                  "minItems": 1
+              },
+              "then": {
+                "properties": {
+                  "urls": {
+                    "minItems": 1
+                  }
                 }
               }
             }

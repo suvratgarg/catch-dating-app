@@ -88,18 +88,20 @@ const schemaSupplyIntakeRequestSchema = <String, Object?>{
           },
         },
       },
-      'anyOf': <Object?>[
+      'allOf': <Object?>[
         <String, Object?>{
-          'properties': <String, Object?>{
-            'name': <String, Object?>{
-              'type': 'string',
+          'if': <String, Object?>{
+            'properties': <String, Object?>{
+              'name': <String, Object?>{
+                'type': 'null',
+              },
             },
           },
-        },
-        <String, Object?>{
-          'properties': <String, Object?>{
-            'urls': <String, Object?>{
-              'minItems': 1,
+          'then': <String, Object?>{
+            'properties': <String, Object?>{
+              'urls': <String, Object?>{
+                'minItems': 1,
+              },
             },
           },
         },

@@ -30890,18 +30890,20 @@ export const supplyIntakeRequestSchema = {
           }
         }
       },
-      "anyOf": [
+      "allOf": [
         {
-          "properties": {
-            "name": {
-              "type": "string"
+          "if": {
+            "properties": {
+              "name": {
+                "type": "null"
+              }
             }
-          }
-        },
-        {
-          "properties": {
-            "urls": {
-              "minItems": 1
+          },
+          "then": {
+            "properties": {
+              "urls": {
+                "minItems": 1
+              }
             }
           }
         }
@@ -31198,18 +31200,20 @@ export const supplyIntakeRequestsDocumentSchema = {
               }
             }
           },
-          "anyOf": [
+          "allOf": [
             {
-              "properties": {
-                "name": {
-                  "type": "string"
+              "if": {
+                "properties": {
+                  "name": {
+                    "type": "null"
+                  }
                 }
-              }
-            },
-            {
-              "properties": {
-                "urls": {
-                  "minItems": 1
+              },
+              "then": {
+                "properties": {
+                  "urls": {
+                    "minItems": 1
+                  }
                 }
               }
             }
@@ -249075,18 +249079,20 @@ export const adminNominateOrganizerCallablePayloadSchema = {
       }
     }
   },
-  "anyOf": [
+  "allOf": [
     {
-      "properties": {
-        "name": {
-          "type": "string"
+      "if": {
+        "properties": {
+          "name": {
+            "type": "null"
+          }
         }
-      }
-    },
-    {
-      "properties": {
-        "urls": {
-          "minItems": 1
+      },
+      "then": {
+        "properties": {
+          "urls": {
+            "minItems": 1
+          }
         }
       }
     }
