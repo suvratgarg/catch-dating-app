@@ -55,7 +55,7 @@ class HostFormEditorViewport extends StatelessWidget {
                   ),
                 ),
               ),
-              VerticalDivider(width: CatchStroke.hairline, color: t.line),
+              CatchDivider.vertical(color: t.line),
               Expanded(
                 child: ColoredBox(
                   color: t.surface,
@@ -72,7 +72,7 @@ class HostFormEditorViewport extends StatelessWidget {
                   ),
                 ),
               ),
-              VerticalDivider(width: CatchStroke.hairline, color: t.line),
+              CatchDivider.vertical(color: t.line),
               SizedBox(
                 width: CatchFormWorkspaceTokens.formBuilderInspectorWidth,
                 child: SingleChildScrollView(
