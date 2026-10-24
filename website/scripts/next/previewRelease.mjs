@@ -29,9 +29,16 @@ export function assertPreviewInvocation(env) {
   assert.equal(env.GITHUB_WORKFLOW_REF, `${env.GITHUB_REPOSITORY}/${preview.workflow}@refs/heads/main`);
   sha(env.GITHUB_SHA);
 }
+/** Successful same-source push CI that must also still be the head of main. */
 export function assertSuccessfulSource({run, sourceSha, repository, mainSha}) {
   sha(sourceSha);
   assert.equal(mainSha, sourceSha, "Preview source is no longer current main");
+  assertSuccessfulSourceRun({run, sourceSha, repository});
+}
+
+/** Successful same-source push CI on main, whatever main has merged since. */
+export function assertSuccessfulSourceRun({run, sourceSha, repository}) {
+  sha(sourceSha);
   assert.equal(run.head_sha, sourceSha);
   assert.equal(run.head_branch, "main");
   assert.equal(run.event, "push");
@@ -41,6 +48,46 @@ export function assertSuccessfulSource({run, sourceSha, repository, mainSha}) {
   assert.equal(run.status, "completed", "Required CI has not finished");
   assert.equal(run.conclusion, "success", "Required CI must pass before preview deployment");
 }
+// A website release never needs to be the head of main: merges keep landing
+// while a release is previewed, approved and promoted. It needs to be on main,
+// validated for its exact source, and not older than what is live, so live
+// only ever moves forward. The tag records the last promoted commit; before
+// the first tagged release, the live runtime's own release header answers.
+export const LIVE_RELEASE_TAG = "deployed/prod-website";
+const FORWARD = new Set(["ahead", "identical"]);
+
+export function assertReleaseLineage({sourceSha, sourceToMain, liveSha, liveToSource}) {
+  sha(sourceSha);
+  assert.ok(FORWARD.has(sourceToMain?.status), "Release source is not on main");
+  sha(liveSha);
+  assert.ok(FORWARD.has(liveToSource?.status), "Release source is older than the live release; live never moves backwards");
+}
+
+export async function liveReleaseSha(repository, {request = github, fetchLive = fetch} = {}) {
+  const tagged = request(`repos/${repository}/git/matching-refs/tags/${LIVE_RELEASE_TAG}`)
+    .filter((ref) => ref.ref === `refs/tags/${LIVE_RELEASE_TAG}`);
+  assert.ok(tagged.length <= 1, "Ambiguous live release tag");
+  if (tagged.length === 1) {
+    assert.equal(tagged[0].object?.type, "commit", "The live release tag must point at a commit");
+    return tagged[0].object.sha;
+  }
+  const response = await fetchLive(`https://catchdates.com/?release-probe=${Date.now()}`,
+    {method: "HEAD", redirect: "manual", headers: {"cache-control": "no-cache"}});
+  const header = response.headers.get("x-catch-release");
+  sha(header);
+  return header;
+}
+
+export async function currentReleaseLineage(repository, sourceSha, options = {}) {
+  const request = options.request ?? github;
+  const liveSha = await liveReleaseSha(repository, options);
+  const lineage = {sourceSha, liveSha,
+    sourceToMain: request(`repos/${repository}/compare/${sourceSha}...main`),
+    liveToSource: request(`repos/${repository}/compare/${liveSha}...${sourceSha}`)};
+  assertReleaseLineage(lineage);
+  return {sourceSha, liveSha, alreadyLive: lineage.liveToSource.status === "identical"};
+}
+
 async function authorize() {
   assertPreviewInvocation(process.env);
   const repository = canonicalRepository(process.env), sourceSha = process.env.GITHUB_SHA;
@@ -49,7 +96,8 @@ async function authorize() {
   assert.ok(result.captureBinding, "Preview requires exact-source captures");
   const run = github(`repos/${repository}/actions/runs/${result.sourceCiRunId}`);
   assert.equal(run.run_attempt, result.sourceCiRunAttempt);
-  assertSuccessfulSource({run, sourceSha, repository, mainSha: github(`repos/${repository}/git/ref/heads/main`).object.sha});
+  assertSuccessfulSourceRun({run, sourceSha, repository});
+  await currentReleaseLineage(repository, sourceSha);
   if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT,
     `capture_binding=${JSON.stringify(result.captureBinding)}\n`);
   console.log(JSON.stringify(result));
