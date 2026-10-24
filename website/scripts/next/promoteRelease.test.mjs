@@ -82,7 +82,8 @@ test("production workflow preserves credentials boundary, tested bytes, shared l
   assert.doesNotMatch(workflow, /result.marketing.version/u);
   const legacy = fs.readFileSync(new URL("../../../.github/workflows/_web-hosting-promote.yml", import.meta.url), "utf8");
   assert.ok(legacy.indexOf("hostingState.mjs legacy-guard") < legacy.indexOf("prod deploy"));
-  assert.match(legacy, /if: \$\{\{ steps.legacy-runtime.outputs.retired != 'true' \}\}/u);
+  // The deploy also waits on both superseded checks; the legacy guard comes first.
+  assert.match(legacy, /if: \$\{\{ steps.legacy-runtime.outputs.retired != 'true' && steps.authorize.outputs.superseded != 'true' && steps.freshness.outputs.superseded != 'true' \}\}/u);
   const lines = workflow.split("\n");
   for (let i = 0; i < lines.length; i++) {
     if (!/^        run: \|$/u.test(lines[i])) continue;
