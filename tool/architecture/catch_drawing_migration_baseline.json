@@ -104,8 +104,7 @@
       "Image": 1
     },
     "lib/chats/presentation/widgets/message_bubble.dart": {
-      "BorderRadius": 2,
-      "ClipRRect": 1,
+      "BorderRadius": 1,
       "Radius": 4
     },
     "lib/chats/presentation/widgets/suvbot_dock.dart": {
@@ -132,7 +131,6 @@
       "Radius": 4
     },
     "lib/clubs/presentation/detail/widgets/club_host_section.dart": {
-      "GestureDetector": 1,
       "Icon": 3,
       "Tooltip": 1
     },
@@ -175,9 +173,6 @@
       "Material": 1
     },
     "lib/core/widgets/activity_map_pin.dart": {
-      "BorderRadius": 1,
-      "BoxDecoration": 1,
-      "DecoratedBox": 1,
       "Icon": 1
     },
     "lib/core/widgets/event_activity_badge.dart": {
@@ -373,12 +368,6 @@
     },
     "lib/event_success/presentation/reveal/event_success_reveal_action_row.dart": {
       "Icon": 5
-    },
-    "lib/event_success/presentation/reveal/event_success_reveal_round_row_list.dart": {
-      "Border": 1,
-      "BorderSide": 1,
-      "BoxDecoration": 1,
-      "Container": 1
     },
     "lib/event_success/presentation/reveal/event_success_reveal_waiting_notice.dart": {
       "Icon": 1
@@ -620,9 +609,7 @@
       "Icon": 1
     },
     "lib/hosts/presentation/inbox/host_inbox_scope_menu.dart": {
-      "Icon": 1,
-      "InkWell": 1,
-      "Material": 1
+      "Icon": 1
     },
     "lib/hosts/presentation/payments/host_payment_account_card.dart": {
       "BorderRadius": 1,
@@ -797,7 +784,6 @@
       "Tooltip": 2
     },
     "lib/reviews/shared/star_rating_row.dart": {
-      "GestureDetector": 1,
       "Icon": 2,
       "Tooltip": 1
     },
