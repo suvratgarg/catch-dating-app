@@ -123,8 +123,12 @@ function followUrls(extraction, via) {
   });
 }
 
-/** Merge gathered evidence into one reviewable listing with per-field sources. */
-export function buildIntakeListing({request, gathered, now}) {
+/**
+ * Merge gathered evidence into one reviewable listing with per-field sources.
+ * Research findings (quoted facts from pages the agent read) rank below
+ * adapter-read facts and above the nominator's typed name.
+ */
+export function buildIntakeListing({request, gathered, now, findings = [], research = null}) {
   const intake = assertSupplyIntakeRequest(request);
   invariant(gathered?.requestId === intake.requestId, "INVALID_INTAKE_EVIDENCE",
     "Gathered evidence belongs to another intake request.");
@@ -144,13 +148,17 @@ export function buildIntakeListing({request, gathered, now}) {
     sourceUrl: organizer.pageUrl, method: "adapter", adapterId: organizer.adapterId}));
   const fromEvents = (field) => gathered.events.map((event) => ({value: event[field],
     sourceUrl: event.pageUrl, method: "adapter", adapterId: event.adapterId}));
+  const fromFindings = (field) => findings.filter((finding) => finding.field === field).map((finding) =>
+    ({value: finding.value, sourceUrl: finding.sourceUrl, method: "agent", adapterId: null}));
   const seedName = {value: intake.seed.name, sourceUrl: null, method: "nominator", adapterId: null};
-  const name = choose("name", [...fromOrganizers("name"), ...fromEvents("organizerName"), seedName]);
-  const description = choose("description", fromOrganizers("description"));
-  const imageUrl = choose("imageUrl", fromOrganizers("imageUrl"));
-  const locality = choose("locality", [...fromOrganizers("locality"), ...fromEvents("locality")]);
+  const name = choose("name", [...fromOrganizers("name"), ...fromEvents("organizerName"),
+    ...fromFindings("name"), seedName]);
+  const description = choose("description", [...fromOrganizers("description"), ...fromFindings("description")]);
+  const imageUrl = choose("imageUrl", [...fromOrganizers("imageUrl"), ...fromFindings("imageUrl")]);
+  const locality = choose("locality", [...fromOrganizers("locality"), ...fromEvents("locality"),
+    ...fromFindings("locality")]);
 
-  const links = listingLinks(gathered);
+  const links = listingLinks(gathered, findings.filter((finding) => finding.field === "link"));
   const events = listingEvents(gathered.events, observedAt);
   const pastEventCount = dedupeEvents(gathered.events).length - events.length;
   const gaps = [];
@@ -166,6 +174,7 @@ export function buildIntakeListing({request, gathered, now}) {
   if (name && intake.seed.name && normalizeName(name) !== normalizeName(intake.seed.name)) {
     gaps.push("name_differs_from_nomination");
   }
+  if (research && research.identityConfident === false) gaps.push("identity_unconfirmed");
   const listing = {
     schemaVersion: 1,
     listingId: `intake-${intake.requestId}`,
@@ -199,7 +208,14 @@ export function buildIntakeListing({request, gathered, now}) {
       capturedAt: page.receipt.capturedAt,
     })),
     gaps: [...new Set(gaps)].sort(),
-    researchNeeded: gaps.some((gap) => RESEARCH_GAPS.has(gap)),
+    researchNeeded: research === null && gaps.some((gap) => RESEARCH_GAPS.has(gap)),
+    research: research === null ? null : {
+      stopReason: research.stopReason,
+      note: research.note ?? null,
+      identityConfident: research.identityConfident ?? null,
+      findings: findings.length,
+      costMicros: research.costMicros,
+    },
     observedAt,
   };
   return {...listing, contentHash: hashValue(listing)};
@@ -214,7 +230,7 @@ function rank(organizer) {
   return 2;
 }
 
-function listingLinks(gathered) {
+function listingLinks(gathered, linkFindings = []) {
   const links = new Map();
   // URLs that name the organizer (its own page, an event's organizer link)
   // resolve ambiguous slugs as organizer surfaces; event pages are not links.
@@ -244,6 +260,7 @@ function listingLinks(gathered) {
   for (const event of gathered.events) {
     if (event.organizerUrl) add(event.organizerUrl, event.pageUrl, {organizerRole: true});
   }
+  for (const finding of linkFindings) add(finding.value, finding.sourceUrl, {organizerRole: true});
   return [...links.values()].sort((left, right) => left.url.localeCompare(right.url)).slice(0, MAX_LISTING_LINKS);
 }
 
