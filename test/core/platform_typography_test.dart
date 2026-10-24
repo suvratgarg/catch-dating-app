@@ -26,8 +26,8 @@ void main() {
                     CatchTextStyles.sectionTitle(context),
                     profile.name,
                   ),
-                  ('proseL', CatchTextStyles.bodyL(context), profile.body),
-                  ('proseM', CatchTextStyles.bodyM(context), profile.secondary),
+                  ('bodyL', CatchTextStyles.bodyL(context), profile.body),
+                  ('bodyM', CatchTextStyles.bodyM(context), profile.secondary),
                   (
                     'bodyLead',
                     CatchTextStyles.bodyLead(context),
@@ -202,10 +202,9 @@ void main() {
                         'Secondary context and its final sentence stay visible.',
                         style: CatchTextStyles.supporting(context),
                       ),
-                      CatchText(
+                      Text(
                         'Long form description with multiple clauses and a readable last word.',
-                        variant: CatchTextVariant.bodyL,
-                        color: CatchTokens.of(context).ink,
+                        style: CatchTextStyles.bodyL(context),
                       ),
                     ],
                   ),

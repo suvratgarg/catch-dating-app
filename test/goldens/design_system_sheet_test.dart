@@ -90,10 +90,9 @@ Widget _sheet(BuildContext context) {
           'Functional UI body, set in the platform font for controls and dense text.',
           style: CatchTextStyles.bodyL(context),
         ),
-        CatchText(
+        Text(
           'Readable prose, set in the platform font for bios and details.',
-          variant: CatchTextVariant.bodyL,
-          color: CatchTokens.of(context).ink,
+          style: CatchTextStyles.bodyL(context),
         ),
         const SizedBox(height: CatchSpacing.s2),
         Text(
