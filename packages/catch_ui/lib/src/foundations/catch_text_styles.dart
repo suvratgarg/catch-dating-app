@@ -400,15 +400,6 @@ abstract final class CatchTextStyles {
     color: color ?? CatchTokens.of(context).ink,
   );
 
-  /// Simulated phone-frame status-bar time.
-  static TextStyle statusBarTime(BuildContext context, {Color? color}) => _mono(
-    context,
-    size: CatchLayout.statusBarTimeFontSize,
-    weight: FontWeight.w700,
-    height: 1,
-    color: color,
-  );
-
   /// OTP digit boxes (`.t-code`).
   static TextStyle otpDigit(BuildContext context, {Color? color}) => _mono(
     context,
