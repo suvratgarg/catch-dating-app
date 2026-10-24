@@ -1143,9 +1143,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ReviewsHistorySkeleton</code> | <code>lib/reviews/presentation/reviews_history_screen.dart:192</code> | — | — | No class documentation or registry summary. |
 | <code>ClubReviewsSection</code> | <code>lib/reviews/shared/reviews_section.dart:21</code> | — | — | Read-only club review aggregate. |
 | <code>EventReviewsSection</code> | <code>lib/reviews/shared/reviews_section.dart:48</code> | — | — | Event-scoped reviews with write/edit CTA for attended attendees. |
-| <code>ReviewCard</code> | <code>lib/reviews/shared/reviews_section.dart:313</code> | — | — | No class documentation or registry summary. |
-| <code>ReviewOwnerResponseCard</code> | <code>lib/reviews/shared/reviews_section.dart:407</code> | — | — | No class documentation or registry summary. |
-| <code>ReviewResponseSheet</code> | <code>lib/reviews/shared/reviews_section.dart:470</code> | — | — | No class documentation or registry summary. |
+| <code>ReviewCard</code> | <code>lib/reviews/shared/reviews_section.dart:314</code> | — | — | No class documentation or registry summary. |
+| <code>ReviewOwnerResponseCard</code> | <code>lib/reviews/shared/reviews_section.dart:409</code> | — | — | No class documentation or registry summary. |
+| <code>ReviewResponseSheet</code> | <code>lib/reviews/shared/reviews_section.dart:473</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewsPreviewSection</code> | <code>lib/reviews/shared/reviews_section.dart:142</code> | — | — | No class documentation or registry summary. |
 | <code>StarRatingPicker</code> | <code>lib/reviews/shared/star_rating_row.dart:37</code> | — | — | Tappable star row for picking a rating. |
 | <code>StarRatingRow</code> | <code>lib/reviews/shared/star_rating_row.dart:7</code> | — | — | Read-only star row. [rating] is 1-5 (integers for filled stars). |
