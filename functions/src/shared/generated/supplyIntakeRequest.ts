@@ -29,4 +29,11 @@ export type SupplyIntakeRequest = {
     partnerId: string | null;
   };
   submittedAt: string;
+  /**
+   * What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), or a discovery run. Null for requests made by hand.
+   */
+  origin: null | {
+    kind: "admin_nomination" | "sales_inbound_intent" | "discovery_run";
+    id: string;
+  };
 };

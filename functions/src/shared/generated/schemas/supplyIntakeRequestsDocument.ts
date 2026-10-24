@@ -47,7 +47,8 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
         "market",
         "seed",
         "submittedBy",
-        "submittedAt"
+        "submittedAt",
+        "origin"
       ],
       "properties": {
         "schemaVersion": {
@@ -172,6 +173,36 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
         "submittedAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "origin": {
+          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), or a discovery run. Null for requests made by hand.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "id"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "admin_nomination",
+                    "sales_inbound_intent",
+                    "discovery_run"
+                  ]
+                },
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$"
+                }
+              }
+            }
+          ]
         }
       },
       "allOf": [

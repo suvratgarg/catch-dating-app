@@ -93,6 +93,8 @@ import {
   AdminRecordOrganizerCurationResponse,
   AdminCreateOrganizerDraftFromCandidatePayload,
   AdminCreateOrganizerDraftFromCandidateResponse,
+  AdminNominateOrganizerPayload,
+  AdminNominateOrganizerResponse,
   AdminRecordEventIntakeReviewDecisionPayload,
   AdminRecordEventIntakeReviewDecisionResponse,
   AdminPublishExternalEventPayload,
@@ -1628,6 +1630,26 @@ export async function decideOrganizerEventCandidate(
     AdminDecideOrganizerEventCandidatePayload,
     AdminDecideOrganizerEventCandidateResponse
   >(functions, "adminDecideOrganizerEventCandidate");
+  const result = await callable(payload);
+  return result.data;
+}
+
+/**
+ * Nominates an organizer for Supply Intake. The worker builds the listing;
+ * staff review it before anything is published.
+ */
+export async function nominateOrganizer(
+  payload: AdminNominateOrganizerPayload
+): Promise<AdminNominateOrganizerResponse> {
+  if (dataMode() === "sample") {
+    await new Promise((resolve) => window.setTimeout(resolve, 240));
+    return {requestId: `nom-${"0".repeat(40)}`, created: true, status: "queued"};
+  }
+
+  const callable = httpsCallable<
+    AdminNominateOrganizerPayload,
+    AdminNominateOrganizerResponse
+  >(functions, "adminNominateOrganizer");
   const result = await callable(payload);
   return result.data;
 }
