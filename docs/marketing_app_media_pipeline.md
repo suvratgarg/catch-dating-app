@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.9.0
-updated: 2026-10-17
+version: 1.10.0
+updated: 2026-10-24
 owner: marketing_website
 status: active
 ---
@@ -106,6 +106,24 @@ its actual built site and retains a separately named validation artifact with
 all 13 capture/manifest byte comparisons. It uses real run identity but has no
 production promotion authority and makes no live-listing calls. Manual
 review/export remains available below. Never manually stamp old PNGs.
+
+## Link-Preview Cards
+
+`tool/marketing/render_preview_cards.mjs --update` renders the 1200×630
+`og:image` cards in `website/public/assets/og/` with Playwright from the site's
+own Archivo font, light colour tokens, the Catch and Catch Host splash marks,
+page copy from `website/src/content/meta.json` and, for the Host cards, an app
+capture from this pipeline. It writes `website/src/generated/previewCards.json`
+with each card's path, alt text and input hash. `src/server/previewCards.ts`
+maps `/host/`, `/host/apply/` and `/f/` to their cards and every other page to
+the brand card. Page metadata and the private-link shell use that map, with the
+hash prefix as a `?v=` query so chat apps refetch a re-rendered card.
+
+`--check` runs in the website `pretypecheck` without a browser. It fails when a
+card's copy, tokens, font, wordmark or renderer changed since it was rendered.
+Re-render after editing those page titles or descriptions. Captures are hashed
+by id only, because CI re-imports their bytes; re-rendering picks up the newest
+capture.
 
 ## Fixture Boundary
 
