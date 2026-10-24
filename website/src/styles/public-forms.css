@@ -27,7 +27,7 @@
 }
 
 .public-form[data-appearance="activity"] .public-form__panel {
-  border-radius: 20px;
+  border-radius: var(--catch-radius-lg);
   border-top: 6px solid var(--form-accent);
 }
 
@@ -111,7 +111,7 @@
 
 .public-form__progress > span:last-child {
   background: rgba(23, 21, 19, 0.09);
-  border-radius: 999px;
+  border-radius: var(--catch-radius-pill);
   grid-column: 1 / -1;
   height: 5px;
   overflow: hidden;
@@ -122,7 +122,7 @@
   border-radius: inherit;
   display: block;
   height: 100%;
-  transition: width 220ms ease;
+  transition: width var(--catch-motion-base) ease;
 }
 
 .public-form__section > header {
@@ -197,7 +197,7 @@
 .public-form .choice-chip {
   background: #f7f3ed;
   border: 1px solid var(--form-border);
-  border-radius: 999px;
+  border-radius: var(--catch-radius-pill);
   color: inherit;
   padding: 11px var(--catch-space-s4);
 }
@@ -223,7 +223,7 @@
 .public-form__upload > label {
   align-items: center;
   border: 1px dashed color-mix(in srgb, #171513 34%, transparent);
-  border-radius: 14px;
+  border-radius: var(--catch-radius-md);
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -254,7 +254,7 @@
 .public-form__signature canvas {
   background: color-mix(in srgb, white 94%, #f3efe7);
   border: 1px solid color-mix(in srgb, #171513 24%, transparent);
-  border-radius: 14px;
+  border-radius: var(--catch-radius-md);
   height: 150px;
   touch-action: none;
   width: 100%;

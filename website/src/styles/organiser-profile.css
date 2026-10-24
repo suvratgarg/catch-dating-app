@@ -18,7 +18,7 @@
 .organiser-profile .listing-profile-rail__identity p { margin: var(--catch-space-s2) 0; }
 .organiser-profile .listing-profile-rail__status { padding-top: var(--catch-space-s3); }
 .organiser-profile .listing-profile-rail__actions { padding: var(--catch-space-micro18) 0; gap: var(--catch-space-micro10); }
-.organiser-profile .listing-profile-rail__actions .button { justify-content: center; padding: 0 var(--catch-space-s4); border: 1px solid var(--website-accent); border-radius: 4px; }
+.organiser-profile .listing-profile-rail__actions .button { justify-content: center; padding: 0 var(--catch-space-s4); border: 1px solid var(--website-accent); border-radius: var(--catch-radius-xs); }
 .organiser-profile .listing-profile-rail__actions .button:not(.button--ghost) { background: var(--website-accent); color: var(--catch-color-light-primary-ink); }
 .organiser-profile .button--ghost { background: transparent; color: var(--website-text); border: 1px solid var(--website-input-border); }
 .organiser-profile .button--ghost:hover { background: var(--website-ghost-hover-bg); color: var(--website-text); }
@@ -36,8 +36,8 @@
 .organiser-profile .event-action-card .explore-badge { justify-self: start; }
 .organiser-profile .event-action-card__meta { gap: 1px; }
 .organiser-profile .event-action-card__meta dd { color: var(--website-text); }
-.organiser-profile .event-action-card__counts { background: var(--website-bg); border-radius: 4px; }
-.organiser-profile .listing-format-row span { color: var(--website-text); border: 1px solid var(--website-line-strong); background: var(--catch-color-light-primary-soft); border-radius: 4px; }
+.organiser-profile .event-action-card__counts { background: var(--website-bg); border-radius: var(--catch-radius-xs); }
+.organiser-profile .listing-format-row span { color: var(--website-text); border: 1px solid var(--website-line-strong); background: var(--catch-color-light-primary-soft); border-radius: var(--catch-radius-xs); }
 .profile-context { border-top: 1px solid var(--website-line-strong); padding: var(--catch-space-micro14) 0; }
 .profile-context summary { cursor: pointer; min-height: 44px; align-content: center; font-size: 15px; font-weight: 600; }
 .profile-context p { font-size: 14px; color: var(--website-text-muted); }

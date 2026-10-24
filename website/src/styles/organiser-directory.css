@@ -6,7 +6,7 @@
 .organiser-directory .organizer-search-form>:has(input) { flex: 1; min-width: 0; }
 .directory-filters { display: flex; flex-wrap: wrap; align-items: end; gap: var(--catch-space-s4); }
 .directory-filters>:has(select) { flex: 0 1 230px; min-width: 170px; }
-.organiser-directory .filter-chip-button { min-height: 48px; border: 1px solid var(--website-input-border); border-radius: 4px; background: var(--website-bg); color: var(--website-text); padding: var(--catch-space-micro10) var(--catch-space-s4); font-family: inherit; font-size: 14px; }
+.organiser-directory .filter-chip-button { min-height: 48px; border: 1px solid var(--website-input-border); border-radius: var(--catch-radius-xs); background: var(--website-bg); color: var(--website-text); padding: var(--catch-space-micro10) var(--catch-space-s4); font-family: inherit; font-size: 14px; }
 .organiser-directory .filter-chip-button[aria-pressed="true"] { background: var(--website-accent); color: var(--catch-color-light-primary-ink); }
 .directory-filters .see-all-button { min-height: 48px; font-size: 13px; }
 .directory-more-filters { margin-top: var(--catch-space-micro18); }

@@ -13,12 +13,12 @@
 .consumer-event-page .event-detail-ticket__body > a:has(.explore-badge):hover { text-decoration: underline; text-underline-offset: 3px; }
 .consumer-event-page .event-detail-ticket__body h1 { font-family: var(--catch-font-voice),sans-serif; font-size: clamp(44px,4.8vw,72px); font-stretch: 78%; line-height: 1; letter-spacing: -.04em; margin: var(--catch-space-s3) 0 var(--catch-space-s6); text-wrap: pretty; }
 .consumer-event-page .event-detail-host-byline { padding-bottom: var(--catch-space-s6); border-bottom: 1px solid var(--website-line-strong); }
-.consumer-event-page .event-detail-host-byline .activity-mark { border-radius: 4px; }
+.consumer-event-page .event-detail-host-byline .activity-mark { border-radius: var(--catch-radius-xs); }
 .consumer-event-page .event-detail-ticket__facts { margin: var(--catch-space-s6) 0; gap: var(--catch-space-micro18); }
 .consumer-event-page .event-detail-ticket__facts dt { font-family: inherit; font-size: 13px; text-transform: none; }
 .consumer-event-page .event-detail-ticket__facts dd { font-size: 16px; }
 .consumer-event-page .event-detail-ticket__facts small { margin-top: var(--catch-space-s1); }
-.consumer-event-page .event-guest-action .button, .consumer-event-page .event-guest-mobile .button { border-radius: 4px; }
+.consumer-event-page .event-guest-action .button, .consumer-event-page .event-guest-mobile .button { border-radius: var(--catch-radius-xs); }
 .consumer-event-page .event-detail-section { padding: 0 var(--consumer-gutter) var(--catch-space-s10); }
 .consumer-event-page .event-detail-section__inner { max-width: 1280px; padding-top: var(--catch-space-s9); }
 .consumer-event-page .event-detail-body { grid-template-columns: minmax(0,1.6fr) minmax(260px,.8fr); gap: var(--catch-space-s16); }
@@ -28,7 +28,7 @@
 .consumer-event-page .event-detail-organizer-panel__identity { flex-wrap: wrap; }
 .consumer-event-page .event-detail-organizer-panel__identity h2 { font-size: 27px; }
 .consumer-event-page .event-detail-organizer-panel__identity p { font-size: 14px; }
-.consumer-event-page .event-detail-organizer-panel .activity-mark { border-radius: 4px; }
+.consumer-event-page .event-detail-organizer-panel .activity-mark { border-radius: var(--catch-radius-xs); }
 .consumer-event-page .button--ghost { color: var(--website-text); border: 1px solid var(--website-input-border); background: transparent; }
 .consumer-event-page .button--ghost:hover { background: var(--catch-color-light-primary-soft); }
 .event-experience-panel { padding: var(--catch-space-s7); margin: var(--catch-space-s8) 0; background: var(--catch-color-light-primary-soft); border: 1px solid var(--website-line-strong); border-radius: 5px; scroll-margin-top: 24px; }

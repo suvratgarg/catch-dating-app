@@ -511,7 +511,7 @@
   width: fit-content;
   padding: 7px var(--catch-space-micro10);
   border: var(--catch-stroke-hairline) solid var(--website-line);
-  border-radius: 999px;
+  border-radius: var(--catch-radius-pill);
   color: var(--website-copy-muted);
   font-size: 12px;
   font-weight: 900;
@@ -694,7 +694,7 @@
   width: fit-content;
   padding: 7px var(--catch-space-micro10);
   border: var(--catch-stroke-hairline) solid var(--website-line);
-  border-radius: 999px;
+  border-radius: var(--catch-radius-pill);
   color: var(--website-copy-muted);
   font-size: 12px;
   font-weight: 900;
@@ -768,7 +768,7 @@
   gap: var(--catch-space-s2);
   padding: var(--catch-space-s4);
   border: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--website-accent) 24%, transparent);
-  border-radius: 12px;
+  border-radius: var(--catch-radius-interactive-tile);
   background: color-mix(in srgb, var(--website-accent) 8%, transparent);
 }
 
